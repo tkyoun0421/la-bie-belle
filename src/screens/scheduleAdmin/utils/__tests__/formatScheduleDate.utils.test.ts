@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/utils/formatScheduleDate.utils.ts
-//
-// 날짜 표기(schedule-admin.md 「표기」) — 「10월 10일(토)」와 확정 줄 「10월 3일에
-// 확정했어요 · 14명에게 알림을 보냈어요」(같은 문서 「확정 뒤 짜임」). `work_date`는
-// 시각 없는 KST 달력 날짜라 UTC 자정으로 읽는다. `confirmed_at`은 실제 타임스탬프라
-// Asia/Seoul로 변환해야 달력 날짜가 맞는다.
-
 import {
   confirmedLine,
   formatScheduleDate,

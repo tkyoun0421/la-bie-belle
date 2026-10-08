@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellWon } from "@/shared/utils/spellNumber";
@@ -32,26 +32,6 @@ import {
   spellWageDate,
 } from "@/screens/wages/utils/wageHistory.utils";
 
-/**
- * 관리자가 기본 시급과 사람별 시급을 정하는 화면의 controller다. 정본은
- * `docs/2-design/modules/payroll/screens/wages.md`고 완료 조건은
- * `docs/2-design/spec/payroll-wages.md`다.
- *
- * **금액 칸 하나를 시트 둘이 같이 쓴다.** 한 번에 한 시트만 열려서 자릿수 상태가 하나면
- * 되고, 「저장이 눌리나」는 지금 열린 시트의 현재 값에 달려 있다 — 그 가름을 여기서 한 번만
- * 한다.
- *
- * **보낸 것이 성공하면 시트가 닫히고 토스트가 선다.** 셋 다 그 꼴이고 말만 다르다 — 그래서
- * 열림이 통신에 매여 있고 화면 것이 아니다.
- *
- * **이력은 받은 데이터에서 갈려 나온다.** 시트를 열 때 질의를 새로 안 던져 로딩이 없다
- * (plan payroll-wages AC-05).
- *
- * **금액 칸의 꼴 바꾸기도 여기서 끝낸다.** `.tsx`가 받는 것은 그릴 글자와 「눌리나」 하나다 —
- * 자릿수에서 쉼표를 넣는 일과 상한에 닿았는지 보는 일은 `model`의 손이 하고 controller가
- * 그것을 부른다.
- */
-
 export type WagesListState = "loading" | "empty" | "rows";
 
 export type WagesScreenRow = {
@@ -67,7 +47,6 @@ export type WagesScreenMember = {
   photoUrl: string | null;
 };
 
-/** 이력 한 줄이다 — 날짜 꼴과 금액 꼴이 여기서 이미 글자가 된다. */
 export type WagesHistoryRow = {
   key: string;
   dateLabel: string;
@@ -114,15 +93,15 @@ function digitsOf(amount: number | null): string {
   return amount === null ? "" : String(amount);
 }
 
-export function useWagesScreen(client: DB): WagesScreenController {
+export function useWagesScreen(): WagesScreenController {
   const [target, setTarget] = useState<SheetTarget | null>(null);
   const [digits, setDigits] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [asking, setAsking] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  const { data: members } = useMembersQuery(client, "active");
-  const { data: wages } = useWageRatesQuery(client);
+  const { data: members } = useMembersQuery(supabase, "active");
+  const { data: wages } = useWageRatesQuery(supabase);
 
   const {
     mutate: saveWage,
@@ -130,7 +109,7 @@ export function useWagesScreen(client: DB): WagesScreenController {
     isSuccess: wageSaved,
     error: wageError,
     reset: resetWageSave,
-  } = useSetWageMutation(client);
+  } = useSetWageMutation(supabase);
 
   const {
     mutate: saveDefaultWage,
@@ -138,14 +117,14 @@ export function useWagesScreen(client: DB): WagesScreenController {
     isSuccess: defaultWageSaved,
     error: defaultWageError,
     reset: resetDefaultWageSave,
-  } = useSetDefaultWageMutation(client);
+  } = useSetDefaultWageMutation(supabase);
 
   const {
     mutate: sendReset,
     isSuccess: resetDone,
     error: resetError,
     reset: resetResetSend,
-  } = useResetWageToDefaultMutation(client);
+  } = useResetWageToDefaultMutation(supabase);
 
   const close = useCallback(() => {
     setTarget(null);

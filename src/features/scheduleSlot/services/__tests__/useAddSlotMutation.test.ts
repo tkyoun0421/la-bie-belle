@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleSlot/services/useAddSlotMutation.ts
-//
-// 잠금이 풀린 포지션의 「자리 추가」다. `addSlot(client, dayId, position)`을 부르고
-// 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']` `['requests']`다
-// (design.md 「자리 늘리기·줄이기·겸임」).
-
 const addSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/scheduleSlot/api/addSlot.api", () => ({

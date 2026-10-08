@@ -4,12 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import { removeAssignment } from "@/features/scheduleAssign/api/removeAssignment.api";
 
-/**
- * 「자리 비우기」와 강제 변경의 「사람 빼기」다. 확정 전이면 행이 지워지고 확정 뒤면
- * `ended_at`이 찍히는 갈림은 함수 안에서 나므로 훅이 확정 여부를 안 본다
- * (`docs/2-design/modules/schedule/design.md`의 「배정」).
- */
-
 export type RemoveAssignmentInput = {
   assignmentId: string;
 };

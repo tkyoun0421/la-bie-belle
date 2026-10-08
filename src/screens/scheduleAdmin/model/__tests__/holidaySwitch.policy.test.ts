@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/holidaySwitch.policy.ts
-//
-// 임시공휴일 스위치의 켜짐·잠김과 아래 줄 문구다(payroll-adjust AC-01). 판정은 그 날짜의
-// `holidays` 행에 `source = 'api'`가 있는가 하나고, 같은 날짜에 `manual`이 같이 있어도
-// 잠금이 이긴다(payroll-adjust plan 「받아온 공휴일인 날은 켜진 채 잠긴다」).
-// 문안은 schedule-admin.md 「날 상세 문안」 표 그대로다.
-
 import {
   holidaySwitchState,
   type HolidayRow,

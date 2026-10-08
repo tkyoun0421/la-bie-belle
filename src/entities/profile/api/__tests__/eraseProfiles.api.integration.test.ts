@@ -145,9 +145,6 @@ async function uploadAvatar(user: ApprovedUser): Promise<void> {
   }
 }
 
-// pg_net은 요청 행만 그 자리에서 넣고 응답 행은 백그라운드 워커가 나중에 쓴다.
-// net._http_response를 부른 직후에 세면 아직 안 쓰인 것을 0으로 읽는다.
-// 요청 번호를 내주는 시퀀스는 net.http_post가 동기로 당기니 그쪽을 센다.
 function netRequestCursor(): number {
   const rows = queryColumn(
     "select case when is_called then last_value else 0 end\n" +

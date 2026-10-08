@@ -1,6 +1,5 @@
 import { usePathname, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
 import { AppBar } from "@/shared/ui/AppBar";
@@ -18,29 +17,10 @@ import { ADMIN_HOME_COPY } from "@/screens/adminHome/consts/adminHome.const";
 import { useAdminHomeScreen } from "@/screens/adminHome/hooks/useAdminHomeScreen";
 import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
 
-/**
- * 관리자가 관리자 모드에서 처음 보는 허브다. 정본은
- * `docs/2-design/system/screens/adminHome.md`고 완료 조건은
- * `docs/2-design/spec/schedule-admin.md`의 AC-01이다.
- *
- * **보는 것이 먼저고 하는 것이 뒤다.** 위 묶음(오늘 현황·타일·빈 자리·미니뷰)은 지금 무슨
- * 일이 벌어지는지고, 가운데는 이번 달 근무표를 굴리는 일이고, 아래는 사람과 값과 도구다.
- *
- * **자리가 빠지면 위 간격을 이어받는다.** 오늘 배정이 없으면 오늘 현황이 통째로 없고, 빈
- * 자리가 없으면 그 자리도 없다 — 0으로 서지 않는다.
- *
- * **타일만 다른 달을 말할 수 있다.** 어느 달이 서는지와 그 달을 어떻게 읽는지는
- * [`useAdminHomeScreen`](../hooks/useAdminHomeScreen.ts)이 가른다 — 이 파일이 받는 것은
- * 「타일이 말하는 달」 하나다.
- *
- * **보낼 데만 여기 산다.** 종과 모드 바꾸기와 줄마다의 이동이 `expo-router`를 쥐고, 그릴
- * 값은 전부 controller가 이미 글자로 만들어 온다.
- */
-
 export function AdminHomeScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const screen = useAdminHomeScreen(supabase);
+  const screen = useAdminHomeScreen();
 
   const goMonth = (asked: string) =>
     router.push(`/admin/schedule?month=${asked}`);

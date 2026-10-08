@@ -1,18 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/adminHome/hooks/useAdminHomeScreen.ts
-//
-// 관리자가 관리자 모드에서 처음 보는 허브의 controller다. `.tsx`가 질의 아홉을 직접 들고
-// 그 답을 `homeTileSummary`·`todayStatus`·`vacancyCards`·`miniViewLoads`에 넘겨 조립까지
-// 하고 있었다.
-//
-// **타일만 다른 달을 말할 수 있다.** 오늘이 든 달이 확정됐으면 타일은 다음 달을 읽는다 —
-// 그래서 같은 질의를 달 둘로 던지는 가름이 이 자리에 산다.
-//
-// **「지금」을 서버 시계에서 읽는다.** 빈 자리 카드의 남은 날과 미니뷰의 오늘 표시가
-// 기기 시계를 그대로 읽고 있었다 — 하루 밀린 기기에서 어제 카드가 선다.
-
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -26,6 +14,12 @@ const getPendingApprovalsMock =
 const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const TODAY = "2026-10-03";
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -96,15 +90,12 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const DEFAULTS = {
   default_slots: 4,
   default_starts: "10:00:00",
   default_ends: "19:00:00",
 };
 
-/** 오늘 하루에 배정 둘이 서고 그중 하나가 출근을 찍은 근무표다. */
 function todayDay() {
   return {
     id: "day-today",
@@ -137,7 +128,11 @@ function todayDay() {
   };
 }
 
+const NOON_OF_TODAY = Date.parse(`${TODAY}T03:00:00.000Z`);
+
 beforeEach(() => {
+  jest.spyOn(Date, "now").mockReturnValue(NOON_OF_TODAY);
+
   getMonthScheduleMock.mockReset();
   getMonthWindowMock.mockReset();
   getOpenSlotsMock.mockReset();
@@ -159,7 +154,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useAdminHomeScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useAdminHomeScreen(), { wrapper });
 
   await waitFor(() => expect(hook.result.current.defaultsValue).toBeDefined());
 

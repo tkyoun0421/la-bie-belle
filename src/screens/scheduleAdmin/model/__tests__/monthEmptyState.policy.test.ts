@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/monthEmptyState.policy.ts
-//
-// 「전부 지난 달」 판정이다 — 그 달의 마지막 날이 오늘(KST) 이전이면 만들기 버튼이 없고
-// 빈 상태 제목만 남는다(plan AC-02, schedule-admin.md 「달 근무표 만들기 짜임」의
-// 「만들기는 달 단위로 막지 않는다」). 열 수 있는 날이 하루라도 남았으면(SCH-002) 지나가는
-// 중인 달도 만들 수 있다 — 즉 마지막 날이 오늘이면 아직 안 지난 것으로 본다.
-
 import { isMonthFullyPast } from "@/screens/scheduleAdmin/model/monthEmptyState.policy";
 
 describe("isMonthFullyPast — 마지막 날이 오늘보다 전이면 전부 지난 달이다", () => {

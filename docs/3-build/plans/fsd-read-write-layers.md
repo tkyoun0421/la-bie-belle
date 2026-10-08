@@ -91,7 +91,7 @@ sources:
 - `src/app/`은 안 건드린다 — Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다
 - 왜 먼저인가: 뒤 묶음이 파일을 만들고 옮긴다. 이름 규칙이 먼저 바뀌어야 그 파일들이 새 꼴로 선다
 - 돌면서 나온 것 — **ESLint 규칙 이름은 kebab으로 되돌렸다.** 일괄 치환이 `house/dumb-ui` 같은 규칙 ID까지 먹었는데 그것은 파일 이름이 아니라 생태계 식별자고 소스의 `eslint-disable` 주석이 그 이름을 쓴다. 규칙 파일은 camel, 등록 키는 kebab이다
-- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 그 파일 주석이 그 위험을 미리 적어뒀고(「일괄 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다」) 실제로 났다 — `kebabWanted`를 `camelWanted`로 뒤집었다
+- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 검사의 짝 테스트는 틀린 이름을 픽스처로 들어, 일괄 치환이 그 파일을 지나가면 픽스처가 정답으로 바뀌고 단언이 조용히 무의미해진다. `kebabWanted`를 `camelWanted`로 뒤집었다
 
 ### AC-02 — 폴더 이름이 camelCase가 된다 ✅
 
@@ -158,7 +158,7 @@ sources:
 - 돌면서 나온 것 — **계획이 `useStatsQueries`를 둘 자리를 규칙에 안 대봤다.** AC-04가 「AC-05가 `entities/stats/hooks/`로 내린다」고 적었는데 그 파일은 entities 세 슬라이스를 함께 읽어 `no-cross-slice-import`에 걸린다. 같은 파일을 두 AC가 연달아 잘못 배치했고([관찰 046](../../observations/046-plan-placement-not-checked-against-rules.md)) 이번에 가르면서 정했다
 - 돌면서 나온 것 — **쿼리 훅이 하나도 `features`를 안 당겼다.** 스물이 전부 `entities` 한 도메인과 `shared`만 import해서 내려보내는 데 손이 들지 않았다. 반대로 뮤테이션 훅은 서른여덞이 각자 제 통신 하나만 불러 1:1이었다 — 둘이 기계적으로 갈린 것이 이 묶음을 치환으로 끝낸 바탕이다
 
-### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다
+### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다 ✅
 
 **둘로 갈라 AC-07을 그 사이에 끼운다.** 가는 자리를 정리하고 나는 이름을 붙인다 — 까닭은 아래 「구현 순서」가 든다.
 
@@ -277,7 +277,7 @@ sources:
 - 돌면서 나온 것 — **관찰 결과가 글자 그대로 섰다.** `config/` 밖에 `process.env`도 `expo-constants` import도 0이다. 옮긴 것은 `readSupabaseEnv`·`readAppUrl`(`shared/config/`)과 `readPushProjectId`·`readIsExpoGo`·`readExpoHostUri`(슬라이스 둘)로 다섯이고, 전제가 든 넷에서 늘어난 것은 `authRedirect`가 읽던 값이 둘이었기 때문이다
 - 돌면서 나온 것 — **환경 읽기를 갈라도 꼴 짜는 함수가 순수해지지 않는다.** `makeAuthRedirectUri`는 `utils`에 남아 `expo-constants` import를 잃었지만 호출 시점에 `config`를 불러 환경을 읽는다. 「`utils`에 SDK import가 없다」는 섰고 「`utils`는 순수하다」는 안 섰다 — 인자로 받게 바꾸면 순수해지는데 부르는 쪽이 매번 환경을 캐 와야 하고, 그 축은 AC-09가 `pushPermission`에서 이미 「주입받아도 뜻이 `lib`이면 `lib`」으로 판정했다. 지금은 import 그물만 세우고 순수성은 검사로 안 세운다
 
-### AC-12 — controller가 선다
+### AC-12 — controller가 선다 ✅
 
 - 전제: `.tsx` 마흔넷이 상태·효과를 들고 호출이 **이백아흔둘**이다. 그중 스물여섯이 repository를 직접 당기고 아흔여섯이 service를 controller 없이 부른다. `ui`가 `hooks`를 당기는 자리는 **셋**뿐이다. `DayDetail.tsx` 하나가 서른셋을 든다
 - 행동
@@ -311,6 +311,14 @@ sources:
 - 돌면서 나온 것 — **같은 값이 두 슬라이스에 각자 섰다.** 근태 비율 띠의 몫 넷과 현황 줄이 근무자 통계의 `utils`에는 함수로, 관리자 통계의 `.tsx`에는 생 배열과 템플릿 문자열로 있었다 — 두 슬라이스가 서로를 못 불러서(lint 규칙 3) 관리자 쪽도 `utils`에 세웠고 접는 것은 AC-13이 받는다
 - 돌면서 나온 것 — **기기 시계를 그대로 읽는 자리가 관리자 홈에 둘 남아 있었다.** 빈 자리 카드의 남은 날과 미니뷰의 오늘 표시다. 나머지 여섯 화면은 서버 시계를 쓰는데 이 둘만 `new Date()`였다 — 하루 밀린 기기에서 어제 카드가 선다. **시계를 쓰는 화면을 센 것으로는 안 보인다** — 그 화면 안에서 「지금」을 읽는 자리를 따로 세야 걸린다
 - 돌면서 나온 것 — **무효화 키를 화면이 배열 리터럴로 적고 있었다.** 통계 둘의 다시 시도가 `[["schedule"], ["attendance"], …]`를 직접 들었고 `queryKeys.attendance.all`은 아예 없었다 — 키의 정본이 `shared/api/queryKeys.ts`인데 거기 없는 접두사를 화면이 손으로 지어 쓰면 키가 바뀔 때 조용히 어긋난다
+- 돌면서 나온 것 — **합성 질의 하나가 화면 여섯에 개인정보를 끌고 들어왔다.** `useMyProfileQuery`는 `profiles`와 `profile_private`를 겹쳐 내는데 id와 role과 승인·퇴사 시각만 쓰는 자리가 여섯이었다(근무표·연습·급여·통계 네 화면과 탭 껍데기와 연습 라우트). 안 쓰는 행을 당기는 것으로 끝나지 않고 **그 행이 와야 `data`가 서니 판정도 그만큼 늦었다.** 여섯이 `useMyProfileRowQuery`로 갔고 합성을 쓰는 자리는 칸에 전화번호를 채우는 「나」 화면 하나다. 그 합성 자신도 제 `useQuery`로 `['profile','private']`를 들어 관리자 쪽 `useProfilePrivateQuery`의 `['profile','private',<id>]`와 같은 행을 두 벌로 캐시에 앉히고 있었다 — 질의 둘을 겹치는 꼴로 바꿔 접었다
+- 돌면서 나온 것 — **`skipToken`이 세션을 모르는 동안 `isPending`을 영구히 켠다.** 세션이 `null`이면 질의가 아예 안 돌아 `isPending`이 안 내려가는데, 게이트 셋이 그 값을 「읽는 중」으로 읽으면 로그인 전 사람이 빈 화면에 갇힌다. 지금 셋은 `userId === null`을 따로 보는 꼴로 서 있고(`!asking && (userId === null || !reading)`) 같은 모양이 세 자리에 손으로 적혀 있다 — 세션에 매인 질의가 늘면 접을 자리다
+- 돌면서 나온 것 — **`.tsx`에 남는 표가 하나 더 있다.** 근무표 근무자의 `VIEW_OPTIONS`가 값과 아이콘과 읽어 주는 말을 한 줄로 묶은 표인데 아이콘이 `lucide-react-native`의 컴포넌트라 `.ts`인 `consts/`가 못 든다. 저장소의 `.const.ts` 서른넷 중 lucide를 당기는 파일이 없고, 반만 옮기면 보기를 하나 더 다는 날 두 자리를 봐야 한다 — `MemberDialog`의 `COPY`가 `ui`에 남은 것과 같은 축이다
+- 돌면서 나온 것 — **드래그 접두사가 `ui`를 떠났다.** AC-10의 관찰이 `ROW_DRAG_PREFIX`·`SLOT_DRAG_PREFIX`를 「컴포넌트를 집는 식별자라 `ui`에 남는다」로 뒀는데, controller가 「받아도 되는 끌기인가」를 판정하게 되면서 같은 접두사를 `ui`와 controller 둘이 알아야 해졌다. `utils/dragId.utils.ts`가 꼴을 들고 되읽기가 갈래까지 같이 답한다 — **축이 바뀐 것이 아니라 그 값을 읽는 쪽이 둘이 된 것이다**
+- 돌면서 나온 것 — **정본과 코드가 어긋난 자리가 controller를 세우면서 드러났다.** 근무표 근무자의 취소 요청이 성공하면 `schedule-worker.md`의 「보낸 뒤」는 「시트가 닫히고 그 배정에 「요청 중」이 남는다」인데, 코드는 취소 얼굴만 접어 같은 겹이 명단으로 돌아왔다. 결과가 알림으로 오고 다음 진입에서 최신을 그리는 자리라 문서 쪽이 맞고 코드를 고쳤다 — e2e가 보낸 뒤 배지만 보므로 어느 쪽이어도 초록이었다
+- 돌면서 나온 것 — **클라이언트를 controller가 받는 것과 당기는 것이 다르다.** 행동의 둘째 줄이 「`.tsx`가 당기는 Supabase 클라이언트 스물다섯이 controller로 가고」인데, 열 아홉이 다 돈 뒤에도 그 스물다섯이 그대로였다 — controller가 `client: DB`를 인자로 받고 **`.tsx`가 실물을 넘기는** 꼴로 섰기 때문이다. 주입은 테스트에 가짜를 넣으려고 고른 길이지만 그 값을 **쥐는 자리**가 `.tsx`면 화면이 통신의 손잡이를 든 채 남고, 같은 줄이 적은 「이 축을 빼면 「`api/` 밖에서 클라이언트 import 금지」를 영구히 못 켠다」가 그대로 현실이 된다. **controller가 `supabase`를 직접 import하고 서명에서 그 인자를 뺀다** — 짝 테스트는 인자 대신 `jest.mock("@/shared/api/supabase")`로 같은 가짜를 넣어 단언을 안 고치고 통과한다. service 훅의 서명은 안 건드린다: `client`를 받는 것은 그대로고 실물을 당기는 자리만 하나로 모인다
+- 돌면서 나온 것 — **클라이언트를 가두는 값이 「빈 훅이 선다」보다 크다.** 게이트 둘(`blocked`·`left`)은 「화면이 제 업무 상태를 드나」로 보면 controller가 없는 것이 맞았는데, `.tsx`가 service에 클라이언트를 넘기려면 그것을 쥐어야 해서 그 판정이 뒤집혔다. 얇은 controller 둘이 서서 **클라이언트를 가두는 일만** 한다 — 보낼 데는 여전히 `.tsx`가 쥔다
+- 돌면서 나온 것 — **controller를 빼도 안 작아지는 파일이 있다.** `useDayDetail.ts`가 구백서른여섯 줄인데 상태 열셋이 한 겹에 사는 것이 그 화면의 사실이라 쪼갤 수 없고, 커진 까닭은 돌려주는 꼴 아홉과 문안 조립과 판정이 같은 파일에 있어서다. **둘째 controller를 세우지 않는다** — 「조각은 제 controller를 못 가진다」가 이 AC의 판정이고, 대신 타입은 `model`로 판정은 `*.policy.ts`로 조립은 `utils`로 내린다
 
 ### AC-14 — `services`가 선다 ✅
 
@@ -379,13 +387,13 @@ sources:
   - 열 안에서만 사는 사본은 그 열이 접는다 — `ALREADY_DECIDED` 셋·`MORE_ICON_SIZE`·`MORE_HIT_SLOP`·`PHOTO_EDGE`·`PHOTO_QUALITY`(구성원), `GENDER_ICON_SIZE` 둘(근무표), `NO_FOLLOWER` 둘(급여)이다. `KST_OFFSET_MS` 둘과 `WEEKDAYS` 하나는 공용 함수가 이미 있어 그쪽으로 위임한다
 - 돌면서 나온 것 — **`ExcuseStatusRow`는 몸이 같아도 못 접는다.** `entities/attendance`와 `entities/payroll`에 각자 있고 다섯 열이 글자까지 같은데, 접으려면 `entities`끼리 import가 생겨 `no-cross-slice-import`에 걸린다. 올릴 자리도 없다 — `shared`에 두면 「`shared`는 도메인을 모른다」가 깨지고, `features`는 통신 계약을 소유할 층이 아니다. **사본 둘이 그 규칙의 값이다**
 
-### AC-08 — 검사 열일곱이 선다
+### AC-08 — 검사 열일곱이 선다 ✅ (열여섯 · `.dto.ts` 하나는 [dto-to-domain-shape](dto-to-domain-shape.md))
 
 **번호는 여덟인데 차례는 마지막이다.** AC-09~AC-13이 뒤에 생겨 문서 차례와 번호가 어긋났다 — 번호를 다시 매기면 merge된 PR 본문과 커밋 메시지가 가리키는 이름이 깨진다.
 
 - 전제: `house/dumb-ui`가 `.tsx`의 Supabase import·`fetch()`·쿼리 훅 호출만 잡는다. 세그먼트와 층의 뜻과 접미사를 지키는 검사가 없다
 - 행동: 규칙을 더하고 `tests/lint/`에 각각의 테스트를 쓴다. [execution.md의 「집행되는 규칙」](../../4-test/execution.md#집행되는-규칙) 표에 행을 더한다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다
-  - `api/` 밖에서 Supabase 클라이언트 import 금지
+  - `api/` 밖에서 Supabase 클라이언트 import 금지 — **축이 둘이다.** `@supabase/*` 패키지를 당기는 것과 `shared/api/supabase`의 실물을 당기는 것이고, 뒤의 것은 `.tsx`를 겨눈다(`src/app/`은 밖이다 — 라우트 파일이라 얇게 남는다). 실물을 쥐는 자리가 controller 하나여야 그 규칙이 선다
   - `hooks`·`services`·`stores` 밖에서 `use*` export 금지
   - `entities/`의 Mutation 금지 · `features/`의 Query는 `entities` 둘 이상을 읽을 때만 — 이름으로 주는 면제를 안 쓴다
   - `.policy.ts`·`.reducer.ts`에서 통신·`Date.now`·`Math.random` 금지
@@ -403,6 +411,15 @@ sources:
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
 - 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열일곱을 통과한다
 - 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
+- **열여섯이 섰다** — 카탈로그 번호 22~28과 30~36, 그리고 `dumb-ui`의 상태 축과 `fileNaming.ts`의 이름 검사 셋이다. **안 선 것은 `.dto.ts`를 `api/` 밖에서 못 당기게 하는 하나**고 그것은 [dto-to-domain-shape](dto-to-domain-shape.md)의 AC-03이 받는다 — DTO의 꼴을 바꾸는 묶음이 그 경계를 세울 자리다
+- 돌면서 나온 것 — **주석 금지도 같은 자리에 섰다**(번호 29). 이 AC 밖에서 온 방침인데 집행 수단이 같다 — 설명 주석과 도구가 읽는 지시를 가르는 축이 글자에 있어 기계가 판정한다. 경위는 [관찰 058](../../observations/058-rule-lived-in-agent-definitions-only.md)이다
+- 돌면서 나온 것 — **검사를 켜니 고칠 자리가 일곱 나왔다.** 되내보내던 `POSITION_ORDER` 둘(관찰 051의 축 그대로)과 `model`·`utils`에 남은 정해진 값 다섯이다. 뒤의 다섯은 AC-10이 「AC-12가 받을 초기값 표」로 면제해 둔 꼴인데 **AC-12가 끝난 뒤에도 남아 있었다** — 면제는 그 조건이 사라지면 같이 사라져야 하고, 그것을 재는 것이 검사다
+- 돌면서 나온 것 — **`.type.ts`가 타입만 든다는 AC-10의 관찰이 거짓이었다.** `screens/pending/model/pendingForm.type.ts`가 상수 둘을 들었고 그중 하나는 바로 옆 타입의 바탕이었다. 세는 눈이 없으면 관찰 결과가 그 자리에서만 참이다
+- 돌면서 나온 것 — **같은 `menuOpen`이 셋인데 둘은 통과하고 하나가 걸렸다.** 통과한 둘은 조각이라 controller를 안 당기고 걸린 하나는 화면 파일이라 당긴다. 「사람이 열고 사람이 닫는다」는 그 상태의 **쓰임**이고 파일의 자리가 아니라, 세그먼트·층·import 어느 축으로도 가를 수 없었다 — 셋을 controller로 올렸다
+- 돌면서 나온 것 — **면제가 아무것도 안 막고 있던 자리가 하나.** 캐시 키 규칙이 팩토리 파일을 이름으로 면제했는데 그 파일의 배열들은 `queryKey:` 속성 자리에 안 서서 애초에 안 걸렸다. 빼도 0건이라 뺐다 — **이름으로 주는 면제는 그 파일이 없어진 뒤에도 구멍으로 남는다**(`dumbUi`가 `src/app/providers.tsx`를 그렇게 들고 있었다)
+- 돌면서 나온 것 — **규칙 둘이 같은 자리를 양쪽에서 받아야 서는 자리가 있다.** `config/`다. 「환경값은 `config/`에서만 읽는다」와 「네이티브 SDK는 `lib`·`ui`·`hooks`에만」이 부딪히는데, EAS 프로젝트 id는 `app.json`에만 살아 `process.env`로는 길이 없다 — 앞은 그 자리만 허용하고 뒤는 그 자리를 면제한다
+- 돌면서 나온 것 — **면제가 규칙 둘을 가르는 선이다.** `no-api-import-in-ui`가 `shared/api/supabase`를 일부러 통과시킨다 — 그 축을 `no-supabase-instance-in-ui`가 더 좁은 메시지로 물어 「`hooks/`로 가라」를 말하기 때문이다. 픽스처를 쓸 때 그 면제를 모르고 `@/shared/api/supabase`를 골랐다가 다른 규칙이 잡혀 빨개졌다 — **면제가 주석에만 살면 그 다음 사람이 같은 자리를 밟는다.** 지금은 카탈로그 표의 그 두 줄이 각각 무는 것을 적어 가른다
+- 돌면서 나온 것 — **`useQueryClient`는 Query·Mutation이 아니다.** `services/` 밖에서 쿼리 훅을 막는 규칙이 그것을 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다
 
 ## 변경 파일
 

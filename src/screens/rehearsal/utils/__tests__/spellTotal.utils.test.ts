@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/rehearsal/utils/spellTotal.utils.ts
-//
-// 달 줄의 합계 문안이다(rehearsal.md 「문안」) — 「3건 · 5시간」꼴이고 0건이면 자리가 빈다.
-// 분이 60 배수가 아니면 「1시간 30분」처럼 분까지 적는다.
-
 import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 describe("spellTotal — 0건이면 자리가 빈다", () => {

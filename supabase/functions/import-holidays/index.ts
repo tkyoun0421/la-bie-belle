@@ -1,15 +1,3 @@
-// 공휴일 받기의 밖으로 나가는 한 걸음이다. `internal.fetch_holidays`가 다음 해가 비어 있는
-// 것을 보고 pg_net으로 이 함수를 쏘면, 여기가 공공 API(한국천문연구원 특일 정보)를 부르고
-// 받은 목록을 service role로 `public.import_holidays`에 넘긴다 — Postgres 함수가 외부 HTTP를
-// 못 부른다(payroll/design.md 「공휴일 받기」).
-//
-// 서비스 키를 쥐는 자리 셋 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
-// `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다 — 안 막으면 인증된 클라이언트
-// 아무나 이 주소를 되풀이해 불러 우리 공공 API 쿼터를 태운다.
-//
-// `_shared`는 `pnpm edge:sync`가 만드는 복사본이다. edge-runtime 컨테이너에 `supabase/functions`
-// 한 폴더만 마운트돼서 `src/`를 직접 가리키면 배포한 함수가 부팅에서 깨진다 — 로컬과 CI가
-// edge-runtime을 빼고 띄워 안 드러났을 뿐이다(관찰 035).
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 import {
@@ -22,13 +10,10 @@ const BEARER = "Bearer ";
 const HOLIDAY_API =
   "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
 
-/** 한 해를 한 번에 못 받는다. `solMonth`를 넘겨 달마다 부른다. */
 const MONTHS = 12;
 
-/** 한 달 공휴일이 이 수를 넘는 일이 없다. 기본값 10으로 두면 연휴가 있는 달이 잘린다. */
 const ROWS_PER_MONTH = 100;
 
-/** 받아올 수 있는 해의 범위다. 이 밖의 값은 부르는 쪽이 잘못 보낸 것이다. */
 const EARLIEST_YEAR = 2000;
 const LATEST_YEAR = 2100;
 
@@ -36,7 +21,6 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const holidayApiKey = Deno.env.get("HOLIDAY_API_KEY") ?? "";
 
-/** 앞 글자가 어디까지 맞았는지가 응답 시간으로 새지 않게 끝까지 본다. */
 function equalsWithoutTiming(left: string, right: string): boolean {
   if (left.length !== right.length) {
     return false;
@@ -61,7 +45,6 @@ function isServiceRole(request: Request): boolean {
   return equalsWithoutTiming(header.slice(BEARER.length), serviceRoleKey);
 }
 
-/** 어느 해를 받는지는 `fetch_holidays`가 정한다 — 비어 있는 해를 아는 자리가 거기 하나다. */
 async function readYear(request: Request): Promise<number | null> {
   let body: unknown;
 
@@ -103,11 +86,6 @@ async function fetchMonth(year: number, month: number): Promise<HolidayRow[]> {
   return parseHolidayApiResponse(await response.json());
 }
 
-/**
- * 열두 달을 모아 한 해를 만든다. **한 달이라도 실패하면 던진다** — 부분 성공이 없다.
- * 반쪽짜리 한 해를 넣으면 `import_holidays`가 그 해의 `api` 행을 지우고 새로 넣어 멀쩡하던
- * 날들이 사라진다. 실패한 날은 아무것도 안 넣고 다음 날 cron이 같은 조건을 다시 본다.
- */
 async function fetchYear(year: number): Promise<HolidayRow[]> {
   const byDate = new Map<string, HolidayRow>();
 
@@ -127,9 +105,6 @@ function respond(status: number, body: Record<string, unknown>): Response {
   });
 }
 
-// 사람이 안 보는 동작이라 로그가 유일한 창이다. 넣은 건수와 실패 사유를 해와 같이 남긴다.
-// 모양이 어긋난 응답도 빈 배열로 와서(`parseHolidayApiResponse`) 「결과 없음」과 같아 보이니,
-// 0건은 0건이라고 따로 적는다.
 Deno.serve(async (request: Request): Promise<Response> => {
   if (!isServiceRole(request)) {
     console.error("import-holidays: service role이 아닌 호출을 거절했다");
@@ -162,8 +137,6 @@ Deno.serve(async (request: Request): Promise<Response> => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // `public` 껍데기다. 서비스 키로도 `internal`은 PostgREST가 라우팅을 안 해 못 닿는다
-  // (data-access.md 「서비스 키 자리」). 껍데기가 첫 줄에서 service role인지 보고 알맹이를 부른다.
   const { error } = await admin.rpc("import_holidays", {
     p_year: year,
     p_rows: rows,

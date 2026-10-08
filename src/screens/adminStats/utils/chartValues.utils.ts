@@ -8,17 +8,6 @@ import {
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 
-/**
- * 통계 화면이 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 정본은
- * `docs/2-design/system/screens/stats.md`의 「추이 그래프」다.
- *
- * **값이 없는 달은 키가 없다.** 0으로 이으면 그 달에 아무도 안 일했다는 뜻이 되는데,
- * 실제로는 아직 근무표를 안 연 달이다 — 그래프는 그 달의 점을 안 찍는다.
- *
- * **출근율 공식은 `entities/attendance`가 든다.** 근무자 통계가 같은 공식을 쓰는데 다른
- * 슬라이스라 여기 두면 못 부른다(plan stats-worker AC-01).
- */
-
 export function workValues(
   loaded: WorkMonth[] | undefined,
 ): Map<string, number> {

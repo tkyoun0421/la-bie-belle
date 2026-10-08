@@ -4,34 +4,12 @@ import Svg from "react-native-svg";
 import { Circle, Polygon, Polyline } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
 
-/**
- * 가로축이 달이고 세로축이 값인 열두 달 추이다. 정본은
- * `docs/2-design/design-system/components.md`의 「추이 그래프」다.
- *
- * **그림이 숫자를 대신하지 않는다.** 그림은 크기를 견주는 일만 맡고 정확한 값은 눈금이
- * 아니라 글자에서 읽는다. 그래서 축 선도 격자도 없다 — 가로축 글자와 값 글자가 이미 있어서
- * 선을 더 그으면 그림보다 선이 많아진다.
- *
- * **점이 보는 달에만 선다.** 열두 점을 다 찍으면 선보다 점이 눈에 먼저 들어온다. 달 줄에서
- * 고른 달이 어디인지가 이 점 하나로 말해진다.
- *
- * **가로축 글자를 다 안 쓴다.** 폰 가로에 열두 개가 겹쳐서 1·4·7·10월만 적고 나머지는
- * 눈금만 남는다.
- *
- * **값이 없는 달은 선이 끊긴다.** 앱을 쓰기 전 달은 0이 아니라 없는 것이라, 0으로 이으면 그
- * 달에 일을 안 한 것처럼 읽힌다.
- *
- * 선과 면은 SVG 도형이라 색이 `fill`·`stroke`로 간다. `SvgPaint`가 `fill-*`·`stroke-*`
- * 유틸을 그 두 prop으로 옮긴다.
- */
-
 const CHART_HEIGHT = 96;
 
 const DOT_RADIUS = 3;
 
 const DOT_BORDER_WIDTH = 2;
 
-/** 양 끝 달의 점이 위아래로 잘리지 않을 만큼만 안으로 들인다. */
 const PLOT_INSET = DOT_RADIUS + DOT_BORDER_WIDTH;
 
 const LINE_WIDTH = 2;
@@ -40,7 +18,6 @@ const TICK_WIDTH = 1;
 
 const TICK_HEIGHT = 4;
 
-/** 값 글자가 점 위로 이만큼 떠 있는다. */
 const VALUE_LABEL_GAP = 8;
 
 const LABELLED_MONTHS = new Set([1, 4, 7, 10]);
@@ -156,11 +133,6 @@ export function TrendChart({
   );
 }
 
-/**
- * 달마다 한 칸을 주고 칸 가운데에 점을 세운다. 가로축 글자가 같은 칸 나눔을 쓰므로 점과
- * 글자가 저절로 맞는다. 값이 하나뿐이거나 전부 같으면 세로 가운데에 눕힌다 — 나눌 폭이
- * 없는데 위나 아래에 붙이면 없는 증감을 말하게 된다.
- */
 function plot(points: TrendChartPoint[], width: number): PlotPoint[] {
   const values = points
     .map((point) => point.value)
@@ -193,7 +165,6 @@ function plot(points: TrendChartPoint[], width: number): PlotPoint[] {
   );
 }
 
-/** 값이 없는 달에서 끊어진 토막들이다. 혼자 남은 점은 이을 상대가 없어 빠진다. */
 function segmentsOf(plotted: PlotPoint[]): PlotPoint[][] {
   const segments: PlotPoint[][] = [];
   let current: PlotPoint[] = [];

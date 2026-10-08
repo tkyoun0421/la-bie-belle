@@ -8,26 +8,6 @@ import type {
   PayrollMonth,
 } from "@/entities/payroll/api/payroll.dto";
 
-/**
- * 그 달 급여의 재료 넷이다 — 시급 이력, 조정, 사유 상태, 공휴일. 배정과 날은 `['schedule']`이고
- * 리허설은 `['rehearsal']`이라 화면이 세 키를 읽어 계산에 넣는다
- * (`docs/2-design/modules/payroll/design.md`의 「급여는 계산한다」).
- *
- * **시급은 그 달 끝일까지 전부 준다.** 그달에 시작한 행만 주면 지난달에 정해진 시급으로 일한
- * 날의 금액을 못 낸다 — 계산이 `effective_date <= 그날` 중 가장 늦은 행을 고르므로 과거
- * 이력이 통째로 있어야 한다.
- *
- * **관리자인지를 코드가 안 나눈다.** RLS가 `wage_rates`를 「본인 행과 관리자 전원」으로
- * 이미 갈라(PAY-018) 같은 질의가 근무자에게는 자기 행만, 관리자에게는 전원을 낸다.
- *
- * **날 묶음을 먼저 읽는다.** `adjustments`와 `excuse_status`가 날짜를 안 들고 `day_id`만
- * 들어서, 그 달의 날을 먼저 집어 그 묶음으로 좁힌다.
- *
- * **공휴일은 날을 안 거친다.** 근무를 안 여는 날에도 행이 서서 `holiday_date`로 바로 자른다.
- * 같은 날짜에 `api` 행과 `manual` 행이 같이 설 수 있어 둘을 합치지 않고 그대로 준다 — 잠금
- * 판정이 `api`의 유무만 본다(`docs/2-design/modules/payroll/design.md`의 「공휴일」).
- */
-
 const WAGE_RATE_COLUMNS = [
   "profile_id",
   "effective_date",

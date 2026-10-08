@@ -358,7 +358,6 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
         p_qr_code: "unused",
         p_now: now,
       });
@@ -405,7 +404,6 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
         p_qr_code: "unused",
         p_now: now,
       });
@@ -430,7 +428,6 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
         p_qr_code: "unused",
         p_now: now,
       });

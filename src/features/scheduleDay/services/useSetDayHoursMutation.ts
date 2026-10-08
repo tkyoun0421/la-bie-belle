@@ -4,11 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import { setDayHours } from "@/features/scheduleDay/api/setDayHours.api";
 
-/**
- * 그 날의 근무 시간을 고친다. 끝이 시작보다 이르면 시트의 버튼이 먼저 막지만, 벽은
- * 누르는 시점에 서버가 다시 세운다 — `bad_hours`다.
- */
-
 export type SetDayHoursInput = {
   workDate: string;
   starts: string;

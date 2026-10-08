@@ -51,14 +51,12 @@ async function seedOpenDayInFreshMonth(admin: AdminUser): Promise<SeededMonth> {
   });
 }
 
-/** `"2027-05"`나 `"2027-05-01"`이 오면 `"2027-05-31"`을 낸다. */
 function monthEndOf(month: string): string {
   const [year, monthNumber] = month.slice(0, 7).split("-").map(Number);
   const end = new Date(Date.UTC(year, monthNumber, 0));
   return end.toISOString().slice(0, 10);
 }
 
-/** `monthEndOf`의 다음 날 — 그 달을 벗어난 첫 날짜다. */
 function firstDayAfter(month: string): string {
   const [year, monthNumber] = month.slice(0, 7).split("-").map(Number);
   const next = new Date(Date.UTC(year, monthNumber, 1));
@@ -118,7 +116,6 @@ function holidaysOf(result: PayrollMonth): HolidayRow[] {
   return result.holidays;
 }
 
-/** 달마다 임의로 멀리 떨어뜨려 다른 테스트가 심은 공휴일과 안 겹치게 한다. */
 function freshMonth(): string {
   return kstMonthStart(24 + Math.floor(Math.random() * 90000));
 }
@@ -139,7 +136,6 @@ function dayOfMonth(month: string, day: string): string {
   return `${month.slice(0, 7)}-${day}`;
 }
 
-/** `month`가 `"2027-05"`면 `"2027-04-30"` — 전달 마지막 날이다. */
 function lastDayOfMonthBefore(month: string): string {
   const [year, monthNumber] = month.slice(0, 7).split("-").map(Number);
   const end = new Date(Date.UTC(year, monthNumber - 1, 0));

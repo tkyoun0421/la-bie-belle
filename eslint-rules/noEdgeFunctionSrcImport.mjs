@@ -1,14 +1,5 @@
 import path from "node:path";
 
-/**
- * edge-runtime 컨테이너에는 `supabase/functions` 한 폴더만 마운트된다. 그 밖을 가리키는
- * 상대 경로는 맵핑을 걸어도 파일이 컨테이너 안에 없어 `Module not found`로 부팅이 깨진다
- * (notification/design.md 「푸시 보내기」).
- *
- * 로컬과 CI가 edge-runtime을 빼고 띄워서 어떤 검사도 이것을 안 잡는다 — 경계가 이미 한 번
- * main에 넘어갔다(관찰 035). 그래서 글자로 막는다.
- */
-
 const FUNCTIONS_ROOT = "supabase/functions";
 
 const noEdgeFunctionSrcImport = {

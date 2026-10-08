@@ -9,10 +9,8 @@ export type ErrorCodeViolation = {
 const MIGRATIONS_DIR = "supabase/migrations";
 const CODE_LIST_FILE = "src/shared/consts/error.const.ts";
 
-/** `data-access.md#오류의-모양`의 꼴 — `raise exception using message = '<코드>'`. */
 const RAISE_MESSAGE = /raise\s+exception\s+using\s+message\s*=\s*'([^']+)'/gi;
 
-/** 코드 목록의 정본 export. 목록 밖의 문자열(주석·다른 선언)은 안 본다. */
 const ERROR_CODES_DECLARATION = /export const ERROR_CODES\s*=\s*\[([\s\S]*?)\]/;
 const CODE_LITERAL = /['"]([a-z][a-z0-9_]*)['"]/g;
 
@@ -30,7 +28,6 @@ export function listedErrorCodes(source: string): string[] {
   return [...declaration[1].matchAll(CODE_LITERAL)].map((match) => match[1]);
 }
 
-/** 양방향 대조 — 마이그레이션에만 있는 코드도, 목록에만 있는 코드도 위반이다. */
 export function errorCodeViolations(
   migrationCodes: string[],
   listedCodes: string[],
@@ -54,7 +51,6 @@ export function errorCodeViolations(
   return violations;
 }
 
-/** 파일 이름을 하드코딩하지 않는다 — 마이그레이션 셋이 계속 늘어난다. */
 function migrationFiles(root: string): string[] {
   const dir = path.join(root, MIGRATIONS_DIR);
   let entries: string[];

@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/qr/services/useQrCodeQuery.ts
-//
-// 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키는 `queryKeys` 팩토리가, staleTime은
-// `@/entities/qr/consts/qr.const`가 정한 값을 그대로 쓴다
-// (design.md 「QR」, spec `docs/2-design/spec/attendance-qr.md`).
-
 const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const FAKE_STALE_TIME = 12345;
 
@@ -121,8 +115,6 @@ describe("useQrCodeQuery — getQrCode를 불러 ['hall','qr']에 앉힌다", ()
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    // `Query.options`의 타입은 `QueryOptions`라 `staleTime`을 안 든다 — 그 값을 드는 것은
-    // `QueryObserverOptions`고, 옵저버가 붙으면 런타임에는 같은 객체에 실려 온다.
     const query = queryClient
       .getQueryCache()
       .find({ queryKey: ["hall", "qr"] }) as

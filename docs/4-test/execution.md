@@ -120,7 +120,7 @@
 
 **지금 플로우는 하나다.** `login.yaml`이 세션 없는 차가운 시작이 로그인 화면에 서는지 본다. **아직 한 번도 돌리지 않았다** — 올릴 앱이 없다. 나머지 라우트는 플로우가 없어서 고치려 들면 훅이 막는다. 그것이 이 자리가 서기 전까지 안 물던 게이트다.
 
-**세션은 개발 빌드의 테스트 문으로 심는다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없으니 앱이 문을 하나 낸다 — `src/app/__test/session.tsx`가 `labiebelle://__test/session?access_token=…&refresh_token=…`을 받아 `supabase.auth.setSession`을 부르고 게이트로 넘긴다. `_catalog`와 같은 꼴로 `__DEV__`가 아니면 `/`로 돌려보내 프로덕션에는 문이 없다. 토큰과 DB 상태는 **시드 서버**가 만든다 — `scripts/e2eSeedServer.mts`가 `tests/integration/postgres.ts`의 헬퍼(거절·퇴사·차단 사용자 만들기 등)를 로컬 HTTP(`127.0.0.1:8765`)로 내놓고, 테스트 사용자를 이메일·비밀번호로 만들어 `signInWithPassword`로 받은 토큰을 돌려준다. 플로우는 `runScript`로 그 서버를 부르고 받은 토큰을 `openLink`에 넣는다. 서버는 `pnpm e2e`가 띄우고 끝나면 내린다 — 로컬 Supabase가 떠 있어야 하고 프로덕션 키는 절대 받지 않는다(URL이 `127.0.0.1`이 아니면 서버가 죽는다). 이 문을 처음 세우는 task가 `profile-form`이다 — 로그인 뒤 화면에 처음 닿는 task라서다.
+**세션은 개발 빌드의 테스트 문으로 심는다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없으니 앱이 문을 하나 낸다 — `src/app/__test/session.tsx`가 `labiebelle://__test/session?access_token=…&refresh_token=…`을 받아 `supabase.auth.setSession`을 부르고 게이트로 넘긴다. `_catalog`와 같은 꼴로 `__DEV__`가 아니면 `/`로 돌려보내 프로덕션에는 문이 없다. 토큰과 DB 상태는 **시드 서버**가 만든다 — `scripts/e2eSeedServer.mts`가 `tests/integration/postgres.ts`의 헬퍼(거절·퇴사·차단 사용자 만들기 등)를 로컬 HTTP(`127.0.0.1:8765`)로 내놓고, 테스트 사용자를 이메일·비밀번호로 만들어 `signInWithPassword`로 받은 토큰을 돌려준다. 플로우는 `runScript`로 그 서버를 부르고 받은 토큰을 `openLink`에 넣는다. 서버는 `pnpm e2e`가 띄우고 끝나면 내린다 — 로컬 Supabase가 떠 있어야 하고 프로덕션 키는 절대 받지 않는다(URL이 `127.0.0.1`이 아니면 서버가 죽는다). **`STATE`가 받는 값과 상태별 응답의 정본은 `scripts/e2eSeedServer.mts`다** — 플로우는 그 글자를 env로 주기만 하고 어느 값이 있는지는 안다고 가정하지 않는다. 이 문을 처음 세우는 task가 `profile-form`이다 — 로그인 뒤 화면에 처음 닿는 task라서다.
 
 ### 파일을 골라 실행
 
@@ -194,12 +194,31 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 19 | 화면 파일의 시각 유틸리티 | house | `house/no-visual-utility-class` | `eslint-rules/__tests__/noVisualUtilityClass.test.ts` |
 | 20 | Edge Function의 마운트 밖 import | house | `house/no-edge-function-src-import` | `eslint-rules/__tests__/noEdgeFunctionSrcImport.test.ts` |
 | 21 | Deno로 복사되는 폴더의 node: import | house | `house/no-node-import-in-edge-shared` | `eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts` |
+| 22 | api 세그먼트 밖의 Supabase 패키지 import | house | `house/supabase-package-in-api` | `eslint-rules/__tests__/supabasePackageInApi.test.ts` |
+| 23 | ui 세그먼트의 api import | house | `house/no-api-import-in-ui` | `eslint-rules/__tests__/noApiImportInUi.test.ts` |
+| 24 | ui 세그먼트의 services import | house | `house/no-services-import-in-ui` | `eslint-rules/__tests__/noServicesImportInUi.test.ts` |
+| 25 | services 세그먼트 밖의 Query·Mutation 훅 | house | `house/query-hook-in-services` | `eslint-rules/__tests__/queryHookInServices.test.ts` |
+| 26 | ui 세그먼트의 Supabase 클라이언트 실물 | house | `house/no-supabase-instance-in-ui` | `eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts` |
+| 27 | entities의 쓰기 훅 | house | `house/entities-read-only` | `eslint-rules/__tests__/entitiesReadOnly.test.ts` |
+| 28 | features의 읽기 service가 맞추는 도메인 수 | house | `house/features-query-composes` | `eslint-rules/__tests__/featuresQueryComposes.test.ts` |
+| 29 | 설명 주석 | house | `house/no-explanatory-comment` | `eslint-rules/__tests__/noExplanatoryComment.test.ts` |
+| 30 | hooks·services·stores 밖의 use* export | house | `house/use-export-segment` | `eslint-rules/__tests__/useExportSegment.test.ts` |
+| 31 | stores 밖의 store·Context 공장 | house | `house/store-factory-in-stores` | `eslint-rules/__tests__/storeFactoryInStores.test.ts` |
+| 32 | policy·reducer 접미사의 통신·시계·난수 | house | `house/pure-policy` | `eslint-rules/__tests__/purePolicy.test.ts` |
+| 33 | 캐시 키 배열 리터럴 | house | `house/query-key-factory` | `eslint-rules/__tests__/queryKeyFactory.test.ts` |
+| 34 | consts 밖에서 내보내는 대문자 스네이크 이름 | house | `house/consts-segment` | `eslint-rules/__tests__/constsSegment.test.ts` |
+| 35 | config 밖의 환경값 읽기 | house | `house/env-in-config` | `eslint-rules/__tests__/envInConfig.test.ts` |
+| 36 | lib·ui·hooks·config 밖의 네이티브 SDK | house | `house/native-sdk-segment` | `eslint-rules/__tests__/nativeSdkSegment.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
-번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 21까지 이어지고 미배정 셋이 빠지며, 줄은 스물이다.
+번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 36까지 이어지고 미배정 셋이 빠지며, 줄은 서른다섯이다.
 
-**규칙 19·20·21은 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
+**규칙 19부터 36까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 28까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다. 27·28은 세그먼트가 아니라 **층**을 본다: 27은 `entities` 전체, 28은 `features`의 `services`다. 29는 자리를 안 가린다 — 주석은 어디서나 같은 부채다. 30·31은 `src/app/`만 면제한다. **세그먼트가 없는 파일은 그 둘의 밖이 아니라 위반이다** — 슬라이스 루트에 파일을 두는 것이 우회가 되면 안 된다. 32는 세그먼트가 아니라 **접미사 둘**(`.policy.ts`·`.reducer.ts`)을 보고, 그 접미사가 제 세그먼트에 사는지는 `fileNaming.ts`가 따로 본다. 33은 `__tests__/`만 면제한다 — 픽스처가 키를 글자로 들고 단언한다. 34는 `.ts`만 보고 면제가 넷이다(`api/`의 질의할 열 목록 · `lib/`의 SDK 손 묶음 · `__tests__/`의 픽스처 · `.tsx` 전부). 35와 36은 `config/`를 가른다 — 35는 그 자리만 환경값을 읽게 하고 36은 그 자리를 면제해 둘이 같이 선다.
+
+**서른둘이 「지금을 읽는 것」을 한 축으로 묶는다.** `Date.now()`와 인자 없는 `new Date()`와 인자 없는 `Date.parse()`가 그것이고, 인자를 받는 `new Date("2026-10-05")`는 통과한다 — AST로 「지금으로 쓰는가」를 가르는 선이 인자 수뿐이다. 「지금」이 필요한 판정은 그 값을 인자로 받는다: 서버 시계가 정본이고 기기 시계는 하루 밀릴 수 있다.
+
+**23과 26이 면제로 이어진다.** 23은 `@/shared/api/supabase`를 일부러 통과시키고 그 축을 26이 더 좁은 메시지로 문다 — 「`api`를 당기지 마라」가 아니라 「`hooks/`로 가라」가 그 자리에서 할 말이다. 짝 테스트의 픽스처가 그 모듈을 고르면 23이 아니라 26이 잡혀 빨개진다. 24도 예외가 하나다 — `features/*/ui`만 **자기 슬라이스의** service를 부른다. 그 조각이 use case를 실행하는 자리라서고, 남의 슬라이스 service를 부르면 그 조각이 무슨 use case인지가 흐려진다. 25는 `useQueryClient`를 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
 ## `pnpm test`에 끼는 문서 검사
 
@@ -214,6 +233,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlogIds.ts` — 작업 ID와 선행 작업 참조
 - `routeTypes.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
+- `edgeSharedFolders.test.ts` — Deno로 복사되는 폴더를 두 자리가 같이 아는지. `pnpm edge:sync`가 가져가는 폴더와 「복사되는 폴더에서 `node:` import 금지」가 무는 폴더가 같아야 한다 — 복사 대상이 늘고 규칙이 안 따라가면 그 폴더만 검사 밖이고, 앱에서는 멀쩡한 Node API가 복사본의 런타임에서 깨진다
 - `fileNaming.ts` — 코드 파일과 폴더 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 나머지 `.ts`는 camelCase고 훅은 그 훅 이름과 같다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 폴더도 camelCase고 `__tests__`만 밖이다. 케이스만 다른 두 파일도 같이 막는다. `src/app/`은 밖이다 — 거기 파일과 폴더 이름은 URL이다. 왜 그 꼴인지는 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)가 가진다
 - `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `fontSubset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
@@ -258,5 +278,19 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - 사용자 정리 헬퍼가 없어 integration·e2e가 만든 사용자가 남는다([관찰 013](../observations/013-integration-users-never-cleaned.md)). 실행이 통과해도 데이터 정리까지 성공한 것으로 기록하지 않는다.
 - `postgres.ts`는 이름에 `supabase_db`가 들어가는 컨테이너 중 첫 번째를 고른다. 여러 로컬 프로젝트를 띄웠으면 앱·헬퍼·마이그레이션이 같은 프로젝트를 가리키는지 먼저 확인한다.
 - [config.toml](../../supabase/config.toml)의 `sign_in_sign_ups = 30`은 IP당 5분간 로그인·가입 요청 제한이다. 사용자 삭제만으로 요청 제한이 풀리지는 않는다. 제한 오류를 확인하면 제한 시간이 지난 뒤 재실행하고 반복 검증의 요청 수를 별도로 점검한다. CI도 한 실행 안에서 제한을 넘길 수 있다.
+
+**시드를 RPC로 못 만드는 자리가 다섯이다.** `postgres.ts`가 SQL을 직접 꽂는 까닭이고, 다시 쓰려 들면 같은 벽을 밟는다.
+
+| 만들려는 것 | 막는 것 |
+| --- | --- |
+| 시급 이력 두 줄 이상 | `set_wage`가 오늘만 받는다(PAY-008) |
+| 지난 달의 근무표와 열린 날 | `create_schedule`·`open_day`가 오늘보다 이른 날을 `date_past`로 거절한다 |
+| 공휴일 행 | 넣는 길이 `internal.import_holidays` 하나고 `internal` 스키마라 PostgREST로 못 부른다 |
+| 지난 날의 사유와 그 판정 | `submit_excuse`·`decide_excuse`가 지난 날을 안 받는다 |
+| 퇴사한 지 1년이 지난 사람 | `createLeftUser`가 `left_at = now()`만 만들어 그 경계를 못 때린다 |
+
+**결근은 저장하는 배치가 없다.** 「인증 창이 닫혔고 그 뒤로 48시간이 지났다」를 그때그때 계산하는 값이라 **진짜로 지나간 달력 날짜**라야 결근한 날이 선다 — 미래 날짜로는 못 심는다.
+
+**매 분 도는 cron이 씨를 뿌리는 중간을 본다.** `expire_requests()`는 「안 지난 pending 후보가 하나도 없다」로만 요청을 닫는데, 요청 행이 선 뒤 후보가 들어가기까지 그 요청에는 후보가 없다 — 사용자를 만드는 `await` 하나가 그 창을 초 단위로 벌리고 그 사이 cron이 닫는다([관찰 055](../observations/055-cron-closes-the-row-the-test-is-seeding.md)). 헬퍼가 후보를 넣은 자리에서 그 요청을 되돌려 부르는 쪽이 순서를 신경 쓰지 않게 한다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는 것이 맞는 모습이다. 한 줄씩 나눠 `execSql`하면 같은 틈이 다시 생긴다([관찰 024](../observations/024-cron-races-two-step-seed.md)).
 
 자기 실행이 만든 데이터 정리·DB 대상 명시·반복 실행의 요청 수 관리는 [backlog](../backlog.md)의 `test-data-isolation` 후보로 연결한다. 완료된 계정 전환의 후속 과제이며 이번 문서 변경으로 해결된 것은 아니다.

@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleAssign/services/useAddAssignmentMutation.ts
-//
-// 배정 추가 — 정규와 교육 둘 다 이 훅 하나로 간다. `addAssignment(client, { profileId, kind,
-// slotId?, dayId?, position?, skipQualification? })`(design.md 「배정과 강제 변경」)의 인자
-// 꼴 그대로 훅이 넘긴다 — 정규는 slotId, 교육은 dayId·position이고 화면이 갈래를 이미
-// 정해 보낸다. 캐시 갱신은 `['schedule']` `['payroll']` `['requests']`다.
-
 const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

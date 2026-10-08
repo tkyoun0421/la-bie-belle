@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import {
   monthOf,
@@ -46,40 +46,21 @@ import {
   workValues,
 } from "@/screens/adminStats/utils/chartValues.utils";
 
-/**
- * 관리자가 한 달을 숫자로 보는 화면의 controller다. 정본은
- * `docs/2-design/system/screens/stats.md`의 관리자 몫이고 완료 조건은
- * `docs/2-design/spec/stats-admin.md`다.
- *
- * **금액이 없다.** 이 화면이 세는 것은 시간과 회수와 비율이고 시급을 아예 안 읽는다.
- *
- * **고른 탭이 읽는 것을 바꾼다.** 탭에 없는 쪽은 열두 달을 안 읽어서, 탭은 화면 꾸밈이
- * 아니라 통신을 움직이는 값이다.
- *
- * **시트 열림도 여기 있다.** 누른 사람의 날 목록이 이번 달 근무표에서 갈려 나와서, 달을
- * 옮기면 그 사람의 날이 달라진다 — 열림이 통신 결과에 매여 있으면 화면 것이 아니다.
- *
- * **보낼 데는 안 든다.** 뒤로는 `.tsx`가 쥔다.
- */
-
 export type AdminStatsTab = (typeof ADMIN_STATS_TABS)[number];
 
 export type AdminStatsListState =
   "loading" | "failed" | "empty" | "work" | "attendance";
 
-/** 사람별 구획 한 줄이다 — 누르면 그 사람의 날 목록이 열린다. */
 export type AdminStatsPersonRow = {
   key: string;
   profileId: string;
   displayName: string;
   detail: string;
   value: string;
-  /** 띠 길이다 — 시간을 그대로 쓴다. */
   weight: number;
   press: () => void;
 };
 
-/** 포지션 구획 한 줄이다. 0인 포지션도 자리가 서서 값의 색이 갈린다. */
 export type AdminStatsPositionRow = {
   key: string;
   title: string;
@@ -95,7 +76,6 @@ export type AdminStatsAttendanceRow = {
   value: string;
 };
 
-/** 근무 내역 시트가 그릴 글자다 — 줄도 합계도 여기서 이미 글월이다. */
 export type AdminStatsSheet = {
   name: string;
   rows: { key: string; title: string; value: string }[];
@@ -132,10 +112,8 @@ export type AdminStatsScreenController = {
   retry: () => void;
 };
 
-/** 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다. */
 const NO_MONTHS: string[] = [];
 
-/** 다시 시도가 다시 읽는 두 키다 — 두 탭의 숫자가 이 둘에서 나온다. */
 const RETRY_KEYS = [queryKeys.schedule.all, queryKeys.attendance.all];
 
 const EMPTY_TALLY = { present: 0, late: 0, absent: 0, excused: 0 };
@@ -144,7 +122,7 @@ function tabOf(value: string): AdminStatsTab {
   return ADMIN_STATS_TABS.find((tab) => tab === value) ?? ADMIN_STATS_TABS[0];
 }
 
-export function useAdminStatsScreen(client: DB): AdminStatsScreenController {
+export function useAdminStatsScreen(): AdminStatsScreenController {
   const queryClient = useQueryClient();
   const today = kstToday();
 
@@ -155,12 +133,15 @@ export function useAdminStatsScreen(client: DB): AdminStatsScreenController {
   const clockOffset = serverClockStore((at) => at.offset);
   const months = useMemo(() => trendMonths(month), [month]);
 
-  const work = useWorkMonthsQuery(client, tab === "work" ? months : NO_MONTHS);
+  const work = useWorkMonthsQuery(
+    supabase,
+    tab === "work" ? months : NO_MONTHS,
+  );
   const attendance = useAttendanceMonthsQuery(
-    client,
+    supabase,
     tab === "attendance" ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonthQuery(client);
+  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const workInputs = useMemo(
     () => workInputsOf(monthIn(work.data, month)?.days ?? []),

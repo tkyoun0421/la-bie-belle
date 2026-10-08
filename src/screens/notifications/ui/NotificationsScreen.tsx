@@ -1,7 +1,6 @@
 import { useRouter, type Href } from "expo-router";
 import { useMemo } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { NotificationRow } from "@/shared/ui/NotificationRow";
@@ -12,26 +11,6 @@ import { NOTIFICATIONS_COPY } from "@/screens/notifications/consts/notifications
 import { useNotificationsScreen } from "@/screens/notifications/hooks/useNotificationsScreen";
 import { nearBottom } from "@/screens/notifications/utils/nearBottom.utils";
 
-/**
- * 받은 알림이 최근부터 다 서는 화면이다. 정본은
- * `docs/2-design/modules/notification/screens/notifications.md`고 완료 조건은
- * `docs/2-design/spec/notification-list.md`다.
- *
- * **탭 바가 없다.** 탭 넷 위로 밀려 올라간 화면이라 나가는 문이 앱바의 뒤로 하나다 — 온
- * 화면이 `?from=`에 실려 온다.
- *
- * **여기서 답하지 않는다.** 교대 요청에 수락·거절이 안 붙고 ✕도 없다. 닿는 자리가 줄
- * 하나뿐이고, 하나뿐이면 무엇이 일어날지가 한 가지다.
- *
- * **controller가 줄을 다 지어 준다.** 제목·시각·안 읽음·누르는 손이 줄마다 꽂혀 오고
- * ([use-notifications-screen](../hooks/useNotificationsScreen.ts)), 여기 남는 것은 그
- * 줄을 날짜 묶음대로 그리는 일이다 — 문장이 없는 줄을 걸러내는 것도 거기서 끝난다.
- *
- * **바닥에 닿았는지만 재서 넘긴다.** 재는 값이 전부 기기가 그려 놓은 길이라 측정은 화면의
- * 일이고, 그 답으로 다음 쪽을 부를지 정하는 것은 controller다.
- */
-
-/** 묶음을 가로지르는 사본 열셋이라 한 열이 못 접는다 — AC-13의 사본 묶음 task가 받는다. */
 const SKELETON_ROWS = [0, 1, 2, 3, 4];
 
 export type NotificationsScreenProps = {
@@ -53,7 +32,6 @@ function FailBlock({ onRetry }: { onRetry: () => void }) {
 
 export function NotificationsScreen({ from }: NotificationsScreenProps) {
   const router = useRouter();
-  // controller는 경로를 글자로 든다 — `Href` 유니언을 아는 것은 라우터를 당기는 이 자리뿐이다.
   const bearings = useMemo(
     () => ({
       canGoBack: () => router.canGoBack(),
@@ -64,7 +42,7 @@ export function NotificationsScreen({ from }: NotificationsScreenProps) {
     [router],
   );
   const { state, groups, goBack, retry, retryNextPage, loadNextWhenNear } =
-    useNotificationsScreen(supabase, bearings, from);
+    useNotificationsScreen(bearings, from);
 
   return (
     <Screen floor="plain">

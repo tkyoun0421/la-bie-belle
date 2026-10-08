@@ -7,18 +7,6 @@ import {
   type AdjustSheetRow,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
-/**
- * 근무 조정 줄을 누르면 서는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이고 문안은 같은
- * 문서 「날 상세 문안」의 조정 시트 행들이다.
- *
- * **머리 아래 한 줄이 근태 층을 말한다.** 줄마다 서는 최종 시간은 인증을 안 봐서, 그 층이 따로
- * 있다는 것을 여기서 알린다.
- *
- * **리허설 줄은 누르는 줄 밖에 선다.** 이름 줄과 히트 영역이 겹치면 읽기만 하는 값을 눌러
- * 조정 시트가 열린다 — 관리자는 리허설을 보기만 한다(SCH-020).
- */
-
 const HELP_LINE = "출근 인증이 없는 날은 급여에서 따로 빠져요";
 
 const EMPTY_LINE = "아직 배정된 사람이 없어요";

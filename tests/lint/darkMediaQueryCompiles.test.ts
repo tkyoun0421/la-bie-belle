@@ -38,13 +38,6 @@ function darkVariantFixture(): string {
   return `${globalsCss}\n\n@source inline("${FIXTURE_UTILITY}");\n`;
 }
 
-/**
- * Tailwind v4는 `dark:border-stroke-neutral`을 평평한(flat) 선택자로 펴지 않고,
- * 클래스 선택자 규칙 안에 `@media (...)`를 중첩해 넣는다:
- *   .dark\:border-stroke-neutral { @media (prefers-color-scheme: dark) { border-color: ...; } }
- * 그래서 클래스 선택자와 정확히 같은 규칙을 먼저 찾고, 그 규칙의 "직계 자식"으로
- * 다크 미디어 쿼리가 있는지를 봐야 한다 — 조상 방향이 아니라 자손 방향이다.
- */
 function fixtureUtilityDarkMedia(root: {
   walkRules: (callback: (rule: PostcssNode) => void) => void;
 }): PostcssNode | undefined {
@@ -68,12 +61,6 @@ function fixtureUtilityDarkMedia(root: {
   return found;
 }
 
-/**
- * 실제 globals.css 파일 그대로를 일반 CSS로 파싱한다. Tailwind 플러그인을 거치지
- * 않으므로 `@import`를 못 푸는 상황과 무관하게 읽을 수 있다. `root.nodes`의 최상위
- * 항목만 보는 것은 다크 팔레트 블록이 최상위 하나여야 한다는 것이 여기서 재는
- * 대상이라서다 — 재귀로 훑으면 유틸 규칙 안에 중첩된 미디어 쿼리까지 같이 걸린다.
- */
 function topLevelDarkMediaRules(root: { nodes: PostcssNode[] }): PostcssNode[] {
   const media = root.nodes.filter(
     (node) =>

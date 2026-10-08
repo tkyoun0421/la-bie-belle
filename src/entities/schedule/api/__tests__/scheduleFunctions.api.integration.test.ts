@@ -313,11 +313,6 @@ describe("근무표 함수", () => {
       expect(error?.message).toBe("no_schedule");
     });
 
-    /**
-     * 근무표를 안 만든다. `open_day`가 `date_past`를 `no_schedule`보다 먼저 보기 때문이고,
-     * 이번 달 1일을 과거로 쓰던 앞선 판은 **오늘이 그 달 1일인 날** 그 날이 과거가 아니라
-     * `already_open`까지 흘러가 깨졌다.
-     */
     it("이미 지난 날짜를 열면 date_past", async () => {
       const { error } = await admin.client.rpc("open_day", {
         p_work_date: kstDate(-1),

@@ -107,11 +107,6 @@ export function parseDroppedComboCell(comboText: string): DroppedCombo {
   };
 }
 
-/**
- * 역할 토큰이 가리키는 팔레트 단계다. 팔레트 칸이 `—`인 행은 라이트·다크 칸이
- * 곧 값이라 테마 쪽 칸을 읽는다 — `bg.neutral`처럼 두 테마가 다른 단계를
- * 가리키는 층 셋이 그 행이다.
- */
 function paletteStepOf(
   markdown: string,
   roleToken: string,

@@ -1,18 +1,3 @@
-// 구현 대상: src/screens/stats/utils/payrollSummary.utils.ts (아직 없다)
-//
-// myPayrollSubtitle(days) — 근무자 급여 탭의 보조 줄이다(plan stats-worker
-// AC-01, spec AC-04). 「근무 12건 · 108시간」 꼴이다.
-//
-// **급여 화면과 같은 셈이다**(stats.md 「내 급여」, payroll.md 「누적」의
-// 「근무 회수와 시간 합」). 결근한 날(kind === 'absent')은 빠지고 시급이 아직
-// 없는 날(kind === 'wage-pending')은 든다 — features/payroll을 features/stats가
-// 부르면 lint 규칙 3 위반이라(plan stats-worker AC-01) 이 파일이 같은 셈을
-// screens/stats 쪽에서 다시 세운다. 값은 features/payroll/model/payrollDays.ts가
-// 낸 날짜별 분·kind를 그대로 받는다.
-//
-// days는 { minutes, kind }만 쓴다. kind는 payrollDays.ts의 PayrollDayKind —
-// 'normal' | 'overtime' | 'absent' | 'wage-pending' 넷이다.
-
 import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 function day(

@@ -4,11 +4,6 @@ import {
   sortLeftMembers,
 } from "@/entities/member/model/sortMembers.policy";
 
-// 직원 화면의 두 목록을 정렬한다(`docs/2-design/modules/account/screens/members.md`의
-// 「재직자 줄」·「퇴사 구획」). 재직자는 가나다순이고 관리자를 위로 올리지 않는다 — 이
-// 화면에서 관리자와 근무자를 가르는 것은 배지뿐이다. 퇴사자는 퇴사한 날이 늦은 순이고,
-// 1년이 지난 사람은 `design.md`의 「퇴사 1년 뒤」대로 접힌다.
-
 describe("sortActiveMembers — 재직자를 가나다순으로 세우고 관리자를 위로 안 올린다", () => {
   it("이름을 가나다순으로 세운다", () => {
     const rows = [

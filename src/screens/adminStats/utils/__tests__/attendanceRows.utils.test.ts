@@ -1,16 +1,3 @@
-// 구현 대상: src/screens/adminStats/utils/attendanceRows.utils.ts
-//
-// buildAttendanceRows(people) — 근태 탭 사람별 목록을 조립한다(plan·spec
-// stats-admin AC-09, stats.md「근태 사람별 목록」). AttendanceRowInput은
-// { profileId, displayName, present, late, absent, excused }다.
-//
-// - 이름 가나다순이다 — 근무 탭 사람별 구획(시간 많은 순)과 반대다
-// - 지각이 0이면 그 자리가 빈다: late가 0이면 결과의 late는 null이다 — 「지각
-//   0」을 안 적는다는 뜻을 화면이 렌더할 수 있게 값 자체를 비운다
-// - 출근(present)은 지각과 달리 0이어도 그 값 그대로다 — 출근은 항상 서는
-//   기본 값이라서다. absent·excused의 0-처리는 이 task가 배정받은 범위 밖이라
-//   여기서 단언하지 않는다(아래 「못 쓴 것」 참고)
-
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type {
   AttendanceInputCheckIn,

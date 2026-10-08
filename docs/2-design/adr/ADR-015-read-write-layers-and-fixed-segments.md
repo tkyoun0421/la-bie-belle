@@ -170,6 +170,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **store는 `use*`로 불려도 `stores/`에 접미사로 산다.** zustand의 `create`가 돌려주는 것이 훅이라 앞선 판은 「부르는 이름이 이긴다」로 `shared/hooks/useTheme.ts`를 뒀고, 훅으로 안 불리는 것만 `model/clock.store.ts`가 됐다. 자리가 둘로 갈린 것이 그 봉합의 값이었다. `stores/`가 서면 폴더가 성격을 말하니 둘이 같은 접미사를 받는다 — `shared/stores/theme.store.ts`고 쓰는 쪽은 그대로 `useTheme()`이다. 「`use*` export는 `hooks`·`services`·`stores`만」이 그 셋을 함께 허용한다.
 
+**짝 테스트의 갈래는 재는 대상의 갈래다.** `__tests__/useSomething.test.ts`는 그 자체로는 훅을 안 내놓아 내용으로 보면 camel로 읽히는데, 재는 대상이 훅이면 그 이름을 따라간다. **대상이 아직 없는 동안은 `use` 뒤에 대문자가 오는 것을 훅 짝으로 읽고 판정을 유예한다** — TDD라 테스트가 훅보다 먼저 서는데 그 사이에 camel을 요구하면 writer가 camel로 짓고 implementer가 훅을 만들며 이름을 다시 바꾼다. 그 마찰이 task 셋에서 났다.
+
 **열여섯 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.

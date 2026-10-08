@@ -3,11 +3,8 @@ import path from "node:path";
 import { parseMarkdown } from "@tests/lint/markdown";
 
 export type DesignMap = {
-  /** 지도 절이 든 마크다운 본문. */
   markdown: string;
-  /** 그 마크다운이 놓인 디렉터리. 불릿 링크의 기준이다. */
   dir: string;
-  /** 지도 절의 제목. */
   heading: string;
 };
 
@@ -38,7 +35,6 @@ function screenDocsIn(dir: string): string[] {
     .map((entry) => path.join(dir, entry));
 }
 
-/** 어느 지도에도 안 걸린 화면 문서를 절대 경로로 돌려준다. */
 export function designMapViolations(
   maps: DesignMap[],
   screenDirs: string[],
@@ -51,7 +47,6 @@ export function designMapViolations(
     .sort();
 }
 
-/** 영역마다의 `screens/`가 화면 문서의 자리다. */
 export function screenDirs(root: string = process.cwd()): string[] {
   const design = path.join(root, DESIGN);
 
@@ -62,7 +57,6 @@ export function screenDirs(root: string = process.cwd()): string[] {
     .sort();
 }
 
-/** 화면 문서를 드는 지도는 업무 영역 지도 하나다. */
 export function designMaps(root: string = process.cwd()): DesignMap[] {
   return [
     {

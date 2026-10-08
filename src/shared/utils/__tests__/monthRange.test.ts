@@ -1,9 +1,3 @@
-// 구현 대상: src/shared/utils/monthRange.ts
-//
-// dal 넷이 각자 들고 있던 사본을 한 자리로 모은다. 달치 질의는 전부
-// `gte(monthStart) & lt(nextMonthStart)`로 창을 잡아서, 이 둘이 어긋나면 달
-// 경계의 하루가 두 달에 같이 세어지거나 아무 달에도 안 센다.
-
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 
 describe("monthStart", () => {

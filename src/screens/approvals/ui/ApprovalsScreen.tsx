@@ -1,7 +1,6 @@
 import { useRouter, type Href } from "expo-router";
 import { useMemo } from "react";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
 import { Card } from "@/shared/ui/Card";
@@ -15,29 +14,6 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
 import { useApprovalsScreen } from "@/screens/approvals/hooks/useApprovalsScreen";
 import { ApprovalDetailSheet } from "@/screens/approvals/ui/ApprovalDetailSheet";
-
-/**
- * 관리자가 근무자에게서 온 요청에 답하는 화면이다. 정본은
- * `docs/2-design/system/screens/approvals.md`고 완료 조건은
- * `docs/2-design/spec/schedule-requests.md`의 AC-05다.
- *
- * **줄에서 바로 답하지 않는다.** 누르면 시트가 올라오고 거기서 정한다 — 승인도 거절도
- * 되돌릴 수 없고 끝난 것을 보는 자리도 없어서, 글을 다 읽은 자리에서만 누르게 한다.
- *
- * **근무 취소 승인만 한 번 더 묻는다.** 누르는 순간 자리가 비고 근무자에게 알림이 나간다.
- * 승인한 뒤에는 목록으로 안 돌아가고 그 자리를 채우는 날 상세로 넘어간다 — 승인한 관리자가
- * 이어서 할 일이 그것 하나다. 토스트 「근무를 취소했어요」는 넘어간 화면이 띄운다
- * (`?from=approvals`).
- *
- * **화면이 먼저 움직이지 않는다.** 응답이 온 뒤에 줄을 뺀다
- * ([runtime.md](../../../../docs/2-design/system/runtime.md#낙관적-업데이트)).
- *
- * **지금 서는 줄은 근무 취소뿐이다.** 사유 줄은 `attendance-excuse`가 같은 목록에 잇는다
- * (plan 「범위 밖」).
- *
- * **`useState`가 하나도 없다.** 목록과 시트와 확인창의 상태가 전부 통신에 매여 있어
- * [`useApprovalsScreen`](../hooks/useApprovalsScreen.ts)이 든다.
- */
 
 const SKELETON_ROWS = [0, 1, 2];
 
@@ -53,7 +29,7 @@ export function ApprovalsScreen() {
     [router],
   );
 
-  const screen = useApprovalsScreen(supabase, bearings);
+  const screen = useApprovalsScreen(bearings);
 
   return (
     <Screen>

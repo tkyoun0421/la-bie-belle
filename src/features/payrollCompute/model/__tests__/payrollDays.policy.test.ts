@@ -1,12 +1,3 @@
-// 구현 대상: src/features/payrollCompute/model/payrollDays.policy.ts
-//
-// payrollDays(input) — assignments·days·adjustments·rehearsals의 날짜 합집합을 훑어
-// 날마다 paidMinutes·wageAt·dayAmount를 부르고, 결근이면(entities/attendance의
-// getAttendanceStatus가 'absent'를 내면) 0원·kind='absent'로 낸다(plan AC-06,
-// PAY-002·PAY-003·PAY-007·PAY-020·PAY-028). wageAt이 null인 날은 결과에서 뺀다.
-//
-// 배정이 없는 날은 attendance 판정 자체를 안 건다 — 배정 없이는 결근일 수 없다.
-
 import {
   payrollDays,
   payrollViewDays,
@@ -261,11 +252,6 @@ describe("payrollDays — 그날 시급이 없으면 'wage-pending'으로 선다
     });
   });
 });
-
-// payrollViewDays(source) — 세 키(급여 재료·근무표·리허설)를 payrollDays의 입력으로 접는다.
-// 화면이 profileId 하나만 들고 부르는 자리라 셋 중 하나가 비어도 죽지 않아야 하고, 날짜는
-// 세 갈래(배정·조정·리허설)의 합집합이어야 하고, 금액 계산 자체는 payrollDays를 그대로 불러야
-// 한다(다시 짜면 두 벌이 서서 어긋날 수 있다).
 
 describe("payrollViewDays — 근무표(days)가 비어도 리허설만으로 죽지 않는다", () => {
   it("배정도 조정도 없이 리허설만 있으면 그 날짜가 뜬다", () => {

@@ -7,14 +7,6 @@ import {
   type HallDefaultsInput,
 } from "@/features/hallDefaults/api/setHallDefaults.api";
 
-/**
- * 홀의 자리·근무 시간 기본값을 바꾼다.
- *
- * **`['hall']`만 낡는다.** 이미 연 날의 근무 시간은 열던 순간 깔린 값이라 안 바뀌므로
- * `['schedule']`을 건드리면 바뀐 것이 없는 근무표를 다시 읽게 된다
- * (`docs/2-design/modules/schedule/design.md`의 「홀 기본값」).
- */
-
 export type SetHallDefaultsResult = {
   mutate: (input: HallDefaultsInput) => void;
   isPending: boolean;

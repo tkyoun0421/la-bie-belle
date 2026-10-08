@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -26,32 +25,15 @@ import {
 import { useAdminStatsScreen } from "@/screens/adminStats/hooks/useAdminStatsScreen";
 import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
 
-/**
- * 관리자가 한 달을 숫자로 보는 화면이다. 정본은
- * `docs/2-design/system/screens/stats.md`의 관리자 몫이고 완료 조건은
- * `docs/2-design/spec/stats-admin.md`다.
- *
- * **금액이 없다.** 이 화면이 세는 것은 시간과 회수와 비율이고 시급을 아예 안 읽는다.
- *
- * **달 줄이 세그먼트 위다.** 탭을 오가도 보는 달이 그대로고, 앱바·달 줄·세그먼트·추이
- * 그래프까지가 두 탭에서 같은 자리다.
- *
- * **무엇을 읽을지는 탭이 가른다.** 그 가름과 열두 달의 조립과 사람 시트의 글월은
- * [`useAdminStatsScreen`](../hooks/useAdminStatsScreen.ts)이 들고 이 파일은 쌓기만 한다.
- *
- * **다시 들어오면 이번 달이다.** 보던 달도 보던 탭도 기억하지 않는다.
- */
-
 const SKELETON_ROWS = [0, 1, 2];
 
-/** 못 가는 화살표는 안 그린다. 달 글이 가운데에 그대로 서게 자리만 남긴다. */
 function ArrowSlot() {
   return <View className="h-8 w-8" />;
 }
 
 export function AdminStatsScreen() {
   const router = useRouter();
-  const screen = useAdminStatsScreen(supabase);
+  const screen = useAdminStatsScreen();
 
   return (
     <Screen floor="plain">
@@ -237,7 +219,6 @@ export function AdminStatsScreen() {
   );
 }
 
-/** 가는 선 아래에 머리글이 서고 그 아래에 줄이 온다 — 직원 화면의 퇴사 구획과 같은 꼴이다. */
 function SectionHeader({ label }: { label: string }) {
   return (
     <View className="mt-8">

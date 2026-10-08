@@ -1,9 +1,3 @@
-// 구현 대상: src/screens/profile/model/hasRehearsalGrant.policy.ts
-//
-// 「나」의 리허설 줄과 /me/rehearsals 가드가 같이 쓰는 판정이다(profile.md 「리허설」,
-// design.md 「자격」) — useQualificationsQuery(client)가 낸 행 중에 내 profile_id와 position이
-// '리허설'인 행이 있는지를 본다. 새 DAL 없이 기존 qualifications 뷰 결과를 그대로 거른다.
-
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 
 const MY_ID = "profile-1";

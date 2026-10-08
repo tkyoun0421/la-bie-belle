@@ -31,10 +31,6 @@ function positionsLiteral(positions: string[]): string {
   return `{${positions.map((position) => `"${position}"`).join(",")}}`;
 }
 
-/**
- * 임의 날짜에 날·자리·배정을 직접 심는다 — `open_day`는 지난 날짜와 오늘을 못 열게 막지
- * 않으니 문제 없지만, 재실행에도 안전하게 같은 날짜를 다시 쓰려면 직접 심는다.
- */
 function seedAssignedDay(
   admin: AdminUser,
   worker: ApprovedUser,

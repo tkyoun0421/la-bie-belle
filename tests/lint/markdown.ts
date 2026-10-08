@@ -34,12 +34,10 @@ function headingText(raw: string): string {
   return raw.trim().replace(EMPHASIS, "").trim();
 }
 
-/** GitHub 슬러그: 소문자로 낮추고, 구두점을 지우고, 남은 공백을 하이픈으로 바꾼다. */
 function baseSlug(text: string): string {
   return text.toLowerCase().replace(NOT_IN_SLUG, "").trim().replace(SPACE, "-");
 }
 
-/** 같은 슬러그가 되풀이되면 둘째부터 -1, -2를 붙인다. */
 function slugger(): (text: string) => string {
   const seen = new Map<string, number>();
 
@@ -51,7 +49,6 @@ function slugger(): (text: string) => string {
   };
 }
 
-/** 코드블록 안의 줄은 빈 줄로 덮는다. 안 닫힌 채 끝나면 그 뒤 전부가 코드다. */
 function outsideCode(lines: string[]): (string | null)[] {
   let inFence = false;
 

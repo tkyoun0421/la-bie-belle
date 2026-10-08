@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleDay/services/useSetDayHoursMutation.ts
-//
-// 그 날의 근무 시간을 고친다. 끝이 시작보다 이른지는 화면이 먼저 막지만 서버까지 가면
-// `bad_hours`다(`schedule-admin.md` AC-05). 캐시 갱신은 `['schedule']` `['payroll']`
-// `['requests']`다.
-
 const setDayHoursMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/scheduleDay/api/setDayHours.api", () => ({

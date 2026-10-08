@@ -1,18 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/payroll/hooks/usePayrollScreen.ts
-//
-// 근무자가 자기 급여를 미리 보는 화면의 controller다. `.tsx`가 `useState` 셋과 `useEffect`
-// 하나와 `useMemo` 넷을 들고, 질의 다섯이 낸 것을 `payrollViewDays`에 넘겨 조립까지 하고
-// 있었다.
-//
-// **기간이 날짜 하나와 단위 둘로 산다.** 세그먼트가 단위를 고르고 화살표가 그 단위 안에서
-// 날짜를 옮긴다 — 둘을 한 상태로 합치면 「주」로 갔다 「월」로 돌아올 때 보던 달을 잃는다.
-//
-// **고른 단위가 읽는 달을 바꾼다.** 기간이 걸치는 달이 질의 키라, 단위는 화면 꾸밈이 아니라
-// 통신을 움직이는 값이다.
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -60,6 +48,12 @@ jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
   kstToday: () => TODAY,
 }));
 
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
+
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
@@ -84,8 +78,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const EMPTY_PAYROLL = {
   wageRates: [],
   adjustments: [],
@@ -93,7 +85,6 @@ const EMPTY_PAYROLL = {
   holidays: [],
 };
 
-/** 그 달 하루에 내 배정 하나가 선 근무표다 — 시급이 없으면 금액이 0원이다. */
 function scheduleDay(workDate: string) {
   return {
     id: `day-${workDate}`,
@@ -142,7 +133,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => usePayrollScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => usePayrollScreen(), { wrapper });
 
   await waitFor(() => expect(hook.result.current.loading).toBe(false));
 

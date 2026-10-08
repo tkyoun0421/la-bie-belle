@@ -5,12 +5,6 @@ import * as SecureStore from "expo-secure-store";
 
 const KEY_BITS = 256;
 
-/**
- * 세션 JSON은 토큰 둘과 사용자 객체를 들어 SecureStore가 받는 크기를 넘는다 —
- * 안드로이드 키체인이 2048바이트 근처에서 실패한다. 그래서 열쇠와 본문을 가른다.
- * SecureStore에는 AES-256 열쇠만, 그 열쇠로 암호화한 본문은 AsyncStorage다.
- * 크기로 갈리는 분기가 아니라 역할로 고정 분리라, 짧은 값도 같은 길을 간다.
- */
 async function encrypt(key: string, value: string): Promise<string> {
   const encryptionKey = crypto.getRandomValues(new Uint8Array(KEY_BITS / 8));
   const cipher = new aesjs.ModeOfOperation.ctr(

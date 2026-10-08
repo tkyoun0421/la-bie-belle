@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 연락처 저장은 응답 대기다 — 낙관적 onMutate·롤백이 없고 isPending으로 버튼만 잠근다.
-// 정본은 `docs/2-design/system/runtime.md`의 「낙관적 업데이트」와
-// `docs/2-design/modules/account/design.md`의 「프로필 제출·연락처·사진」이다.
-// 성공하면 `['profile','private']`을 무효화한다.
-
 const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

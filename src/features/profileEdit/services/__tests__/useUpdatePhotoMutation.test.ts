@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 사진 고치기는 두 걸음이다 — 먼저 버킷에 올리고, 그 공개 주소를 profiles.photo_url에
-// 앉힌다. 정본은 `docs/2-design/modules/account/design.md`의 「사진 저장」이다. 성공하면
-// `['profile']`을 무효화한다.
-
 const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

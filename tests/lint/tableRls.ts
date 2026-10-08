@@ -7,7 +7,6 @@ export type TableRlsViolation = {
 
 const MIGRATIONS_DIR = "supabase/migrations";
 
-/** `data-access.md#읽기-rls-기본값`의 계약 — `public` 표는 전부 RLS를 켠다. */
 const CREATE_TABLE =
   /create\s+table\s+(?:if\s+not\s+exists\s+)?public\.([a-z_][a-z0-9_]*)/gi;
 const ENABLE_RLS =
@@ -39,7 +38,6 @@ export function tableRlsViolations(sql: string): TableRlsViolation[] {
     .map((table) => ({ table }));
 }
 
-/** 파일 이름을 하드코딩하지 않는다 — 마이그레이션 셋이 계속 늘어난다. */
 function migrationFiles(root: string): string[] {
   const dir = path.join(root, MIGRATIONS_DIR);
   let entries: string[];
@@ -56,7 +54,6 @@ function migrationFiles(root: string): string[] {
     .map((entry) => path.join(dir, entry));
 }
 
-/** 표를 세운 파일과 RLS를 켠 파일이 달라도 되게 마이그레이션 전체를 한 덩어리로 본다. */
 export function repositoryTableRlsViolations(
   root: string = process.cwd(),
 ): TableRlsViolation[] {

@@ -12,15 +12,6 @@ import {
   restrictedQualifications,
 } from "@/screens/scheduleAdmin/utils/personSheet.utils";
 
-/**
- * 픽커 줄을 길게 누르면 그 위에 겹쳐 올라오는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 시트」다.
- *
- * **배정하지 않는다.** 읽고 닫으면 픽커 목록 그대로다 — 넣으려면 닫고 줄을 짧게 다시 누른다.
- *
- * **자격이 하나도 없으면 그 줄이 없다.** 빈 자리를 남기면 읽을 것이 있는 줄처럼 보인다.
- */
-
 const GENDER_ICON_SIZE = 16;
 
 export type PersonSheetProps = {

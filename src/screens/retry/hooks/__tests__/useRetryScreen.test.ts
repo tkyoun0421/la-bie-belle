@@ -1,19 +1,30 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/retry/hooks/useRetryScreen.ts
-//
-// 읽기 실패 화면의 controller다. 이 화면이 제 상태를 드는 자리는 「다시 시도」 한 번뿐이다 —
-// 판정을 다시 돌리는 동안 버튼이 돌고, 성공하면 원래 가려던 자리로 보내고, 실패하면 이
-// 화면이 그대로다(`docs/2-design/modules/account/screens/login.md`의 「읽기 실패 짜임」).
-//
-// 세션의 사람과 로그아웃은 여기 안 든다 — service 둘이 그것을 가지고 `.tsx`가 직접 부른다.
-// controller가 서는 것은 **화면이 제 업무 상태를 들 때**고, 이 화면에서 그것은 재시도다.
-
 const decideEntryMock = jest.fn<(...args: unknown[]) => Promise<string>>();
+const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/features/auth/lib/decideEntry.lib", () => ({
   decideEntry: decideEntryMock,
+}));
+
+jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
+  getCurrentUser: getCurrentUserMock,
+}));
+
+jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
+  signOut: signOutMock,
+  DEVICE_CLEANUP_NOT_WIRED_YET: {
+    removePushToken: async (): Promise<void> => {},
+    clearPersistedState: async (): Promise<void> => {},
+  },
 }));
 
 const { renderHook, waitFor, act } =
@@ -39,14 +50,21 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 function fakeRouter() {
   return { replace: jest.fn() };
 }
 
 beforeEach(() => {
   decideEntryMock.mockReset();
+  getCurrentUserMock.mockReset();
+  signOutMock.mockReset();
+
+  getCurrentUserMock.mockResolvedValue({
+    id: "user-1",
+    email: "retry@example.com",
+    user_metadata: {},
+  });
+  signOutMock.mockResolvedValue(undefined);
 });
 
 describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 다시 돌린다", () => {
@@ -55,7 +73,7 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRetryScreen(FAKE_CLIENT, router), {
+    const { result } = renderHook(() => useRetryScreen(router), {
       wrapper,
     });
 
@@ -69,7 +87,7 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRetryScreen(FAKE_CLIENT, router), {
+    const { result } = renderHook(() => useRetryScreen(router), {
       wrapper,
     });
 
@@ -93,7 +111,7 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRetryScreen(FAKE_CLIENT, router), {
+    const { result } = renderHook(() => useRetryScreen(router), {
       wrapper,
     });
 
@@ -119,7 +137,7 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRetryScreen(FAKE_CLIENT, router), {
+    const { result } = renderHook(() => useRetryScreen(router), {
       wrapper,
     });
 
@@ -138,7 +156,7 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRetryScreen(FAKE_CLIENT, router), {
+    const { result } = renderHook(() => useRetryScreen(router), {
       wrapper,
     });
 

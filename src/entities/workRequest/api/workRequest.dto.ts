@@ -1,8 +1,3 @@
-/**
- * 요청 질의가 돌려주는 생 꼴이다. 자리와 날과 보낸 사람이 임베딩으로 딸려 와 중첩이
- * 깊고, 열 이름이 전부 DB 그대로다.
- */
-
 export type SlotRequestCandidate = {
   profile_id: string;
   status: string;

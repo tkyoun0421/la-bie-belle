@@ -1,17 +1,6 @@
-import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import {
-  AppState,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  View,
-} from "react-native";
+import { Redirect, useRouter } from "expo-router";
+import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { queryClient } from "@/shared/api/queryClient";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";
@@ -25,341 +14,43 @@ import { PushNotice } from "@/shared/ui/PushNotice";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
-import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
-import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
 import {
-  isProfileGender,
-  validateProfileForm,
-  type ProfileGender,
-} from "@/entities/profile/model/profile.schema";
-import { spellGender } from "@/entities/profile/utils/spellGender.utils";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
-import {
-  DEVICE_CLEANUP_NOT_WIRED_YET,
-  signOut,
-} from "@/features/auth/lib/signOut.lib";
-import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
-import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
-import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
-import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
-import { requestPushPermission } from "@/features/pushSwitch/lib/pushPermission.lib";
-import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
-import {
-  INITIAL_NOTIFICATION_PROMPT_VIEW,
+  EMAIL_AVATAR_SIZE,
+  GENDER_OPTIONS,
   NOTIFICATION_PROMPT_BUTTON,
-  PROMPT_OUTCOME_OF,
+  PENDING_AVATAR_SIZE,
+  PENDING_FORM_COPY,
+  PENDING_WAIT_COPY,
+  SCREEN_BOTTOM_PADDING,
 } from "@/screens/pending/consts/pending.const";
-import {
-  transitionNotificationPromptView,
-  type NotificationPromptView,
-} from "@/screens/pending/model/notificationPrompt.policy";
-import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
-
-/**
- * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필
- * 작성, 보낸 뒤의 축하, 승인 대기, 거절된 뒤. 정본은
- * `docs/2-design/modules/account/screens/login.md`고 완료 조건은
- * `docs/2-design/spec/profile-form.md`다.
- *
- * **칸은 하나고 자리가 고정이다.** 다섯을 한 장에 세우지 않는다. 지금 답할 것 하나만 화면
- * 아래에서 묻고, 규칙에 맞으면 그 칸이 위 더미로 올라가 굳는다. 굳은 것을 누르면 다시
- * 물음으로 내려온다. 그래서 이 화면의 상태는 「값 다섯」과 「굳은 것이 무엇인가」 둘이고,
- * 열려 있는 칸은 늘 「아직 안 굳은 첫 스텝」으로 계산된다 — 따로 들고 있지 않는다.
- *
- * **축하는 계정마다 한 번이다.** 거절 뒤 다시 보낸 것이면 축하 없이 바로 승인 대기다.
- * 한 번이라도 보낸 적이 있는지는 개인정보 행이 있는지로 안다 — 차단이 풀린 사람은
- * `submitted_at`이 비워진 채 지난 값만 남아서 그 자리에 다시 선다.
- *
- * **알림 영역은 기다리는 중에만 선다.** 거절된 뒤에는 알림을 켜 봐야 올 것이 없어 자리째
- * 사라진다(login.md 「거절된 뒤」). 저절로 안 묻고 사람이 「알림 켜기」를 눌러야 기기가
- * 묻는다 — 켜도 화면이 안 넘어가고 안 켜도 안 막힌다
- * ([NTF-018](../../../../docs/2-design/modules/notification/README.md#ntf-018)).
- */
-
-const STEPS = ["photo", "name", "gender", "birthDate", "phone"] as const;
-
-type Step = (typeof STEPS)[number];
-
-type Stage = "loading" | "form" | "celebrating" | "waiting" | "rejected";
-
-const ROTATING_LINES = [
-  "이번 달 근무표를 한눈에 봐요",
-  "출근은 현장에서 찍어요",
-  "일한 시간과 급여를 같이 봐요",
-];
-
-const ROTATE_INTERVAL_MS = 4000;
-
-const CELEBRATION_STAY_MS = 1200;
-
-const AVATAR_SIZE = 64;
-
-const PHOTO_EDGE = 512;
-
-const PHOTO_QUALITY = 0.8;
-
-const SCREEN_BOTTOM_PADDING = 24;
-
-function digitsOnly(value: string, limit: number): string {
-  return value.replace(/\D/g, "").slice(0, limit);
-}
-
-/** 칸은 숫자만 받고 하이픈은 앱이 넣는다. 굳은 글과 서버가 보는 꼴이 같다. */
-function hyphenatePhone(digits: string): string {
-  if (digits.length < 8) {
-    return digits;
-  }
-
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-}
-
-/** 칸에서는 여덟 자리지만 글로 서면 년·월·일이 말로 갈린다. */
-function spellBirthDate(digits: string): string {
-  const year = digits.slice(0, 4);
-  const month = Number(digits.slice(4, 6));
-  const day = Number(digits.slice(6, 8));
-
-  return `${year}년 ${month}월 ${day}일`;
-}
-
-function toDigits(isoDate: string | null): string {
-  return isoDate === null ? "" : isoDate.replaceAll("-", "");
-}
-
-function toIsoDate(digits: string): string {
-  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
-}
-
-type FormValues = {
-  name: string;
-  gender: ProfileGender | null;
-  birthDate: string;
-  phone: string;
-  photoUrl: string | null;
-};
-
-const EMPTY_VALUES: FormValues = {
-  name: "",
-  gender: null,
-  birthDate: "",
-  phone: "",
-  photoUrl: null,
-};
-
-function firstOpenStep(frozen: readonly Step[]): Step | null {
-  return STEPS.find((step) => !frozen.includes(step)) ?? null;
-}
+import { usePendingScreen } from "@/screens/pending/hooks/usePendingScreen";
 
 export function PendingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const screen = usePendingScreen();
 
-  const [stage, setStage] = useState<Stage>("loading");
-  const [values, setValues] = useState<FormValues>(EMPTY_VALUES);
-  const [frozen, setFrozen] = useState<Step[]>([]);
-  const [everSubmitted, setEverSubmitted] = useState(false);
-  const [email, setEmail] = useState("");
-  const [touched, setTouched] = useState<Step[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [photoFailed, setPhotoFailed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitFailed, setSubmitFailed] = useState(false);
-  const [line, setLine] = useState(0);
-  const [promptView, setPromptView] = useState<NotificationPromptView>(
-    INITIAL_NOTIFICATION_PROMPT_VIEW,
-  );
-  const [pushToken, setPushToken] = useState<string | null>(null);
+  if (screen.stage === "signedOut") {
+    return <Redirect href="/login" />;
+  }
 
-  useSavePushTokenMutation(supabase, pushToken, AppState);
-
-  useEffect(() => {
-    let abandoned = false;
-
-    void (async () => {
-      const user = await getCurrentUser(supabase);
-
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-
-      const profile = await getMyProfile(supabase, user.id);
-      const priv = profile
-        ? await getProfilePrivate(supabase, profile.id)
-        : null;
-
-      if (abandoned) {
-        return;
-      }
-
-      const gender = priv && isProfileGender(priv.gender) ? priv.gender : null;
-      const answered = priv !== null || profile?.submitted_at !== null;
-
-      setEmail(user.email ?? "");
-      setValues({
-        name: profile?.display_name ?? "",
-        gender,
-        birthDate: toDigits(priv?.birth_date ?? null),
-        phone: digitsOnly(priv?.phone ?? "", 11),
-        photoUrl: profile?.photo_url ?? googlePhotoOf(user.user_metadata),
-      });
-      setFrozen(answered ? [...STEPS] : []);
-      setEverSubmitted(answered);
-      setStage(
-        profile?.rejected_at
-          ? "rejected"
-          : profile?.submitted_at
-            ? "waiting"
-            : "form",
-      );
-    })();
-
-    return () => {
-      abandoned = true;
-    };
-  }, [router]);
-
-  useEffect(() => {
-    if (stage !== "waiting") {
-      return;
-    }
-
-    const timer = setInterval(
-      () => setLine((at) => (at + 1) % ROTATING_LINES.length),
-      ROTATE_INTERVAL_MS,
-    );
-
-    return () => clearInterval(timer);
-  }, [stage]);
-
-  useEffect(() => {
-    if (stage !== "celebrating") {
-      return;
-    }
-
-    const timer = setTimeout(() => setStage("waiting"), CELEBRATION_STAY_MS);
-
-    return () => clearTimeout(timer);
-  }, [stage]);
-
-  const onSignOut = useCallback(() => {
-    void signOut({
-      ...DEVICE_CLEANUP_NOT_WIRED_YET,
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-      clearQueryClient: () => queryClient.clear(),
-    }).then(() => router.replace("/login"));
-  }, [router]);
-
-  const turnOnNotifications = useCallback(async () => {
-    const asked = await requestPushPermission(PUSH_DEPS);
-
-    if (asked.permission === "granted" && asked.token !== null) {
-      setPushToken(asked.token);
-    }
-
-    setPromptView((at) =>
-      transitionNotificationPromptView(at, PROMPT_OUTCOME_OF[asked.permission]),
-    );
-  }, []);
-
-  const freeze = useCallback((step: Step) => {
-    setFrozen((at) => (at.includes(step) ? at : [...at, step]));
-  }, []);
-
-  const thaw = useCallback((step: Step) => {
-    setFrozen((at) => at.filter((frozenStep) => frozenStep !== step));
-  }, []);
-
-  const pickPhoto = useCallback(async () => {
-    const picked = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
-      allowsEditing: true,
-      aspect: [1, 1],
-    });
-
-    if (picked.canceled) {
-      return;
-    }
-
-    setUploading(true);
-    setPhotoFailed(false);
-
-    try {
-      const user = await getCurrentUser(supabase);
-
-      if (!user) {
-        throw new Error("not_allowed");
-      }
-
-      const shrunk = await ImageManipulator.manipulateAsync(
-        picked.assets[0].uri,
-        [{ resize: { width: PHOTO_EDGE, height: PHOTO_EDGE } }],
-        {
-          compress: PHOTO_QUALITY,
-          format: ImageManipulator.SaveFormat.JPEG,
-        },
-      );
-
-      const publicUrl = await uploadAvatar(supabase, {
-        userId: user.id,
-        uri: shrunk.uri,
-        contentType: "image/jpeg",
-        extension: "jpg",
-      });
-
-      await updateMyPhoto(supabase, publicUrl);
-
-      setValues((at) => ({ ...at, photoUrl: publicUrl }));
-      freeze("photo");
-    } catch {
-      setPhotoFailed(true);
-    } finally {
-      setUploading(false);
-    }
-  }, [freeze]);
-
-  const send = useCallback(async () => {
-    setSubmitting(true);
-    setSubmitFailed(false);
-
-    try {
-      await submitProfile(supabase, {
-        displayName: values.name.trim(),
-        phone: hyphenatePhone(values.phone),
-        birthDate: toIsoDate(values.birthDate),
-        gender: values.gender ?? "",
-      });
-
-      setStage(everSubmitted ? "waiting" : "celebrating");
-      setEverSubmitted(true);
-    } catch {
-      setSubmitFailed(true);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [everSubmitted, values]);
-
-  if (stage === "loading") {
+  if (screen.stage === "loading") {
     return <Screen floor="plain" />;
   }
 
-  if (stage === "celebrating") {
+  if (screen.stage === "celebrating") {
     return (
       <Screen floor="plain" className="items-center justify-center px-5">
-        <CelebrationCircle name={values.name} photoUrl={values.photoUrl} />
+        <CelebrationCircle name={screen.name} photoUrl={screen.photoUrl} />
         <Text size="2xl" weight="semibold" className="mt-6">
-          {values.name}님, 반가워요
+          {screen.nameLine}
         </Text>
       </Screen>
     );
   }
 
-  if (stage === "waiting" || stage === "rejected") {
-    const rejected = stage === "rejected";
-    const prompt = getNotificationPromptCopy(promptView);
+  if (screen.stage === "waiting" || screen.stage === "rejected") {
+    const rejected = screen.stage === "rejected";
 
     return (
       <Screen
@@ -369,35 +60,44 @@ export function PendingScreen() {
       >
         <View className="flex-1 items-center justify-center">
           {rejected ? (
-            <Badge variant="neutral" size="md" label="아직 연결 전" />
+            <Badge
+              variant="neutral"
+              size="md"
+              label={PENDING_WAIT_COPY.rejectedBadge}
+            />
           ) : (
             <>
               <Illustration scene="waiting" />
-              <Badge variant="brand" size="md" dot label="승인 기다리는 중" />
+              <Badge
+                variant="brand"
+                size="md"
+                dot
+                label={PENDING_WAIT_COPY.waitingBadge}
+              />
             </>
           )}
           <Text size="xl" weight="bold" className="mt-4 text-center">
-            {rejected ? "이번엔 연결이 안 됐어요" : "관리자가 확인 중이에요"}
+            {rejected
+              ? PENDING_WAIT_COPY.rejectedTitle
+              : PENDING_WAIT_COPY.waitingTitle}
           </Text>
           <Text size="sm" tone="muted" className="mt-2 text-center">
-            {rejected
-              ? "프로필을 고쳐서 다시 보낼 수 있어요"
-              : ROTATING_LINES[line]}
+            {rejected ? PENDING_WAIT_COPY.rejectedSubline : screen.rotatingLine}
           </Text>
         </View>
 
         <View>
           {rejected ? null : (
             <PushNotice
-              tone={promptView}
-              title={prompt.title}
-              subline={prompt.subline}
+              tone={screen.promptTone}
+              title={screen.prompt.title}
+              subline={screen.prompt.subline}
               action={
-                prompt.hasButton ? (
+                screen.prompt.hasButton ? (
                   <Button
                     variant="primary"
                     size="md"
-                    onPress={() => void turnOnNotifications()}
+                    onPress={() => void screen.turnOnNotifications()}
                   >
                     {NOTIFICATION_PROMPT_BUTTON}
                   </Button>
@@ -407,43 +107,32 @@ export function PendingScreen() {
           )}
           <Divider className="my-5" />
           <View className="flex-row items-center justify-center gap-3">
-            <Avatar name={email} photoUrl={values.photoUrl} size={24} />
+            <Avatar
+              name={screen.email}
+              photoUrl={screen.photoUrl}
+              size={EMAIL_AVATAR_SIZE}
+            />
             <Text size="sm" tone="subtle">
-              {email}
+              {screen.email}
             </Text>
           </View>
           {rejected ? (
-            <Button
-              variant="primary"
-              className="mt-4"
-              onPress={() => setStage("form")}
-            >
-              다시 보내기
+            <Button variant="primary" className="mt-4" onPress={screen.retry}>
+              {PENDING_WAIT_COPY.retry}
             </Button>
           ) : null}
           <Button
             variant={rejected ? "ghost" : "outline"}
             className="mt-4"
-            onPress={onSignOut}
+            loading={screen.signingOut}
+            onPress={() => screen.signOut(() => router.replace("/login"))}
           >
-            로그아웃
+            {PENDING_FORM_COPY.signOut}
           </Button>
         </View>
       </Screen>
     );
   }
-
-  const open = firstOpenStep(frozen);
-  const errors = validateProfileForm({
-    name: values.name,
-    phone: values.phone,
-    birthDate: values.birthDate,
-    gender: values.gender,
-  });
-  const guideOf = (step: "birthDate" | "phone"): string | undefined =>
-    touched.includes(step) ? errors[step] : undefined;
-
-  const isFrozen = (step: Step) => frozen.includes(step);
 
   return (
     <KeyboardAvoidingView
@@ -452,11 +141,14 @@ export function PendingScreen() {
     >
       <Screen floor="plain">
         <AppBar
-          title="프로필"
+          title={PENDING_FORM_COPY.appBarTitle}
           right={
-            <Pressable accessibilityRole="button" onPress={onSignOut}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => screen.signOut(() => router.replace("/login"))}
+            >
               <Text size="sm" tone="subtle">
-                로그아웃
+                {PENDING_FORM_COPY.signOut}
               </Text>
             </Pressable>
           }
@@ -464,70 +156,70 @@ export function PendingScreen() {
 
         <View className="flex-1 px-5">
           <Text size="sm" tone="subtle">
-            {open === null
-              ? "아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요"
-              : "자신의 프로필을 작성해 주세요"}
+            {screen.canSubmit
+              ? PENDING_FORM_COPY.reviewing
+              : PENDING_FORM_COPY.writing}
           </Text>
 
           <View className="mt-6">
-            {isFrozen("photo") ? (
+            {screen.shown.photo ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => thaw("photo")}
+                onPress={() => screen.thaw("photo")}
                 className="self-center"
               >
                 <Avatar
-                  name={values.name}
-                  photoUrl={values.photoUrl}
-                  size={AVATAR_SIZE}
+                  name={screen.name}
+                  photoUrl={screen.photoUrl}
+                  size={PENDING_AVATAR_SIZE}
                 />
               </Pressable>
             ) : null}
 
-            {isFrozen("name") ? (
+            {screen.shown.name ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => thaw("name")}
+                onPress={() => screen.thaw("name")}
                 className="mt-6"
               >
                 <Text size="xl" weight="semibold">
-                  {values.name}님, 반가워요
+                  {screen.nameLine}
                 </Text>
               </Pressable>
             ) : null}
 
-            {isFrozen("gender") && values.gender ? (
+            {screen.shown.gender ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => thaw("gender")}
+                onPress={() => screen.thaw("gender")}
                 className="mt-3"
               >
                 <Text size="lg" weight="medium">
-                  {spellGender(values.gender)}
+                  {screen.genderLine}
                 </Text>
               </Pressable>
             ) : null}
 
-            {isFrozen("birthDate") ? (
+            {screen.shown.birthDate ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => thaw("birthDate")}
+                onPress={() => screen.thaw("birthDate")}
                 className="mt-3"
               >
                 <Text size="lg" weight="medium" numeric>
-                  {spellBirthDate(values.birthDate)}
+                  {screen.birthDateLine}
                 </Text>
               </Pressable>
             ) : null}
 
-            {isFrozen("phone") ? (
+            {screen.shown.phone ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => thaw("phone")}
+                onPress={() => screen.thaw("phone")}
                 className="mt-3"
               >
                 <Text size="lg" weight="medium" numeric>
-                  {hyphenatePhone(values.phone)}
+                  {screen.phoneLine}
                 </Text>
               </Pressable>
             ) : null}
@@ -535,147 +227,114 @@ export function PendingScreen() {
 
           <View className="flex-1" />
 
-          {open === "photo" ? (
+          {screen.open === "photo" ? (
             <View className="mb-4 items-center">
               <Pressable
                 accessibilityRole="button"
-                disabled={uploading}
-                onPress={() => void pickPhoto()}
+                disabled={screen.uploading}
+                onPress={() => void screen.pickPhoto()}
               >
                 <Avatar
-                  name={values.name}
-                  photoUrl={values.photoUrl}
-                  size={AVATAR_SIZE}
+                  name={screen.name}
+                  photoUrl={screen.photoUrl}
+                  size={PENDING_AVATAR_SIZE}
                 />
               </Pressable>
               <Button
                 variant="outline"
                 size="md"
                 className="mt-4"
-                loading={uploading}
-                onPress={() => freeze("photo")}
+                loading={screen.uploading}
+                onPress={screen.freezePhoto}
               >
-                기본 사진 쓰기
+                {PENDING_FORM_COPY.useDefaultPhoto}
               </Button>
-              {photoFailed ? (
+              {screen.photoFailed ? (
                 <Text size="xs" tone="critical" className="mt-1.5">
-                  사진을 올리지 못했어요. 다시 골라 주세요
+                  {PENDING_FORM_COPY.photoFailed}
                 </Text>
               ) : null}
             </View>
           ) : null}
 
-          {open === "name" ? (
+          {screen.open === "name" ? (
             <Input
               className="mb-4"
-              label="이름"
-              placeholder="근무표에 뜰 이름"
-              value={values.name}
+              label={PENDING_FORM_COPY.nameLabel}
+              placeholder={PENDING_FORM_COPY.namePlaceholder}
+              value={screen.values.name}
               returnKeyType="done"
-              onChangeText={(name) => setValues((at) => ({ ...at, name }))}
-              onSubmitEditing={() => {
-                if (values.name.trim() !== "") {
-                  freeze("name");
-                }
-              }}
+              onChangeText={screen.writeName}
+              onSubmitEditing={screen.submitName}
             />
           ) : null}
 
-          {open === "gender" ? (
+          {screen.open === "gender" ? (
             <View className="mb-4">
               <Text size="xs" tone="muted" className="mb-1.5">
-                성별
+                {PENDING_FORM_COPY.genderLabel}
               </Text>
               <Segment
-                options={[
-                  { value: "female", label: "여" },
-                  { value: "male", label: "남" },
-                ]}
-                value={values.gender ?? ""}
-                onChange={(picked) => {
-                  if (isProfileGender(picked)) {
-                    setValues((at) => ({ ...at, gender: picked }));
-                    freeze("gender");
-                  }
-                }}
+                options={[...GENDER_OPTIONS]}
+                value={screen.values.gender ?? ""}
+                onChange={screen.chooseGender}
               />
             </View>
           ) : null}
 
-          {open === "birthDate" ? (
+          {screen.open === "birthDate" ? (
             <Input
               className="mb-4"
-              label="생년월일"
-              placeholder="19930421"
+              label={PENDING_FORM_COPY.birthDateLabel}
+              placeholder={PENDING_FORM_COPY.birthDatePlaceholder}
               keyboardType="number-pad"
-              value={values.birthDate}
-              error={guideOf("birthDate")}
-              onBlur={() => setTouched((at) => [...at, "birthDate"])}
-              onChangeText={(typed) => {
-                const birthDate = digitsOnly(typed, 8);
-
-                setValues((at) => ({ ...at, birthDate }));
-
-                if (
-                  validateProfileForm({ ...values, birthDate }).birthDate ===
-                  undefined
-                ) {
-                  freeze("birthDate");
-                }
-              }}
+              value={screen.values.birthDate}
+              error={screen.birthDateGuide}
+              onBlur={() => screen.touch("birthDate")}
+              onChangeText={screen.writeBirthDate}
             />
           ) : null}
 
-          {open === "phone" ? (
+          {screen.open === "phone" ? (
             <Input
               className="mb-4"
-              label="연락처"
-              placeholder="010-0000-0000"
+              label={PENDING_FORM_COPY.phoneLabel}
+              placeholder={PENDING_FORM_COPY.phonePlaceholder}
               keyboardType="number-pad"
-              value={values.phone}
-              error={guideOf("phone")}
-              onBlur={() => setTouched((at) => [...at, "phone"])}
-              onChangeText={(typed) => {
-                const phone = digitsOnly(typed, 11);
-
-                setValues((at) => ({ ...at, phone }));
-
-                if (
-                  validateProfileForm({ ...values, phone }).phone === undefined
-                ) {
-                  freeze("phone");
-                }
-              }}
+              value={screen.values.phone}
+              error={screen.phoneGuide}
+              onBlur={() => screen.touch("phone")}
+              onChangeText={screen.writePhone}
             />
           ) : null}
 
-          {open === null ? (
+          {screen.canSubmit ? (
             <Text size="xs" tone="subtle" className="mb-4">
-              이름과 성별과 생년월일은 보내고 나면 못 고쳐요
+              {PENDING_FORM_COPY.lockedNote}
             </Text>
           ) : null}
         </View>
 
         <BottomCTA
           note={
-            submitFailed ? (
+            screen.submitFailed ? (
               <Text size="xs" tone="critical" className="text-center">
-                보내지 못했어요. 다시 시도해주세요
+                {PENDING_FORM_COPY.submitFailed}
               </Text>
-            ) : open === null ? null : (
+            ) : screen.canSubmit ? null : (
               <Text size="xs" tone="subtle" className="text-center">
-                빈 칸을 다 채우면 보낼 수 있어요
+                {PENDING_FORM_COPY.submitHint}
               </Text>
             )
           }
         >
           <Button
             variant="primary"
-            disabled={open !== null}
-            loading={submitting}
-            onPress={() => void send()}
+            disabled={!screen.canSubmit}
+            loading={screen.submitting}
+            onPress={screen.send}
           >
-            보내기
+            {PENDING_FORM_COPY.submit}
           </Button>
         </BottomCTA>
       </Screen>

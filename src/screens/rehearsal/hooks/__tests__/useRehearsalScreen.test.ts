@@ -1,18 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/rehearsal/hooks/useRehearsalScreen.ts
-//
-// 리허설 화면의 controller다. `.tsx`가 `useState` 여섯과 `useReducer` 하나와 `useEffect`
-// 일곱을 들고 있었다 — 세션을 읽는 것, 경로의 달을 받는 것, 보낸 뒤 시트를 닫는 것, 실패를
-// 폼의 안내로 옮기는 것, 기기 뒤로를 가로채는 것이 그 일곱이다.
-//
-// **읽는 질의가 둘인데 한 번에 하나만 돈다.** 관리자는 전원 것을, 근무자는 자기 것을 읽고
-// 그 가름이 프로필의 역할이라 세션을 읽어야 비로소 정해진다.
-//
-// **시트 열림 둘이 UI 상태가 아니다.** 폼 시트는 보낸 것이 성공하면 저절로 닫히고, 지우기
-// 확인창도 그렇다. 달 고르기만 사람이 열고 사람이 닫아 `.tsx`에 남는다.
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -74,6 +62,12 @@ jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
   kstToday: () => TODAY,
 }));
 
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
+
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
@@ -97,8 +91,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 function rehearsalAt(id: string, workDate: string) {
   return {
@@ -135,7 +127,7 @@ beforeEach(() => {
 
 async function mounted(month?: string) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useRehearsalScreen(FAKE_CLIENT, month), {
+  const hook = renderHook(() => useRehearsalScreen(month), {
     wrapper,
   });
 
@@ -144,7 +136,6 @@ async function mounted(month?: string) {
   return hook;
 }
 
-/** 그날 줄이 와서 칸이 바뀌기를 기다린다 — 역할까지 읽혀야 질의가 돈다. */
 async function withOneRowOn(
   date: string,
   result: { current: { cellStateOf: (date: string) => string } },

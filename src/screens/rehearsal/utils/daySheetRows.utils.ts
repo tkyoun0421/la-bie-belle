@@ -9,19 +9,6 @@ import {
 } from "@/screens/rehearsal/consts/rehearsal.const";
 import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
 
-/**
- * 날 시트의 줄 문구다(`docs/2-design/modules/schedule/screens/rehearsal.md`의 「날 시트
- * 짜임」과 「문안」).
- *
- * **줄이 무엇으로 넣었는지를 먼저 말한다.** 시각 줄은 구간을, 건수 줄은 건수를 적고 뒤에
- * 시간이 붙는다 — 같은 2시간이어도 어떻게 센 것인지가 갈린다.
- *
- * **줄이 하나면 합계를 안 그린다.** 같은 숫자가 두 번 선다.
- *
- * **관리자는 이름이 앞에 붙는다.** 「님」을 안 붙이는 것은 이름이 나열되는 목록이라서다
- * (`docs/2-design/design-system/writing.md`의 「사람 이름」).
- */
-
 export type DaySheetRow = RehearsalRow & {
   id: string;
   profiles?: { display_name: string | null } | null;
@@ -36,7 +23,6 @@ export type DaySheetContent =
   | { kind: "empty"; message: string }
   | { kind: "rows"; lines: DaySheetLine[]; totalLine: string | null };
 
-/** DB는 초까지 싣고 화면은 안 싣는다 — 「14:00:00」이 「14:00」이다. */
 function clock(value: string): string {
   return value.slice(0, CLOCK_LENGTH);
 }

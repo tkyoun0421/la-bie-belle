@@ -8,10 +8,6 @@ import {
 
 const ROOT = process.cwd();
 
-/**
- * illustration.md 「토스페이스 스무 개」 표를 그대로 옮긴 것이다. 정본은 문서고,
- * 이 표는 대조용 사본이다.
- */
 const TOSSFACE_TABLE: { codepoints: string[]; filename: string }[] = [
   { codepoints: ["1F492"], filename: "u1F492.svg" },
   { codepoints: ["1F4C5"], filename: "u1F4C5.svg" },

@@ -1,15 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/personPickerRows.policy.ts
-//
-// 사람 픽커의 「전체 보기」가 사람마다 매기는 상태 넷이다(schedule-admin.md 「사람 픽커
-// 짜임」 표) — 배정 가능(신청했고, 그날 배정이 없고, 자격이 있다) / 신청 안 함 / 자격 없음
-// / 배정됨. 자격은 `qualifications` 뷰가 낸 (profile_id, position) 행으로 판정한다
-// (design.md 「자격」). 문구는 표 그대로다.
-//
-// 확장 — 미신청 줄에 근무 요청 상태가 얹힌다(schedule-admin.md 「근무 요청 보내기」).
-// 대기 중·거절함·만료됨 셋이고, 만료는 저장하지 않으니(design.md 「요청」) `expires_at`과
-// `serverNowMs`를 견줘 화면이 파생한다. 체크박스는 대기 중에만 없다 — 이미 나간 요청이라
-// 다시 고를 것이 없다.
-
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
   classifyPickerRows,

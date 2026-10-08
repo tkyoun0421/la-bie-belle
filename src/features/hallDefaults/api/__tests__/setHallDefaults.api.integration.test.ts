@@ -48,12 +48,6 @@ function countByPosition(
     .reduce((sum, slot) => sum + slot.count, 0);
 }
 
-/**
- * 대표 실패를 못 넣었다 — `set_hall_defaults`(마이그레이션
- * `20260922091503_schedule_functions.sql`)는 `is_admin()` 검사(`not_allowed`) 하나만 던지고,
- * design.md의 「홀 기본값」 절에도 「결과와 실패」 줄이 없다. `not_allowed`는 기존
- * `schedule-functions.integration.test.ts`가 이미 덮어 반복하지 않는다.
- */
 describe("setHallDefaults dal — set_hall_defaults를 부르고 halls 기본값을 바꾼다", () => {
   let admin: AdminUser;
 

@@ -1,9 +1,5 @@
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 
-// 가입 대기 상세 시트의 생년월일 값. "1992년 3월 4일(34세)"처럼 만 나이를 같이 적는다
-// — [members-pending.md 「생년월일 옆에 나이를 같이 적는다」]. 2월 29일생은 평년에
-// 3월 1일에 한 살 더한다(한국 민법 해석, account/design.md).
-
 describe("formatBirthDate — 생년월일과 오늘을 견줘 만 나이를 같이 적는다", () => {
   it("생일 전날에는 아직 나이를 안 더한다", () => {
     const label = formatBirthDate(

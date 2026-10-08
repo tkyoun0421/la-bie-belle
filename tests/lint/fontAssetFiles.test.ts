@@ -3,8 +3,6 @@ import path from "node:path";
 
 const FONTS_DIR = path.join(process.cwd(), "assets/fonts");
 
-// tokens.md의 「서체 연결」절(292~301줄)이 정본이다 — 파일명을 바꾸면
-// 안드로이드(파일명 기반 폰트 이름)와 iOS(PostScript 이름)가 어긋난다.
 const EXPECTED_FONT_FILENAMES = [
   "WantedSans-Regular.ttf",
   "WantedSans-Medium.ttf",
@@ -14,11 +12,6 @@ const EXPECTED_FONT_FILENAMES = [
 
 const FVAR_TABLE_TAG = "fvar";
 
-/**
- * sfnt(TrueType/OpenType) 헤더의 테이블 디렉터리에서 태그 목록을 읽는다.
- * offset 4: numTables(uint16BE). offset 12부터 테이블 레코드가 16바이트씩
- * 이어지고, 각 레코드의 앞 4바이트가 태그다.
- */
 function sfntTableTags(buffer: Buffer): string[] {
   const numTables = buffer.readUInt16BE(4);
   const tags: string[] = [];

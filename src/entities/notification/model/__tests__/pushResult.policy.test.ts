@@ -1,14 +1,3 @@
-// 구현 대상: src/entities/notification/model/pushResult.policy.ts (notification-push plan AC-07)
-//
-// 함수 이름은 splitPushResults로 정했다 — plan이 이름을 비워둬 이 테스트가 계약을 정한다.
-// 부친 답 하나마다 {id, token, response}를 받아 넷으로 가른다 — 성공(접수증 번호),
-// 주소 폐기, 다시 시도, 사람이 봐야 하는 것. `id`는 알림 id, `token`은 그 기기의 주소다.
-//
-// 같은 함수가 ticket 응답(부친 직후 오는 답)과 receipt 응답(긁을 때 오는 답)을 모두
-// 받는다 — 「긁은 접수증도 같은 갈래로 가른다」. 두 응답은 성공(`status: "ok"`)일 때
-// 모양이 다르다 — ticket은 새 접수증 id를 내고 receipt는 이미 아는 접수증을 확인만
-// 하니 id가 없다. 실패(`status: "error"`)는 `details.error` 코드로 갈린다.
-
 type PushOutcome = {
   id: string;
   token: string;

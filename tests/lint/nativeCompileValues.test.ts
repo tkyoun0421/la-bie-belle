@@ -5,11 +5,6 @@ import { compile } from "react-native-css/compiler";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 
-/**
- * 실제 화면에서 쓰는 유틸 조합이다 — 브랜드 배경 하나, 중립 배경·글자색 하나씩,
- * 스페이싱 눈금 하나(p-4), 타이포 하나(text-base), 서체 유틸 넷. `@source inline(...)`이
- * 없으면 Tailwind가 이 클래스들을 쓰는 곳이 없다고 보고 CSS를 안 만든다.
- */
 const FIXTURE_UTILITIES =
   "bg-bg-brand-solid text-fg-neutral bg-bg-neutral p-4 text-base " +
   "font-sans font-medium font-semibold font-bold shadow-card text-4xl " +
@@ -27,19 +22,10 @@ const SYSTEM_DARK_CONDITION = [["=", "prefers-color-scheme", "dark"]];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CompiledNode = any;
 
-// react-native-css/compiler가 실제로 내는 타입은 ReactNativeCssStyleSheet인데
-// s·vr을 optional로 선언한다. 이 테스트는 값의 구조(entries)를 직접 순회하며
-// 검증하니 이웃 dark-media-query-compiles.test.ts의 PostcssNode처럼 any로 느슨하게 받는다.
 type CompiledStylesheet = CompiledNode;
 
 type ConditionalValue = [CompiledNode] | [CompiledNode, CompiledNode];
 
-/**
- * `@tailwindcss/postcss`가 실제로 요구하는 postcss와 최상위 postcss 패키지가
- * pnpm 하에서 서로 다른 인스턴스로 깔릴 수 있다(타입도 따라 갈라진다). 플러그인
- * 안쪽에서 require하는 postcss를 그대로 가져와야 타입도 값도 같은 것을 쓴다 —
- * 이웃 dark-media-query-compiles.test.ts의 tailwindPostcssProcessor()와 같은 이유다.
- */
 function tailwindPostcssProcessor() {
   const projectRequire = createRequire(
     path.join(process.cwd(), "package.json"),
@@ -60,8 +46,6 @@ async function compileNativeStylesheet(): Promise<CompiledStylesheet> {
     { from: GLOBALS_CSS_PATH },
   );
 
-  // compile()이 돌려주는 것은 함수를 담은 lazy 객체다. .stylesheet()를 불러야
-  // 실제 규칙·루트 변수 값이 나온다 — 안 부르면 JSON.stringify가 {}를 낸다.
   return compile(result.css, {}).stylesheet();
 }
 
@@ -88,11 +72,6 @@ function collectPlainObjects(
   return [];
 }
 
-/**
- * 선언 트리에서 특정 property(padding·fontSize 등) 값을 찾는다. 컴파일러가 내는
- * 선언 형태가 유틸마다 다르게 중첩돼 있어(예: text-base는 fontSize 옆에 lineHeight
- * 계산식이 배열로 따라붙는다) 정확한 트리 모양 대신 값 하나만 짚는다.
- */
 function declaredNumber(
   sheet: CompiledStylesheet,
   utilityClassName: string,
@@ -106,10 +85,6 @@ function declaredNumber(
   return withProperty?.[property];
 }
 
-/**
- * 선언 트리 안에서 `[..., "var", "팔레트-이름", ...]` 꼴로 박힌 변수 참조를 찾는다.
- * 색 유틸은 hex를 직접 안 넣고 이 변수 참조로 남아야 라이트·다크가 런타임에 갈린다.
- */
 function referencedVariableName(node: CompiledNode): string | undefined {
   if (Array.isArray(node)) {
     const varIndex = node.indexOf("var");

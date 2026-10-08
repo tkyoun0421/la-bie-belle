@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/discardSlot.policy.ts
-//
-// 자리를 버리는 손짓의 데이터 판정이다(schedule-admin.md 「잠금과 구조 변경」 — 「빈
-// 자리는 놓는 순간 사라지고, 사람이 든 자리는 시트가 확인한다」). 살아 있는 정규 배정이
-// 있는 자리만 확인 시트를 띄운다 — 좌표가 아니라 그 자리의 배정 상태만 본다. 문구는
-// 「날 상세 문안」의 「배정 있는 자리 버릴 때」 표 그대로다.
-
 import {
   discardSlotJudgement,
   discardSlotWarningLine,

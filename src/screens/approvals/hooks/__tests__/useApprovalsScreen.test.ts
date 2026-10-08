@@ -1,21 +1,16 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/approvals/hooks/useApprovalsScreen.ts
-//
-// 「승인할 일」 화면의 controller다. `.tsx`가 `useState` 여섯과 `useEffect` 하나를 들고
-// 있었고, 거절 이유를 고르는 상태 둘은 시트 조각이 따로 들고 판정까지 거기서 불렀다.
-//
-// **이유 고르기가 UI 상태가 아니다.** 고른 문장이 그대로 근무자에게 가고, 보내는 중에는
-// 잠기고, 실패하면 쓴 글이 남아야 한다 — 통신에 매여 있다.
-//
-// **보낸 뒤가 판정마다 다르다.** 거절은 토스트를 띄우고 목록에 남고, 승인은 그 자리를
-// 채우는 날 상세로 넘어간다.
-
 const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const decideCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule(
   "@/entities/workRequest/api/getPendingApprovals.api",
@@ -52,8 +47,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 function fakeRouter() {
   return {
@@ -92,7 +85,7 @@ beforeEach(() => {
 
 async function mounted(router = fakeRouter()) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useApprovalsScreen(FAKE_CLIENT, router), {
+  const hook = renderHook(() => useApprovalsScreen(router), {
     wrapper,
   });
 
@@ -107,10 +100,9 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useApprovalsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useApprovalsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     expect(result.current.listState).toBe("loading");
   });

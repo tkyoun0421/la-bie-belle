@@ -27,7 +27,6 @@ describe("dayBandFillRatio — 하루 띠 채움 비율 (AC-05)", () => {
   });
 
   it("근무 중이면 지난 만큼의 비율이다", () => {
-    // 10:00 시작 9시간 근무, 12:15은 2시간 15분(=2.25시간) 경과 → 25%
     expect(dayBandFillRatio(SHIFT, at("12:15"), true)).toBe(25);
   });
 
@@ -46,12 +45,10 @@ describe("dayBandCheckInMarkRatio — 인증 눈금 (AC-05)", () => {
   });
 
   it("일찍 찍어도 0에 물린다 — 음수 자리를 안 낸다", () => {
-    // 인증 창은 근무 시작 한 시간 전에 열린다(9:40 인증)
     expect(dayBandCheckInMarkRatio(SHIFT, at("09:40"))).toBe(0);
   });
 
   it("늦게 찍으면 지난 만큼의 비율이다", () => {
-    // 10:54 인증 = 54분 경과, 9시간(540분) 중 10%
     expect(dayBandCheckInMarkRatio(SHIFT, at("10:54"))).toBe(10);
   });
 

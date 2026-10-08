@@ -1,10 +1,3 @@
-// 구현 대상: eslint-rules/noNodeImportInEdgeShared.mjs (notification-push plan AC-10)
-//
-// `src/entities/notification/model/`은 CI가 `supabase/functions/_shared/`로 복사해
-// Deno로 돌리는 폴더다(notification/design.md 「푸시 보내기」). 그 안에서 Node 전용
-// API를 부르면 복사본이 런타임에서 깨진다 — 정본은 「lint가 막는다」고 이미 적는데
-// 그 규칙이 저장소에 없었다.
-
 import { violationsOf } from "@tests/lint/ruleCheck";
 
 const RULE_ID = "house/no-node-import-in-edge-shared";

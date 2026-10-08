@@ -10,7 +10,6 @@ export type SianHtmlViolation = {
 
 const DESIGN = "docs/2-design";
 
-/** 닫는 태그를 안 쓰는 HTML 요소와 시안이 쓰는 SVG 자식 요소들. */
 const VOID_TAGS = new Set([
   "area",
   "base",
@@ -37,23 +36,17 @@ const VOID_TAGS = new Set([
   "wbr",
 ]);
 
-/** 시안이 안 닫고 쓰는 문서 수준 태그. 브라우저가 알아서 닫는다. */
 const IGNORED_TAGS = new Set(["html", "head", "body", "title"]);
 
 const COMMENT = /<!--[\s\S]*?-->/g;
 const RAW_TEXT = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
 const TAG = /<(\/?)([a-zA-Z][a-zA-Z0-9:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
 
-/** 주석과 script·style 본문을 같은 길이의 공백으로 덮는다. 줄 번호를 지키려고 줄바꿈은 남긴다. */
 function blankOut(source: string): string {
   const blank = (matched: string) => matched.replace(/[^\n]/g, " ");
   return source.replace(COMMENT, blank).replace(RAW_TEXT, blank);
 }
 
-/**
- * 앞에서 뒤로만 나아가며 줄을 센다. 태그는 나온 순서대로 오니 매번 파일 처음부터
- * 다시 세지 않는다 — 그렇게 하면 태그 수와 파일 길이를 곱한 만큼 일하게 된다.
- */
 function lineCounter(source: string): (index: number) => number {
   let cursor = 0;
   let line = 1;

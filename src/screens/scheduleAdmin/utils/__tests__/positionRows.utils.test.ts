@@ -1,14 +1,5 @@
-// 구현 대상: src/screens/scheduleAdmin/utils/positionRows.utils.ts
-//
-// 포지션 아홉 줄로 자리를 가르고 줄 머리의 셈을 낸다(schedule-assign plan AC-02, 화면
-// 「포지션과 자리」). 겸임 자리는 `positions[0]`이 든 줄에만 선다 — TS의 `positions[0]`이
-// SQL의 `positions[1]`(design.md 「배정과 강제 변경」의 `p_slot_id`로 날과 포지션을 읽는
-// 자리, 「받은 쪽」)이다. 줄 머리 셈의 분자는 살아 있는 정규 배정이 있는 자리 수, 분모는
-// 살아 있는 자리 수다 — 교육 배정은 안 든다(README SCH-012). 배정은 `slot_id`로 카드에
-// 앉는다.
-
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import {
-  POSITION_ORDER,
   groupSlotsByPosition,
   slotFillCount,
   assignmentForSlot,

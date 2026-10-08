@@ -1,9 +1,3 @@
-// 구현 대상: src/screens/approvals/utils/approvalsList.utils.ts
-//
-// 승인할 일 목록의 정렬과 처리한 줄 제거다(approvals.md 「목록 짜임」). 이 task가 내는
-// 줄은 근무 취소뿐이다 — 사유 줄은 attendance가 뒤에 잇는다(plan schedule-requests.md
-// 「배정하지 않은 것」). 근무 취소 안에서는 근무 날이 가까운 것부터 선다.
-
 import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
 import {
   removeApproval,

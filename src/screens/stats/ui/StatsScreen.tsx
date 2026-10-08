@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -18,36 +17,15 @@ import { TrendChart } from "@/shared/ui/TrendChart";
 import { STATS_COPY, TAB_OPTIONS } from "@/screens/stats/consts/stats.const";
 import { useStatsScreen } from "@/screens/stats/hooks/useStatsScreen";
 
-/**
- * 근무자가 자기 한 달을 숫자로 보는 화면이다. 정본은
- * `docs/2-design/system/screens/stats.md`의 근무자 몫이고 완료 조건은
- * `docs/2-design/spec/stats-worker.md`다.
- *
- * **여기만 금액이 있다.** 관리자 통계에는 급여 탭이 없다 — 자기 급여를 보는 것은 홀 전체
- * 인건비를 보는 것과 다른 자리다. 예상치 안내 한 줄도 이 탭에만 선다.
- *
- * **사람별 구획이 없다.** 볼 사람이 자기 하나라 근태는 날짜 목록이, 포지션은 내가 들어간 것만
- * 든 목록이 그 자리를 받는다.
- *
- * **달 줄이 세그먼트 위다.** 탭을 오가도 보는 달이 그대로고, 앱바·달 줄·세그먼트·추이 그래프
- * 넷까지가 관리자 화면과 같은 자리다.
- *
- * **무엇을 읽을지는 탭이 가른다.** 그 가름과 열두 달의 조립은
- * [`useStatsScreen`](../hooks/useStatsScreen.ts)이 들고 이 파일은 받은 글자를 쌓는다.
- *
- * **다시 들어오면 이번 달이다.** 보던 달도 보던 탭도 기억하지 않는다.
- */
-
 const SKELETON_ROWS = [0, 1, 2];
 
-/** 못 가는 화살표는 안 그린다. 달 글이 가운데에 그대로 서게 자리만 남긴다. */
 function ArrowSlot() {
   return <View className="h-8 w-8" />;
 }
 
 export function StatsScreen() {
   const router = useRouter();
-  const screen = useStatsScreen(supabase);
+  const screen = useStatsScreen();
 
   return (
     <Screen floor="plain">

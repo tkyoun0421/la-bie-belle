@@ -12,20 +12,6 @@ import {
   type OpenSlotRow,
 } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
-/**
- * 확정 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「확정 시트」와 「결과」다.
- *
- * **시트 자체가 확인이다.** 확인을 한 번 더 겹치지 않고, 되돌릴 수 없다는 것을 아래 줄과
- * 버튼 라벨이 두 번 말한다.
- *
- * **빈 자리가 확정을 안 막는다.** 경고 블록은 무엇이 남았는지만 말하고 끝 줄이 채울 길이
- * 남아 있음을 잇는다(SCH-014).
- *
- * **결과가 같은 시트 안에서 난다.** 손잡이와 모서리가 그대로면 방금 누른 것의 답으로 읽힌다.
- * 1.65초 뒤 저절로 닫힌다.
- */
-
 const RESULT_STAY_MS = 1650;
 
 const RESULT_ICON_SIZE = 48;

@@ -1,10 +1,7 @@
-// 구현 대상: src/screens/scheduleAdmin/model/slotRequestBadge.policy.ts
-//
-// 날 상세 자리 카드의 요청 대기 배지다(schedule-admin.md 「포지션과 자리」·「날 상세
-// 문안」의 「요청 2건 대기 중」). 살아 있는 요청의 pending 후보 수를 센다 — 닫힌
-// 요청(`closed_at`이 있다)은 [AC-03]이 이미 지웠으니 배지가 없다.
-
-import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
+import {
+  slotRequestBadge,
+  slotRequestBadgeFor,
+} from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
 
 describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중」으로 말한다", () => {
   it("살아 있는 요청에 pending 후보가 둘이면 「요청 2건 대기 중」이다", () => {
@@ -40,5 +37,53 @@ describe("slotRequestBadge — 닫힌 요청은 null이다", () => {
 describe("slotRequestBadge — 요청 자체가 없으면 null이다", () => {
   it("null을 받으면 null을 낸다", () => {
     expect(slotRequestBadge(null)).toBeNull();
+  });
+});
+
+describe("slotRequestBadgeFor — 그 자리의 요청만 본다", () => {
+  const REQUESTS = [
+    {
+      slot_id: "s1",
+      closed_at: null,
+      request_candidates: [{ status: "pending" }, { status: "declined" }],
+    },
+    {
+      slot_id: "s2",
+      closed_at: "2026-10-10T00:00:00Z",
+      request_candidates: [{ status: "pending" }],
+    },
+  ];
+
+  it("내 자리에 살아 있는 요청이 있으면 배지가 선다", () => {
+    expect(slotRequestBadgeFor("s1", REQUESTS)).toBe("요청 1건 대기 중");
+  });
+
+  it("내 자리의 요청이 닫혔으면 배지가 없다", () => {
+    expect(slotRequestBadgeFor("s2", REQUESTS)).toBeNull();
+  });
+
+  it("내 자리에 요청이 없으면 배지가 없다", () => {
+    expect(slotRequestBadgeFor("s3", REQUESTS)).toBeNull();
+  });
+
+  it("자리를 안 가리키는 요청은 안 센다", () => {
+    expect(
+      slotRequestBadgeFor("s1", [
+        {
+          slot_id: null,
+          closed_at: null,
+          request_candidates: [{ status: "pending" }],
+        },
+      ]),
+    ).toBeNull();
+  });
+
+  it("한 자리에 요청이 둘이면 마지막 것을 본다", () => {
+    expect(
+      slotRequestBadgeFor("s1", [
+        ...REQUESTS,
+        { slot_id: "s1", closed_at: null, request_candidates: [] },
+      ]),
+    ).toBe("요청 0건 대기 중");
   });
 });

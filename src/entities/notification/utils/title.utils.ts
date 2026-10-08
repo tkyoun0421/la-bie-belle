@@ -4,22 +4,6 @@ import type {
 } from "@/entities/notification/model/notification.type";
 import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
-/**
- * 알림 한 줄이 무엇이라고 말하는지다. 정본은
- * `docs/2-design/modules/notification/screens/notifications.md`의 「알림 제목」 표고 이
- * 파일이 그 표를 옮긴다 — 문자열이 표와 글자 하나까지 같아야 한다.
- *
- * **한 알림의 문장이 한 곳에서만 난다.** 목록과 대시보드와 푸시가 같은 알림을 그리는데 셋이
- * 문장을 따로 들면 같은 것이 기기와 화면에서 다르게 읽힌다. 세 자리가 이 함수 하나를 쓴다.
- *
- * **1차 열여덟만 낸다.** 2차 다섯(교대 넷·관리자 공지)은 통째로 널이고 그 널이 「아직 문장이
- * 없다」로 읽힌다 — 유니온에는 스물셋이 다 있어 아래 표가 하나라도 빠지면 컴파일에서 걸린다
- * (`docs/2-design/modules/notification/design.md`의 「kind와 payload」).
- *
- * **아래 줄이 있는 종류가 넷이다** — 신청 접수 열림·미리 알림 둘·사유 거절. 목록은 제목만
- * 세우고 이 줄은 대시보드와 푸시가 쓴다.
- */
-
 export type NotificationTitle = {
   title: string;
   sub: string | null;
@@ -47,12 +31,10 @@ function dates(payload: NotificationPayload, key: string): string[] {
     : [];
 }
 
-/** `"2025-10"`은 「10월」이다. 문장이 달을 말할 때는 연도를 안 붙인다. */
 function spellMonth(month: string): string {
   return `${Number(month.slice(5, 7))}월`;
 }
 
-/** `"2025-09-13"`은 「9월 13일」이다. 요일은 날짜 머리만 적는다. */
 function spellDay(date: string): string {
   return `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
 }

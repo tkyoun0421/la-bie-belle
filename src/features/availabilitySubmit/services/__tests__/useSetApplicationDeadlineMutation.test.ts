@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/availabilitySubmit/services/useSetApplicationDeadlineMutation.ts
-//
-// 마감일을 바꾼다. 근무 신청 모아보기의 「마감일 바꾸기」와 확정 잠김의 「마감일 당기기」가
-// 같은 훅을 쓴다(`schedule-admin.md`의 「근무 신청 모아보기 짜임」). 캐시 갱신은
-// design.md 「근무표 만들기와 마감일」 행 그대로 `['schedule']` `['payroll']`
-// `['requests']`다.
-
 const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

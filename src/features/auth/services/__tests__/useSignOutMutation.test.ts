@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/auth/services/useSignOutMutation.ts
-//
-// 로그아웃 뒤 기기를 비우는 순서는 `lib/signOut.lib.ts`가 들고, 그 손에 무엇을 꽂을지가
-// 화면 다섯(pending·left·blocked·retry·profile)에 **글자까지 같이** 적혀 있었다 —
-// `supabase.auth.signOut()`과 `queryClient.clear()`를 매번 손으로 꽂는다.
-//
-// 이 훅이 그 꽂는 일을 한 자리로 가진다. 보낼 데는 화면마다 다를 수 있어 안 든다 —
-// 지금은 다섯 다 `/login`이지만 그것은 이동이고 `services/`는 `expo-router`를 못 당긴다.
-
 const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({

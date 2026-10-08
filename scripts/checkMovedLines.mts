@@ -1,11 +1,3 @@
-// 문서 이동 PR에서 옛 파일의 문장이 새 파일 어딘가에 그대로 있는지 센다.
-//
-//   node --experimental-strip-types scripts/checkMovedLines.mts <base-ref> <옛 파일>... -- <새 파일>...
-//
-// 옛 파일은 <base-ref>(보통 origin/main)에서 읽고 새 파일은 작업 트리에서 읽는다.
-// 제목·표 구분선·빈 줄·목차 줄은 세지 않는다. 링크의 목적지 경로는 비교에서 뺀다 —
-// 이동하면 경로가 바뀌는 것이 당연해서다. 남은 줄이 있으면 목록을 찍고 1로 끝난다.
-
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 

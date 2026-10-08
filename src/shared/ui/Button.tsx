@@ -8,24 +8,6 @@ import {
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
 
-/**
- * 누르는 것 한 벌이다. 변형과 높이만 고르면 색과 모서리가 따라오므로 화면은 색을 안 고른다.
- * 값의 정본은 `docs/2-design/design-system/components.md`의 「Button」절이고 라벨 글자는
- * `foundation/typography.md`의 「버튼 라벨」이다.
- *
- * 모서리는 높이가 정한다. 36·40·48은 `rounded-lg`로 한 가족이 되고, 32 이하에서는 그 곡률이
- * 절반에 가까워져 알약으로 읽히므로 `rounded-sm`으로 내린다. 글자 없이 아이콘만 든 정사각형은
- * 고정값을 주면 모서리만 깎인 네모가 되니 `rounded-full`이다.
- *
- * 비활성은 계열을 안 나눈다. primary든 destructive든 같은 회색이라, 눌리지 않는 버튼이
- * 원래 무슨 색이었는지를 화면이 기억할 필요가 없다. 테두리는 원래 두르던 변형에만 남는다 —
- * 없던 변형에 비활성이라고 선을 더하면 그 순간 버튼 높이가 2px 자란다.
- *
- * 스피너는 라벨이 서던 자리에 그대로 선다. 버튼 크기가 안 바뀌어야 보내는 동안 화면이 안 튄다.
- * `ActivityIndicator`는 색을 `color` prop으로 받아 className이 그대로 닿지 않으니, 아이콘과
- * 같은 방식으로 계산된 색을 그 prop에 옮긴다.
- */
-
 const SMALL_BUTTON_HEIGHT = 32;
 
 const Spinner = styled(ActivityIndicator, {

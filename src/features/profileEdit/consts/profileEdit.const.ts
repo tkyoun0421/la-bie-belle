@@ -1,2 +1,9 @@
-/** 사진이 올라가는 스토리지 버킷 이름이다 — 개발과 운영이 같은 이름을 쓴다. */
 export const AVATARS_BUCKET = "avatars";
+
+export const PHOTO_EDGE = 512;
+
+export const PHOTO_QUALITY = 0.8;
+
+export const PHOTO_CONTENT_TYPE = "image/jpeg";
+
+export const PHOTO_EXTENSION = "jpg";

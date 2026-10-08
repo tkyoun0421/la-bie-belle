@@ -37,9 +37,6 @@ function callFetchHolidays(): void {
   execSql("select internal.fetch_holidays();\n");
 }
 
-// pg_net은 요청 행만 그 자리에서 넣고 응답 행은 백그라운드 워커가 나중에 쓴다.
-// net._http_response를 부른 직후에 세면 아직 안 쓰인 것을 0으로 읽는다.
-// 요청 번호를 내주는 시퀀스는 net.http_post가 동기로 당기니 그쪽을 센다.
 function netRequestCursor(): number {
   const rows = queryColumn(
     "select case when is_called then last_value else 0 end\n" +
@@ -78,11 +75,6 @@ function apiHolidayCountInYear(year: number): number {
   return Number(rows[0] ?? "0");
 }
 
-/**
- * `public.holidays`에 아직 아무 행도 없는 연도. 범위가 `payrollFunctions.integration.test.ts`와
- * 안 겹친다 — 둘이 같은 풀에서 뽑던 판에서 아래 「아무것도 안 들어간다」 단언이 그 파일의
- * 행을 세며 깨졌다.
- */
 function freshHolidayYear(): number {
   for (
     let year = 2500 + Math.floor(Math.random() * 400);

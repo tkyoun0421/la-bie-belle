@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 21;
+export const DOCUMENTED_LINT_RULE_COUNT = 36;
 
-export const ENFORCED_RULE_COUNT = 21;
+export const ENFORCED_RULE_COUNT = 36;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -173,5 +173,125 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-node-import-in-edge-shared",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts",
+  },
+  {
+    no: 22,
+    name: "api 세그먼트 밖의 Supabase 패키지 import",
+    mechanism: "house",
+    ruleId: "house/supabase-package-in-api",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/supabasePackageInApi.test.ts",
+  },
+  {
+    no: 23,
+    name: "ui 세그먼트의 api import",
+    mechanism: "house",
+    ruleId: "house/no-api-import-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noApiImportInUi.test.ts",
+  },
+  {
+    no: 24,
+    name: "ui 세그먼트의 services import",
+    mechanism: "house",
+    ruleId: "house/no-services-import-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noServicesImportInUi.test.ts",
+  },
+  {
+    no: 25,
+    name: "services 세그먼트 밖의 Query·Mutation 훅",
+    mechanism: "house",
+    ruleId: "house/query-hook-in-services",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/queryHookInServices.test.ts",
+  },
+  {
+    no: 26,
+    name: "ui 세그먼트의 Supabase 클라이언트 실물",
+    mechanism: "house",
+    ruleId: "house/no-supabase-instance-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts",
+  },
+  {
+    no: 27,
+    name: "entities의 쓰기 훅",
+    mechanism: "house",
+    ruleId: "house/entities-read-only",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/entitiesReadOnly.test.ts",
+  },
+  {
+    no: 28,
+    name: "features의 읽기 service가 맞추는 도메인 수",
+    mechanism: "house",
+    ruleId: "house/features-query-composes",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/featuresQueryComposes.test.ts",
+  },
+  {
+    no: 29,
+    name: "설명 주석",
+    mechanism: "house",
+    ruleId: "house/no-explanatory-comment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noExplanatoryComment.test.ts",
+  },
+  {
+    no: 30,
+    name: "hooks·services·stores 밖의 use* export",
+    mechanism: "house",
+    ruleId: "house/use-export-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/useExportSegment.test.ts",
+  },
+  {
+    no: 31,
+    name: "stores 밖의 store·Context 공장",
+    mechanism: "house",
+    ruleId: "house/store-factory-in-stores",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/storeFactoryInStores.test.ts",
+  },
+  {
+    no: 32,
+    name: "policy·reducer 접미사의 통신·시계·난수",
+    mechanism: "house",
+    ruleId: "house/pure-policy",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/purePolicy.test.ts",
+  },
+  {
+    no: 33,
+    name: "캐시 키 배열 리터럴",
+    mechanism: "house",
+    ruleId: "house/query-key-factory",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/queryKeyFactory.test.ts",
+  },
+  {
+    no: 34,
+    name: "consts 밖에서 내보내는 대문자 스네이크 이름",
+    mechanism: "house",
+    ruleId: "house/consts-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/constsSegment.test.ts",
+  },
+  {
+    no: 35,
+    name: "config 밖의 환경값 읽기",
+    mechanism: "house",
+    ruleId: "house/env-in-config",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/envInConfig.test.ts",
+  },
+  {
+    no: 36,
+    name: "lib·ui·hooks·config 밖의 네이티브 SDK",
+    mechanism: "house",
+    ruleId: "house/native-sdk-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/nativeSdkSegment.test.ts",
   },
 ];

@@ -1,13 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/confirmAffordance.policy.ts
-//
-// 확정 버튼의 세 모습(schedule-admin.md 「세 모습」) — 잠김·열림·끝남. 마감일 경계는
-// 자정이다: 마감 당일까지는 잠김이고 다음 날 KST 0시부터 열린다(같은 문서 「마감일 경계는
-// 날짜가 바뀌는 자정이다」, plan의 상태 격자 「경계」). 서버 시각을 `now`(ISO 문자열)로
-// 주입받아 Asia/Seoul로 셈한다 — 기기 시계를 믿지 않는다(runtime.md 「TanStack Query
-// 규칙」).
-//
-// 시나리오는 schedule-admin.md 예시와 같다 — 마감일 2026-10-02(금).
-
 import { confirmAffordance } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
 
 const DEADLINE = "2026-10-02";

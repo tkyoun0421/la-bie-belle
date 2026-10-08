@@ -15,10 +15,6 @@ import {
   type AdminUser,
 } from "@tests/integration/postgres";
 
-// 구현 대상: src/entities/member/api/listMembers.api.ts
-// AC-08(docs/3-build/plans/notification-settings.md) — 직원 목록이 notifications_enabled와
-// push_tokens 유무(has_device)를 같이 읽어 갈래 셋을 구별하게 한다. 퇴사자에게는 안 붙는다.
-
 type PendingRow = { id: string; submitted_at: string | null };
 
 type MemberReachRow = MemberRow & {

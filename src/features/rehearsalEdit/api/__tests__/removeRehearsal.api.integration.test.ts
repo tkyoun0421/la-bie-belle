@@ -13,11 +13,6 @@ function freshWorkDate(): string {
   return kstMonthStart(24 + Math.floor(Math.random() * 90000));
 }
 
-/**
- * `remove_rehearsal`도 첫 줄에서 자격을 본다(plan AC-03) — 자격 없는 사람은 제 행이어도
- * `not_qualified`다. 지우는 길이 열리려면 자격이 있어야 해서 여기서 준다(implementer가 더한
- * 준비다).
- */
 function grantRehearsal(profileId: string, grantedBy: string): void {
   execSql(
     "insert into public.position_grants (profile_id, position, granted_by) values (:'profile_id', '리허설', :'granted_by');\n",

@@ -48,10 +48,6 @@ describe("라우트 타입 선언 검사 — 네 규칙을 각각 어기면 위�
     });
   });
 
-  /**
-   * `Href`가 경로 유니언 없이 서면 `string`으로 떨어져 아무 문자열이나 통과한다 —
-   * 이 자리가 조용히 꺼지는 것이 이 task가 고치는 사고다.
-   */
   it("href에 경로 리터럴이 하나도 없으면 no-route-literal 위반이다", () => {
     const declaration = GENERATED.replace(
       /^( *href:).*$/m,

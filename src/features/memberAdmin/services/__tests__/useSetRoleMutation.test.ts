@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 관리자로 올리고 내린다(`docs/2-design/modules/account/screens/members.md`의
-// 「관리자로 올리기와 내리기」). 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만
-// 무효화한다. 마지막 관리자를 내리면 서버가 `last_admin`으로 거절한다([ACC-008]).
-
 const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/setRole.api", () => ({

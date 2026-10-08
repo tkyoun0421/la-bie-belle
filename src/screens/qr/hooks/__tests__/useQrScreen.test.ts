@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/qr/hooks/useQrScreen.ts
-//
-// QR 화면의 controller다. 이 화면이 드는 업무 상태가 넷이다 — 지금 코드, 그 코드를 구운
-// 그림, 종이를 내보내는 중인지, 그리고 「새로 뽑을까요?」가 열려 있는지다.
-//
-// **열림 하나가 UI 상태가 아니다.** 확인창은 사람이 열지만 닫히는 때가 통신 결과에 매여
-// 있다 — 새로 뽑기가 성공하면 저절로 닫히고 토스트가 선다. 측정한 너비나 포커스처럼
-// 화면이 혼자 아는 값이 아니라서 여기 든다. 「크게 띄우기」는 그것과 달라 `.tsx`에 남는다.
-
 const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 const buildQrSvgMock = jest.fn<(...args: unknown[]) => Promise<string>>();
@@ -43,6 +34,12 @@ jest.unstable_mockModule("expo-sharing", () => ({
   shareAsync: jest.fn(),
 }));
 
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
+
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
@@ -67,8 +64,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const HALL_QR = { qrCode: "code-1", rotatedAt: "2026-10-03T01:00:00.000Z" };
 
 beforeEach(() => {
@@ -87,7 +82,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
   it("읽은 코드로 주소를 지어 그림을 굽는다", async () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -100,7 +95,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     getQrCodeMock.mockResolvedValue(null);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.qr).toBeNull());
 
@@ -112,7 +107,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     buildQrSvgMock.mockRejectedValue(new Error("못 구웠다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.qr).toEqual(HALL_QR));
 
@@ -122,7 +117,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
   it("내보내기가 구운 그림을 종이로 넘긴다", async () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -139,7 +134,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     getQrCodeMock.mockResolvedValue(null);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.qr).toBeNull());
 
@@ -158,7 +153,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -179,7 +174,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     exportQrPaperMock.mockRejectedValue(new Error("못 만들었다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -195,7 +190,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
   it("확인창은 사람이 열고 새로 뽑기가 성공하면 저절로 닫힌다", async () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -215,7 +210,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     rotateQrMock.mockRejectedValue(new Error("끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -232,7 +227,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     rotateQrMock.mockRejectedValue(new Error("끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 
@@ -250,7 +245,7 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     exportQrPaperMock.mockRejectedValue(new Error("못 만들었다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrScreen(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
 
     await waitFor(() => expect(result.current.svg).toBe("<svg />"));
 

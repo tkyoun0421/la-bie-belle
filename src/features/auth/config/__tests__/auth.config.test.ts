@@ -1,14 +1,5 @@
 import { jest } from "@jest/globals";
 
-/**
- * 구현 대상: src/features/auth/config/auth.config.ts
- *
- * 딥링크 주소를 만들려면 「지금 무엇이 앱을 돌리고 있나」를 알아야 한다. Expo Go는 번들을
- * 내려받아 대신 돌리는 껍데기라 제 스킴이 없고, dev client와 스토어 빌드는 제 스킴을 가진다.
- * 그 답은 환경이 주는 값이라 `config`가 읽고, 주소를 짜는 일은
- * `utils/authRedirect.utils.ts`가 한다.
- */
-
 type ConstantsState = {
   executionEnvironment: string;
   expoConfig?: { hostUri?: string };

@@ -1,13 +1,5 @@
 import { jest } from "@jest/globals";
 
-/**
- * 구현 대상: src/features/pushSwitch/config/pushSwitch.config.ts
- *
- * `app.json`의 `extra.eas.projectId`를 읽는다. 아직 EAS 프로젝트를 안 만들어 그 열쇠가
- * 비어 있고, 그때 널로 서는 것이 「켰는데 기기가 없음」 갈래다
- * (`docs/3-build/plans/notification-settings.md`의 「이 plan이 정본에 박은 판정」).
- */
-
 type ExpoConfig = { extra?: { eas?: { projectId?: string } } };
 
 async function loadWith(expoConfig: ExpoConfig | null) {

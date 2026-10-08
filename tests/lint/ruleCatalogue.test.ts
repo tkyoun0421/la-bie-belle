@@ -207,13 +207,6 @@ describe("규칙 번호", () => {
   });
 });
 
-/**
- * 규칙 목록의 정본은 사람이 읽는 표다 — [execution.md의 「집행되는 규칙」](../../docs/4-test/execution.md#집행되는-규칙).
- * `rules.ts`는 그 표를 코드가 쓸 수 있게 옮겨둔 사본이고, 여기가 둘이 갈라지는 것을 막는다.
- *
- * 표를 저장소로 들이기 전에는 정본이 PR 본문 하나에만 있었다. 그러면 `열넷`이
- * 무엇에 근거한 수인지 저장소 안에서 확인할 수 없다.
- */
 describe("규칙 카탈로그의 정본은 문서다", () => {
   const DOC = "docs/4-test/execution.md";
   const HEADING = "## 집행되는 규칙";
@@ -253,13 +246,6 @@ describe("규칙 카탈로그의 정본은 문서다", () => {
       });
   }
 
-  /**
-   * 표가 안 읽히면 아래 대조가 빈 배열끼리 맞춰지며 조용히 통과한다.
-   *
-   * 줄 수와 `ENFORCED_RULE_COUNT`는 다른 수다 — 그 상수는 번호가 1부터 어디까지
-   * 이어지는지(18)고, 줄은 그보다 적다. 미배정 번호 셋이 빠지고 한 번호를 둘이
-   * 나눠 가진 자리가 둘 있다.
-   */
   it("표를 실제로 읽어낸다", () => {
     expect(documentedRules().length).toBe(RULES.length);
     expect(documentedRules().length).toBeGreaterThan(10);

@@ -115,11 +115,6 @@ function positionsLiteral(positions: string[]): string {
   return `{${positions.map((position) => `"${position}"`).join(",")}}`;
 }
 
-/**
- * 임의 날짜에 날 하나와 자리 하나를 직접 심는다 — `open_day`·`create_schedule`은 지난
- * 날짜를 막거나 이미 있는 달·날짜에 `already_exists`·`already_open`을 던져서, 재실행에도
- * 안전하게 같은 날짜를 다시 쓰려면 직접 심어야 한다(`seedDayEndedHoursAgo`와 같은 결).
- */
 function seedDayWithSlot(
   admin: AdminUser,
   workDate: string,

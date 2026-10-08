@@ -1,11 +1,3 @@
-// 구현 대상: src/shared/utils/kstDate.ts
-//
-// KST 날짜 손 공용화(plan AC-09) — 슬라이스 넷(schedule-worker·schedule-admin·admin-home·
-// applications)에 각자 서 있던 kstDateOf·shiftMonth·spellMonth·lastDateOfMonth·
-// spellDate를 여기 하나로 모으고 monthOf를 새로 더한다. KST 자정 경계는 UTC 15:00이 당일
-// 0시라 14:59Z는 전날, 15:00Z는 당일이다 — schedule-admin/model/format-schedule-date.ts의
-// confirmedLine 테스트가 쓰는 것과 같은 경계다.
-
 import {
   kstClockOf,
   kstDateOf,
@@ -76,8 +68,6 @@ describe("spellDate — 요일 한 글자를 붙인다", () => {
   });
 });
 
-// 같은 꼴이 screens/stats와 screens/approvals에 각자 서 있었다 — 시각만 읽는 자리라
-// 날짜와 갈려 있었고, 한쪽만 고치면 같은 순간이 화면마다 다른 시각으로 선다.
 describe("kstClockOf — 그 순간을 홀의 시계로 읽는다", () => {
   it("UTC 05:30은 KST 14:30이다", () => {
     expect(kstClockOf("2026-10-02T05:30:00Z")).toBe("14:30");

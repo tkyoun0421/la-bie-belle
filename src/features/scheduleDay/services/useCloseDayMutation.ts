@@ -4,11 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import { closeDay } from "@/features/scheduleDay/api/closeDay.api";
 
-/**
- * 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에 불린다
- * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 닫기 경고」).
- */
-
 export type CloseDayInput = {
   workDate: string;
 };

@@ -1,19 +1,3 @@
-// 구현 대상: src/entities/schedule/services/useWorkMonthsQuery.ts
-//
-// useWorkMonthsQuery(client, months) — 근무 탭의 열두 달 창을 읽는다. 달마다
-// getMonthSchedule을 부르고(`queryKeys.schedule.month`) 달치를 useQueries로 나란히
-// 읽는다(plan stats-admin AC-03「달마다 키를 읽어 더한다」).
-//
-// **새 키를 안 만드는 것이 이 방식의 값이다.** 근무표 화면이 이미 읽어둔 달은 캐시에서
-// 오고, 그쪽 무효화가 이 화면에도 그대로 걸린다.
-//
-// **결과가 달별로 구분돼 돌아온다.** useScheduleMonthsQuery는 flatMap으로 여러 달의
-// 행을 하나의 배열로 뭉갠다. 이 훅은 그러면 안 된다 — 추이 그래프가 「몇 월이 비었나」를
-// 알아야 해서, data는 달 수만큼의 길이고 항목마다 그 달의 month가 붙는다.
-//
-// `features/stats/api/useStatsQueries.ts`에서 갈라져 나왔다 — 아래 단언은 그 파일의
-// 짝 테스트가 들고 있던 것과 같다(fsd-read-write-layers AC-05).
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

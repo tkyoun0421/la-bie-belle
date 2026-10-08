@@ -6,10 +6,6 @@ import {
   type ApprovedUser,
 } from "@tests/integration/postgres";
 
-// 구현 대상: src/entities/notification/api/getPushReachable.api.ts
-// AC-08(docs/3-build/plans/notification-settings.md) — push_reachable 뷰를 관리자로 읽어
-// profile_id·has_device만 낸다. 관리자가 아니면 예외가 아니라 빈 배열이다.
-
 const { getPushReachable } =
   await import("@/entities/notification/api/getPushReachable.api");
 

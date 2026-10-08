@@ -1,12 +1,3 @@
-// 구현 대상: src/entities/schedule/services/useFirstScheduleMonthQuery.ts
-//
-// useFirstScheduleMonthQuery(client) — 통계의 달 줄이 뒤로 갈 수 있는 바닥이다. 홀 하나뿐이라
-// 달을 옮겨도 다시 안 읽는다 — 키가 달을 안 물고(`['schedule', 'first-month']`) 근무표를
-// 만드는 판정이 `['schedule']`을 통째로 낡게 해서 새 달이 생기면 저절로 따라온다.
-//
-// `features/stats/api/useStatsQueries.ts`에서 갈라져 나왔다 — 아래 단언은 그 파일의
-// 짝 테스트가 들고 있던 것과 같다(fsd-read-write-layers AC-05).
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

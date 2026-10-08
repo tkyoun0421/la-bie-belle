@@ -1,15 +1,3 @@
-// 구현 대상: src/features/stats/utils/myTotals.utils.ts (아직 없다)
-//
-// computeMyWorkTotals(assignments, days, profileId) — workTotals.ts의
-// computeWorkTotals를 그대로 불러 입력을 그 사람 배정으로 좁힌다(plan
-// stats-worker AC-01, spec stats-worker AC-03). 집계를 다시 짜지 않는다 —
-// 아래 값은 전부 computeWorkTotals가 이미 내는 값과 같아야 한다.
-//
-// { totalMinutes, totalCount, byPosition }을 낸다. byPosition은 관리자
-// workTotals.ts의 byPosition(POSITION_ORDER 아홉이 늘 다 서는 것)과 반대로
-// **그 사람이 들어간 포지션만** 남는다 — count가 0인 포지션은 목록에서
-// 아예 빠진다(stats.md 「내 포지션」, 관리자 쪽이 아홉을 다 세우는 것과 반대).
-
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import { computeWorkTotals } from "@/features/stats/model/workTotals.policy";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";

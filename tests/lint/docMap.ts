@@ -6,7 +6,6 @@ const MAP_HEADING = "문서 지도";
 const BULLET = /^\s*[-*]\s/;
 const DOCS_PREFIX = "docs/";
 
-/** 링크 목적지의 `#앵커`는 경로가 아니다. */
 function withoutAnchor(href: string): string {
   const hash = href.indexOf("#");
   return hash === -1 ? href : href.slice(0, hash);

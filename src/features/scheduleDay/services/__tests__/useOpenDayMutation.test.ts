@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleDay/services/useOpenDayMutation.ts
-//
-// 날 하나를 연다. `open_day`가 날 하나만 받는 모양이라(design.md 「날 열기·닫기」) 여러
-// 날을 한 번에 여는 화면 쪽 오케스트레이션(부분 실패 처리)은 이 훅이 아니라
-// `screens/scheduleAdmin`의 몫이다. 캐시 갱신은 `['schedule']` `['payroll']`
-// `['requests']`다.
-
 const openDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/scheduleDay/api/openDay.api", () => ({

@@ -1,15 +1,3 @@
-// 구현 대상: src/screens/payroll/model/period.policy.ts
-//
-// Period는 { unit: "week"; weekStart } | { unit: "month"; month } | { unit: "year"; year }다
-// (weekStart는 그 주의 월요일 "YYYY-MM-DD", month는 "YYYY-MM", year는 "YYYY").
-//
-// periodLabel(period) — 기간 줄 가운데 문구다(payroll.md 「기간 줄」).
-// shiftPeriod(period, step) — 화살표 이동. step은 뒤(-1)·앞(+1)이고 달·연 경계를 넘나든다.
-// periodMonthKeys(period) — 그 기간의 금액을 내려면 읽어야 할 달 키(YYYY-MM) 목록이다
-// (plan payroll-view AC-06 「기간이 달을 걸치면 키를 둘 읽어 합친다」).
-//
-// 주는 월요일~일요일이다(PAY-021).
-
 import {
   isInPeriod,
   periodLabel,
@@ -131,8 +119,6 @@ describe("periodMonthKeys — 연은 열두 키를 읽는다", () => {
   });
 });
 
-// periodOf(date, unit) — 화면이 들고 있는 날짜 하나와 단위에서 기간을 낸다(PAY-021·PAY-022).
-
 describe("periodOf — 주 단위는 그 날짜가 든 주의 월요일을 낸다", () => {
   it("2026-10-07(수)이 든 주는 2026-10-05(월)에서 시작한다", () => {
     expect(periodOf("2026-10-07", "week")).toEqual({
@@ -169,8 +155,6 @@ describe("periodOf — 연 단위는 그 날짜가 든 해를 낸다", () => {
   });
 });
 
-// periodStartDate(period) — 기간을 다시 날짜 하나로 잡아두는 자리다.
-
 describe("periodStartDate — 주의 시작일은 weekStart 그대로다", () => {
   it("weekStart가 2026-10-05면 시작일도 2026-10-05다", () => {
     expect(periodStartDate({ unit: "week", weekStart: "2026-10-05" })).toBe(
@@ -192,8 +176,6 @@ describe("periodStartDate — 연의 시작일은 1월 1일이다", () => {
     expect(periodStartDate({ unit: "year", year: "2026" })).toBe("2026-01-01");
   });
 });
-
-// isInPeriod(period, date) — 달치로 읽은 날들 중 그 기간 안인 것만 가린다.
 
 describe("isInPeriod — 주의 첫날과 마지막날 모두 그 주 안이다", () => {
   it("2026-10-05(월)와 2026-10-11(일) 둘 다 그 주 기간 안이다", () => {
@@ -238,8 +220,6 @@ describe("isInPeriod — 연 경계에서 12월 31일은 그 해 안, 1월 1일�
     expect(isInPeriod(period, "2027-01-01")).toBe(false);
   });
 });
-
-// periodUnitOf(value) — 세그먼트가 고른 칸을 단위로 읽는다. 모르는 값은 「월」이다(PAY-025).
 
 describe("periodUnitOf — 유효한 값 셋을 그대로 낸다", () => {
   it("week·month·year를 각각 그대로 읽는다", () => {

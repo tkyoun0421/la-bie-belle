@@ -1,14 +1,3 @@
-// 구현 대상: src/entities/notification/utils/pushMessage.utils.ts (notification-push plan AC-06)
-//
-// 잡힌 알림 행과 그 사람의 기기 주소 목록을 받아 부칠 메시지 배열을 낸다. 함수 이름은
-// buildPushMessages(주소 수만큼 메시지를 낸다)와 chunkPushMessages(백 건씩 끊는다)로
-// 정했다 — plan이 이름을 비워둬 이 테스트가 계약을 정한다.
-//
-// buildPushMessages가 받는 한 행의 모양은 AC-02가 claim_notifications이 돌려주는 것과
-// 같다 — id·kind·payload·그 사람의 tokens 배열이다. 문안(제목·아래 줄)은
-// `src/entities/notification/utils/title.utils.ts`가 그대로 내니 이 테스트는 그 문자열을
-// title.test.ts가 이미 확인한 값 그대로 가져다 쓴다.
-
 type ClaimedPushNotification = {
   id: string;
   kind: string;

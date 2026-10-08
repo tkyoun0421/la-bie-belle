@@ -1,24 +1,3 @@
-// 구현 대상: src/shared/utils/monthBoundary.ts (아직 없다)
-//
-// canGoToPreviousMonth(month, firstScheduleMonth) — 뒤로 가는 화살표가 서는지다. 바닥은
-// 첫 근무표가 있는 달이다(plan stats-admin 「착수 판정」 — get-first-schedule-month
-// 값을 받은 뒤의 경계 판정). firstScheduleMonth는 그 dal이 그대로 내는
-// `schedules.month` 값 — "YYYY-MM-01" 꼴의 달 첫날 전체 날짜다(정수 슬라이스로
-// 달을 가른다는 점에서 payroll/model/boundary.ts의 canGoToPreviousMonth(period, approvedAt)과
-// 같은 결). month가 firstScheduleMonth가 든 달과 같으면 더 뒤로 못 간다.
-//
-// canGoToNextMonth(month, today) — 앞으로 가는 화살표가 서는지다. 바닥이 아니라
-// 천장은 이번 달이다 — month가 today가 든 달과 같으면 더 앞으로 못 간다
-// (spec stats-admin AC-04).
-//
-// month는 "YYYY-MM", firstScheduleMonth·today는 "YYYY-MM-DD"(전체 날짜)다.
-//
-// 관리자 통계(src/shared/utils/monthBoundary.ts)와 근무자
-// 통계(src/screens/stats/ui/StatsScreen.tsx)가 같은 경계를 인라인으로 각각
-// 판정하고 있었다 — lint 규칙 3으로는 두 통계 슬라이스가 서로를 못 불러
-// 사본이 둘로 늘던 자리를 shared/utils로 올려 하나로 묶는다. 계약은 관리자
-// 쪽 짝 테스트와 같다 — 단언을 그대로 옮긴다.
-
 import {
   canGoToPreviousMonth,
   canGoToNextMonth,

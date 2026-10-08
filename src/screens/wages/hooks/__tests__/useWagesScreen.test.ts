@@ -1,17 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/wages/hooks/useWagesScreen.ts
-//
-// 관리자가 기본 시급과 사람별 시급을 정하는 화면의 controller다. `.tsx`가 `useState`
-// 다섯과 `useEffect` 셋을 들고, 금액 칸의 꼴 바꾸기와 저장 가능 판정과 오류 코드 비교까지
-// 하고 있었다.
-//
-// **금액 칸 하나를 시트 둘이 같이 쓴다.** 한 번에 한 시트만 열려서 자릿수 상태가 하나면
-// 되고, 「저장이 눌리나」는 지금 열린 시트의 현재 값에 달려 있다.
-//
-// **보낸 것이 성공하면 시트가 닫히고 토스트가 선다.** 셋 다 그 꼴이고 말만 다르다.
-
 const listActiveMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getWageRatesMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -21,6 +10,12 @@ const resetWageToDefaultMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const TODAY = "2026-10-03";
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: listActiveMembersMock,
@@ -75,8 +70,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const MEMBERS = [
   { id: "p1", display_name: "이준호", photo_url: null },
   { id: "p2", display_name: "박수진", photo_url: null },
@@ -119,7 +112,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useWagesScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useWagesScreen(), { wrapper });
 
   await waitFor(() =>
     expect(hook.result.current.listState).not.toBe("loading"),
@@ -132,7 +125,7 @@ describe("useWagesScreen — 금액 칸 하나를 시트 둘이 같이 쓴다", 
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useWagesScreen(FAKE_CLIENT), {
+    const { result } = renderHook(() => useWagesScreen(), {
       wrapper,
     });
 

@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/workRequest/services/usePendingApprovalsQuery.ts
-//
-// 미판정 근무 취소 요청을 읽는다(`getPendingApprovals.ts`의
-// `getPendingApprovals(client)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한
-// 것」 5가 `['requests', 'approvals']`로 못 박았다. 관리자 홈의 「승인할 일」 줄이 이
-// 훅의 길이를 읽는다(「총괄이 정한 것」 7).
-
 const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

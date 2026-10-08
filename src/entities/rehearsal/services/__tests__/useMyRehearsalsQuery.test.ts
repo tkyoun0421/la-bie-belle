@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/rehearsal/services/useMyRehearsalsQuery.ts
-//
-// 본인 리허설이다(design.md 「소유 데이터」) — 키는 ['rehearsal', 'YYYY-MM']. RLS가 이미
-// 본인 행으로 좁혀 별도 조건이 없다.
-
 const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

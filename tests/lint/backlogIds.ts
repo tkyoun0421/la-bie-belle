@@ -6,7 +6,6 @@ export type BacklogRow = {
   id: string;
   status: string;
   prerequisites: string[];
-  /** 「spec 또는 plan」 칸이 든 링크 목적지. 없으면 빈 목록이다. */
   documents: string[];
   line: number;
 };
@@ -20,7 +19,6 @@ export type BacklogViolation = {
 
 const STATUSES = new Set(["candidate", "blocked", "ready", "active", "done"]);
 
-/** 표의 열 이름은 `docs/README.md`의 이 절이 소유한다. */
 const COLUMN_SECTION = "협업 기록";
 
 const TABLE_ROW = /^\s*\|.*\|\s*$/;
@@ -38,7 +36,6 @@ function cells(line: string): string[] {
     .map((cell) => cell.trim());
 }
 
-/** 칸이 코드 스팬으로 ID를 들면 그것이고, 링크만 들면 ID가 아니라 미정 참조다. */
 function identifiers(cell: string): string[] {
   const spans = parseMarkdown(cell).codeSpans;
 
@@ -57,7 +54,6 @@ function hrefs(cell: string): string[] {
   return parseMarkdown(cell).links.map((link) => link.href);
 }
 
-/** 복사용 틀의 표 머리가 열 이름의 정본이다. */
 export function backlogColumns(readme: string): string[] {
   const lines = parseMarkdown(readme).section(COLUMN_SECTION);
   const header = lines.findIndex(

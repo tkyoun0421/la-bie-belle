@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 퇴사 처리다(`docs/2-design/modules/account/screens/members.md`의 「퇴사 처리」).
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 앞 배정이 남았으면
-// `has_future_assignments`, 마지막 관리자면 `last_admin`으로 서버가 거절한다([ACC-008]·
-// [ACC-010]).
-
 const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/markLeave.api", () => ({
