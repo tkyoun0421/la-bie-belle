@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 28;
+export const DOCUMENTED_LINT_RULE_COUNT = 36;
 
-export const ENFORCED_RULE_COUNT = 28;
+export const ENFORCED_RULE_COUNT = 36;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -229,5 +229,69 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/features-query-composes",
     enforcedBy: null,
     test: "eslint-rules/__tests__/featuresQueryComposes.test.ts",
+  },
+  {
+    no: 29,
+    name: "설명 주석",
+    mechanism: "house",
+    ruleId: "house/no-explanatory-comment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noExplanatoryComment.test.ts",
+  },
+  {
+    no: 30,
+    name: "hooks·services·stores 밖의 use* export",
+    mechanism: "house",
+    ruleId: "house/use-export-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/useExportSegment.test.ts",
+  },
+  {
+    no: 31,
+    name: "stores 밖의 store·Context 공장",
+    mechanism: "house",
+    ruleId: "house/store-factory-in-stores",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/storeFactoryInStores.test.ts",
+  },
+  {
+    no: 32,
+    name: "policy·reducer 접미사의 통신·시계·난수",
+    mechanism: "house",
+    ruleId: "house/pure-policy",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/purePolicy.test.ts",
+  },
+  {
+    no: 33,
+    name: "캐시 키 배열 리터럴",
+    mechanism: "house",
+    ruleId: "house/query-key-factory",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/queryKeyFactory.test.ts",
+  },
+  {
+    no: 34,
+    name: "consts 밖에서 내보내는 대문자 스네이크 이름",
+    mechanism: "house",
+    ruleId: "house/consts-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/constsSegment.test.ts",
+  },
+  {
+    no: 35,
+    name: "config 밖의 환경값 읽기",
+    mechanism: "house",
+    ruleId: "house/env-in-config",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/envInConfig.test.ts",
+  },
+  {
+    no: 36,
+    name: "lib·ui·hooks·config 밖의 네이티브 SDK",
+    mechanism: "house",
+    ruleId: "house/native-sdk-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/nativeSdkSegment.test.ts",
   },
 ];

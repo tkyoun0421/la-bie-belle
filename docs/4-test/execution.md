@@ -201,12 +201,22 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 26 | ui 세그먼트의 Supabase 클라이언트 실물 | house | `house/no-supabase-instance-in-ui` | `eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts` |
 | 27 | entities의 쓰기 훅 | house | `house/entities-read-only` | `eslint-rules/__tests__/entitiesReadOnly.test.ts` |
 | 28 | features의 읽기 service가 맞추는 도메인 수 | house | `house/features-query-composes` | `eslint-rules/__tests__/featuresQueryComposes.test.ts` |
+| 29 | 설명 주석 | house | `house/no-explanatory-comment` | `eslint-rules/__tests__/noExplanatoryComment.test.ts` |
+| 30 | hooks·services·stores 밖의 use* export | house | `house/use-export-segment` | `eslint-rules/__tests__/useExportSegment.test.ts` |
+| 31 | stores 밖의 store·Context 공장 | house | `house/store-factory-in-stores` | `eslint-rules/__tests__/storeFactoryInStores.test.ts` |
+| 32 | policy·reducer 접미사의 통신·시계·난수 | house | `house/pure-policy` | `eslint-rules/__tests__/purePolicy.test.ts` |
+| 33 | 캐시 키 배열 리터럴 | house | `house/query-key-factory` | `eslint-rules/__tests__/queryKeyFactory.test.ts` |
+| 34 | consts 밖에서 내보내는 대문자 스네이크 이름 | house | `house/consts-segment` | `eslint-rules/__tests__/constsSegment.test.ts` |
+| 35 | config 밖의 환경값 읽기 | house | `house/env-in-config` | `eslint-rules/__tests__/envInConfig.test.ts` |
+| 36 | lib·ui·hooks·config 밖의 네이티브 SDK | house | `house/native-sdk-segment` | `eslint-rules/__tests__/nativeSdkSegment.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
-번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 28까지 이어지고 미배정 셋이 빠지며, 줄은 스물일곱이다.
+번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 36까지 이어지고 미배정 셋이 빠지며, 줄은 서른다섯이다.
 
-**규칙 19부터 28까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 28까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다. 27·28은 세그먼트가 아니라 **층**을 본다: 27은 `entities` 전체, 28은 `features`의 `services`다.
+**규칙 19부터 36까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 28까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다. 27·28은 세그먼트가 아니라 **층**을 본다: 27은 `entities` 전체, 28은 `features`의 `services`다. 29는 자리를 안 가린다 — 주석은 어디서나 같은 부채다. 30·31은 `src/app/`만 면제한다. **세그먼트가 없는 파일은 그 둘의 밖이 아니라 위반이다** — 슬라이스 루트에 파일을 두는 것이 우회가 되면 안 된다. 32는 세그먼트가 아니라 **접미사 둘**(`.policy.ts`·`.reducer.ts`)을 보고, 그 접미사가 제 세그먼트에 사는지는 `fileNaming.ts`가 따로 본다. 33은 `__tests__/`만 면제한다 — 픽스처가 키를 글자로 들고 단언한다. 34는 `.ts`만 보고 면제가 넷이다(`api/`의 질의할 열 목록 · `lib/`의 SDK 손 묶음 · `__tests__/`의 픽스처 · `.tsx` 전부). 35와 36은 `config/`를 가른다 — 35는 그 자리만 환경값을 읽게 하고 36은 그 자리를 면제해 둘이 같이 선다.
+
+**서른둘이 「지금을 읽는 것」을 한 축으로 묶는다.** `Date.now()`와 인자 없는 `new Date()`와 인자 없는 `Date.parse()`가 그것이고, 인자를 받는 `new Date("2026-10-05")`는 통과한다 — AST로 「지금으로 쓰는가」를 가르는 선이 인자 수뿐이다. 「지금」이 필요한 판정은 그 값을 인자로 받는다: 서버 시계가 정본이고 기기 시계는 하루 밀릴 수 있다.
 
 **23과 26이 면제로 이어진다.** 23은 `@/shared/api/supabase`를 일부러 통과시키고 그 축을 26이 더 좁은 메시지로 문다 — 「`api`를 당기지 마라」가 아니라 「`hooks/`로 가라」가 그 자리에서 할 말이다. 짝 테스트의 픽스처가 그 모듈을 고르면 23이 아니라 26이 잡혀 빨개진다. 24도 예외가 하나다 — `features/*/ui`만 **자기 슬라이스의** service를 부른다. 그 조각이 use case를 실행하는 자리라서고, 남의 슬라이스 service를 부르면 그 조각이 무슨 use case인지가 흐려진다. 25는 `useQueryClient`를 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
