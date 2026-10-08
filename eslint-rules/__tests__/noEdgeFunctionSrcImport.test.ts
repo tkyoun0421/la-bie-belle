@@ -1,10 +1,3 @@
-// 구현 대상: eslint-rules/noEdgeFunctionSrcImport.mjs (notification-push plan AC-10)
-//
-// Deno는 `supabase/functions` 밖을 못 읽는다(notification/design.md 「푸시 보내기」 끝).
-// `import-holidays`(#464)가 `../../../src/...`를 직접 가리켜 이미 한 번 경계를 넘었다
-// (관찰 035). edge-runtime을 안 띄우는 로컬·CI는 이 import를 걸러내지 못하니 글자로
-// 막는 규칙이 필요하다 — 규칙 이름은 house/no-edge-function-src-import로 정했다.
-
 import { violationsOf } from "@tests/lint/ruleCheck";
 
 const RULE_ID = "house/no-edge-function-src-import";

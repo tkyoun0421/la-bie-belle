@@ -5,16 +5,6 @@ import {
   importEdges,
 } from "./segments.mjs";
 
-/**
- * 클라이언트 **실물**을 화면 파일이 쥐는 것을 막는다. 패키지를 당기는 축은
- * `house/supabase-package-in-api`가 들고 여기는 그 뒷겹이다 — ADR-015 「집행」이
- * 「SDK를 당기는 것과 손잡이를 받는 것」으로 둘을 가른 자리다.
- *
- * **무는 자리가 `ui`다.** 실물을 쥐는 자리는 controller 하나여야 하고(`hooks/`가 직접
- * import한다) `.tsx`는 controller가 돌려준 것만 그린다. `src/app/`은 밖이다 — 라우트
- * 파일이라 얇게 남는 자리고 세그먼트가 없어 이 규칙에 안 걸린다.
- */
-
 const noSupabaseInstanceInUi = {
   meta: {
     type: "problem",

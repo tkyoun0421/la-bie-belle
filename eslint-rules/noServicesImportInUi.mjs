@@ -6,17 +6,6 @@ import {
   specifierLocation,
 } from "./segments.mjs";
 
-/**
- * `ui`가 service를 직접 부르는 것을 막는다. ADR-015 「`ui`가 사는 네 자리」가
- * `screens/<슬라이스>/ui`는 controller를 거치고 `entities/<도메인>/ui`와 `shared/ui`는
- * 부르는 쪽이 값을 들고 온다고 적는다 — controller를 건너뛰면 화면 하나의 교통정리가
- * `.tsx`로 되돌아간다.
- *
- * **`features/<use case>/ui`만 예외고 그것도 자기 슬라이스까지다.** 그 조각이 use case를
- * 실행하는 자리라는 뜻이고, 「근무 신청 보내기」 버튼처럼 눌리면 그 use case가 도는
- * 자리다. 남의 슬라이스 service를 부르면 그 조각이 무슨 use case인지가 흐려진다.
- */
-
 const FEATURES_LAYER = "features";
 
 const noServicesImportInUi = {

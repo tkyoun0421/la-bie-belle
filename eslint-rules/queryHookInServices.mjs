@@ -1,16 +1,6 @@
 import { QUERY_HOOKS, QUERY_PACKAGE } from "./queryHooks.mjs";
 import { SERVICES_SEGMENT, fileLocation } from "./segments.mjs";
 
-/**
- * Query·Mutation 훅을 `services` 세그먼트 안에 묶는다. ADR-015 「세그먼트 열」이
- * `services`와 `hooks`를 **통신을 아느냐**로 가르고, 그 가름이 깨지면 같은 이름 폴더에
- * 역할 둘이 산다 — 화면이 두 service를 묶는 자리는 controller고, 그 묶음이 통신을 새로
- * 열면 `services`로 내려가야 한다.
- *
- * 당기는 자리를 문다. 이름을 바꿔 받아도(`useQuery as useProfileQuery`) 같은 훅이고,
- * 네임스페이스로 받으면 부르는 자리를 본다.
- */
-
 const queryHookInServices = {
   meta: {
     type: "problem",
@@ -63,8 +53,6 @@ const queryHookInServices = {
         memberUses.push(node);
       },
 
-      // 네임스페이스 이름은 import 선언을 지나야 알 수 있고 그 선언이 파일 맨 위에
-      // 있을 거라는 보장은 없다 — 다 읽은 뒤에 판정한다.
       "Program:exit"() {
         for (const node of memberUses) {
           if (

@@ -12,11 +12,6 @@ import noVisualUtilityClass from "./noVisualUtilityClass.mjs";
 import queryHookInServices from "./queryHookInServices.mjs";
 import supabasePackageInApi from "./supabasePackageInApi.mjs";
 
-/**
- * 규칙 이름은 kebab으로 둔다. ESLint 생태계가 그 꼴이고 소스의
- * `eslint-disable house/dumb-ui` 주석이 그 이름을 그대로 쓴다 —
- * 파일 이름을 camel로 옮긴 ADR-015는 규칙 이름까지는 안 건드렸다.
- */
 const house = {
   meta: { name: "eslint-plugin-house" },
   rules: {
