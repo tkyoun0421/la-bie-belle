@@ -1,21 +1,7 @@
-const SUPABASE = /^@supabase\//;
-const QUERY_PACKAGE = "@tanstack/react-query";
-const GLOBALS = new Set(["window", "globalThis", "global", "self"]);
+import { QUERY_HOOKS, QUERY_PACKAGE } from "./queryHooks.mjs";
 
-const QUERY_HOOKS = new Set([
-  "useQuery",
-  "useQueries",
-  "useInfiniteQuery",
-  "useSuspenseQuery",
-  "useSuspenseQueries",
-  "useSuspenseInfiniteQuery",
-  "usePrefetchQuery",
-  "usePrefetchInfiniteQuery",
-  "useMutation",
-  "useMutationState",
-  "useIsFetching",
-  "useIsMutating",
-]);
+const SUPABASE = /^@supabase\//;
+const GLOBALS = new Set(["window", "globalThis", "global", "self"]);
 
 const dumbUi = {
   meta: {

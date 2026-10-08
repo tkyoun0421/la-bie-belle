@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 21;
+export const DOCUMENTED_LINT_RULE_COUNT = 26;
 
-export const ENFORCED_RULE_COUNT = 21;
+export const ENFORCED_RULE_COUNT = 26;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -173,5 +173,45 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-node-import-in-edge-shared",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts",
+  },
+  {
+    no: 22,
+    name: "api 세그먼트 밖의 Supabase 패키지 import",
+    mechanism: "house",
+    ruleId: "house/supabase-package-in-api",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/supabasePackageInApi.test.ts",
+  },
+  {
+    no: 23,
+    name: "ui 세그먼트의 api import",
+    mechanism: "house",
+    ruleId: "house/no-api-import-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noApiImportInUi.test.ts",
+  },
+  {
+    no: 24,
+    name: "ui 세그먼트의 services import",
+    mechanism: "house",
+    ruleId: "house/no-services-import-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noServicesImportInUi.test.ts",
+  },
+  {
+    no: 25,
+    name: "services 세그먼트 밖의 Query·Mutation 훅",
+    mechanism: "house",
+    ruleId: "house/query-hook-in-services",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/queryHookInServices.test.ts",
+  },
+  {
+    no: 26,
+    name: "ui 세그먼트의 Supabase 클라이언트 실물",
+    mechanism: "house",
+    ruleId: "house/no-supabase-instance-in-ui",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts",
   },
 ];

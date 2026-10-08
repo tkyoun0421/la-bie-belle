@@ -194,12 +194,17 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 19 | 화면 파일의 시각 유틸리티 | house | `house/no-visual-utility-class` | `eslint-rules/__tests__/noVisualUtilityClass.test.ts` |
 | 20 | Edge Function의 마운트 밖 import | house | `house/no-edge-function-src-import` | `eslint-rules/__tests__/noEdgeFunctionSrcImport.test.ts` |
 | 21 | Deno로 복사되는 폴더의 node: import | house | `house/no-node-import-in-edge-shared` | `eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts` |
+| 22 | api 세그먼트 밖의 Supabase 패키지 import | house | `house/supabase-package-in-api` | `eslint-rules/__tests__/supabasePackageInApi.test.ts` |
+| 23 | ui 세그먼트의 api import | house | `house/no-api-import-in-ui` | `eslint-rules/__tests__/noApiImportInUi.test.ts` |
+| 24 | ui 세그먼트의 services import | house | `house/no-services-import-in-ui` | `eslint-rules/__tests__/noServicesImportInUi.test.ts` |
+| 25 | services 세그먼트 밖의 Query·Mutation 훅 | house | `house/query-hook-in-services` | `eslint-rules/__tests__/queryHookInServices.test.ts` |
+| 26 | ui 세그먼트의 Supabase 클라이언트 실물 | house | `house/no-supabase-instance-in-ui` | `eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
-번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 21까지 이어지고 미배정 셋이 빠지며, 줄은 스물이다.
+번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 26까지 이어지고 미배정 셋이 빠지며, 줄은 스물다섯이다.
 
-**규칙 19·20·21은 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
+**규칙 19부터 26까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 26까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
 ## `pnpm test`에 끼는 문서 검사
 

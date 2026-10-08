@@ -157,6 +157,20 @@ const eslintConfig = defineConfig([
     rules: { "house/no-cross-slice-import": "error" },
   },
 
+  // 세그먼트의 뜻을 지키는 규칙들이다. 규칙 19·20·21처럼 넓게 켜고 무는 자리는 규칙
+  // 자신이 든다 — 어느 세그먼트를 보는지가 규칙마다 다르고, 글롭으로 좁히면 이 표를
+  // 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "house/supabase-package-in-api": "error",
+      "house/no-api-import-in-ui": "error",
+      "house/no-services-import-in-ui": "error",
+      "house/query-hook-in-services": "error",
+      "house/no-supabase-instance-in-ui": "error",
+    },
+  },
+
   {
     files: ["src/**/*.{ts,tsx}"],
     ignores: ["src/**/__tests__/**"],
