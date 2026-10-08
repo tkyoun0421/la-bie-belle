@@ -221,6 +221,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlogIds.ts` — 작업 ID와 선행 작업 참조
 - `routeTypes.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
+- `edgeSharedFolders.test.ts` — Deno로 복사되는 폴더를 두 자리가 같이 아는지. `pnpm edge:sync`가 가져가는 폴더와 「복사되는 폴더에서 `node:` import 금지」가 무는 폴더가 같아야 한다 — 복사 대상이 늘고 규칙이 안 따라가면 그 폴더만 검사 밖이고, 앱에서는 멀쩡한 Node API가 복사본의 런타임에서 깨진다
 - `fileNaming.ts` — 코드 파일과 폴더 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 나머지 `.ts`는 camelCase고 훅은 그 훅 이름과 같다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 폴더도 camelCase고 `__tests__`만 밖이다. 케이스만 다른 두 파일도 같이 막는다. `src/app/`은 밖이다 — 거기 파일과 폴더 이름은 URL이다. 왜 그 꼴인지는 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)가 가진다
 - `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `fontSubset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
