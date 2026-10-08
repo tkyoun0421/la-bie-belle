@@ -35,7 +35,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{ headerShown: false }}
-      tabBar={profile?.left_at == null ? undefined : () => null}
+      tabBar={profile?.leftAt == null ? undefined : () => null}
     >
       <Tabs.Screen
         name="index"

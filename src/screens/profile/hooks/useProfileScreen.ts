@@ -146,7 +146,7 @@ export function useProfileScreen(): ProfileScreenController {
 
   const notification = useNotificationSwitchMutation(
     supabase,
-    data?.notifications_enabled ?? false,
+    data?.notificationsEnabled ?? false,
     askPushPermission,
   );
 
@@ -214,14 +214,14 @@ export function useProfileScreen(): ProfileScreenController {
   return {
     loading: isLoading,
     unread: (unreadCount.data ?? 0) > 0,
-    name: data?.display_name ?? "",
-    photoUrl: data?.photo_url ?? null,
+    name: data?.displayName ?? "",
+    photoUrl: data?.photoUrl ?? null,
     roleLabel: admin ? PROFILE_COPY.admin : PROFILE_COPY.worker,
     admin,
     rehearsal: admin || hasRehearsalGrant(grants ?? [], data?.id ?? null),
     gender: spellGender(data?.gender ?? null),
-    birthDate: data?.birth_date
-      ? spellBirthDate(digitsOfBirthDate(data.birth_date))
+    birthDate: data?.birthDate
+      ? spellBirthDate(digitsOfBirthDate(data.birthDate))
       : "",
     phone,
     theme,
@@ -245,7 +245,7 @@ export function useProfileScreen(): ProfileScreenController {
       contactDraft.length === PHONE_LENGTH && !isValidPhone(contactDraft),
     canSaveContact: canSaveContact(currentDigits, contactDraft),
     offerGoogle: shouldOfferGooglePhoto(
-      data?.photo_url ?? null,
+      data?.photoUrl ?? null,
       me?.googlePhotoUrl ?? null,
     ),
     uploading: picking || savingPhoto,

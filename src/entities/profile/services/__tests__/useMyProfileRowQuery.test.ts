@@ -32,18 +32,18 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const ROW = {
+const PROFILE = {
   id: "profile-1",
-  display_name: "이준호",
-  photo_url: null,
+  displayName: "이준호",
+  photoUrl: null,
   role: "worker",
-  submitted_at: "2026-10-01T05:00:00.000Z",
-  rejected_at: null,
+  submittedAt: "2026-10-01T05:00:00.000Z",
+  rejectedAt: null,
 };
 
 beforeEach(() => {
   getMyProfileMock.mockReset();
-  getMyProfileMock.mockResolvedValue(ROW);
+  getMyProfileMock.mockResolvedValue(PROFILE);
 });
 
 describe("useMyProfileRowQuery — profiles 행 하나다", () => {
@@ -55,7 +55,7 @@ describe("useMyProfileRowQuery — profiles 행 하나다", () => {
       { wrapper },
     );
 
-    await waitFor(() => expect(result.current.data).toEqual(ROW));
+    await waitFor(() => expect(result.current.data).toEqual(PROFILE));
 
     expect(getMyProfileMock).toHaveBeenCalledWith(FAKE_CLIENT, "user-1");
   });

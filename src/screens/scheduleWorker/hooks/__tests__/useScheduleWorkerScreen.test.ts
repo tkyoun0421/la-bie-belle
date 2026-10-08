@@ -216,20 +216,20 @@ beforeEach(() => {
   });
   getMyProfileMock.mockResolvedValue({
     id: "p1",
-    display_name: "이준호",
-    photo_url: null,
+    displayName: "이준호",
+    photoUrl: null,
     role: "member",
-    submitted_at: null,
-    approved_at: "2026-01-01T00:00:00.000Z",
-    rejected_at: null,
-    blocked_at: null,
-    left_at: null,
-    notifications_enabled: true,
+    submittedAt: null,
+    approvedAt: "2026-01-01T00:00:00.000Z",
+    rejectedAt: null,
+    blockedAt: null,
+    leftAt: null,
+    notificationsEnabled: true,
   });
   getProfilePrivateMock.mockResolvedValue({
     email: "a@b.c",
     phone: "010-0000-0001",
-    birth_date: "1998-03-04",
+    birthDate: "1998-03-04",
     gender: "male",
   });
   countUnreadMock.mockResolvedValue(0);
