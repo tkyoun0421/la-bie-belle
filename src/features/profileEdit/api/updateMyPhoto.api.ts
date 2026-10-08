@@ -1,10 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
-/**
- * 자기 `profiles.photo_url`을 바꾼다. 파일은 이미 `avatars` 버킷에 올라가 있고 여기는 그
- * 공개 주소를 프로필에 앉히는 자리다 — 관리자도 남의 것은 못 바꾼다.
- */
 export async function updateMyPhoto(
   client: DB,
   photoUrl: string,

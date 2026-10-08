@@ -1,10 +1,3 @@
-// 구현 대상: src/features/payrollCompute/utils/payrollTotal.utils.ts
-//
-// weekTotals(days) — 주는 월요일에 시작해 일요일에 끝난다(PAY-021). 달을 걸친 주도
-// 주 하나로 묶는다.
-// monthTotal(days, month) — 월은 달력 달이다(PAY-022). 달을 걸친 주는 날짜로 갈라 각
-// 달의 합계에 따로 든다 — 8월 31일이 월요일이면 그 하루만 8월, 9월 1일부터 엿새는 9월.
-
 import {
   monthTotal,
   weekTotals,
@@ -17,8 +10,8 @@ function payrollDay(date: string, amount: number, minutes = 480) {
 describe("weekTotals — 주는 월요일에 시작해 일요일에 끝난다(PAY-021)", () => {
   it("일요일과 그다음 월요일은 서로 다른 주로 갈린다", () => {
     const days = [
-      payrollDay("2026-09-06", 96000), // 일요일
-      payrollDay("2026-09-07", 96000), // 월요일
+      payrollDay("2026-09-06", 96000),
+      payrollDay("2026-09-07", 96000),
     ];
 
     const totals = weekTotals(days);

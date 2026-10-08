@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/hallDefaults/services/useSetHallDefaultsMutation.ts
-//
-// 홀의 자리·근무 시간 기본값을 바꾼다. 연 날은 안 바뀌므로 캐시 갱신은
-// `['hall']`뿐이다 — `['schedule']`은 안 건드린다
-// (`docs/2-design/modules/schedule/design.md`의 「홀 기본값」).
-
 const setHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

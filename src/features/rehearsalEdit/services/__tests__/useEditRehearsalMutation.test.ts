@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsalEdit/services/useEditRehearsalMutation.ts
-//
-// 리허설 고치기다(design.md 「리허설 넣기·고치기·지우기」) — 성공하면 ['rehearsal']과
-// ['payroll']을 무효화한다. **['schedule']은 안 건드린다.**
-
 const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

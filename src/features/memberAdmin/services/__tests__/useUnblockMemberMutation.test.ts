@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 차단 해제다(같은 문서의 「차단한 사람」). 풀면 그 사람이 다시 가입 대기로 선다.
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 늦게 누른 쪽은
-// `already_decided`로 서버가 거절한다.
-
 const unblockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleConfirm/services/useForceChangeMutation.ts
-//
-// 확정 뒤 「사람 바꾸기」다. `forceChange(client, assignmentId, profileId)`가 한
-// 트랜잭션으로 옛 배정을 닫고 새 배정을 연다(design.md 「배정과 강제 변경」 — 「한
-// 트랜잭션이다」). 새 사람에게 `add_assignment`와 같은 검사 넷이 걸린다. 캐시 갱신은
-// `['schedule']` `['payroll']` `['requests']`다.
-
 const forceChangeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

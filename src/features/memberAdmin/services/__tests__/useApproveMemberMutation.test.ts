@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 가입 승인이다(`docs/2-design/modules/account/screens/membersPending.md`의 「승인」).
-// 앱 전체의 첫 문이라 이것이 지나야 근무표도 급여도 열린다.
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 늦게 누른 쪽은
-// `already_decided`로 서버가 거절한다.
-
 const approveMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

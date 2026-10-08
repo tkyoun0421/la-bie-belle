@@ -4,12 +4,6 @@ import {
   type PickPhotoDeps,
 } from "@/features/profileEdit/lib/pickPhoto.lib";
 
-// 구현 대상: src/features/profileEdit/lib/pickPhoto.lib.ts
-//
-// 화면 둘이 「고르고 줄이는」 같은 순서를 각자 `.tsx` 안에 적고 있었다
-// (`ProfileScreen`·`PendingScreen`). 기기에 붙는 함수는 전부 주입받는다 — 여기가
-// `expo-image-picker`를 직접 물면 이 순서가 기기 없이는 안 돈다.
-
 const SHRUNK = { uri: "file:///shrunk.jpg" };
 
 function deps(overrides: Partial<PickPhotoDeps>): PickPhotoDeps {

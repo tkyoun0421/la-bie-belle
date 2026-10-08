@@ -4,11 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import { splitSlot } from "@/features/scheduleSlot/api/splitSlot.api";
 
-/**
- * 겸임 자리를 나눈다 — 겸임 카드 시트의 「자리 나누기」다. 배정된 사람은 받은 쪽에 그대로
- * 남는다(`docs/2-design/modules/schedule/design.md`의 「날과 자리」).
- */
-
 export type SplitSlotInput = {
   slotId: string;
 };

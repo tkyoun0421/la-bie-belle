@@ -1,22 +1,3 @@
-// 구현 대상: src/features/stats/utils/attendanceInputs.utils.ts
-//
-// buildAttendanceInputs(days, checkIns, excuseStatuses, now) — 그달 배정·날
-// 시각과 checkIns·excuseStatuses를 (day_id, profile_id)로 맞물려
-// AttendanceStatusInput[]을 낸다(착수 판정 「근태 월 집계의 입력을 만드는 자리」).
-// 세는 것은 tallyMonthlyAttendance(entities/attendance/model/attendanceSummary)
-// 고 여기서 다시 짜지 않는다 — 이 파일은 입력을 만드는 것만 검증한다.
-//
-// AttendanceInputDay = { id, work_date, starts_at, ends_at,
-// assignments: { profile_id, ended_at }[] }.
-// AttendanceInputCheckIn = { day_id, profile_id, checked_at, reported_at,
-// received_at }. AttendanceInputExcuseStatus = { day_id, profile_id,
-// submitted_at, decided_at, decision }.
-//
-// - ended_at이 찬 배정은 그 사람의 그날 몫이 안 생긴다
-// - checkIn·excuse는 day_id와 profile_id가 둘 다 맞아야 그 배정에 붙는다 —
-//   같은 사람의 다른 날 기록이 섞이지 않는다
-// - 출근(present)과 출근 인정(excused)을 합치지 않는다(ATT-023)
-
 import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSummary.utils";
 import {
   buildAttendanceInputs,
@@ -140,9 +121,6 @@ describe("buildAttendanceInputs — day_id와 profile_id가 둘 다 맞아야 �
   });
 });
 
-// daysOfPerson(days, profileId) — 그달 날들을 그 사람 배정만 남기고 좁힌다. 같은 손이
-// screens/adminStats와 screens/stats에 로컬 함수로 각자 서 있었다(`daysOfPerson`·
-// `myDaysOf`). 안 좁히면 같은 날 같이 선 사람의 결근까지 그 사람 숫자에 든다.
 describe("daysOfPerson — 그 사람 배정만 남긴다", () => {
   it("남의 배정은 그 날의 배정 목록에서 빠진다", () => {
     const mine = daysOfPerson(DAYS, "p1");

@@ -1,21 +1,3 @@
-// 구현 대상: src/features/stats/utils/personDays.utils.ts
-//
-// computePersonDays(profileId, assignments, days) — 한 사람의 날짜별 근무다
-// (plan stats-admin AC-02, spec stats-admin AC-02). WorkAssignment·WorkDay는
-// workTotals.ts와 같은 모양이다(fixtures.ts 참고).
-//
-// 결과는 { days: PersonDayRow[], totalMinutes, totalCount }다. PersonDayRow는
-// { workDate, position, minutes }이고 날짜순이다.
-//
-// **겸임인 날은 앞 포지션만 낸다.** spec AC-02·stats.md「근무 내역 시트」— "겸임인
-// 날은 앞 포지션만 적는다. 포지션 구획이 세는 방식과 같다. 두 포지션을 다 적으면
-// 시간이 두 번 든 것처럼 읽힌다." workTotals.ts가 앞 포지션 하나로만 세는 것과
-// 같은 규칙이라 이 시트의 날짜별 목록도 하루에 한 줄만 낸다.
-//
-// **시트 합계 = 구획 줄의 값.** 같은 픽스처를 computeWorkTotals에도 먹여 두
-// 함수의 합계가 실제로 같은 값을 내는지를 이 파일이 단언한다 — 다르면 시트와
-// 구획 중 하나가 틀렸다는 뜻이고 그것을 눈으로 확인하는 것이 이 시트의 쓸모다.
-
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import { computeWorkTotals } from "@/features/stats/model/workTotals.policy";
 import { computePersonDays } from "@/features/stats/utils/personDays.utils";

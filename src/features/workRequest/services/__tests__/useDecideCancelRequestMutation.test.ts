@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/workRequest/services/useDecideCancelRequestMutation.ts
-//
-// 관리자가 근무 취소 요청을 판정한다(`decideCancelRequest.ts`의
-// `decideCancelRequest(client, cancelRequestId, decision, reason?)` — decision은
-// 'approved'·'rejected'). 성공하면 `['schedule']`·`['payroll']`·`['requests']`를
-// 무효화한다(design.md 「근무 취소 요청과 판정」).
-
 const decideCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

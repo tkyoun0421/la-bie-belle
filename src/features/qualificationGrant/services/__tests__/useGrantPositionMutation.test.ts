@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/qualificationGrant/services/useGrantPositionMutation.ts
-//
-// 자격 없는 사람 시트의 「자격도 주기」다. `grantPosition(client, profileId, position)`을
-// 부른다. 이 훅만 `['schedule']`이 아니라 `['members']`를 무효화한다(design.md 「자격
-// 주기」 — 「캐시 갱신: ['members']」). `qualifications` 뷰가 `position_grants`를 읽으므로
-// 픽커의 자격 판정도 이 무효화가 덮는다.
-
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

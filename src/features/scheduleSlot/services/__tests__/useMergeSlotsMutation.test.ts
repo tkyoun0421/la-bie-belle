@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleSlot/services/useMergeSlotsMutation.ts
-//
-// 줄 머리를 다른 줄 머리에 겹쳐 겸임을 만든다. `mergeSlots(client, dayId, from, to)`는
-// 자리 id가 아니라 포지션 이름 둘을 받는다 — 화면이 집는 것이 줄 머리라서다
-// (design.md 「날과 자리」). 캐시 갱신은 `['schedule']` `['payroll']` `['requests']`다.
-
 const mergeSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/scheduleSlot/api/mergeSlots.api", () => ({

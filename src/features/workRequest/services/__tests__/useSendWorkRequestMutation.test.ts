@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/workRequest/services/useSendWorkRequestMutation.ts
-//
-// 관리자가 픽커의 미신청 줄에서 고른 사람들에게 근무 요청을 보낸다
-// (`sendWorkRequest.ts`의 `sendWorkRequest(client, slotId, profileIds)`). 성공하면
-// `['schedule']`·`['payroll']`·`['requests']`를 무효화한다(plan schedule-requests.md
-// 「총괄이 정한 것」 6, design.md 「근무 요청 보내기」).
-
 const sendWorkRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 가입 거절이다(같은 문서의 「안 받기」). 다시 보낼 수 있어 차단과 갈린다.
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 늦게 누른 쪽은
-// `already_decided`로 서버가 거절한다.
-
 const rejectMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/rejectMember.api", () => ({

@@ -9,40 +9,10 @@ import type {
   WorkTotals,
 } from "@/features/stats/model/stats.type";
 
-/**
- * 그달 근무를 사람과 포지션 두 축으로 가른다. 정본은
- * `docs/2-design/system/screens/stats.md`의 「근무」고 완료 조건은
- * `docs/2-design/spec/stats-admin.md`의 AC-01이다.
- *
- * **셋의 합이 같다.** 사람별 시간 합도 포지션별 시간 합도 `totalMinutes`와 같다 — 같은 한
- * 숫자를 두 축으로 나눠 보는 자리라 둘이 어긋나면 그 자리에서 들킨다. 건수도 같다.
- *
- * **한 배정의 시간은 그날 근무 시간이다.** 사람마다 다르지 않아 `days`의 시각 차이가 그대로
- * 그 배정의 분이다. 날을 못 찾은 배정은 잴 값이 없어 빠진다.
- *
- * **겸임은 앞 포지션으로 한 번만 센다.** 배정이 든 `position`이 이미 그 앞 포지션이라 양쪽에
- * 얹을 길이 없다 — 얹으면 포지션 합이 전체보다 커진다.
- *
- * **교육 배정도 든다**(ATT-020). 정규 자리를 안 먹을 뿐 그날 같은 시간을 있었고, 어느
- * 포지션의 교육이었는지로 센다.
- *
- * **확정 여부를 안 본다.** 배정이 있으면 센다 — 관리자가 이번 달을 짜면서 균형을 보는 것이 이
- * 화면의 쓰임이라 확정을 기다리면 가장 쓸모 있는 순간에 빈다(plan stats-admin 「착수 판정」).
- *
- * **재직 여부도 안 본다.** 그달에 일했으면 퇴사한 사람도 선다 — 근무 시간은 그달의 사실이다.
- */
-
 const MINUTES_PER_HOUR = 60;
 
 const KOREAN = "ko";
 
-/**
- * 읽어 온 달을 이 모듈이 세는 모양으로 옮긴다. 배정 행이 이름을 임베딩해 오므로
- * (`getMonthSchedule.ts`) 사람별 구획이 프로필을 다시 읽지 않는다.
- *
- * 옮기는 손이 여기 있는 것은 `WorkAssignment`·`WorkDay`를 이 파일이 소유해서다 — 부르는
- * 쪽마다 짜면 필드 하나가 늘 때 그만큼 고쳐야 한다.
- */
 export function workInputsOf(days: readonly ScheduleDay[]): WorkInputs {
   return {
     assignments: days.flatMap((day) =>
@@ -65,28 +35,16 @@ export function workInputsOf(days: readonly ScheduleDay[]): WorkInputs {
   };
 }
 
-/**
- * 「9시간」이다. 30분짜리 꼬리가 붙으면 소수 한 자리까지 적는다 — 반올림해 지우면 사람별 합과
- * 포지션 합이 화면에서 안 맞는 것처럼 보인다.
- */
 export function hoursLabel(minutes: number): string {
   const hours = minutes / MINUTES_PER_HOUR;
 
   return `${Number(hours.toFixed(1))}시간`;
 }
 
-/** 배정이 끝난 자국은 취소나 교대로 넘어간 자리라 셈에 안 든다. */
 export function isLiveAssignment(assignment: WorkAssignment): boolean {
   return assignment.ended_at === null;
 }
 
-/**
- * 그날 근무 시간대의 길이다 — `"10:00:00"`과 `"18:00:00"`이면 480이다.
- *
- * **급여가 세는 분과 다른 질문이다.** 여기는 그날의 창이 몇 분인가라서 그날 선 사람이면 누구나
- * 같은 값이고, `features/payrollCompute`의 `paidMinutes`는 그 사람 하나의 조정과 리허설까지
- * 더한 값이다. 둘이 `dayMinutes` 한 이름을 쓰고 있어 이름에 축을 넣었다.
- */
 export function shiftMinutes(day: WorkDay): number {
   return minutesOfTime(day.ends_at) - minutesOfTime(day.starts_at);
 }
@@ -167,7 +125,6 @@ function add<Row extends Tallied>(
   rows.set(key, row);
 }
 
-/** 정본 순서 밖의 포지션은 뒤에 붙는다 — 홀이 포지션을 늘려도 합이 안 어긋난다. */
 function positionRank(position: string): number {
   const at = (POSITION_ORDER as readonly string[]).indexOf(position);
 

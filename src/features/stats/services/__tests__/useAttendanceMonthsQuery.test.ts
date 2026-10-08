@@ -1,15 +1,3 @@
-// 구현 대상: src/features/stats/services/useAttendanceMonthsQuery.ts
-//
-// useAttendanceMonthsQuery(client, months) — 근태 탭의 열두 달 창이다. 달마다 배정과 체크인
-// 둘이 필요한데(attendanceInputs.ts의 재료) 그 둘은 entities의 다른 슬라이스다. 그래서
-// 이 훅은 제 질의를 안 열고 `useWorkMonthsQuery`와 `useMonthsAttendanceQuery` 둘을 불러
-// 달마다 맞춘다 — `useQuery`가 없어야 「features에서 useQuery 금지」가 선다
-// (fsd-read-write-layers AC-05·AC-08).
-//
-// 단언은 셋이다. ①열두 달이면 질의가 스물넷이다 — 근무 열둘과 근태 열둘. ②달마다 값이
-// 따로 붙고 서로 안 섞인다. ③한쪽만 와 있으면 로딩이다 — 근태만 온 채 그리면 그 달의
-// 배정이 0으로 읽힌다.
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

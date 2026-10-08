@@ -5,21 +5,6 @@ import type {
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
 
-/**
- * 근태 월 집계의 재료를 맞물린다. 그달 배정·날 시각과 인증·사유를 `(day_id, profile_id)`로
- * 짝지어 상태 함수가 그대로 먹을 입력을 낸다(plan stats-admin 「착수 판정」).
- *
- * **세는 것은 여기가 아니다.** 상태 여섯을 내는 것도 넷으로 세는 것도
- * `entities/attendance/model/attendanceSummary.ts`의 `tallyMonthlyAttendance`가 이미 하고,
- * 여기서 다시 짜면 명단·대시보드와 다른 숫자를 말하게 된다.
- *
- * **산 배정만 한 몫이다.** `ended_at`이 찬 배정은 그날 그 사람이 없던 것이라 인증 행이 남아
- * 있어도 몫이 안 생긴다 — 그 인증은 어느 입력에도 안 붙는다.
- *
- * **출근과 출근 인정을 안 합친다**(ATT-023). 가르는 것은 상태 함수고 이 파일은 사유 행을
- * 그대로 실어 보낼 뿐이다.
- */
-
 export type AttendanceInputAssignment = {
   profile_id: string;
   ended_at: string | null;
@@ -101,20 +86,6 @@ export function buildAttendanceInputs(
   );
 }
 
-/**
- * 그달 날들을 그 사람 배정만 남기고 좁힌다 — 안 좁히면 같은 날 같이 선 사람의 결근까지 그
- * 사람 숫자에 든다.
- *
- * **날은 안 걸러진다.** 내 배정이 없는 날도 빈 목록으로 남아 `buildAttendanceInputs`가 그
- * 날에서 입력을 안 낸다 — 날을 빼는 것과 결과가 같고, 빼면 부르는 쪽이 날 수를 세는 자리에서
- * 갈린다.
- *
- * **`profileId`가 없으면 아무 날도 없다.** 좁힐 기준이 없는 순간이라 빈 배열이 그대로 0으로
- * 나온다 — 프로필이 오기 전에도 화면이 그려진다.
- *
- * 쓰는 쪽이 `screens` 슬라이스 둘(관리자 통계의 사람별 목록, 근무자 통계의 달 집계)이라 자리가
- * 위층인 여기다 — 슬라이스끼리는 서로를 못 부른다(lint 규칙 3).
- */
 export function daysOfPerson(
   days: readonly AttendanceInputDay[],
   profileId: string | null,
@@ -129,7 +100,6 @@ export function daysOfPerson(
       }));
 }
 
-/** 인증과 사유를 배정에 맞물리는 열쇠다. 만드는 자리가 하나라 양쪽이 어긋날 길이 없다. */
 function pairKey(dayId: string, profileId: string): string {
   return `${dayId} ${profileId}`;
 }

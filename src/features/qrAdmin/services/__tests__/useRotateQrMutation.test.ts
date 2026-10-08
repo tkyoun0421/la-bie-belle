@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/qrAdmin/services/useRotateQrMutation.ts
-//
-// 관리자가 「새로 뽑기」를 누르면 rotate_qr을 부르고 성공 시 ['hall','qr']을
-// 무효화한다(design.md 「QR 바꾸기」, spec `docs/2-design/spec/attendance-qr.md`).
-
 const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/qrAdmin/api/rotateQr.api", () => ({

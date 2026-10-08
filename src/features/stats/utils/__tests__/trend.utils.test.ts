@@ -1,13 +1,3 @@
-// 구현 대상: src/features/stats/utils/trend.utils.ts
-//
-// trendMonths(viewingMonth) — 보는 달에서 열한 달을 거슬러 올라간 열두 달이다.
-// 오래된 달이 먼저, 보는 달이 마지막(오른쪽 끝)이다(plan·spec stats-admin AC-03).
-//
-// buildTrend(months, valueByMonth) — TrendPoint[]를 낸다. TrendPoint는
-// { month, value }다. valueByMonth는 Map<월, 값>이고 그 달의 키가 아예 없으면
-// value가 null(앱을 쓰기 전 달 — 선이 끊긴다), 키가 있고 값이 0이면 value가
-// 0이다(0인 달과 없는 달이 다르다).
-
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 
 describe("trendMonths — 보는 달이 오른쪽 끝인 열두 달이다", () => {

@@ -1,23 +1,3 @@
-// 구현 대상: src/features/stats/model/workTotals.policy.ts
-//
-// computeWorkTotals(assignments, days) — 그달의 배정 목록과 날 목록을 받아
-// { totalMinutes, totalCount, byPerson, byPosition }을 낸다
-// (plan stats-admin AC-01, spec stats-admin AC-01).
-//
-// WorkAssignment = { id, day_id, profile_id, display_name, position, kind,
-// ended_at }. WorkDay = { id, work_date, starts_at, ends_at }.
-// 한 배정의 시간은 그 배정이 든 날의 starts_at~ends_at 차이다.
-//
-// - ended_at이 찬 배정은 셈에서 빠진다
-// - kind가 'training'인 배정도 든다 — 어느 포지션의 교육이었는지로 센다(ATT-020)
-// - 겸임(포지션 둘을 합친 자리)의 배정은 position 필드 하나만 갖고 있고 그 값(앞
-//   포지션)으로만 세진다 — 뒤 포지션 쪽에는 아무것도 안 붙는다
-// - byPosition은 POSITION_ORDER 아홉이 항상 다 서고, 배정이 없는 포지션은
-//   { minutes: 0, count: 0 }이다
-// - byPerson 시간 합, byPosition 시간 합, totalMinutes 셋이 같다(count도 같다)
-// - 재직 여부는 이 함수의 입력에 없다 — 그달 배정이 있으면 무조건 byPerson에 선다
-//   (퇴사한 사람도 같다)
-
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";

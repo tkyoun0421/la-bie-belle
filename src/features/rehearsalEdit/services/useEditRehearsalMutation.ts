@@ -7,11 +7,6 @@ import {
   type EditRehearsalInput,
 } from "@/features/rehearsalEdit/api/editRehearsal.api";
 
-/**
- * 리허설 고치기다. 넣기와 같은 둘을 낡게 한다 — `['rehearsal']`과 `['payroll']`이고
- * **`['schedule']`은 안 건드린다**.
- */
-
 export type EditRehearsalResult = {
   mutate: (input: EditRehearsalInput) => void;
   isPending: boolean;

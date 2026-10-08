@@ -19,7 +19,6 @@ function fakeClient(
 
 describe("checkIn dal — TransportError면 재시도하고 DomainError면 즉시 실패한다(AC-07)", () => {
   it("check_in RPC를 부른다", async () => {
-    // 인자를 받는 꼴로 적어야 mock.calls 가 빈 튜플이 아니라 인자 배열로 잡힌다.
     const rpc = jest.fn(async (..._args: unknown[]) => ({
       data: null,
       error: null,
@@ -31,11 +30,6 @@ describe("checkIn dal — TransportError면 재시도하고 DomainError면 즉�
     expect(rpc.mock.calls[0]?.[0]).toBe("check_in");
   });
 
-  /**
-   * 안 보내는 인자는 `null`이 아니라 `undefined`여야 한다 — `JSON.stringify`가 그 키를
-   * 떨어뜨려서 PostgREST가 SQL의 `default null`을 태운다. `null`로 보내면 생성 타입이
-   * 막고, 그 자리를 캐스트로 덮으면 이 dal의 검사가 통째로 꺼진다.
-   */
   it("위치로 인증하면 QR 코드 자리를 안 보내고 QR로 인증하면 좌표 자리를 안 보낸다", async () => {
     const rpc = jest.fn(async (..._args: unknown[]) => ({
       data: null,

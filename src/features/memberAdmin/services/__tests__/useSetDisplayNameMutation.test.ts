@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 관리자가 직원 이름을 고친다(`docs/2-design/modules/account/screens/members.md`의
-// 「이름 고치기」). 성공하면 지난 근무표·급여에도 그 이름이 뜨므로 `design.md`의
-// 「캐시 갱신」대로 `['profile']` `['members']` `['schedule']` 셋을 무효화한다.
-
 const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

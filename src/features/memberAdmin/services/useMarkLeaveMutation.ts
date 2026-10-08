@@ -4,14 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { markLeave } from "@/features/memberAdmin/api/markLeave.api";
 
-/**
- * 그만둔 사람을 퇴사로 옮긴다. 성공하면 그 줄이 재직자 목록에서 빠지고 퇴사 구획에 서는데,
- * 두 목록이 `['members']` 아래 같이 살아 무효화 한 번으로 둘 다 다시 읽힌다.
- *
- * 거절 둘은 화면이 갈라 받는다 — 앞 배정이 남았으면 `has_future_assignments`고 마지막
- * 관리자면 `last_admin`이다. 둘 다 Dialog가 이유를 말하는 자리라 시트를 안 닫는다.
- */
-
 export type MarkLeaveInput = {
   profileId: string;
 };

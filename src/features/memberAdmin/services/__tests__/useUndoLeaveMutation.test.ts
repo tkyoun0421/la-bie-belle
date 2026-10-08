@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 퇴사 되돌리기다(`docs/2-design/modules/account/screens/members.md`의 「되돌리기」).
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 퇴사 아닌 대상이면
-// 도메인 거절 코드를 안 늘려 `already_decided`로 거절한다(총괄이 정한 것 1).
-
 const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/undoLeave.api", () => ({

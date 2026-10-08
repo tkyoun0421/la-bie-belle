@@ -1,10 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 차단이다(같은 문서의 「차단」). 다시 보낼 길이 막혀 거절과 갈린다.
-// 성공하면 `design.md`의 「캐시 갱신」대로 `['members']`만 무효화한다. 늦게 누른 쪽은
-// `already_decided`로 서버가 거절한다.
-
 const blockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/blockMember.api", () => ({

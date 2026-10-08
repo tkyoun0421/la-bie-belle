@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/profileEdit/services/useSubmitProfileMutation.ts
-//
-// 가입 프로필을 보내는 쓰기다. 화면이 `async` 손으로 API를 직접 부르고 보낸 중·실패를
-// `useState` 둘로 셈하고 있었다 — 무효화는 아예 없어, 보낸 뒤 「나」가 옛 값을 들고 있었다.
-
 const submitProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

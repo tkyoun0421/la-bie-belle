@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/scheduleConfirm/services/useConfirmScheduleMutation.ts
-//
-// 달을 확정한다. `already_confirmed`는 관리자 둘이 같은 달을 확정했거나 재시도가 두 번
-// 닿은 것이라 결과가 같으므로 이 훅이 성공으로 처리한다
-// (`docs/3-build/plans/schedule-admin.md` 상태 격자 「동시 변경」, dal 자체는
-// `confirm-schedule.integration.test.ts`가 이미 확인했듯 오류 모양 정규화만 한다).
-// `too_early`처럼 다른 코드는 그대로 실패로 낸다. 캐시 갱신은 `['schedule']`
-// `['payroll']` `['requests']`다.
-
 const confirmScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(

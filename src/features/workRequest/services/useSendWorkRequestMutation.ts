@@ -4,11 +4,6 @@ import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import { sendWorkRequest } from "@/features/workRequest/api/sendWorkRequest.api";
 
-/**
- * 관리자가 고른 사람들에게 빈 자리의 근무를 물어본다. 보낸 뒤 자리 카드에 배지가 서고
- * 픽커의 그 줄들이 「요청 대기 중」이 되므로 근무표와 요청을 같이 낡게 한다.
- */
-
 export type SendWorkRequestInput = {
   slotId: string;
   profileIds: readonly string[];

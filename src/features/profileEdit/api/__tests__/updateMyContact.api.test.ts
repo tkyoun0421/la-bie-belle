@@ -3,10 +3,6 @@ import type { DB } from "@/shared/api/database";
 import { DomainError, TransportError } from "@/shared/model/error.type";
 import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
-// `profile_private.phone`은 함수가 아니라 본인 행 직접 갱신이다 — check 제약이 마지막 문이라
-// 이 DAL이 PostgREST의 23514를 제약 이름으로 갈라 DomainError('invalid_phone')으로 바꾼다.
-// 정본은 `docs/2-design/system/data-access.md`의 「오류의 모양」 예외 항목이다.
-
 type FakeError = { code?: string; message: string } | null;
 
 function buildClient(error: FakeError): DB {

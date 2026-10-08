@@ -1,10 +1,3 @@
-// 구현 대상: src/features/adjustment/services/useSetAdjustmentMutation.ts
-//
-// `set_adjustment`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
-// `['payroll']`을 무효화한다. `p_reason`은 화면이 고른 갈래 이름이고 셋 중 하나다 —
-// 「결근」·「연장」·「원래대로」(payroll/design.md 「조정」). 거절은 삼키지 않고 그대로
-// error에 싣는다.
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
