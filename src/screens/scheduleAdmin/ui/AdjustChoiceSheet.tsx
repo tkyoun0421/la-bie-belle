@@ -5,22 +5,6 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
 import { spellHours } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
-/**
- * 조정 시트의 사람 줄을 누르면 그 위에 한 겹 더 서는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이다.
- *
- * **이름이 「사람 시트」가 아닌 것은 [사람 픽커](PersonSheet.tsx)가 그 이름을 이미 써서다** —
- * 그쪽은 읽기 전용 카드고 이쪽은 값을 쓰는 자리다.
- *
- * **결근은 값을 안 묻는다.** 고른 즉시 나가고, 넣을 음수는 부르는 쪽이 그날 배정 시간에서
- * 계산한다(`absenceMinutes.ts`).
- *
- * **연장을 고르면 분 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다.** 근무 시간 시트와 같은
- * 짝이다.
- *
- * **「원래대로」는 조정 행이 있는 사람에게만 선다.** 판정은 `showRevertOption`이 한다.
- */
-
 export const ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID =
   "adjustment-extra-minutes-input";
 

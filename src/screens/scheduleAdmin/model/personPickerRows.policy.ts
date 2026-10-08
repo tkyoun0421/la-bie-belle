@@ -1,26 +1,4 @@
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
-/**
- * 사람 픽커의 「전체 보기」가 사람마다 매기는 상태다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 픽커」 표와 「근무 요청
- * 보내기」 표고 문구는 「사람 픽커 문안」 그대로다.
- *
- * **배정됨이 가장 세다.** 그날 이미 든 사람은 왜 못 넣는지가 신청·자격·요청보다 앞서는
- * 사실이고, 그 줄을 누르면 「겸임은 자리를 합쳐 만드세요」로 이어진다(SCH-015).
- *
- * **자격은 뷰가 낸 행으로만 본다.** 「자격 부여 ∪ 살아 있는 교육 배정」을 여기서 다시 합치지
- * 않는다(`docs/2-design/modules/schedule/design.md`의 「자격」).
- *
- * **요청 상태는 미신청 줄에만 얹힌다.** 근무 요청이 신청 안 한 날을 채우는 유일한 길이라
- * (SCH-016) 요청이 나간 자리도 그 줄뿐이다. 메시지에 「요청」을 남기는 것은 같은 목록에
- * 「신청 안 함」이 서 있어서다 — 신청과 요청은 방향이 반대다.
- *
- * **만료됨은 저장하지 않는다.** `status = 'pending'`인데 `expires_at`이 서버 시각을 지난
- * 것이 만료된 갈래다(design.md 「요청」) — cron이 도는 사이 화면과 표가 어긋나지 않게
- * 화면이 그때그때 판정한다.
- *
- * **체크박스는 다시 보낼 수 있는 줄에만 붙는다.** 대기 중인 줄은 이미 나가 있는 요청이라
- * 다시 고를 것이 없고, 배정 가능한 줄은 눌러서 바로 넣는다.
- */
 
 export type PickerCategory =
   | "assignable"
@@ -55,9 +33,7 @@ export type PersonPickerRowsInput = {
   appliedProfileIds: readonly string[];
   qualifiedProfileIds: readonly string[];
   dayAssignments: readonly PickerDayAssignment[];
-  /** 이 자리에 살아 있는 요청의 갈래들. 요청이 없는 자리는 빈 배열이다. */
   requestCandidates?: readonly PickerRequestCandidate[];
-  /** 만료를 가르는 기준 시각. 요청이 없으면 안 쓰이므로 기본값이 0이다. */
   serverNowMs?: number;
 };
 
@@ -89,7 +65,6 @@ function heldPosition(
   );
 }
 
-/** 미신청 줄에 얹힌 요청 상태다. 요청이 안 나갔으면 `null`이라 그 줄은 「신청 안 함」이다. */
 function requestCategory(
   profileId: string,
   candidates: readonly PickerRequestCandidate[],

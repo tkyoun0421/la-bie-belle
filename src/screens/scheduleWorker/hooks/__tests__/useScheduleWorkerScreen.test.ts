@@ -1,23 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts
-//
-// 근무자가 보는 근무표의 controller다. `.tsx`가 620줄에 `useState` 열하나와 `useEffect`
-// 일곱을 들고, 세션 읽기와 `BackHandler`와 오류 코드 비교까지 하고 있었다.
-//
-// **한 화면이 달의 상태를 탄다.** 확정된 달은 근무표고 확정 전 달은 같은 자리가 제출
-// 모드다 — 무엇을 그릴지가 `bodyState` 하나로 접힌다.
-//
-// **날짜 하나에 문이 둘이다.** 그 날 내게 온 근무 요청이 살아 있으면 요청 시트가 열리고
-// 아니면 명단 시트다. 어느 문이 열렸는지를 `sheet.kind`가 말한다.
-//
-// **늦은 수락은 오류 블록이 아니다.** 시트를 닫고 토스트로 말한 뒤 달력 아래 줄에 사건을
-// 남긴다 — 통신이 끊긴 것은 반대로 시트가 열린 채 실패가 선다.
-//
-// **취소 사유가 조각이 아니라 여기 산다.** 보내는 동안 잠기고 실패하면 남아야 해서 통신에
-// 매여 있고, 조각은 제 controller를 못 가진다.
-
 const TODAY = "2026-10-03";
 const MONTH = "2026-10";
 
@@ -39,6 +22,12 @@ const submitAvailabilityMock =
 const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const createCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
   kstToday: () => TODAY,
@@ -130,9 +119,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
-/** 내 근무가 하나 있는 날이다 — 오늘보다 뒤라 버튼 둘이 설 수 있는 날이다. */
 const MY_DAY = {
   id: "d1",
   work_date: "2026-10-17",
@@ -157,7 +143,6 @@ const MY_DAY = {
   check_ins: [],
 };
 
-/** 남의 날이다 — 요청이 이 날로 온다. */
 const OTHER_DAY = {
   ...MY_DAY,
   id: "d2",
@@ -268,7 +253,7 @@ beforeEach(() => {
 
 async function mounted(params: { month?: string; date?: string } = {}) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useScheduleWorkerScreen(FAKE_CLIENT, params), {
+  const hook = renderHook(() => useScheduleWorkerScreen(params), {
     wrapper,
   });
 
@@ -284,10 +269,9 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useScheduleWorkerScreen(FAKE_CLIENT, {}),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useScheduleWorkerScreen({}), {
+      wrapper,
+    });
 
     expect(result.current.bodyState).toBe("loading");
   });
@@ -571,11 +555,6 @@ describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
     expect(result.current.sheet.canSend).toBe(true);
   });
 
-  /**
-   * 보낸 뒤 취소 얼굴이 닫히고 같은 겹이 명단으로 돌아오는 것이 지금 코드의 모습이다.
-   * 정본(schedule-worker.md의 「보낸 뒤」)은 겹째로 닫힌다고 적어 두었는데 둘이 어긋난
-   * 채로 들어와 있었다 — 이 묶음은 꼴만 옮기므로 보이는 것을 그대로 지킨다.
-   */
   it("취소 요청이 그 배정 id와 다듬은 사유로 가고 보낸 뒤 시트가 닫힌다", async () => {
     const { result } = await mounted();
 

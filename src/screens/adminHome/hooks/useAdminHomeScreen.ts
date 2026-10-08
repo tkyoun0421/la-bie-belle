@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -34,33 +34,12 @@ import {
 } from "@/screens/adminHome/model/vacancyCards.policy";
 import { approvalsLine } from "@/screens/adminHome/utils/approvalsLine.utils";
 
-/**
- * 관리자가 관리자 모드에서 처음 보는 허브의 controller다. 정본은
- * `docs/2-design/system/screens/adminHome.md`고 완료 조건은
- * `docs/2-design/spec/schedule-admin.md`의 AC-01이다.
- *
- * **타일만 다른 달을 말할 수 있다.** 오늘이 든 달이 확정됐으면 타일은 다음 달을 읽고
- * 눌렀을 때 그 달이 열린다 — 그래서 같은 질의 셋을 달 둘로 던지는 가름이 이 자리에 산다.
- * 오늘 현황·빈 자리 카드·미니뷰는 늘 오늘이 든 달이다.
- *
- * **「지금」을 서버 시계에서 읽는다.** 빈 자리 카드의 남은 날과 미니뷰의 오늘 표시가 둘 다
- * 지금에 달려 있어, 기기 시계가 하루 밀린 기기에서는 어제 카드가 선다.
- *
- * **시트의 적는 값도 여기 있다.** 적은 것이 그대로 보내질 값이라 화면 것이 아니고, 보내기가
- * 넘어지면 시트가 열린 채로 그 값이 남아야 한다.
- *
- * **보낼 데는 안 든다.** 종과 모드 바꾸기와 줄마다의 이동은 `.tsx`가 쥔다 — 이 자리가 내는
- * 것은 그릴 값과 「안 읽은 것이 있나」다.
- */
-
-/** 빈 자리 카드 한 장이 그릴 글자다 — 셈도 꼴도 여기서 끝난다. */
 export type AdminHomeVacancyCard = {
   workDate: string;
   title: string;
   daysLeftLine: string;
 };
 
-/** 기본값 시트가 적고 있는 값이다 — 열려 있지 않으면 `null`이다. */
 export type AdminHomeSheet = {
   starts: string;
   ends: string;
@@ -94,40 +73,33 @@ export type AdminHomeScreenController = {
   saveDefaults: () => void;
 };
 
-/**
- * `"10:00:00"`에서 초를 뗀다.
- *
- * **같은 손이 다른 열에도 있다.** `scheduleAdmin`·`scheduleWorker`·`approvals`·
- * `payrollCompute`가 저마다 `.slice(0, 5)`를 적고 있어 접는 것은 AC-13이 받는다 — 지금
- * 여기 두는 것은 이 파일 안의 세 번을 한 번으로 줄이기 위해서다.
- */
 function clockLabel(clock: string): string {
   return clock.slice(0, 5);
 }
 
-export function useAdminHomeScreen(client: DB): AdminHomeScreenController {
+export function useAdminHomeScreen(): AdminHomeScreenController {
   const [sheet, setSheet] = useState<AdminHomeSheet | null>(null);
 
   const today = kstToday();
   const month = today.slice(0, 7);
   const clockOffset = serverClockStore((at) => at.offset);
 
-  const unreadCount = useUnreadCountQuery(client);
-  const { data: schedule } = useMonthWindowQuery(client, month);
-  const { data: days } = useMonthScheduleQuery(client, month);
-  const { data: openSlots } = useOpenSlotsQuery(client, month);
-  const { data: defaults } = useHallDefaultsQuery(client);
-  const { data: pending } = useMembersQuery(client, "pending");
-  const { data: approvals } = usePendingApprovalsQuery(client);
+  const unreadCount = useUnreadCountQuery(supabase);
+  const { data: schedule } = useMonthWindowQuery(supabase, month);
+  const { data: days } = useMonthScheduleQuery(supabase, month);
+  const { data: openSlots } = useOpenSlotsQuery(supabase, month);
+  const { data: defaults } = useHallDefaultsQuery(supabase);
+  const { data: pending } = useMembersQuery(supabase, "pending");
+  const { data: approvals } = usePendingApprovalsQuery(supabase);
 
   const tiled = tileMonth({
     todayMonth: month,
     todayMonthConfirmed: schedule?.confirmedAt != null,
   });
 
-  const { data: tileSchedule } = useMonthWindowQuery(client, tiled);
-  const { data: tileDays } = useMonthScheduleQuery(client, tiled);
-  const { data: tileSlots } = useOpenSlotsQuery(client, tiled);
+  const { data: tileSchedule } = useMonthWindowQuery(supabase, tiled);
+  const { data: tileDays } = useMonthScheduleQuery(supabase, tiled);
+  const { data: tileSlots } = useOpenSlotsQuery(supabase, tiled);
 
   const {
     mutate: sendDefaults,
@@ -135,7 +107,7 @@ export function useAdminHomeScreen(client: DB): AdminHomeScreenController {
     isSuccess: saved,
     isError: saveFailed,
     reset: resetSave,
-  } = useSetHallDefaultsMutation(client);
+  } = useSetHallDefaultsMutation(supabase);
 
   const closeSheet = useCallback(() => {
     setSheet(null);

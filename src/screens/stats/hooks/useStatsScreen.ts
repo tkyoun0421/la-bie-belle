@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import {
@@ -51,37 +51,16 @@ import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
 import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
 import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
-/**
- * 근무자가 자기 한 달을 숫자로 보는 화면의 controller다. 정본은
- * `docs/2-design/system/screens/stats.md`의 근무자 몫이고 완료 조건은
- * `docs/2-design/spec/stats-worker.md`다.
- *
- * **고른 탭이 읽는 것을 바꾼다.** 탭에 없는 쪽은 열두 달을 안 읽어서, 탭은 화면 꾸밈이
- * 아니라 통신을 움직이는 값이다 — 그래서 `.tsx`에 안 남는다.
- *
- * **보던 달이 탭을 건너 산다.** 달과 탭이 따로 있어 탭을 오가도 달이 그대로다.
- *
- * **「지금」을 서버 시계에서 읽는다.** 근태 판정과 급여 판정이 둘 다 지금에 달려 있어,
- * 기기 시계가 하루 밀린 기기에서는 서버가 셀 것과 다른 숫자가 선다.
- *
- * **금액도 셈도 여기서 안 낸다.** 질의 넷이 낸 행을 `features/stats`와 이 슬라이스의
- * `utils`에 넘기고 받는 것은 그릴 값이다.
- *
- * **보낼 데는 안 든다.** 뒤로와 급여 내역으로 가는 길은 `.tsx`가 쥔다.
- */
-
 export type StatsTab = (typeof STATS_TABS)[number];
 
 export type StatsListState =
   "loading" | "failed" | "empty" | "attendance" | "position" | "payroll";
 
-/** 목록 한 줄이다 — 근태와 포지션이 같은 꼴을 쓴다. */
 export type StatsRow = {
   key: string;
   title: string;
   detail: string;
   value: string;
-  /** 포지션 줄의 띠 길이다. 근태 줄에는 띠가 없어 0이다. */
   weight: number;
 };
 
@@ -114,12 +93,8 @@ export type StatsScreenController = {
   retry: () => void;
 };
 
-/**
- * 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다.
- */
 const NO_MONTHS: string[] = [];
 
-/** 다시 시도가 다시 읽는 네 키다 — 세 탭의 숫자가 이 넷에서 나온다. */
 const RETRY_KEYS = [
   queryKeys.schedule.all,
   queryKeys.attendance.all,
@@ -131,16 +106,16 @@ function tabOf(value: string): StatsTab {
   return STATS_TABS.find((tab) => tab === value) ?? STATS_TABS[0];
 }
 
-export function useStatsScreen(client: DB): StatsScreenController {
+export function useStatsScreen(): StatsScreenController {
   const queryClient = useQueryClient();
   const today = kstToday();
 
   const [tab, setTab] = useState<StatsTab>(STATS_TABS[0]);
   const [month, setMonth] = useState(() => monthOf(today));
 
-  const { data: me } = useSessionUserQuery(client);
+  const { data: me } = useSessionUserQuery(supabase);
   const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
-    client,
+    supabase,
     me?.id ?? null,
   );
   const clockOffset = serverClockStore((at) => at.offset);
@@ -150,22 +125,22 @@ export function useStatsScreen(client: DB): StatsScreenController {
   const profileId = profile?.id ?? null;
 
   const work = useWorkMonthsQuery(
-    client,
+    supabase,
     tab === "attendance" ? NO_MONTHS : months,
   );
   const attendance = useAttendanceMonthsQuery(
-    client,
+    supabase,
     tab === "attendance" ? months : NO_MONTHS,
   );
   const payroll = usePayrollMonthsByMonthQuery(
-    client,
+    supabase,
     tab === "payroll" ? months : NO_MONTHS,
   );
   const rehearsal = useRehearsalMonthsQuery(
-    client,
+    supabase,
     tab === "payroll" ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonthQuery(client);
+  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const sources: readonly { isLoading: boolean; error: Error | null }[] =
     tab === "attendance"

@@ -1,15 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/adminCalendarDayState.policy.ts
-//
-// 관리자 달력 칸 하나가 어느 상태로 서는지와, 확정 뒤 빈 자리 수를 칸에 그릴지를 가른다.
-// 색과 모양의 정본은 `docs/2-design/design-system/components.md`의 「근무표 날짜 칸」과
-// `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「달력 칸」이다.
-// `ScheduleDayCellState`(`src/shared/ui/ScheduleDayCell.tsx`)의 기존 값 `closed`·
-// `admin-open`·`admin-picked`를 그대로 쓴다 — 새 상태를 안 만든다.
-//
-// 「오늘」과 「지난 날」은 이 칸 상태 계산과 무관하다 — 오늘은 `ScheduleDayCell`이
-// `isToday`로 따로 그리고, 지난 날의 선택 가능 여부는 `openModeSelection.ts`가 가른다.
-// 이 테스트가 그 무관함을 명시로 확인한다.
-
 import {
   adminCalendarDayState,
   confirmedVacancyCount,

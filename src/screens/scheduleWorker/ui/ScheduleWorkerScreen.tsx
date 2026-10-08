@@ -6,7 +6,6 @@ import {
   List,
 } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { useHardwareBack } from "@/shared/hooks/useHardwareBack";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -29,39 +28,8 @@ import { DaySheet } from "@/screens/scheduleWorker/ui/DaySheet";
 import { RequestSheet } from "@/screens/scheduleWorker/ui/RequestSheet";
 import { ScheduleAgenda } from "@/screens/scheduleWorker/ui/ScheduleAgenda";
 
-/**
- * 근무자가 보는 근무표다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`고 완료 조건은
- * `docs/2-design/spec/schedule-worker.md`다.
- *
- * **한 화면이 달의 상태를 탄다.** 확정된 달은 근무표고 확정 전 달은 같은 자리가 제출
- * 모드다 — 별도 제출 화면이 없다. 무엇을 그릴지는
- * [`useScheduleWorkerScreen`](../hooks/useScheduleWorkerScreen.ts)이 `bodyState` 하나로
- * 접어 내고 여기는 그 갈래를 그린다.
- *
- * **시트 겹이 하나다.** 요청·취소·명단 셋이 같은 자리에 서고 어느 얼굴인지는 controller가
- * `sheet.kind`로 말한다 — 날짜 하나에 문이 둘이라 어느 문이 열렸는지가 여기서 갈리면
- * 그 판정이 화면에 남는다.
- *
- * **아직 안 채운 셋.** 인증 상태 열과 현황 줄은 `check_ins` 표가 서는 attendance task 뒤에
- * 차고, 교대 요청 시트는 swap task가 낸다. 달 고르기 시트도 아직이다
- * (`docs/3-build/plans/schedule-worker.md`의 AC-09).
- */
-
-/**
- * 껍데기가 그릴 줄 수다.
- *
- * **같은 값이 저장소 열셋에 쓰는 꼴까지 같다.** 몇 줄인지는 화면이 정하고 `.map`으로 회색
- * 덩이를 그리는 일은 `shared/ui`의 몫이라, 접는 자리가 `consts`가 아닐 수 있다 — AC-13이
- * 받는다.
- */
 const SKELETON_ROWS = [0, 1, 2];
 
-/**
- * 보기 전환 표다. 값과 아이콘과 읽어 주는 말이 한 줄로 묶여야 하는데 아이콘이 컴포넌트라
- * `.ts`인 `consts/`가 못 든다 — 반만 옮기면 보기를 하나 더 다는 날 두 자리를 봐야 해서
- * 표째로 여기 남는다.
- */
 const VIEW_OPTIONS = [
   {
     value: "calendar",
@@ -86,7 +54,7 @@ export function ScheduleWorkerScreen({
 }: ScheduleWorkerScreenProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const screen = useScheduleWorkerScreen(supabase, { month, date });
+  const screen = useScheduleWorkerScreen({ month, date });
 
   useHardwareBack(screen.closeTop);
 

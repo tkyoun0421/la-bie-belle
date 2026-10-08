@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/pending/hooks/usePendingScreen.ts
-//
-// 한 경로가 장면 넷을 드는 화면의 controller다. `.tsx`가 684줄에 `useState` 열하나를 들고
-// 세션과 프로필을 제 `useEffect`로 읽고, 보내기와 사진 올리기를 `async` 손으로 직접 했다.
-//
-// **칸은 하나고 자리가 고정이다.** 열려 있는 칸은 「굳은 것」에서 계산된다.
-//
-// **축하는 계정마다 한 번이다.** 거절 뒤 다시 보낸 것이면 축하 없이 바로 승인 대기다.
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -91,6 +82,12 @@ jest.unstable_mockModule("@/shared/lib/appState.lib", () => ({
   APP_STATE: { addEventListener: () => ({ remove: () => {} }) },
 }));
 
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
+
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
@@ -116,8 +113,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 const USER = {
   id: "user-1",
@@ -158,7 +153,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => usePendingScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => usePendingScreen(), { wrapper });
 
   await waitFor(() => expect(hook.result.current.stage).not.toBe("loading"));
 
@@ -183,7 +178,7 @@ describe("usePendingScreen — 장면이 넷이다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => usePendingScreen(FAKE_CLIENT), {
+    const { result } = renderHook(() => usePendingScreen(), {
       wrapper,
     });
 

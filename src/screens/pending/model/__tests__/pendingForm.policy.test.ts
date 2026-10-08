@@ -3,11 +3,6 @@ import {
   stageOfProfile,
 } from "@/screens/pending/model/pendingForm.policy";
 
-// 구현 대상: src/screens/pending/model/pendingForm.policy.ts
-//
-// 열려 있는 칸은 따로 들고 있지 않고 「굳은 것」에서 계산된다. 장면도 프로필 행의 시각 둘이
-// 정한다 — `.tsx`가 그 둘을 안에서 세고 있었다.
-
 describe("firstOpenStep — 아직 안 굳은 첫 칸이다", () => {
   it("아무것도 안 굳었으면 사진부터다", () => {
     expect(firstOpenStep([])).toBe("photo");

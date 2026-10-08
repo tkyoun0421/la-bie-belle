@@ -9,24 +9,19 @@ import type {
 import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import type { DayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
-import type { HolidayRow } from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
+import type {
+  HolidayRow,
+  HolidaySwitchState,
+} from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
 import type { PickerRow } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
 import type {
   AdjustSheetAdjustment,
   AdjustSheetRehearsal,
+  AdjustSheetRow,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
+import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
+import type { PositionSlot } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
-/**
- * 날 상세가 위에서 받는 것 전부다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이다.
- *
- * **조각이 제 질의를 안 든다.** 달력과 날 상세가 한 라우트라 읽는 질의가 같고, 그 아홉을 한
- * 번만 거는 자리가 화면의 controller다 — 날 상세는 그것이 걸러 준 것과 쓰는 손을 받는다.
- *
- * **타입이 `model`에 사는 까닭.** 주는 쪽(`useScheduleAdminScreen`)과 받는 쪽
- * (`useDayDetail`·`DayDetail.tsx`) 셋이 같은 모양을 봐야 하는데, 어느 하나가 소유하면 나머지
- * 둘이 그 파일을 거슬러 당긴다.
- */
 export type DayDetailInput = {
   dayId: string;
   workDate: string;
@@ -70,11 +65,160 @@ export type DayDetailInput = {
   onReloadDay: () => void;
 };
 
-/**
- * 사람 픽커 한 줄이다 — 판정이 낸 갈래에 얼굴과 성별이 얹힌다. 갈래는 `model`이 내고 사진은
- * 명단에서 오는데, 줄을 세우는 쪽이 controller라 모양도 여기 산다.
- */
 export type PickerEntry = PickerRow & {
   photoUrl: string | null;
   gender: string | null;
+};
+
+export type PickerTarget = {
+  position: string;
+  slotId: string | null;
+  replacing: {
+    assignmentId: string;
+    outgoingProfileId: string;
+    outgoingName: string;
+  } | null;
+};
+
+export type PendingChange =
+  | {
+      kind: "add";
+      slotId: string;
+      profileId: string;
+      name: string;
+      skipQualification: boolean;
+      grant: { position: string } | null;
+    }
+  | { kind: "training"; position: string; profileId: string; name: string }
+  | {
+      kind: "swap";
+      assignmentId: string;
+      profileId: string;
+      outgoingProfileId: string;
+      outgoingName: string;
+      incomingName: string;
+    }
+  | {
+      kind: "remove";
+      assignmentId: string;
+      outgoingProfileId: string;
+      outgoingName: string;
+    };
+
+export type DayDetailPositionRow = {
+  position: string;
+  slots: readonly PositionSlot[];
+  assignments: readonly ScheduleAssignment[];
+  unlocked: boolean;
+  canChangeStructure: boolean;
+  nameOf: (profileId: string) => string;
+  requestBadgeOf: (slotId: string) => string | null;
+  onToggleLock: () => void;
+  onPressEducation: () => void;
+  onPressSlot: (slotId: string) => void;
+  onAddSlot: () => void;
+};
+
+export type DayDetailPicker = {
+  title: string;
+  entries: readonly PickerEntry[];
+  expanded: boolean;
+  picked: readonly string[];
+  sending: boolean;
+  expand: () => void;
+  pick: (entry: PickerEntry) => void;
+  inspect: (entry: PickerEntry) => void;
+  toggle: (profileId: string) => void;
+  send: () => void;
+  close: () => void;
+};
+
+export type DayDetailPerson = {
+  name: string;
+  photoUrl: string | null;
+  gender: string | null;
+  birthDate: string | null;
+  qualifications: readonly string[];
+  close: () => void;
+};
+
+export type DayDetailQualification = {
+  name: string;
+  position: string;
+  once: () => void;
+  grant: () => void;
+  close: () => void;
+};
+
+export type DayDetailSlotSheet = {
+  confirmed: boolean;
+  merged: boolean;
+  replace: () => void;
+  split: () => void;
+  remove: () => void;
+  close: () => void;
+};
+
+export type DayDetailAdjust = {
+  head: string;
+  rows: readonly AdjustSheetRow[];
+  pickPerson: (profileId: string) => void;
+  close: () => void;
+};
+
+export type DayDetailChoice = {
+  name: string;
+  assignedMinutes: number;
+  canRevert: boolean;
+  extending: boolean;
+  digits: string;
+  canSend: boolean;
+  sending: boolean;
+  failureMessage: string | null;
+  absent: () => void;
+  revert: () => void;
+  startExtending: () => void;
+  writeDigits: (text: string) => void;
+  extend: () => void;
+  close: () => void;
+};
+
+export type DayDetailConfirmChange = {
+  copy: ForceChangeCopyInput;
+  saving: boolean;
+  confirm: () => void;
+  close: () => void;
+};
+
+export type DayDetailDiscard = {
+  name: string;
+  removing: boolean;
+  confirm: () => void;
+  close: () => void;
+};
+
+export type DayDetailController = {
+  title: string;
+  fillLabel: string;
+  showHours: boolean;
+  hoursLine: string;
+  holiday: HolidaySwitchState;
+  adjustmentLine: string;
+  showApplications: boolean;
+  applicationsLine: string;
+  positions: readonly DayDetailPositionRow[];
+  showCloseDay: boolean;
+  canDrop: (dragId: string, dropId: string) => boolean;
+  drop: (dragId: string, dropId: string) => void;
+  openAdjust: () => void;
+  picker: DayDetailPicker | null;
+  person: DayDetailPerson | null;
+  qualification: DayDetailQualification | null;
+  slotSheet: DayDetailSlotSheet | null;
+  adjust: DayDetailAdjust | null;
+  choice: DayDetailChoice | null;
+  confirmChange: DayDetailConfirmChange | null;
+  discard: DayDetailDiscard | null;
+  toast: string | null;
+  dismissToast: () => void;
 };

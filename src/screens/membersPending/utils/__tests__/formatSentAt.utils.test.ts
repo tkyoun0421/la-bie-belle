@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/membersPending/utils/formatSentAt.utils.ts
-//
-// 상세 시트가 보낸 시각을 그대로 말하는 줄이다. `MemberDetailSheet.tsx` 안에서 KST 보정
-// 상수와 요일 표를 제 손으로 들고 조립하고 있었다 — 둘 다 공용 함수가 이미 한다.
-
 import { formatSentAt } from "@/screens/membersPending/utils/formatSentAt.utils";
 
 describe("formatSentAt — 목록과 달리 시트는 언제인지를 그대로 말한다", () => {

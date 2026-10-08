@@ -1,7 +1,6 @@
 import { Redirect, useRouter } from "expo-router";
 import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";
@@ -26,27 +25,11 @@ import {
 } from "@/screens/pending/consts/pending.const";
 import { usePendingScreen } from "@/screens/pending/hooks/usePendingScreen";
 
-/**
- * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필
- * 작성, 보낸 뒤의 축하, 승인 대기, 거절된 뒤. 정본은
- * `docs/2-design/modules/account/screens/login.md`고 완료 조건은
- * `docs/2-design/spec/profile-form.md`다.
- *
- * **칸은 하나고 자리가 고정이다.** 다섯을 한 장에 세우지 않는다. 지금 답할 것 하나만 화면
- * 아래에서 묻고, 굳은 것은 위 더미로 올라간다. 굳은 것을 누르면 다시 물음으로 내려온다.
- *
- * 값과 굳은 것과 장면은 `usePendingScreen`이 든다. 여기 남은 것은 그림과 보낼 데다.
- */
-
 export function PendingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const screen = usePendingScreen(supabase);
+  const screen = usePendingScreen();
 
-  /**
-   * 세션이 끊긴 채로 이 경로에 서 있을 자리가 없다. 효과가 아니라 선언으로 보내는 것은
-   * `.tsx`가 `useEffect`를 안 들기 때문이고(ADR-015), 보낼 데를 화면이 쥐는 것은 그대로다.
-   */
   if (screen.stage === "signedOut") {
     return <Redirect href="/login" />;
   }

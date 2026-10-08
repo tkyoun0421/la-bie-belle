@@ -1,17 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/stats/hooks/useStatsScreen.ts
-//
-// 근무자가 자기 한 달을 숫자로 보는 화면의 controller다. `.tsx`가 `useState` 셋과
-// `useEffect` 하나와 `useMemo` 일곱을 들고, 질의 다섯이 낸 것을 탭마다 다른 손으로 조립하고
-// 있었다.
-//
-// **고른 탭이 읽는 것을 바꾼다.** 탭에 없는 쪽은 열두 달을 안 읽어서, 탭은 화면 꾸밈이
-// 아니라 통신을 움직이는 값이다.
-//
-// **「지금」을 서버 시계에서 읽는다.** 근태 판정과 급여 판정이 둘 다 지금에 달려 있다.
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -26,6 +15,12 @@ const getFirstScheduleMonthMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const TODAY = "2026-10-03";
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
   getCurrentUser: getCurrentUserMock,
@@ -94,8 +89,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const EMPTY_PAYROLL = {
   wageRates: [],
   adjustments: [],
@@ -105,7 +98,6 @@ const EMPTY_PAYROLL = {
 
 const EMPTY_ATTENDANCE = { checkIns: [], excuseStatuses: [] };
 
-/** 그 달 하루에 내 배정 하나가 선 근무표다 — 다섯 시간짜리 메인이다. */
 function scheduleDay(workDate: string) {
   return {
     id: `day-${workDate}`,
@@ -156,7 +148,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useStatsScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useStatsScreen(), { wrapper });
 
   await waitFor(() =>
     expect(hook.result.current.listState).not.toBe("loading"),

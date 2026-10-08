@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/members/utils/spellLeftAt.utils.ts
-//
-// 퇴사한 날을 「2026년 6월 30일」로 적는다. `MemberSheet.tsx`가 내보내고 있었고 KST
-// 보정도 그 파일 안의 상수였다 — 공용 `kstDateOf`가 이미 같은 보정을 한다.
-
 import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
 describe("spellLeftAt — 해를 넘긴 기록이 쌓이는 자리라 연도가 붙는다", () => {

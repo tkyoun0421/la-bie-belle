@@ -2,7 +2,6 @@ import { useRouter } from "expo-router";
 import { EllipsisVertical } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Card } from "@/shared/ui/Card";
@@ -22,27 +21,11 @@ import {
 import { useMembersPendingScreen } from "@/screens/membersPending/hooks/useMembersPendingScreen";
 import { MemberDetailSheet } from "@/screens/membersPending/ui/MemberDetailSheet";
 
-/**
- * 관리자가 가입 신청을 받거나 돌려보내는 화면이다. 앱 전체의 첫 문이다 — 승인이 없으면
- * 근무표도 급여도 안 열린다. 정본은
- * `docs/2-design/modules/account/screens/membersPending.md`고 완료 조건은
- * `docs/2-design/spec/members-pending.md`다.
- *
- * **줄에서 바로 판정하지 않는다.** 누르면 시트가 올라오고 거기서 정한다. 줄에서 승인하면
- * 성별과 생년월일과 연락처를 못 보고 누르게 되는데 그 셋이 관리자가 사람을 알아보는 재료다.
- *
- * 판정과 시트 열림은 `useMembersPendingScreen`이 든다. 여기 남은 `useState`는 앱바 더보기
- * 하나다 — 사람이 열고 사람이 닫는 자리라 통신을 안 탄다.
- */
-
-/**
- * **같은 표가 저장소 열세 자리에 있다.** 묶음 여럿에 걸려 한 열이 못 접고 AC-13이 받는다.
- */
 const SKELETON_ROWS = [0, 1, 2];
 
 export function MembersPendingScreen() {
   const router = useRouter();
-  const screen = useMembersPendingScreen(supabase);
+  const screen = useMembersPendingScreen();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

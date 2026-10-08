@@ -3,15 +3,6 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
 
-/**
- * 그날 근무 시간을 고치는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이고 문안은
- * 같은 문서 「날 상세 문안」의 「근무 시간 시트」 행이다.
- *
- * **이 값은 그날 배정된 전원에게 같이 걸린다.** 사람마다 어긋난 자리는 근무 조정이 담는다 —
- * 도움말이 그 경계를 말한다.
- */
-
 const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
 
 export type DayHoursSheetProps = {

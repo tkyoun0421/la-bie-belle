@@ -2,18 +2,6 @@ import { Dialog } from "@/shared/ui/Dialog";
 import { MARK_LEAVE_CONFIRM_TEST_ID } from "@/screens/members/consts/members.const";
 import type { MemberDialogKind } from "@/screens/members/model/members.type";
 
-/**
- * 직원 화면이 묻고 막는 자리 여섯이다. 문안의 정본은
- * `docs/2-design/modules/account/screens/members.md`의 문안 표 셋이고 여기는 그 표를 옮겨
- * 적은 자리다 — 한 벌로 모아두면 어느 물음이 어느 답을 받는지가 한눈에 보인다.
- *
- * **묻는 넷과 막는 둘이 갈린다.** 역할·퇴사·되돌리기는 동의를 받는 자리라 버튼이 둘이고,
- * 배정이 남았거나 마지막 관리자라 못 하는 자리는 그 사실을 말하는 것뿐이라 버튼이 하나다.
- *
- * **오른쪽 버튼이 destructive가 아니다.** 퇴사도 역할 바꾸기도 되돌릴 수 있는 자리라 손을
- * 브랜드로 끌 이유가 없다(members.md의 「색」).
- */
-
 type DialogCopy = {
   title?: string;
   body: string;

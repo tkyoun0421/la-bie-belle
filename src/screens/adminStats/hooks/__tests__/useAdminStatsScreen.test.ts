@@ -1,16 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/adminStats/hooks/useAdminStatsScreen.ts
-//
-// 관리자가 한 달을 숫자로 보는 화면의 controller다. `.tsx`가 `useState` 셋과 `useMemo`
-// 넷을 들고, 탭마다 다른 손으로 조립하고 사람 시트의 글월까지 거기서 만들고 있었다.
-//
-// **고른 탭이 읽는 것을 바꾼다.** 탭에 없는 쪽은 열두 달을 안 읽는다.
-//
-// **시트 열림이 통신 결과에 매여 있다.** 누른 사람의 날 목록이 이번 달 근무표에서 갈려
-// 나와서, 달을 옮기면 그 사람의 날이 달라진다 — 화면이 들 상태가 아니다.
-
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthAttendanceMock =
@@ -19,6 +9,12 @@ const getFirstScheduleMonthMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const TODAY = "2026-10-03";
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -67,11 +63,8 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const EMPTY_ATTENDANCE = { checkIns: [], excuseStatuses: [] };
 
-/** 그 달 하루에 배정 하나가 선 근무표다 — 다섯 시간짜리 메인이다. */
 function scheduleDay(workDate: string) {
   return {
     id: `day-${workDate}`,
@@ -107,7 +100,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useAdminStatsScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useAdminStatsScreen(), { wrapper });
 
   await waitFor(() =>
     expect(hook.result.current.listState).not.toBe("loading"),

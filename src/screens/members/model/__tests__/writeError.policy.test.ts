@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/members/model/writeError.policy.ts
-//
-// 쓰기 넷이 돌려준 오류를 「서버가 이유를 말해 준 것」과 「그 밖」으로 가른다. `.tsx`가
-// `instanceof DomainError`와 `Set.has`로 그 판정을 하고 있었다.
-
 import { DomainError } from "@/shared/model/error.type";
 import { isUnexpectedWriteError } from "@/screens/members/model/writeError.policy";
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -11,18 +11,6 @@ import {
   PENDING_COPY,
 } from "@/screens/membersPending/consts/membersPending.const";
 import { spellBlockedLine } from "@/screens/membersPending/utils/elapsedLine.utils";
-
-/**
- * 차단한 사람을 보고 차단을 푸는 화면의 controller다. 가입 대기 앱바의 더보기가 여는 화면이고
- * 정본은 `docs/2-design/modules/account/screens/membersPending.md`의 「차단한 사람 짜임」이다.
- *
- * **여기는 줄에서 바로 묻는다.** 상세 시트가 없다 — 여기서 하는 판단은 「이 사람 맞나」
- * 하나고 그건 사진과 이름이 답한다. 그래서 controller가 드는 것이 「누구에게 묻는 중인가」
- * 하나다.
- *
- * 푼 사람은 목록에서 빠진다. 승인 여부는 안 건드리고 `submitted_at`만 같이 비므로, 그 사람이
- * 프로필을 다시 보내야 가입 대기에 다시 선다.
- */
 
 export type BlockedToast = { kind: ToastKind; message: string };
 
@@ -52,14 +40,14 @@ export type MembersBlockedController = {
   dismissToast: () => void;
 };
 
-export function useMembersBlockedScreen(client: DB): MembersBlockedController {
+export function useMembersBlockedScreen(): MembersBlockedController {
   const [openId, setOpenId] = useState<string | null>(null);
   const [toast, setToast] = useState<BlockedToast | null>(null);
 
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
 
-  const { data: blocked, isLoading } = useMembersQuery(client, "blocked");
+  const { data: blocked, isLoading } = useMembersQuery(supabase, "blocked");
 
   const {
     mutate: sendUnblock,
@@ -67,7 +55,7 @@ export function useMembersBlockedScreen(client: DB): MembersBlockedController {
     isSuccess: unblocked,
     error,
     reset,
-  } = useUnblockMemberMutation(client);
+  } = useUnblockMemberMutation(supabase);
 
   const close = useCallback(() => {
     setOpenId(null);

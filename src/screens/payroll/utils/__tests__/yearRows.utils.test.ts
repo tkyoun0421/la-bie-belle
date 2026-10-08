@@ -1,11 +1,3 @@
-// 구현 대상: src/screens/payroll/utils/yearRows.utils.ts
-//
-// PayrollMonthRow = { month: "YYYY-MM", amount }다.
-//
-// yearRows(months) — 「연」 단위 목록이다(payroll.md 「내역 목록」). 달마다 한
-// 줄로 접히고 최근이 위다(12월이 맨 위, 1월이 맨 아래). 맨 아래에 합계 줄이
-// 하나 더 붙고 값은 열두 달 합과 같다. 주·월 단위에는 이 함수 자체를 안 부른다.
-
 import {
   monthRowsOfDays,
   yearRows,
@@ -69,9 +61,6 @@ describe("yearRows — 합계 줄은 달 개수와 무관하게 항상 선다", 
     expect(rows[1]).toEqual({ type: "total", amountLabel: "50,000원" });
   });
 });
-
-// monthRowsOfDays(days) — 날 목록을 달 줄로 접는다. 날이 있는 달만 선다
-// (payroll.md 「내역 목록」의 「빈 상태」).
 
 describe("monthRowsOfDays — 날이 있는 달만 줄로 선다", () => {
   it("1월과 3월에만 날이 있으면 2월 줄은 없다", () => {

@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";
@@ -19,37 +18,11 @@ import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
 import { MemberDialog } from "@/screens/members/ui/MemberDialog";
 import { MemberSheet } from "@/screens/members/ui/MemberSheet";
 
-/**
- * 관리자가 이미 받은 사람들을 다루는 화면이다. 여기서 하는 일이 셋이다 — 이름 고치기,
- * 관리자로 올리고 내리기, 퇴사 처리. 정본은
- * `docs/2-design/modules/account/screens/members.md`고 완료 조건은
- * `docs/2-design/spec/members.md`다.
- *
- * **퇴사한 사람이 같은 화면 아래에 있다.** 별도 화면으로 안 뺀다 — 실수로 퇴사 처리한 것을
- * 되돌리거나 지난 이름을 확인하는 일이 드물지만 있고, 화면을 하나 더 만들 만큼은 아니다.
- * 검색도 두 구획을 같이 거른다.
- *
- * **막는 자리 둘은 서버가 정한다.** 화면이 마지막 관리자의 내리기 버튼을 미리 잠그지만 그것은
- * 목록을 받은 시점의 판정이고, 누르는 시점의 판정은 `last_admin`과
- * `has_future_assignments`로 돌아와 Dialog가 이유를 말한다 — 그 합침은
- * [`useMembersScreen`](../hooks/useMembersScreen.ts)이 한다.
- *
- * **아직 안 그린 둘.** 시급 줄은 시급 표가 서기 전이라 붙일 값이 없고(members.md의 「사람 시트
- * 짜임」), 「근무표로 가기」의 목적지 화면은 아직 없다.
- */
-
-/**
- * 껍데기가 그릴 줄 수다.
- *
- * **같은 값이 저장소 열셋에 쓰는 꼴까지 같다.** 몇 줄인지는 화면이 정하고 `.map`으로 회색
- * 덩이를 그리는 일은 `shared/ui`의 몫이라, 접는 자리가 `consts`가 아닐 수 있다 — AC-13이
- * 받는다.
- */
 const SKELETON_ROWS = [0, 1, 2];
 
 export function MembersScreen() {
   const router = useRouter();
-  const screen = useMembersScreen(supabase);
+  const screen = useMembersScreen();
 
   return (
     <Screen>

@@ -1,15 +1,15 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/membersPending/hooks/useMembersBlockedScreen.ts
-//
-// 차단한 사람을 보고 차단을 푸는 화면의 controller다. 상세 시트가 없고 쓰기도 하나라 가입
-// 대기보다 얇지만 가름은 같다 — 성공하면 확인 시트를 닫고 토스트를 세우고, `already_decided`
-// 면 안내 토스트를, 통신이 끊기면 시트를 연 채로 「보내지 못했어요」를 세운다.
-
 const listBlockedMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const unblockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: jest.fn(),
@@ -52,8 +52,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const BLOCKED = [
   {
     id: "p1",
@@ -79,7 +77,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useMembersBlockedScreen(FAKE_CLIENT), {
+  const hook = renderHook(() => useMembersBlockedScreen(), {
     wrapper,
   });
 
@@ -94,7 +92,7 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembersBlockedScreen(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMembersBlockedScreen(), {
       wrapper,
     });
 

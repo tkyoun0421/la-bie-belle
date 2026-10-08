@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/rehearsal/model/addSheetState.reducer.ts
-//
-// 넣는 시트의 리듀서다(rehearsal.md 「넣는 중」·「문안」) — wrong_kind가 오면 갈래를
-// 전환하고 알림 「이 날의 근무가 바뀌었어요 · 다시 넣어주세요」를 세우되 넣던 값은 그대로
-// 둔다. overlaps는 값을 유지한 채 칸 아래 문구 「이 시간에 넣은 리허설이 이미 있어요」를
-// 세운다. TransportError(저장 실패)도 넣던 값을 그대로 둔다.
-
 import {
   addSheetReducer,
   type AddSheetState,

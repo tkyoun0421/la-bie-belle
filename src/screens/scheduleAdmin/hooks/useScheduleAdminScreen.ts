@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -68,35 +68,10 @@ import {
 } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 import { countOpenSlotsByDate } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
-/**
- * 관리자가 근무표를 짜는 화면의 controller다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`고 완료 조건은
- * `docs/2-design/spec/schedule-admin.md`다.
- *
- * **한 라우트가 달력과 날 상세를 둘 다 든다.** `?date=`가 있으면 그 날의 상세고 없으면
- * 달력이다 — 읽는 질의가 같은 아홉이라 훅이 두 갈래로 안 갈린다. 날 상세가 쓰는 네 묶음을
- * 여기서 그 날 것만 걸러 넘긴다.
- *
- * **날 열기 모드의 부분 실패가 이 자리에 산다.** 여는 함수가 날 하나를 받아서
- * (`docs/2-design/modules/schedule/design.md`의 「날 열기·닫기」) 실패한 날만 다시 고를 수
- * 있게 남기고 모드를 안 푼다 — 다시 고를 자리가 있어야 해서다.
- *
- * **시트 열림이 통신에 매여 있다.** 만들기·마감일·근무 시간은 성공하면 저절로 닫히고 훅까지
- * 비운다. 안 비우면 같은 시트를 다시 열었을 때 지난 성공이 그대로 남아 열자마자 닫힌다.
- * 확정 시트만 열린 채로 「끝났어요」를 말하고 닫는 손이 따로다.
- *
- * **「지금」을 서버 시계에서 읽는다.** 확정 잠김·열 수 있는 날·전부 지난 달이 전부 그 하나에
- * 걸려 있어, 기기 시계가 하루 밀린 기기에서는 셋이 같이 어긋난다.
- *
- * **보낼 데는 안 든다.** 앱바 뒤로와 신청 모아보기와 날 상세의 돌아가기는 `.tsx`가 쥔다 —
- * `?from=`이 가리키는 곳으로 돌아가는 것은 이동이고, 그 자리에서 띄울 토스트만 여기 있다.
- */
-
 export type ScheduleAdminListState = "loading" | "missing" | "calendar";
 
 export type ScheduleAdminToast = { kind: "info" | "success"; message: string };
 
-/** 달력 칸 하나가 묻는 것들이다 — 판정은 전부 `model/`에서 끝나 화면은 답만 받는다. */
 export type ScheduleAdminCalendar = {
   isToday: (date: string) => boolean;
   stateOf: (date: string) => ScheduleDayCellState;
@@ -106,14 +81,9 @@ export type ScheduleAdminCalendar = {
   vacancyCountOf: (date: string) => number | null;
 };
 
-/**
- * 서 있는 시트 하나다. 다섯이 한 자리를 나눠 쓰는 것은 동시에 둘이 서는 길이 없어서고,
- * 열림과 보내는 중과 실패가 한 덩이로 와야 화면이 셋을 따로 안 맞춘다.
- */
 export type ScheduleAdminSheet =
   | {
       kind: "create";
-      /** 적고 있는 마감일이다 — 보낼 값이라 화면 것이 아니다. */
       deadline: string;
       canSave: boolean;
       saving: boolean;
@@ -130,7 +100,6 @@ export type ScheduleAdminSheet =
     }
   | {
       kind: "hours";
-      /** 적고 있는 출근·퇴근 시각이다. 열 때 그 날 값으로 깔린다. */
       starts: string;
       ends: string;
       canSave: boolean;
@@ -153,7 +122,6 @@ export type ScheduleAdminScreenParams = {
 export type ScheduleAdminScreenController = {
   month: string;
   monthTitle: string;
-  /** 시트의 날짜 고르기가 아래끝으로 쓰는 KST 오늘이다 — 지난 날을 마감으로 못 잡는다. */
   today: string;
   listState: ScheduleAdminListState;
   confirmed: boolean;
@@ -200,10 +168,6 @@ export type ScheduleAdminScreenController = {
   leaveDay: () => void;
 };
 
-/**
- * 서 있는 시트와 그 시트가 적고 있는 값이다. 적은 값이 시트와 한 덩이인 것은 닫으면 같이
- * 사라져야 해서고, 시트마다 따로 두면 닫는 손이 비울 것을 하나씩 기억해야 한다.
- */
 type SheetState =
   | { kind: "create"; deadline: string }
   | { kind: "deadline" }
@@ -211,15 +175,10 @@ type SheetState =
   | { kind: "hours"; starts: string; ends: string }
   | { kind: "close" };
 
-/** `"10:00:00"`에서 초를 뗀다 — 시트가 적는 값은 분까지다. */
 function clockLabel(clock: string): string {
   return clock.slice(0, 5);
 }
 
-/**
- * 보내기가 끝나면 시트를 닫고 훅을 비운다. 안 비우면 같은 시트를 다시 열었을 때 지난 성공이
- * 그대로 남아 열자마자 닫힌다.
- */
 function useCloseSheetOnSuccess(
   succeeded: boolean,
   reset: () => void,
@@ -233,10 +192,11 @@ function useCloseSheetOnSuccess(
   }, [succeeded, reset, leave]);
 }
 
-export function useScheduleAdminScreen(
-  client: DB,
-  { month: monthParam, date: dateParam, from }: ScheduleAdminScreenParams,
-): ScheduleAdminScreenController {
+export function useScheduleAdminScreen({
+  month: monthParam,
+  date: dateParam,
+  from,
+}: ScheduleAdminScreenParams): ScheduleAdminScreenController {
   const clockOffset = serverClockStore((at) => at.offset);
   const nowMs = nowWithOffset(Date.now(), clockOffset);
   const now = new Date(nowMs).toISOString();
@@ -252,38 +212,38 @@ export function useScheduleAdminScreen(
   const [toast, setToast] = useState<ScheduleAdminToast | null>(null);
 
   const { data: schedule, isLoading: loadingWindow } = useMonthWindowQuery(
-    client,
+    supabase,
     month,
   );
   const { data: days, refetch: reloadDays } = useMonthScheduleQuery(
-    client,
+    supabase,
     month,
   );
-  const { data: openSlots } = useOpenSlotsQuery(client, month);
-  const { data: availabilities } = useMonthAvailabilitiesQuery(client, month);
-  const { data: activeMembers } = useMembersQuery(client, "active");
-  const { data: qualifications } = useQualificationsQuery(client);
-  const { data: slotRequests } = useSlotRequestsQuery(client, month);
-  const { data: payroll } = usePayrollMonthsQuery(client, [month]);
-  const { data: rehearsals } = useAllRehearsalsQuery(client, month);
+  const { data: openSlots } = useOpenSlotsQuery(supabase, month);
+  const { data: availabilities } = useMonthAvailabilitiesQuery(supabase, month);
+  const { data: activeMembers } = useMembersQuery(supabase, "active");
+  const { data: qualifications } = useQualificationsQuery(supabase);
+  const { data: slotRequests } = useSlotRequestsQuery(supabase, month);
+  const { data: payroll } = usePayrollMonthsQuery(supabase, [month]);
+  const { data: rehearsals } = useAllRehearsalsQuery(supabase, month);
 
-  const create = useCreateScheduleMutation(client);
-  const changeDeadline = useSetApplicationDeadlineMutation(client);
-  const open = useOpenDayMutation(client);
-  const close = useCloseDayMutation(client);
-  const setHours = useSetDayHoursMutation(client);
-  const confirm = useConfirmScheduleMutation(client);
-  const addSlot = useAddSlotMutation(client);
-  const removeSlot = useRemoveSlotMutation(client);
-  const mergeSlots = useMergeSlotsMutation(client);
-  const splitSlot = useSplitSlotMutation(client);
-  const addAssignment = useAddAssignmentMutation(client);
-  const removeAssignment = useRemoveAssignmentMutation(client);
-  const forceChange = useForceChangeMutation(client);
-  const grantPosition = useGrantPositionMutation(client);
-  const sendWorkRequest = useSendWorkRequestMutation(client);
-  const setHoliday = useSetHolidayMutation(client);
-  const setAdjustment = useSetAdjustmentMutation(client);
+  const create = useCreateScheduleMutation(supabase);
+  const changeDeadline = useSetApplicationDeadlineMutation(supabase);
+  const open = useOpenDayMutation(supabase);
+  const close = useCloseDayMutation(supabase);
+  const setHours = useSetDayHoursMutation(supabase);
+  const confirm = useConfirmScheduleMutation(supabase);
+  const addSlot = useAddSlotMutation(supabase);
+  const removeSlot = useRemoveSlotMutation(supabase);
+  const mergeSlots = useMergeSlotsMutation(supabase);
+  const splitSlot = useSplitSlotMutation(supabase);
+  const addAssignment = useAddAssignmentMutation(supabase);
+  const removeAssignment = useRemoveAssignmentMutation(supabase);
+  const forceChange = useForceChangeMutation(supabase);
+  const grantPosition = useGrantPositionMutation(supabase);
+  const sendWorkRequest = useSendWorkRequestMutation(supabase);
+  const setHoliday = useSetHolidayMutation(supabase);
+  const setAdjustment = useSetAdjustmentMutation(supabase);
 
   const closeSheet = useCallback(() => {
     setSheetState(null);
@@ -407,10 +367,6 @@ export function useScheduleAdminScreen(
     }
   };
 
-  /**
-   * 「자격도 주기」는 한 트랜잭션이 아니라 두 호출이다. 앞이 성공하고 뒤가 실패하면 자격만
-   * 남는데, 자격은 사람의 속성이라 그 상태가 틀린 것이 아니다(plan AC-05).
-   */
   const grantAndAssign = async (
     input: AddAssignmentInput,
     position: string,

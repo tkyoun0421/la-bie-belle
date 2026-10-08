@@ -1,11 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  PERMISSION_OF_OTHERS,
-  REACHABLE,
-} from "@/entities/notification/consts/notification.const";
-import { getReachState } from "@/entities/notification/model/reachState.policy";
-import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
-import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import {
   ADJUSTMENT_REASON,
@@ -20,18 +13,23 @@ import {
 import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
 import { allowsStructureChange } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type {
+  DayDetailController,
   DayDetailInput,
+  DayDetailPositionRow,
+  PendingChange,
   PickerEntry,
+  PickerTarget,
 } from "@/screens/scheduleAdmin/model/dayDetail.type";
 import { dayHoursLine } from "@/screens/scheduleAdmin/model/dayHoursForm.policy";
-import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot.policy";
 import {
-  holidaySwitchState,
-  type HolidaySwitchState,
-} from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
-import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
-import { classifyPickerRows } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
-import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
+  canDropOnTarget,
+  dropOutcome,
+} from "@/screens/scheduleAdmin/model/dragGesture.policy";
+import { holidaySwitchState } from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
+import { canNotifyMember } from "@/screens/scheduleAdmin/model/notifyReach.policy";
+import { pickOutcome } from "@/screens/scheduleAdmin/model/pickOutcome.policy";
+import { pickerEntries } from "@/screens/scheduleAdmin/model/pickerEntries.policy";
+import { slotRequestBadgeFor } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
 import {
   absenceMinutes,
   assignedMinutes,
@@ -39,238 +37,22 @@ import {
 import {
   adjustSheetHead,
   adjustSheetRows,
-  type AdjustSheetRow,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 import { adjustmentCountLine } from "@/screens/scheduleAdmin/utils/adjustmentCount.utils";
+import { confirmChangeCopyOf } from "@/screens/scheduleAdmin/utils/confirmChangeCopy.utils";
 import {
   dayApplicationsLine,
   dayDetailRows,
 } from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
-import {
-  DISCARD_DROP_ID,
-  positionOf,
-  slotOf,
-} from "@/screens/scheduleAdmin/utils/dragId.utils";
-import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
 import { formatScheduleDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 import {
   POSITION_ORDER,
   assignmentForSlot,
   groupSlotsByPosition,
   slotFillCount,
-  type PositionSlot,
 } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
-/**
- * 열린 날 하나의 상세를 쥐는 controller다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이다.
- *
- * **확정 갈림이 둘이다.** 알림이 나가는지는 그 달이 확정됐는지로 갈리고(확인 시트), 자물쇠와
- * 끌기와 자리 추가가 서는지는 그 날이 확정 시점에 있던 날인지로 갈린다
- * (`confirmGate.policy.ts`). 확정 뒤에 새로 연 날은 앞은 참이고 뒤도 참이다.
- *
- * **확정 뒤에는 모든 변경이 한 문을 지난다.** 배정·교육·교체·빼기 넷이 같은 `commit`으로
- * 모이는 것은 「물어보고 보낼지」가 넷에 같은 조건이어서고, 그래서 확인 시트가 하나다.
- *
- * **판정은 전부 `model/`에 있다.** 누가 어느 갈래로 서고 무엇이 합쳐지고 어느 실패가 목록을
- * 다시 읽게 하는지는 순수 함수가 알고, 이 자리가 하는 일은 그 답대로 상태를 옮기는 것까지다.
- *
- * **쓰는 손은 위에서 내려온다.** 조각은 제 질의를 안 들어(`dayDetail.type.ts`) 보내는 것은
- * 받은 콜백이고, 보내는 중인지와 실패도 받은 값이다.
- */
-
-export type DayDetailPositionRow = {
-  position: string;
-  slots: readonly PositionSlot[];
-  assignments: readonly ScheduleAssignment[];
-  unlocked: boolean;
-  canChangeStructure: boolean;
-  nameOf: (profileId: string) => string;
-  requestBadgeOf: (slotId: string) => string | null;
-  onToggleLock: () => void;
-  onPressEducation: () => void;
-  onPressSlot: (slotId: string) => void;
-  onAddSlot: () => void;
-};
-
-export type DayDetailPicker = {
-  title: string;
-  entries: readonly PickerEntry[];
-  expanded: boolean;
-  picked: readonly string[];
-  sending: boolean;
-  expand: () => void;
-  pick: (entry: PickerEntry) => void;
-  inspect: (entry: PickerEntry) => void;
-  toggle: (profileId: string) => void;
-  send: () => void;
-  close: () => void;
-};
-
-export type DayDetailPerson = {
-  name: string;
-  photoUrl: string | null;
-  gender: string | null;
-  birthDate: string | null;
-  qualifications: readonly string[];
-  close: () => void;
-};
-
-export type DayDetailQualification = {
-  name: string;
-  position: string;
-  once: () => void;
-  grant: () => void;
-  close: () => void;
-};
-
-export type DayDetailSlotSheet = {
-  confirmed: boolean;
-  merged: boolean;
-  replace: () => void;
-  split: () => void;
-  remove: () => void;
-  close: () => void;
-};
-
-export type DayDetailAdjust = {
-  head: string;
-  rows: readonly AdjustSheetRow[];
-  pickPerson: (profileId: string) => void;
-  close: () => void;
-};
-
-export type DayDetailChoice = {
-  name: string;
-  assignedMinutes: number;
-  canRevert: boolean;
-  /** 연장을 골라 분 칸이 열렸는지다. 결근과 원래대로는 값을 안 묻는다. */
-  extending: boolean;
-  digits: string;
-  canSend: boolean;
-  sending: boolean;
-  failureMessage: string | null;
-  absent: () => void;
-  revert: () => void;
-  startExtending: () => void;
-  writeDigits: (text: string) => void;
-  extend: () => void;
-  close: () => void;
-};
-
-export type DayDetailConfirmChange = {
-  copy: ForceChangeCopyInput;
-  saving: boolean;
-  confirm: () => void;
-  close: () => void;
-};
-
-export type DayDetailDiscard = {
-  name: string;
-  removing: boolean;
-  confirm: () => void;
-  close: () => void;
-};
-
-export type DayDetailController = {
-  title: string;
-  fillLabel: string;
-  showHours: boolean;
-  hoursLine: string;
-  holiday: HolidaySwitchState;
-  adjustmentLine: string;
-  showApplications: boolean;
-  applicationsLine: string;
-  positions: readonly DayDetailPositionRow[];
-  showCloseDay: boolean;
-  canDrop: (dragId: string, dropId: string) => boolean;
-  drop: (dragId: string, dropId: string) => void;
-  openAdjust: () => void;
-  picker: DayDetailPicker | null;
-  person: DayDetailPerson | null;
-  qualification: DayDetailQualification | null;
-  slotSheet: DayDetailSlotSheet | null;
-  adjust: DayDetailAdjust | null;
-  choice: DayDetailChoice | null;
-  confirmChange: DayDetailConfirmChange | null;
-  discard: DayDetailDiscard | null;
-  toast: string | null;
-  dismissToast: () => void;
-};
-
-/** 「원래대로」는 행을 지우는 것이 아니라 0분인 새 행을 넣는 것이다. */
 const REVERT_MINUTES = 0;
-
-/** 확정 뒤에 확인 시트를 거쳐 나가는 변경들이다. 확정 전에는 같은 값이 바로 실행된다. */
-type PendingChange =
-  | {
-      kind: "add";
-      slotId: string;
-      profileId: string;
-      name: string;
-      skipQualification: boolean;
-      grant: { position: string } | null;
-    }
-  | { kind: "training"; position: string; profileId: string; name: string }
-  | {
-      kind: "swap";
-      assignmentId: string;
-      profileId: string;
-      outgoingProfileId: string;
-      outgoingName: string;
-      incomingName: string;
-    }
-  | {
-      kind: "remove";
-      assignmentId: string;
-      outgoingProfileId: string;
-      outgoingName: string;
-    };
-
-type PickerTarget = {
-  position: string;
-  slotId: string | null;
-  replacing: {
-    assignmentId: string;
-    outgoingProfileId: string;
-    outgoingName: string;
-  } | null;
-};
-
-/**
- * 알림이 그 사람에게 닿는지는 의사와 기기 둘로 갈린다(`reachState.policy.ts`) — 목록이 그
- * 둘을 같이 실어 와서 여기서 한 번 더 읽을 것이 없다. 못 받는 사람의 문안은
- * `forceChangeCopy.utils.ts`가 들고, 이 자리는 갈래를 합쳐 「닿나」 하나로만 넘긴다 — 그
- * 자리에서 관리자가 할 일이 어느 갈래든 따로 연락 하나라서다.
- */
-function confirmCopyOf(
-  change: PendingChange,
-  canNotify: (profileId: string) => boolean,
-): ForceChangeCopyInput {
-  if (change.kind === "swap") {
-    return {
-      kind: "swap",
-      outgoingName: change.outgoingName,
-      outgoingCanNotify: canNotify(change.outgoingProfileId),
-      incomingName: change.incomingName,
-      incomingCanNotify: canNotify(change.profileId),
-    };
-  }
-
-  if (change.kind === "remove") {
-    return {
-      kind: "remove",
-      outgoingName: change.outgoingName,
-      outgoingCanNotify: canNotify(change.outgoingProfileId),
-    };
-  }
-
-  return {
-    kind: change.kind,
-    incomingName: change.name,
-    incomingCanNotify: canNotify(change.profileId),
-  };
-}
 
 export function useDayDetail(input: DayDetailInput): DayDetailController {
   const {
@@ -325,10 +107,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [chosen, setChosen] = useState<string | null>(null);
 
-  /**
-   * 연장으로 적고 있는 분이다. `null`이면 아직 연장을 안 골랐다는 뜻이라 「열렸나」와 「무엇을
-   * 적었나」가 한 값으로 접힌다 — 닫힌 칸에 값이 남아 있는 상태가 아예 안 선다.
-   */
   const [extra, setExtra] = useState<string | null>(null);
 
   const rows = dayDetailRows({ applicationCount: applicationNames.length });
@@ -363,10 +141,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     (row) => row.profile_id === chosen,
   );
 
-  /**
-   * `not_allowed`는 그날 배정이 사라진 것이라 고르기 시트를 닫고 목록을 다시 읽는다. 나머지
-   * 실패는 시트를 열어둔 채 문구만 띄운다 — 넣던 분이 남아야 다시 보낼 수 있다.
-   */
   const failure =
     adjustError === null ? null : adjustmentFailureAction(adjustError);
 
@@ -396,20 +170,8 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     [assignments, members],
   );
 
-  /** 목록에 없는 사람은 못 받는 쪽으로 읽는다 — 안 가는 것을 간다고 말하지 않는다. */
   const canNotify = useCallback(
-    (profileId: string) => {
-      const found = members.find((one) => one.id === profileId);
-
-      return (
-        found !== undefined &&
-        getReachState({
-          notificationsEnabled: found.notifications_enabled,
-          hasDevice: found.has_device,
-          permission: PERMISSION_OF_OTHERS,
-        }) === REACHABLE
-      );
-    },
+    (profileId: string) => canNotifyMember(members, profileId),
     [members],
   );
 
@@ -419,7 +181,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     onAdjustSettled();
   }, [onAdjustSettled]);
 
-  /** 사람을 바꾸면 적던 분이 남지 않는다 — 남의 줄에 넣을 값이 아니다. */
   const choosePerson = useCallback((profileId: string) => {
     setChosen(profileId);
     setExtra(null);
@@ -442,32 +203,9 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     setQualifying(null);
   }, []);
 
-  const requestOf = useMemo(() => {
-    const bySlot = new Map<string, SlotRequest>();
-
-    for (const request of slotRequests) {
-      if (request.slot_id !== null) {
-        bySlot.set(request.slot_id, request);
-      }
-    }
-
-    return bySlot;
-  }, [slotRequests]);
-
   const requestBadgeOf = useCallback(
-    (slotId: string) => {
-      const request = requestOf.get(slotId);
-
-      return slotRequestBadge(
-        request === undefined
-          ? null
-          : {
-              closed_at: request.closed_at,
-              candidates: request.request_candidates,
-            },
-      );
-    },
-    [requestOf],
+    (slotId: string) => slotRequestBadgeFor(slotId, slotRequests),
+    [slotRequests],
   );
 
   const toggleRequested = useCallback((profileId: string) => {
@@ -478,53 +216,29 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     );
   }, []);
 
-  /**
-   * 요청은 빈 자리에만 보낸다 — 교육 픽커에는 자리가 없고 강제 변경 픽커의 자리는 이미
-   * 차 있다. 그 둘에서는 체크박스를 떼어 보낼 길 자체를 없앤다.
-   */
-  const entries = useMemo((): PickerEntry[] => {
-    if (picker === null) {
-      return [];
-    }
-
-    const requestable = picker.slotId !== null && picker.replacing === null;
-    const request =
-      picker.slotId === null ? undefined : requestOf.get(picker.slotId);
-
-    const classified = classifyPickerRows({
-      position: picker.position,
-      members: members.map((one) => ({
-        profileId: one.id,
-        displayName: one.display_name ?? "",
-      })),
+  const entries = useMemo(
+    (): PickerEntry[] =>
+      picker === null
+        ? []
+        : pickerEntries({
+            target: picker,
+            members,
+            appliedProfileIds,
+            qualifications,
+            dayAssignments: assignments,
+            slotRequests,
+            serverNowMs,
+          }),
+    [
       appliedProfileIds,
-      qualifiedProfileIds: qualifications
-        .filter((one) => one.position === picker.position)
-        .map((one) => one.profile_id),
-      dayAssignments: assignments,
-      requestCandidates: request?.request_candidates ?? [],
+      assignments,
+      members,
+      picker,
+      qualifications,
       serverNowMs,
-    });
-
-    return classified.map((row) => {
-      const found = members.find((one) => one.id === row.profileId);
-
-      return {
-        ...row,
-        checkbox: row.checkbox && requestable,
-        photoUrl: found?.photo_url ?? null,
-        gender: found?.gender ?? null,
-      };
-    });
-  }, [
-    appliedProfileIds,
-    assignments,
-    members,
-    picker,
-    qualifications,
-    requestOf,
-    serverNowMs,
-  ]);
+      slotRequests,
+    ],
+  );
 
   const run = useCallback(
     (change: PendingChange) => {
@@ -569,7 +283,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     ],
   );
 
-  /** 확정 뒤에는 모든 변경에 확인 시트가 선다 — 그 사람의 근무가 생기고 없어지는 사건이다. */
   const commit = useCallback(
     (change: PendingChange) => {
       closePicker();
@@ -591,54 +304,26 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
         return;
       }
 
-      if (entry.checkbox) {
-        toggleRequested(entry.profileId);
+      const outcome = pickOutcome(picker, entry);
+
+      if (outcome.kind === "toggle_request") {
+        toggleRequested(outcome.profileId);
         return;
       }
 
-      if (entry.category === "not_applied") {
-        return;
-      }
-
-      if (entry.category === "assigned") {
+      if (outcome.kind === "merge_instead") {
         setToast(SCHEDULE_ADMIN_COPY.mergeInstead);
         return;
       }
 
-      if (entry.category === "not_qualified") {
+      if (outcome.kind === "needs_qualification") {
         setQualifying(entry);
         return;
       }
 
-      if (picker.replacing !== null) {
-        commit({
-          kind: "swap",
-          assignmentId: picker.replacing.assignmentId,
-          profileId: entry.profileId,
-          outgoingProfileId: picker.replacing.outgoingProfileId,
-          outgoingName: picker.replacing.outgoingName,
-          incomingName: entry.displayName,
-        });
-        return;
+      if (outcome.kind === "change") {
+        commit(outcome.change);
       }
-
-      commit(
-        picker.slotId === null
-          ? {
-              kind: "training",
-              position: picker.position,
-              profileId: entry.profileId,
-              name: entry.displayName,
-            }
-          : {
-              kind: "add",
-              slotId: picker.slotId,
-              profileId: entry.profileId,
-              name: entry.displayName,
-              skipQualification: false,
-              grant: null,
-            },
-      );
     },
     [commit, picker, toggleRequested],
   );
@@ -661,10 +346,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     [commit, picker, qualifying],
   );
 
-  /**
-   * 요청을 보내는 손은 배정과 같다 — 시트를 먼저 닫고 보낸다. 요청은 고른 전원에게 한 번에
-   * 나가고 결과는 자리 카드의 배지로 돌아온다.
-   */
   const sendRequest = useCallback(() => {
     const slotId = picker?.slotId ?? null;
 
@@ -692,59 +373,37 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   );
 
   const canDrop = useCallback(
-    (dragId: string, dropId: string) => {
-      if (slotOf(dragId) !== null) {
-        return dropId === DISCARD_DROP_ID;
-      }
-
-      const from = positionOf(dragId);
-      const to = positionOf(dropId);
-
-      if (from === null || to === null) {
-        return false;
-      }
-
-      return (
-        mergeTargetValidity({
-          slots,
-          assignments,
-          fromPosition: from,
-          toPosition: to,
-          fromUnlocked: unlocked.includes(from),
-          toUnlocked: unlocked.includes(to),
-        }) === "valid"
-      );
-    },
+    (dragId: string, dropId: string) =>
+      canDropOnTarget({
+        dragId,
+        dropId,
+        slots,
+        assignments,
+        unlockedPositions: unlocked,
+      }),
     [assignments, slots, unlocked],
   );
 
   const drop = useCallback(
     (dragId: string, dropId: string) => {
-      const fromPosition = positionOf(dragId);
-      const toPosition = positionOf(dropId);
+      const outcome = dropOutcome({ dragId, dropId, assignments });
 
-      if (fromPosition !== null && toPosition !== null) {
-        onMergeSlots(dayId, fromPosition, toPosition);
+      if (outcome.kind === "merge") {
+        onMergeSlots(dayId, outcome.fromPosition, outcome.toPosition);
         return;
       }
 
-      const slotId = slotOf(dragId);
-
-      if (slotId === null) {
+      if (outcome.kind === "confirm") {
+        setDiscarding({
+          slotId: outcome.slotId,
+          name: nameOf(outcome.profileId),
+        });
         return;
       }
 
-      const taken = assignmentForSlot(slotId, assignments);
-
-      if (
-        taken !== null &&
-        discardSlotJudgement([taken]) === "needs_confirmation"
-      ) {
-        setDiscarding({ slotId, name: nameOf(taken.profile_id) });
-        return;
+      if (outcome.kind === "remove") {
+        onRemoveSlot(outcome.slotId);
       }
-
-      onRemoveSlot(slotId);
     },
     [assignments, dayId, nameOf, onMergeSlots, onRemoveSlot],
   );
@@ -910,7 +569,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       pending === null
         ? null
         : {
-            copy: confirmCopyOf(pending, canNotify),
+            copy: confirmChangeCopyOf(pending, canNotify),
             saving,
             confirm: () => {
               run(pending);

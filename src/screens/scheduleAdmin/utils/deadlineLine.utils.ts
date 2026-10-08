@@ -4,15 +4,6 @@ import {
   kstDateOf,
 } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
-/**
- * 월 달력 머리의 마감 줄이다. 문안 표
- * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「월 달력 문안」) 그대로
- * 마감 전이면 남은 날을, 마감 뒤면 마감일만 적는다.
- *
- * **마감 당일에 「0일 남았어요」를 안 쓴다.** 그 말은 남은 시간을 안 말한다 — 오늘이 아직
- * 안 지났다는 것이 그날 사람이 알아야 할 전부다. 근무자 달력의 같은 줄과 같은 손이다.
- */
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type DeadlineLineInput = {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -23,25 +23,6 @@ import {
   removeApproval,
   sortApprovals,
 } from "@/screens/approvals/utils/approvalsList.utils";
-
-/**
- * 「승인할 일」 화면의 controller다. 정본은
- * `docs/2-design/system/screens/approvals.md`고 완료 조건은
- * `docs/2-design/spec/schedule-requests.md`의 AC-05다.
- *
- * **이유 고르기가 UI 상태가 아니다.** 고른 문장이 그대로 근무자에게 가고 보내는 동안 잠기고
- * 실패하면 쓴 글이 남아야 한다 — 통신에 매여 있으면 그것은 화면 것이 아니다. 시트 조각이
- * 들고 있던 둘(`chosen`·`written`)이 여기로 올라온 까닭이다.
- *
- * **보낸 뒤가 판정마다 다르다.** 거절은 토스트를 띄우고 목록에 남고, 승인은 그 자리를 채우는
- * 날 상세로 넘어간다 — 승인한 관리자가 이어서 할 일이 그것 하나다.
- *
- * **화면이 먼저 움직이지 않는다.** 응답이 온 뒤에 줄을 뺀다
- * ([runtime.md](../../../../docs/2-design/system/runtime.md#낙관적-업데이트)).
- *
- * **보낼 데를 `expo-router`에서 직접 안 당긴다.** 받는 꼴만 안다 — 그래야 이 자리가 조각
- * 없이 테스트에 선다.
- */
 
 export type ApprovalsRouter = {
   canGoBack: () => boolean;
@@ -128,12 +109,11 @@ function sendLabelOf(sending: boolean, failed: boolean): string {
 }
 
 export function useApprovalsScreen(
-  client: DB,
   router: ApprovalsRouter,
 ): ApprovalsScreenController {
-  const { data: approvals } = usePendingApprovalsQuery(client);
+  const { data: approvals } = usePendingApprovalsQuery(supabase);
   const { mutate, isPending, isSuccess, isError, reset } =
-    useDecideCancelRequestMutation(client);
+    useDecideCancelRequestMutation(supabase);
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<ApprovalSheetFace>("detail");

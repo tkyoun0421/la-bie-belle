@@ -1,25 +1,17 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/applications/hooks/useApplicationsScreen.ts
-//
-// 그 달 근무 신청을 두 방향으로 보는 화면의 controller다. `.tsx`가 질의 둘과 쓰기 하나를
-// 직접 들고 탭과 시트 열림을 `useState`로 쥐고 있었다.
-//
-// **탭은 그릴 것만 가르고 질의는 하나다.** 날짜순과 사람순이 같은 답을 두 방향으로 접어서
-// 로딩·빈 상태와 탭 둘이 `listState` 하나로 접힌다 — 탭이 읽을 것을 가르는 통계와 갈린다.
-//
-// **시트 열림이 통신에 매여 있다.** 저장이 끝나면 저절로 닫히고 실패하면 열린 채로 남는다 —
-// 사람이 열고 사람이 닫는 상태가 아니라 controller 것이다.
-//
-// **「지금」은 서버 시계에서 온다.** 마감까지 며칠 남았는지가 하루 밀린 기기에서 달라지면
-// 안 된다. 그래서 여기서 기기 시계를 고정해 두고 센다.
-
 const getMonthAvailabilitiesMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule(
   "@/entities/availability/api/getMonthAvailabilities.api",
@@ -62,9 +54,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
-/** KST로 2026-10-03 오전 10시다 — 그 달이 `"2026-10"`이고 오늘이 3일이다. */
 const NOW_MS = Date.parse("2026-10-03T01:00:00.000Z");
 
 const DEADLINE = "2026-10-10";
@@ -108,7 +97,7 @@ afterEach(() => {
 
 async function mounted(month?: string) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useApplicationsScreen(FAKE_CLIENT, month), {
+  const hook = renderHook(() => useApplicationsScreen(month), {
     wrapper,
   });
 
@@ -123,10 +112,9 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useApplicationsScreen(FAKE_CLIENT, "2026-10"),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useApplicationsScreen("2026-10"), {
+      wrapper,
+    });
 
     expect(result.current.listState).toBe("loading");
   });

@@ -11,14 +11,6 @@ import {
   type MyAssignment,
 } from "@/screens/scheduleWorker/utils/agendaRow.utils";
 
-/**
- * 포지션 순 보기다. 열린 날이 날짜순 아코디언으로 서고 기본은 전부 접힘이다
- * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「포지션 순 — 날짜
- * 아코디언」).
- *
- * 현황 줄은 여기서 안 선다 — 날짜 줄이 이미 그 자리를 쓴다.
- */
-
 export type AgendaEntry = {
   workDate: string;
   myAssignment: MyAssignment | null;

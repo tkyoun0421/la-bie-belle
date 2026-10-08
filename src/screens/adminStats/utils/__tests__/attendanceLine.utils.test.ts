@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/adminStats/utils/attendanceLine.utils.ts
-//
-// 관리자 통계 근태 탭의 현황 줄과 비율 띠 몫이다. 둘 다 `.tsx`가 템플릿 문자열과 배열
-// 리터럴로 직접 적고 있었다 — 근무자 통계가 같은 값을 `utils`에 두고 있어 꼴이 갈려 있었다.
-
 import {
   adminAttendanceLine,
   adminAttendanceShares,

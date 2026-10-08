@@ -1,16 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/profile/hooks/useProfileScreen.ts
-//
-// 「나」 화면의 controller다. `.tsx`가 502줄에 `useState` 여덟을 들고 세션 읽기와 로그아웃과
-// 사진 고르기를 직접 하고 있었다.
-//
-// **시트는 한 번에 하나다.** 연락처·사진·화면 셋이 같은 겹을 쓴다 — 연락처와 사진은 성공하면
-// 저절로 닫히므로 열림이 통신에 매여 있다.
-//
-// **끄기 전에 한 번 묻는다.** 켜기는 바로 켜지고 끄기만 Dialog를 거친다.
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -94,8 +84,6 @@ jest.unstable_mockModule("@/features/profileEdit/lib/pickPhoto.lib", () => ({
   pickAndShrinkPhoto: pickAndShrinkPhotoMock,
 }));
 
-// 기기 실물을 묶은 자리 둘은 `expo-*`를 직접 물어 node 갈래에서 못 선다. 주입 이음매가
-// 거기라 controller는 이 둘만 가리고도 통째로 돈다.
 jest.unstable_mockModule("@/features/pushSwitch/lib/pushDeps.lib", () => ({
   PUSH_DEPS: { getPermissionsAsync: jest.fn() },
 }));
@@ -115,6 +103,12 @@ jest.unstable_mockModule("@/shared/lib/themeStorage.lib", () => ({
   applyColorScheme: jest.fn(),
   readStoredTheme: jest.fn(async () => null),
   writeStoredTheme: jest.fn(),
+}));
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
 }));
 
 const { renderHook, waitFor, act } =
@@ -142,8 +136,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 const USER = {
   id: "user-1",
@@ -195,7 +187,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useProfileScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useProfileScreen(), { wrapper });
 
   await waitFor(() => expect(hook.result.current.loading).toBe(false));
 

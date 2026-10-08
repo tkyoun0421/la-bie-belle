@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/membersPending/utils/elapsedLine.utils.ts
-//
-// 목록 줄의 「언제 그랬나」다. 가입 대기 화면과 차단한 사람 화면이 같은 꼴을 각자 적고
-// 있었다 — 조사를 붙이는 가름까지 글자가 같았다.
-
 import {
   spellBlockedLine,
   spellSentLine,

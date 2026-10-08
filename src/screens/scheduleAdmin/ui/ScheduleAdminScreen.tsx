@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
@@ -29,22 +28,6 @@ import { CreateScheduleSheet } from "@/screens/scheduleAdmin/ui/CreateScheduleSh
 import { DayDetail } from "@/screens/scheduleAdmin/ui/DayDetail";
 import { DayHoursSheet } from "@/screens/scheduleAdmin/ui/DayHoursSheet";
 
-/**
- * 관리자가 근무표를 짜는 화면이다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`고 완료 조건은
- * `docs/2-design/spec/schedule-admin.md`다.
- *
- * **한 라우트가 달력과 날 상세를 둘 다 든다.** `?date=`가 있으면 그 날의 상세고 없으면
- * 달력이다 — 알림과 관리자 홈이 날짜로 바로 들어오는 자리라 문이 하나여야 한다
- * (`docs/2-design/system/navigation.md`의 「경로」). 어느 쪽을 그릴지와 날 상세가 쓸 묶음은
- * [`useScheduleAdminScreen`](../hooks/useScheduleAdminScreen.ts)이 들고 이 파일은 쌓기만 한다.
- *
- * **`?from=`은 앱바 뒤로가 어디로 가는지를 정한다.** 승인할 일에서 근무 취소를 승인하면 그
- * 자리를 채우러 여기로 오고, 알림 목록에서 와도 같은 자리다
- * ([navigation.md 「뒤로」](../../../../docs/2-design/system/navigation.md#뒤로)) — 이동이라
- * 이 파일이 쥔다. 닿아서 띄울 토스트는 controller 것이다.
- */
-
 const SKELETON_ROWS = [0, 1, 2];
 
 export type ScheduleAdminScreenProps = {
@@ -59,7 +42,7 @@ export function ScheduleAdminScreen({
   from,
 }: ScheduleAdminScreenProps) {
   const router = useRouter();
-  const screen = useScheduleAdminScreen(supabase, { month, date, from });
+  const screen = useScheduleAdminScreen({ month, date, from });
 
   const toast =
     screen.toast === null ? null : (

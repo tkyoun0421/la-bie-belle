@@ -2,14 +2,6 @@ import { View } from "react-native";
 import { Divider } from "@/shared/ui/Divider";
 import { Text } from "@/shared/ui/Text";
 
-/**
- * 근무 내역 시트의 속이다. 정본은 `docs/2-design/system/screens/stats.md`의 「근무 내역
- * 시트」고, 이 시트가 답하는 것은 「이 시간이 어느 날들에서 나왔나」 하나다.
- *
- * 줄도 합계도 이미 글월로 와서 여기서는 세로로 쌓기만 한다 — 계산은
- * [`features/stats/model/personDays.ts`](../../../features/stats/model/personDays.ts)가 든다.
- */
-
 export type WorkDaysSheetRow = {
   key: string;
   title: string;

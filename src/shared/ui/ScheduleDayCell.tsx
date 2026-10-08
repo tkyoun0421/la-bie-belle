@@ -7,35 +7,6 @@ import { Rect } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
 
-/**
- * 근무표 달력의 날짜 칸 하나다. 정본은
- * `docs/2-design/design-system/components.md`의 「근무표 날짜 칸」이고, 관리자 편집 상태는
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「달력 칸」이 더한 것이다.
- *
- * **달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다.** 상태가 아홉인데 색이 둘인 것은,
- * 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 내 근무가 어디인지 안 보이기 때문이다.
- *
- * **오늘은 상태와 나란히 서지 않고 그 위에 얹힌다.** 칸 배경은 그날 상태를 그대로 두고
- * 날짜 숫자만 지름 21px 검은 원이 감싼다. 오늘이면서 근무가 있는 날은 브랜드 면에 검은
- * 원과 브랜드 점이 같이 선다 — 상태 둘이 서로를 지우지 않는다.
- *
- * **그리드가 이 달 밖으로 남긴 칸은 비운다.** `day`가 `null`이면 자리만 지키고 숫자도 안
- * 쓴다. 흐린 숫자라도 남기면 그 달 근무표에 든 날로 읽히고, 누르면 어디로 가는지를 또
- * 정해야 한다.
- *
- * **바닥 단에 짧은 글도 선다.** `note`가 그 자리고 표식보다 앞선다 — 리허설 달력이 건수가
- * 아니라 「2시간」을 적는 자리다(`docs/2-design/modules/schedule/screens/rehearsal.md`의
- * 「달력 칸」). 무엇을 적을지는 칸이 아니라 부르는 쪽이 안다.
- *
- * **고른 날의 체크가 `${testID}-selected`를 단다.** 골랐는지 아닌지는 배경색과 테두리와 체크
- * 아이콘으로만 갈리는데 셋 다 스타일이라 밖에서 못 본다 — [ListRow](ListRow.tsx)가 화살표에
- * 이름을 실어 주는 것과 같은 자리다.
- *
- * 점선을 `border`가 아니라 SVG의 `stroke-dasharray`로 그리는 것은 `border`가 애니메이션을
- * 못 받고, 확정 전 칸의 점선 `border`와 한 칸에서 부딪히기 때문이다. 요청 온 날의 점선이
- * 시계 방향으로 도는 것은 아직 안 붙었다.
- */
-
 const TODAY_CIRCLE_SIZE = 21;
 
 const ASSIGNED_DOT_SIZE = 4;
@@ -46,10 +17,8 @@ const VACANCY_RING_SIZE = 10;
 
 const DASH_STROKE_WIDTH = 1;
 
-/** 대시와 간격이 각각 3px다. */
 const DASH_PATTERN = [3, 3];
 
-/** `rounded-sm`의 8px과 같은 값이다 — SVG는 className이 안 닿아 숫자로 받는다. */
 const CELL_RADIUS = 8;
 
 export type ScheduleDayCellState =
@@ -255,10 +224,6 @@ function CellMark({
   return null;
 }
 
-/**
- * 부모 상자를 꽉 채우는 점선 테두리다. 칸 폭이 그리드에서 정해져 이쪽이 먼저 알 수 없으니
- * 한 번 재고 나서 그린다.
- */
 function DashedOutline({
   className,
   radius,

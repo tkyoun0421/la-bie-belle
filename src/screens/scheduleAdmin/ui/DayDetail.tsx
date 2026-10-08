@@ -2,7 +2,7 @@ import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
-import { DragProvider } from "@/shared/ui/DragAndDrop";
+import { DragProvider } from "@/shared/ui/DragProvider";
 import { DropZone } from "@/shared/ui/DropZone";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { ListRow } from "@/shared/ui/ListRow";
@@ -22,20 +22,6 @@ import { PositionRow } from "@/screens/scheduleAdmin/ui/PositionRow";
 import { QualificationSheet } from "@/screens/scheduleAdmin/ui/QualificationSheet";
 import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
 import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/utils/dragId.utils";
-
-/**
- * 열린 날 하나의 상세다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이다.
- *
- * **어느 시트가 서는지는 [`useDayDetail`](../hooks/useDayDetail.ts)이 정한다.** 확정 갈림과
- * 자격 갈림과 끌기 판정과 조정 실패 처리가 다 그쪽에 있고 이 파일은 받은 묶음을 쌓는다.
- *
- * **임시공휴일 줄과 근무 조정 줄은 확정 잠금 밖이다.** 포지션과 자리의 잠금과 달리 조정도
- * 임시공휴일도 근무표 확정을 안 기다린다(PAY-020·PAY-027).
- *
- * **돌아가기만 위에서 받는다.** `?from=`이 가리키는 곳으로 가는 것은 이동이라 라우트를 쥔
- * 화면이 넘긴다.
- */
 
 export const SCHEDULE_HOLIDAY_SWITCH_TEST_ID = "schedule-holiday-switch";
 

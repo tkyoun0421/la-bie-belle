@@ -1,9 +1,3 @@
-// 구현 대상: src/screens/stats/utils/moneyLabel.utils.ts (아직 없다)
-//
-// tenThousandWonLabel(amount) — 근무자 급여 탭 추이 그래프의 값이다(plan
-// stats-worker AC-01, spec AC-04). 「1,296,000원」이 그래프에서는 「130만」이
-// 된다 — 만 단위로 반올림해 줄인다(stats.md 「그래프 값 — 급여」).
-
 import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
 
 describe("tenThousandWonLabel — 그래프 값은 만 단위로 줄여 적는다(stats.md 「내 급여」)", () => {

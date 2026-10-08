@@ -1,13 +1,3 @@
-/**
- * 직원 화면이 쓰는 문안과 정해진 값이다. 정본은
- * `docs/2-design/modules/account/screens/members.md`의 문안 표다.
- *
- * **Dialog 문안은 여기 없다.** 묻는 넷과 막는 둘이 제목·본문·버튼 셋을 짝지어 들어
- * [`MemberDialog`](../ui/MemberDialog.tsx)가 그 표를 한 벌로 가진다 — 어느 물음이 어느
- * 답을 받는지가 한눈에 보여야 하는 자리다.
- */
-
-/** 서버가 이유를 말해 주는 코드 셋이다 — 이 셋이 아니면 「보내지 못했어요」다. */
 export const HANDLED_CODES: readonly string[] = [
   "has_future_assignments",
   "last_admin",
@@ -31,12 +21,6 @@ export const MEMBERS_COPY = {
   alreadyDecided: "이미 처리된 사람이에요",
 } as const;
 
-/**
- * 사람 시트의 문안이다. 정본은 같은 문서의 「사람 시트 짜임」·「퇴사한 사람 시트 짜임」이다.
- *
- * **「보내지 못했어요…」가 저장소 여섯 자리에 같은 글자로 있다.** 묶음 다섯에 걸려 한 열이
- * 못 접고 AC-13이 받는다.
- */
 export const MEMBER_SHEET_COPY = {
   more: "더보기",
   markLeave: "퇴사 처리",
@@ -63,7 +47,6 @@ export const RENAME_INPUT_TEST_ID = "members-rename-input";
 
 export const MARK_LEAVE_CONFIRM_TEST_ID = "members-mark-leave-confirm";
 
-/** 시트 맨 위 동그란 사진의 지름이다 — 목록 줄의 것보다 크다. */
 export const SHEET_AVATAR_SIZE = 64;
 
 export const MORE_ICON_SIZE = 20;

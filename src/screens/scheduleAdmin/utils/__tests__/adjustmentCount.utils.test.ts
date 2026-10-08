@@ -1,9 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/utils/adjustmentCount.utils.ts
-//
-// 근무 조정 줄 오른쪽의 「N명 조정됨」이다(payroll-adjust AC-02). 세는 것은 마지막 조정
-// 행의 분이 0이 아닌 사람이다 — 되돌린 사람(마지막 행이 0분)은 안 센다
-// (schedule-admin.md 「근무 조정」). 0명이면 빈 문자열이다 — 「0명 조정됨」이 아니다.
-
 import {
   adjustmentCountLine,
   type AdjustmentCountRow,

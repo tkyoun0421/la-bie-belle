@@ -1,55 +1,3 @@
-// 구현 대상: src/screens/stats/utils/chartValues.utils.ts (아직 없다)
-//
-// 관리자 쪽 src/screens/adminStats/utils/chartValues.utils.ts의 workValues·
-// attendanceValues에 해당하는 것이 근무자에게 없다(stats.md 「추이 그래프」
-// 표). 근무자는 탭이 셋이라 값도 셋이다 — 근태는 내 출근율, 포지션은 내
-// 근무 시간 합, 급여는 내 급여 합이다.
-//
-// myWorkValues(loaded, profileId) — 포지션 탭 그래프의 달별 내 근무 분
-// 합이다. 관리자 workValues와 같은 결로, 그 달에 근무표 자체가 안 열렸으면
-// (days.length === 0) Map에서 빠진다. 집계는 features/stats/model/
-// workTotals.ts의 workInputsOf·computeMyWorkTotals를 그대로 부른다 —
-// 여기서 다시 짜지 않는다.
-//
-// myAttendanceValues(loaded, profileId, now) — 근태 탭 그래프의 달별 내
-// 출근율이다. 판정은 screens/stats/model/attendanceDays.ts의
-// buildMyAttendanceDays가 이미 낸 상태 목록을 세고,
-// entities/attendance/model/attendanceSummary.ts의 attendanceRate로
-// 퍼센트를 낸다 — 넷이 다 0인 달(내 배정이 그 달에 없는 달)은 Map에서
-// 빠진다.
-//
-// myPayrollValues(loaded, profileId, now, rehearsals) — 급여 탭 그래프의
-// 달별 내 급여 합이다. 관리자 통계에 없는 축이라 admin-stats에 견줄 짝이
-// 없다.
-//
-// 재료는 usePayrollMonthsByMonthQuery(entities/payroll/hooks,
-// 아직 없다)가 달마다 내는 원재료(entities/payroll/api/getPayrollMonth.api.ts의
-// PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonthsQuery가 이미
-// 내는 그 달 ScheduleDay 목록이다. 금액 자체는 features/payroll/model/
-// payrollDays.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
-// 더한다 — 여기서 급여 계산을 다시 짜지 않는다(plan stats-worker AC-01
-// "여기서 금액을 새로 계산하지 않는다").
-//
-// **리허설은 새 훅 없이 useRehearsalMonths를 그대로 쓴다**(PayrollScreen.tsx가
-// 앞서 밟은 길). 그 훅이 flatMap으로 뭉친 Rehearsal[]을 화면이 그대로
-// 넘기고, payrollViewDays가 work_date로 각 날에 도로 맞춘다 — 그래서
-// rehearsals는 달마다 안 갈리고 loaded 전체에 한 번만 붙는다(PAY-028,
-// 리허설도 급여에 든다).
-//
-// **rehearsals가 달마다 안 갈려서 생기는 위험을 여기서 막는다.**
-// payrollDays는 rehearsals를 통째로 훑어 work_date를 그대로 dates에
-// 더하므로, 8월 달의 payrollViewDays를 부를 때도 rehearsals에 9월 리허설이
-// 섞여 있으면 9월 날짜의 PayrollDay가 8월 결과 배열에 낀다. 그래서
-// myPayrollValues는 payrollViewDays가 낸 날짜 목록을 그 달(one.month)로
-// 한 번 더 걸러서 더한다.
-//
-// **「빈 달」은 두 조건의 OR다.** ①근무표 자체가 열린 달(one.days.length >
-// 0 — myWorkValues와 같은 신호. 스케줄은 열렸는데 내가 이 달에 급여로
-// 잡을 날이 하나도 없으면 0으로 남는다) 이거나 ②근무표는 없어도 그 달
-// 날짜로 걸러진 payrollViewDays 결과가 있는 달(리허설은 days 없이도 서는
-// 달이 있다 — getMyRehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
-// 선다"). 둘 다 아니면 Map에서 빠진다.
-
 import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
 import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
@@ -178,9 +126,6 @@ describe("myAttendanceValues — 출근율은 entities/attendance의 attendanceR
       assignments: [assignment({ id: "a2" })],
     });
 
-    // buildMyAttendanceDays가 상태 판정에 쓰는 체크인은 scheduleDay.check_ins가
-    // 아니라 여기(attendance.checkIns)다 — day_id로 배정을 맞춘다
-    // (features/stats/model/attendanceInputs.ts의 buildAttendanceInputs).
     const loaded: AttendanceMonth[] = [
       {
         month: "2026-08",
@@ -421,12 +366,6 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
     expect(withRehearsal.get("2026-08")).toBeGreaterThan(96000);
   });
 });
-
-// pr-diff 감사가 StatsScreen.tsx 205~240행에서 더 찾은 계산 둘이다. 화면은 `work.data`·
-// `payroll.data`를 달로 조인해 `payrollLoaded`를 만들고(①), 그중 보는 달 하나를 골라
-// `payrollViewDays`를 부른 뒤 그 달 날짜로 한 번 더 거른다(②) — 리허설이 달마다 안 갈려
-// 뭉쳐 오기 때문이다(myPayrollValues 위 설명의 PAY-028과 같은 이유). `myPayrollValues`가
-// 이미 열두 달치로 접어 둔 것과 같은 모양이라 여기서도 같은 함수를 부르는 꼴로 접는다.
 
 describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollMonthWithDays[]를 만든다", () => {
   it("근무표와 급여 재료가 둘 다 있는 달은 days와 payroll이 한 행으로 묶인다", () => {

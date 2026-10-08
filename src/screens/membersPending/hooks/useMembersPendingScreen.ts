@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -14,23 +14,6 @@ import { PENDING_COPY } from "@/screens/membersPending/consts/membersPending.con
 import type { SheetFace } from "@/screens/membersPending/model/membersPending.type";
 import { spellSentLine } from "@/screens/membersPending/utils/elapsedLine.utils";
 import { formatSentAt } from "@/screens/membersPending/utils/formatSentAt.utils";
-
-/**
- * 관리자가 가입 신청을 받거나 돌려보내는 화면의 controller다. 앱 전체의 첫 문이다 — 승인이
- * 없으면 근무표도 급여도 안 열린다. 정본은
- * `docs/2-design/modules/account/screens/membersPending.md`고 완료 조건은
- * `docs/2-design/spec/members-pending.md`다.
- *
- * **판정 셋이 한 꼴이다.** 승인·거절·차단이 성공하면 시트를 닫고 이름이 든 토스트를 세운다 —
- * 말만 다르다. 그래서 「시트가 열려 있나」가 통신 결과에 매여 있고 화면 것이 아니다.
- *
- * **늦게 누른 쪽은 `already_decided`를 받는다.** 그때는 시트를 닫고 안내 토스트를 세운다 —
- * 목록은 Mutation이 이미 낡게 해서 이미 처리된 사람의 줄이 다음 읽기에 안 선다. 통신이 끊긴
- * 것이면 시트를 연 채로 둔다. 사람이 다시 누를 자리가 거기다.
- *
- * **얼굴은 controller가 든다.** 거절과 차단이 상세 시트의 값 넷 자리를 물음으로 바꾸는데,
- * 성공하면 시트째 닫혀 그 자리가 사라진다 — 사람이 열고 사람이 닫는 상태가 아니다.
- */
 
 export type PendingToast = { kind: ToastKind; message: string };
 
@@ -67,7 +50,7 @@ export type MembersPendingController = {
   dismissToast: () => void;
 };
 
-export function useMembersPendingScreen(client: DB): MembersPendingController {
+export function useMembersPendingScreen(): MembersPendingController {
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<SheetFace>("detail");
   const [toast, setToast] = useState<PendingToast | null>(null);
@@ -75,8 +58,8 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
   const clockOffset = serverClockStore((at) => at.offset);
   const today = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
 
-  const { data: pending, isLoading } = useMembersQuery(client, "pending");
-  const { data: values } = useProfilePrivateQuery(client, openId);
+  const { data: pending, isLoading } = useMembersQuery(supabase, "pending");
+  const { data: values } = useProfilePrivateQuery(supabase, openId);
 
   const {
     mutate: sendApprove,
@@ -84,7 +67,7 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
     isSuccess: approved,
     error: approveError,
     reset: resetApprove,
-  } = useApproveMemberMutation(client);
+  } = useApproveMemberMutation(supabase);
 
   const {
     mutate: sendReject,
@@ -92,7 +75,7 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
     isSuccess: rejected,
     error: rejectError,
     reset: resetReject,
-  } = useRejectMemberMutation(client);
+  } = useRejectMemberMutation(supabase);
 
   const {
     mutate: sendBlock,
@@ -100,7 +83,7 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
     isSuccess: blocked,
     error: blockError,
     reset: resetBlock,
-  } = useBlockMemberMutation(client);
+  } = useBlockMemberMutation(supabase);
 
   const closeSheet = useCallback(() => {
     setOpenId(null);
@@ -110,10 +93,6 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
     resetBlock();
   }, [resetApprove, resetReject, resetBlock]);
 
-  /**
-   * 성공한 쓰기가 셋 다 여기로 온다 — 토스트를 세우고 시트를 닫는다. 닫으면서 Mutation을
-   * 비우므로 `isSuccess`가 내려가 같은 효과가 두 번 안 돈다.
-   */
   const finish = useCallback(
     (toasted: PendingToast) => {
       setToast(toasted);
@@ -155,7 +134,6 @@ export function useMembersPendingScreen(client: DB): MembersPendingController {
   const errors = [approveError, rejectError, blockError];
   const decided = errors.map(errorCodeOf).includes("already_decided");
 
-  /** 서버가 이유를 말해 준 것 말고는 전부 「보내지 못했어요」다 — 시트가 열린 채로 선다. */
   const failed = errors.some(
     (error) => error !== null && errorCodeOf(error) !== "already_decided",
   );

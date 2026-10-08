@@ -25,28 +25,6 @@ import {
 import type { MemberSheetFace } from "@/screens/members/model/members.type";
 import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
-/**
- * 한 사람을 여는 시트다. 재직자와 퇴사한 사람이 같은 틀을 쓰고 다른 것이 셋이다 — 퇴사한
- * 날이 이름 아래 서고, 이름 고치기와 역할 바꾸기가 없고, 더보기에 「퇴사 되돌리기」가 있다
- * (`docs/2-design/modules/account/screens/members.md`의 「퇴사한 사람 시트 짜임」).
- *
- * **얼굴이 둘인데 시트는 하나다.** 이름 고치기는 새 시트를 쌓지 않고 값이 서던 자리를 입력으로
- * 바꾼다. 사진과 이름은 그 자리에 남는다 — 고치는 대상이 같은 사람이라 화면이 바뀔 이유가 없다.
- *
- * **더보기 열림만 이 조각이 든다.** 사람이 열고 사람이 닫고 통신에 안 매여 있어 UI 상태다 —
- * 얼굴과 적는 이름은 보낸 것의 결과에 매여 있어
- * [`useMembersScreen`](../hooks/useMembersScreen.ts)이 든다.
- *
- * **1년이 지나 비워진 사람은 이름과 퇴사한 날뿐이다.** 연락처도 사진도 계정도 없어 되돌릴 길이
- * 없으니 더보기가 안 선다. 시트가 서는 것은 지난 근무표의 이름이 누구였는지 확인하는 자리라서다.
- *
- * **시급 줄이 없다.** 시급 표가 서기 전에는 붙일 값이 없다 — 붙이는 것은 급여 쪽이다.
- *
- * **알림을 못 받는 사람에게는 프로필 아래 한 줄이 더 선다.** 목록 줄의 한 마디를 여기서는
- * 문장으로 편다 — 관리자가 전화하기 전에 무슨 말을 할지가 그 줄에 있다. 고치는 길은 없다 —
- * 관리자가 남의 알림을 켜주지 못한다([NTF-022](../../../../docs/2-design/modules/notification/README.md#ntf-022)).
- */
-
 export type MemberSheetProps = {
   member: MemberRow;
   today: string;

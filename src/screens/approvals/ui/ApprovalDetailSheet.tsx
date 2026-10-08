@@ -14,25 +14,6 @@ import {
 import type { ApprovalSheetFace } from "@/screens/approvals/model/approvals.type";
 import type { CancelApprovalDetail } from "@/screens/approvals/utils/approvalDetail.utils";
 
-/**
- * 판정을 기다리는 한 건을 여는 시트다. 정본은
- * `docs/2-design/system/screens/approvals.md`의 「상세 시트 짜임」과 「거절 짜임」이다.
- *
- * **얼굴이 둘인데 시트는 하나다.** 「거절」을 눌러도 새 시트를 안 쌓고 이 시트 안쪽이 이유
- * 고르기로 바뀐다 — 방금 읽은 글에서 이어지는 한 동작이다.
- *
- * **보내는 동안 버튼 둘이 다 잠긴다.** 「뒤로」까지 막는 것은 요청이 떠난 뒤에 시트를 닫으면
- * 결과를 어디서도 못 보기 때문이다.
- *
- * **실패해도 안 닫힌다.** 쓴 글이 그대로 남고 오른쪽 버튼만 「다시 보내기」가 된다.
- *
- * **고른 이유를 이 조각이 안 든다.** 고른 문장이 그대로 근무자에게 가고 실패하면 남아야
- * 하는 값이라 controller가 들고 내려준다
- * ([`useApprovalsScreen`](../hooks/useApprovalsScreen.ts)).
- *
- * 승인은 여기서 안 보낸다. 근무 취소의 승인은 확인 Dialog가 한 번 더 묻고 그 안에서 보낸다.
- */
-
 export type ApprovalDetailSheetProps = {
   detail: CancelApprovalDetail;
   face: ApprovalSheetFace;

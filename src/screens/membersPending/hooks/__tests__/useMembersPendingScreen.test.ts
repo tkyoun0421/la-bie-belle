@@ -1,18 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/membersPending/hooks/useMembersPendingScreen.ts
-//
-// 관리자가 가입 신청을 받거나 돌려보내는 화면의 controller다. `.tsx`가 `useState` 일곱을
-// 들고 세 쓰기를 `async` 손으로 직접 부르고 있었다 — Mutation이 없어 보낸 중·실패·무효화를
-// 화면이 손으로 셈했다.
-//
-// **판정 셋이 한 꼴이다.** 승인·거절·차단이 성공하면 시트를 닫고 이름이 든 토스트를 세운다 —
-// 말만 다르다.
-//
-// **늦게 누른 쪽은 `already_decided`를 받는다.** 그때는 시트를 닫고 안내 토스트를 세운다 —
-// 통신이 끊긴 것이면 시트를 연 채로 둔다.
-
 const listPendingMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
@@ -20,6 +8,12 @@ const getProfilePrivateMock =
 const approveMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const rejectMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const blockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: jest.fn(),
@@ -72,8 +66,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 const PENDING = [
   {
     id: "p1",
@@ -112,7 +104,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useMembersPendingScreen(FAKE_CLIENT), {
+  const hook = renderHook(() => useMembersPendingScreen(), {
     wrapper,
   });
 
@@ -127,7 +119,7 @@ describe("useMembersPendingScreen — 판정 셋이 한 꼴이다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembersPendingScreen(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMembersPendingScreen(), {
       wrapper,
     });
 

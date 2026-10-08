@@ -1,23 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts
-//
-// 관리자가 근무표를 짜는 화면의 controller다. `.tsx`가 `useState` 여섯과 `useEffect` 넷을
-// 들고 질의 아홉과 쓰기 열일곱을 직접 걸고 있었다.
-//
-// **한 라우트가 달력과 날 상세를 둘 다 든다.** `?date=`가 있으면 그 날의 상세고 없으면
-// 달력이다 — 읽는 질의가 같아서 controller도 하나다.
-//
-// **날 열기 모드의 부분 실패가 이 자리에 산다.** 여러 날을 한 번에 여는데 함수는 날 하나를
-// 받아서, 실패한 날만 다시 고를 수 있게 남기고 모드를 안 푼다.
-//
-// **시트 열림이 통신에 매여 있다.** 만들기·마감일·근무 시간은 성공하면 저절로 닫히고 훅까지
-// 비워야 같은 시트를 다시 열었을 때 열자마자 닫히지 않는다.
-//
-// **「지금」을 서버 시계에서 읽는다.** 확정 잠김·열 수 있는 날·전부 지난 달이 한 자정에서
-// 같이 움직여야 해서 기기 시계를 그대로 안 읽는다.
-
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -44,8 +27,13 @@ const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-/** 2026-10-05 12:00 KST다 — 오늘은 `2026-10-05`고 그달 마감은 아직 안 지났다. */
 const FIXED_NOW_MS = Date.parse("2026-10-05T03:00:00.000Z");
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -135,8 +123,6 @@ jest.unstable_mockModule("@/features/adjustment/api/setAdjustment.api", () => ({
   setAdjustment: setAdjustmentMock,
 }));
 
-// 시계만 못 박고 나머지는 원래 것을 그대로 쓴다 — `clock.store`가 같은 모듈에서
-// `serverOffset`을 당긴다.
 const clockPolicy = await import("@/entities/clock/model/serverClock.policy");
 
 jest.unstable_mockModule("@/entities/clock/model/serverClock.policy", () => ({
@@ -169,8 +155,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 const WINDOW_OPEN = {
   month: "2026-10",
@@ -252,10 +236,10 @@ type Params = { month?: string; date?: string; from?: string };
 function render(params: Params = {}) {
   const { wrapper } = createWrapper();
 
-  return renderHook(
-    (next: Params) => useScheduleAdminScreen(FAKE_CLIENT, next),
-    { wrapper, initialProps: params },
-  );
+  return renderHook((next: Params) => useScheduleAdminScreen(next), {
+    wrapper,
+    initialProps: params,
+  });
 }
 
 async function mounted(params: Params = {}) {

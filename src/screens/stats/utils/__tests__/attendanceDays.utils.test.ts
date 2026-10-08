@@ -1,31 +1,3 @@
-// 구현 대상: src/screens/stats/utils/attendanceDays.utils.ts (아직 없다)
-//
-// buildMyAttendanceDays(profileId, days, checkIns, excuseStatuses, now) — 근태
-// 탭 날짜 목록의 재료다(plan stats-worker AC-01, spec AC-02). 판정은
-// entities/attendance의 getAttendanceStatus 하나고 여기서 다시 안 짠다 —
-// features/stats/model/attendanceInputs.ts의 buildAttendanceInputs로 재료를
-// 맞물린 뒤 그 상태 함수에 그대로 넣는다(admin의 attendanceRows.ts
-// buildAttendanceTab과 같은 전례다).
-//
-// - 내 배정이 있는 날만 남는다(ended_at이 null인 산 배정)
-// - 인증 창이 아직 안 열려 getAttendanceStatus가 null을 내는 날은 목록에서
-//   빠진다 — "아직 상태가 없다"는 여섯 상태 중 어디에도 속하지 않는다
-// - 날짜순으로 정렬한다
-// - 겸임 자리는 assignment.position이 이미 앞 포지션으로 해소돼 있어 그 값을
-//   그대로 쓴다
-// - 교육 배정(kind === 'training')은 isEducation이 true다
-//
-// myAttendanceRow(day) — 한 줄의 title·subtitle·value다.
-// - title은 spellDate(workDate) — "10월 10일(토)"
-// - subtitle은 isEducation이면 "포지션 교육", 아니면 포지션 이름 그대로다
-// - value는 못 찍었으면(checkedAt === null) 상태 이름 하나, 찍었으면
-//   "상태 · HH:mm"이다
-// - 상태 이름 여섯은 "출근·지각·안 찍음·확인 중·인정·결근"이다 — 줄이지
-//   않는다. schedule-worker의 "아직 안 찍음"·"출근 인정"이 아니다
-//   (attendance/design.md가 정본).
-//
-// checkedTimeLabel(checkedAt) — ISO 순간을 KST HH:mm로 읽는다.
-
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type {
@@ -83,53 +55,42 @@ function assignment(
   };
 }
 
-// 출근·지각·결근·인정·확인 중·안 찍음 여섯을 하루씩 만든다. now를 하나로
-// 고정해도(entities/attendance/model/__tests__/attendanceSummary.test.ts와
-// 같은 시각 조합) 각 날의 사실만으로 상태가 갈린다.
 const DAYS: ScheduleDay[] = [
-  // 9/14 — 확인 중(사유 제출, 미결)
   scheduleDay({
     id: "day-14",
     work_date: "2026-09-14",
     assignments: [assignment("메인", "regular", ME)],
   }),
-  // 9/10 — 출근, 교육 배정(안내)이라 subtitle이 "안내 교육"이어야 한다
   scheduleDay({
     id: "day-10",
     work_date: "2026-09-10",
     assignments: [assignment("안내", "training", ME)],
   }),
-  // 9/11 — 지각
   scheduleDay({
     id: "day-11",
     work_date: "2026-09-11",
     assignments: [assignment("메인", "regular", ME)],
   }),
-  // 9/12 — 결근(체크인 없음, 사유 없음, 마감 지남)
   scheduleDay({
     id: "day-12",
     work_date: "2026-09-12",
     assignments: [assignment("스캔", "regular", ME)],
   }),
-  // 9/13 — 인정(사유 승인)
   scheduleDay({
     id: "day-13",
     work_date: "2026-09-13",
     assignments: [assignment("드레스실", "regular", ME)],
   }),
-  // 9/15 — 안 찍음(체크인도 사유도 없고 마감 전)
   scheduleDay({
     id: "day-15",
     work_date: "2026-09-15",
     assignments: [assignment("메인", "regular", ME)],
   }),
-  // 9/16 — 내 배정이 아니라 남의 날이다
   scheduleDay({
     id: "day-16",
     work_date: "2026-09-16",
     assignments: [assignment("스캔", "regular", "p2")],
   }),
-  // 9/20 — 인증 창이 아직 안 열린 미래 날이다
   scheduleDay({
     id: "day-18",
     work_date: "2026-09-20",

@@ -1,9 +1,5 @@
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
 
-// 사진 시트의 「구글 사진으로」 줄. 정본은
-// `docs/2-design/modules/account/screens/profile.md`의 「사진 고치기」 —
-// 지금 쓰는 것이 구글 사진이거나 구글 계정에 사진이 없으면 줄 자체가 없다.
-
 describe("shouldOfferGooglePhoto — 되돌릴 구글 사진이 따로 있을 때만 줄을 보인다", () => {
   it("구글 계정에 사진이 없으면 줄을 안 보인다", () => {
     expect(shouldOfferGooglePhoto("https://example.com/mine.jpg", null)).toBe(

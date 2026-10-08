@@ -6,20 +6,6 @@ import {
   MIN_COUNT,
 } from "@/screens/rehearsal/consts/rehearsal.const";
 
-/**
- * 넣는 시트와 고치는 시트가 같이 쓰는 상태다
- * (`docs/2-design/modules/schedule/screens/rehearsal.md`의 「넣는 중」과 「문안」).
- *
- * **거절이 시트를 안 닫는다.** 셋 다 넣던 값을 그대로 두고 말만 바꾼다 — 다시 넣을 자리가
- * 시트 안이라서다.
- *
- * - `wrong_kind` — 시트를 연 사이에 관리자가 그날 배정을 넣거나 뺐다. 갈래를 바꾸고 알림
- *   한 줄을 세우되 **고른 날짜는 그대로다**. 오류가 아니라 앱이 규칙대로 움직인 것이라
- *   중립으로 말한다
- * - `overlaps` — 칸 아래 문구 한 줄이다. 값이 남아 그 자리에서 시각만 고친다
- * - `transport_error` — 저장이 실패했다. 제목과 아래 줄 둘로 말한다
- */
-
 export type AddSheetValues = {
   startsAt: string;
   endsAt: string;
@@ -50,21 +36,12 @@ export const EMPTY_VALUES: AddSheetValues = {
   count: "",
 };
 
-/**
- * 시트를 아직 안 연 상태다. 갈래는 여는 순간 그날 배정이 정하니 여기서는 시각 쪽으로 둔다 —
- * 이 값이 화면에 보일 일은 없다.
- */
 export const INITIAL_SHEET: AddSheetState = {
   formKind: "time",
   values: EMPTY_VALUES,
   notice: null,
 };
 
-/**
- * 저장이 거절당했을 때 시트가 받을 행동이다. `wrong_kind`는 그날 갈래가 뒤집혔다는 말이라
- * 반대 갈래로 넘긴다 — 두 갈래뿐이라 서버에 다시 묻지 않는다. 나머지는 통신 실패와 같은
- * 자리에서 말한다.
- */
 export function addSheetActionFor(
   error: unknown,
   formKind: RehearsalKind,
@@ -80,10 +57,6 @@ export function addSheetActionFor(
     : { type: "transport_error" };
 }
 
-/**
- * 칸이 덜 차면 넣기가 안 눌린다. 건수 칸은 한 자리고 0을 넣으면 안 눌린다 — 상·하한은
- * `consts`가 들고 표의 check와 같은 값이라 화면이 먼저 막고 서버가 다시 막는다.
- */
 export function canSubmitForm({ formKind, values }: AddSheetState): boolean {
   if (formKind === "count") {
     const count = Number(values.count);

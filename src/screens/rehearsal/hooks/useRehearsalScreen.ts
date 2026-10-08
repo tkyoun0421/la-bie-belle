@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -33,28 +33,6 @@ import {
 } from "@/screens/rehearsal/utils/daySheetRows.utils";
 import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
-/**
- * 리허설 화면의 controller다. 정본은
- * `docs/2-design/modules/schedule/screens/rehearsal.md`고 완료 조건은
- * `docs/2-design/spec/rehearsal.md`다.
- *
- * **역할이 읽는 질의를 가른다.** 관리자는 그 달 전원 것을, 근무자는 자기 것을 읽는다. 훅은
- * 조건부로 못 부르니 둘을 다 걸고 안 쓰는 쪽을 `enabled`로 끈다 — **역할을 알기 전에는
- * 둘 다 끈다.** 모르는 동안 근무자 쪽을 켜두면 관리자에게도 자기 것 한 번이 먼저 나간다.
- *
- * **시트 열림 둘이 UI 상태가 아니다.** 폼 시트는 보낸 것이 성공하면 저절로 닫히고 지우기
- * 확인창도 그렇다 — 열림이 통신 결과에 매여 있으면 그것은 화면 것이 아니다. 달 고르기만
- * 사람이 열고 사람이 닫아 `.tsx`에 남는다.
- *
- * **기기 뒤로를 여기서 안 건다.** 무엇을 닫을지는 이 자리가 알지만 `BackHandler`에 손을
- * 거는 일은 네이티브라, 닫는 손 하나(`closeTop`)만 내고 잇는 것은
- * [`useHardwareBack`](../../../shared/hooks/useHardwareBack.ts)이 한다.
- */
-
-/**
- * 본인 것과 전원 것이 한 자리에 선다. 이름은 관리자가 읽을 때만 실려 오므로 선택이다 —
- * 줄 문구를 만드는 `daySheetRows`가 그 자리를 안다.
- */
 type Row = Rehearsal & { profiles?: { display_name: string | null } | null };
 
 export type RehearsalFormHandle =
@@ -94,7 +72,6 @@ export type RehearsalScreenController = {
 };
 
 export function useRehearsalScreen(
-  client: DB,
   monthParam?: string,
 ): RehearsalScreenController {
   const today = kstToday();
@@ -105,17 +82,17 @@ export function useRehearsalScreen(
   const [removing, setRemoving] = useState(false);
   const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_SHEET);
 
-  const { data: me } = useSessionUserQuery(client);
-  const { data: profile } = useMyProfileRowQuery(client, me?.id ?? null);
+  const { data: me } = useSessionUserQuery(supabase);
+  const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
 
   const role = profile?.role;
   const isAdmin = role === "admin";
   const roleKnown = role !== undefined;
   const myProfileId = profile?.id ?? null;
 
-  const mine = useMyRehearsalsQuery(client, month, roleKnown && !isAdmin);
-  const all = useAllRehearsalsQuery(client, month, roleKnown && isAdmin);
-  const { data: days } = useMonthScheduleQuery(client, month);
+  const mine = useMyRehearsalsQuery(supabase, month, roleKnown && !isAdmin);
+  const all = useAllRehearsalsQuery(supabase, month, roleKnown && isAdmin);
+  const { data: days } = useMonthScheduleQuery(supabase, month);
 
   const {
     mutate: add,
@@ -124,7 +101,7 @@ export function useRehearsalScreen(
     isError: addFailed,
     error: addError,
     reset: resetAdd,
-  } = useAddRehearsalMutation(client);
+  } = useAddRehearsalMutation(supabase);
 
   const {
     mutate: save,
@@ -133,13 +110,13 @@ export function useRehearsalScreen(
     isError: editFailed,
     error: editError,
     reset: resetEdit,
-  } = useEditRehearsalMutation(client);
+  } = useEditRehearsalMutation(supabase);
 
   const {
     mutate: remove,
     isSuccess: deleted,
     reset: resetRemove,
-  } = useRemoveRehearsalMutation(client);
+  } = useRemoveRehearsalMutation(supabase);
 
   useEffect(() => {
     if (monthParam !== undefined) {

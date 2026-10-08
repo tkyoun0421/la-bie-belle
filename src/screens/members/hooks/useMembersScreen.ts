@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -27,40 +27,15 @@ import type {
 import { isUnexpectedWriteError } from "@/screens/members/model/writeError.policy";
 import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
-/**
- * 관리자가 이미 받은 사람들을 다루는 화면의 controller다. 정본은
- * `docs/2-design/modules/account/screens/members.md`고 완료 조건은
- * `docs/2-design/spec/members.md`다.
- *
- * **쓰기 넷이 한 시트에서 나간다.** 이름·역할·퇴사·되돌리기가 같은 사람을 보고, 성공하면
- * 넷 다 시트를 닫고 토스트를 세운다 — 말만 다르다. 그래서 열림이 통신에 매여 있고 화면 것이
- * 아니다.
- *
- * **막는 자리 둘은 서버가 정한다.** 화면이 마지막 관리자의 내리기를 미리 잠그는 것은 목록을
- * 받은 시점의 판정이고, 누르는 시점의 판정은 `last_admin`과 `has_future_assignments`로
- * 돌아와 Dialog가 이유를 말한다 — 「물어서 선 Dialog」와 「거절당해 선 Dialog」가 한 자리에
- * 합쳐지는 까닭이다.
- *
- * **퇴사한 사람이 같은 화면 아래에 있다.** 검색은 두 구획을 같이 거르고, 1년이 지난 사람은
- * 접혀 있다 — 찾는 중이거나 펴 뒀으면 다 보인다.
- *
- * **서버 시계를 쓴다.** 1년이 지났는지와 생일이 지났는지가 둘 다 「지금」에 달려 있다.
- *
- * **보낼 데는 안 든다.** 뒤로와 전화 걸기는 `.tsx`가 쥔다.
- */
-
 export type MembersListState = "loading" | "empty" | "rows";
 
 export type MembersToast = { kind: ToastKind; message: string };
 
-/** 목록 한 줄이다 — 재직과 퇴사가 쓰는 칸이 갈려 둘 다 선택이다. */
 export type MembersScreenRow = {
   key: string;
   displayName: string;
   photoUrl: string | null;
-  /** 재직 줄의 연락처와 알림 한 마디다. 퇴사 줄에는 없다. */
   detail: string;
-  /** 퇴사 줄의 퇴사한 날이다. 재직 줄에는 없다. */
   value: string;
   isAdmin: boolean;
   press: () => void;
@@ -97,7 +72,7 @@ export type MembersScreenController = {
   dismissToast: () => void;
 };
 
-export function useMembersScreen(client: DB): MembersScreenController {
+export function useMembersScreen(): MembersScreenController {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -109,8 +84,8 @@ export function useMembersScreen(client: DB): MembersScreenController {
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
 
-  const { data: active } = useMembersQuery(client, "active");
-  const { data: left } = useMembersQuery(client, "left");
+  const { data: active } = useMembersQuery(supabase, "active");
+  const { data: left } = useMembersQuery(supabase, "left");
 
   const {
     mutate: saveDisplayName,
@@ -118,28 +93,28 @@ export function useMembersScreen(client: DB): MembersScreenController {
     isSuccess: nameSaved,
     error: nameError,
     reset: resetName,
-  } = useSetDisplayNameMutation(client);
+  } = useSetDisplayNameMutation(supabase);
 
   const {
     mutate: saveRole,
     isSuccess: roleSaved,
     error: roleError,
     reset: resetRole,
-  } = useSetRoleMutation(client);
+  } = useSetRoleMutation(supabase);
 
   const {
     mutate: sendLeave,
     isSuccess: leaveDone,
     error: leaveError,
     reset: resetLeave,
-  } = useMarkLeaveMutation(client);
+  } = useMarkLeaveMutation(supabase);
 
   const {
     mutate: sendUndo,
     isSuccess: undoDone,
     error: undoError,
     reset: resetUndo,
-  } = useUndoLeaveMutation(client);
+  } = useUndoLeaveMutation(supabase);
 
   const close = useCallback(() => {
     setOpenId(null);
@@ -200,10 +175,6 @@ export function useMembersScreen(client: DB): MembersScreenController {
   const rows = [...(active ?? []), ...(left ?? [])];
   const open = rows.find((row) => row.id === openId) ?? null;
 
-  /**
-   * 갈래는 재직자에게만 붙는다 — 퇴사 구획은 이 표에 아예 안 든다. 남의 기기 권한은 알
-   * 길이 없어 판정 축이 의사와 기기 둘뿐이다(`reachState.policy.ts`).
-   */
   const reach = useMemo(() => {
     const suffixes = new Map<string, string | null>();
     const lines = new Map<string, string | null>();

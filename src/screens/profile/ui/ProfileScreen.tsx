@@ -1,7 +1,6 @@
 import { usePathname, useRouter } from "expo-router";
 import { Pencil } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -28,28 +27,12 @@ import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
 import { ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
 
-/**
- * 근무자가 자기 것을 보고 고칠 수 있는 둘만 고치는 화면이다. 정본은
- * `docs/2-design/modules/account/screens/profile.md`고 완료 조건은
- * `docs/2-design/spec/profile-screen.md`다.
- *
- * **카드 셋이다.** 나를 말하는 카드, 설정과 문을 묶은 카드, 로그아웃 하나다
- * ([ADR-014](../../../../docs/2-design/adr/ADR-014-toss-like-depth-and-graphics.md)). 잠긴 줄과
- * 고치는 줄이 첫 카드 안에서 가는 선으로 갈리고, 다른 화면으로 나가는 문은 둘째 카드에
- * 모인다 — 눌렀을 때 시트가 열리는지 화면이 바뀌는지를 눌러 봐야 아는 일이 없게.
- *
- * 값과 시트와 판정은 `useProfileScreen`이 든다. 여기 남은 것은 그림과 보낼 데다.
- */
-
-/**
- * **같은 표가 저장소 열세 자리에 있다.** 묶음 여럿에 걸려 한 열이 못 접고 AC-13이 받는다.
- */
 const SKELETON_ROWS = [0, 1, 2];
 
 export function ProfileScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const screen = useProfileScreen(supabase);
+  const screen = useProfileScreen();
 
   return (
     <Screen>

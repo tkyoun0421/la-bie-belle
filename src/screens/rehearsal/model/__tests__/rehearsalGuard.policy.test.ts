@@ -1,8 +1,3 @@
-// 구현 대상: src/screens/rehearsal/model/rehearsalGuard.policy.ts
-//
-// /me/rehearsals의 문이다(plan AC-08) — 자격이 있는 사람과 관리자만 연다. 다른 사람이
-// 주소를 직접 치면 /me로 보낸다. 자격 조회가 끝나기 전에는 판정을 미룬다.
-
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
 
 describe("resolveRehearsalGuard — 자격 조회가 끝나기 전에는 기다린다", () => {

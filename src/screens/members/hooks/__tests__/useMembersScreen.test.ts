@@ -1,18 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/members/hooks/useMembersScreen.ts
-//
-// 관리자가 이미 받은 사람들을 다루는 화면의 controller다. `.tsx`가 `useState` 일곱과
-// `useEffect` 다섯을 들고, 오류 코드 비교와 알림 갈래 표 조립과 퇴사 구획 접기까지 하고
-// 있었다.
-//
-// **쓰기 넷이 한 시트에서 나간다.** 이름·역할·퇴사·되돌리기가 같은 사람을 보고, 성공하면
-// 넷 다 시트를 닫고 토스트를 세운다 — 말만 다르다.
-//
-// **막는 자리 둘은 서버가 정한다.** 화면이 미리 잠그는 것은 목록을 받은 시점의 판정이고,
-// 누르는 시점의 판정은 `last_admin`과 `has_future_assignments`로 돌아와 Dialog가 말한다.
-
 const listActiveMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const listLeftMembersMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -20,6 +8,12 @@ const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: listActiveMembersMock,
@@ -71,8 +65,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-const FAKE_CLIENT = {} as never;
-
 function member(over: Record<string, unknown>) {
   return {
     id: "p1",
@@ -96,7 +88,6 @@ const ACTIVE = [
   member({ id: "p2", display_name: "박수진", role: "admin" }),
 ];
 
-/** 1년이 넘은 퇴사자 하나와 최근 퇴사자 하나다 — 접히는 쪽이 앞의 것이다. */
 const LEFT = [
   member({
     id: "p3",
@@ -134,7 +125,7 @@ beforeEach(() => {
 
 async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useMembersScreen(FAKE_CLIENT), { wrapper });
+  const hook = renderHook(() => useMembersScreen(), { wrapper });
 
   await waitFor(() =>
     expect(hook.result.current.listState).not.toBe("loading"),
@@ -147,7 +138,7 @@ describe("useMembersScreen — 쓰기 넷이 한 시트에서 나간다", () => 
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembersScreen(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMembersScreen(), {
       wrapper,
     });
 

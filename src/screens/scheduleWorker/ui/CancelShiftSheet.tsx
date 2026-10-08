@@ -5,19 +5,6 @@ import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
 import { CANCEL_REASON_MAX_LENGTH } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 
-/**
- * 내 근무를 못 나가게 됐다고 관리자에게 알리는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「근무 취소 시트 짜임」이다.
- *
- * **보내는 것은 취소가 아니라 취소 요청이다.** 관리자가 승인해야 자리가 비고 그때까지는
- * 예정대로 근무라, 부제와 버튼 둘이 그 사실을 말한다(SCH-018).
- *
- * **사유를 여기가 안 든다.** 적은 글이 그대로 관리자에게 가고 보내는 동안 잠기고 실패하면
- * 남아야 해서 통신에 매여 있다 — 조각은 제 controller를 못 가지니 화면의 controller가
- * 들고 내려보낸다([`useScheduleWorkerScreen`](../hooks/useScheduleWorkerScreen.ts)).
- * 보낼 수 있는지도 그쪽 판정이고 여기는 그 답을 버튼에 걸기만 한다.
- */
-
 export type CancelShiftSheetProps = {
   title: string;
   reason: string;

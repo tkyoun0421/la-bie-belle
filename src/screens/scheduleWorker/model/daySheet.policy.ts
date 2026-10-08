@@ -1,18 +1,3 @@
-/**
- * 날 시트와 아코디언 펼침이 같이 쓰는 명단이다
- * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「날 시트 짜임」).
- *
- * **자리와 사람이 다른 것이다.** 정규 배정은 자리 하나를 먹고, 자리가 남으면 그 줄이 「빈
- * 자리」로 서고, 교육 배정은 자리를 안 먹고 그 포지션 끝에 덧붙는다
- * ([ATT-020](../../../../docs/2-design/modules/attendance/README.md#att-020)). 그래서 명단
- * 길이가 자리 수보다 길어질 수 있다.
- *
- * **순서는 포지션 정본 순서다** — 이름순도 배정순도 아니다. 같은 날을 여럿이 볼 때 줄 자리가
- * 같아야 서로 「위에서 세 번째」로 말한다. 그 순서는 업무 상수라
- * [`entities/schedule/model/positions.ts`](../../../entities/schedule/model/positions.ts)가
- * 들고, 이 파일은 부르던 이름을 그대로 두려고 다시 내보낸다.
- */
-
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 
 export { POSITION_ORDER };
@@ -31,7 +16,6 @@ export type RosterAssignment = {
 
 export type RosterRow = RosterAssignment | { kind: "vacant"; position: string };
 
-/** 정본 순서 밖의 포지션은 뒤에 붙는다 — 홀 기본값이 바뀌어도 명단이 그 사람을 안 지운다. */
 function positionRank(position: string): number {
   const at = (POSITION_ORDER as readonly string[]).indexOf(position);
 
@@ -80,7 +64,6 @@ export function buildRoster(
   });
 }
 
-/** 부제의 인원이다. 빈 자리는 사람이 아니고 교육은 사람이다. */
 export function rosterHeadcount(roster: readonly RosterRow[]): number {
   return roster.filter((row) => row.kind !== "vacant").length;
 }
@@ -92,14 +75,6 @@ export type ShiftActionsInput = {
   hasActiveCancelRequest?: boolean;
 };
 
-/**
- * 「근무 취소」·「교대 요청」을 지금 누를 수 있는 날이다. 근무 당일부터는 바꿀 시간이 없어
- * 닫히고, 지난 날은 조회만이다.
- *
- * **요청 중에도 닫힌다.** 같은 근무에 교대와 취소를 겹쳐 거는 길을 안 둔다
- * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「보낸 뒤」) — 그때 버튼은
- * 사라지지 않고 비활성으로 남고 옆에 「취소 요청 중」 배지가 선다.
- */
 export function canShowShiftActions({
   isMyAssignment,
   workDate,
@@ -109,12 +84,6 @@ export function canShowShiftActions({
   return isMyAssignment && today < workDate && !hasActiveCancelRequest;
 }
 
-/**
- * 읽어 온 하루를 명단으로 옮긴다. 끝난 자리와 끝난 배정은 빼고 센다 — 강제 변경으로 닫힌
- * 자리가 「빈 자리」로 남으면 아직 사람을 구하는 중으로 읽힌다.
- *
- * 자리 하나가 `slots` 한 행이라 같은 포지션의 행 수가 곧 그 포지션의 자리 수다.
- */
 export function rosterOfDay(day: {
   slots: readonly { positions: string[]; ended_at: string | null }[];
   assignments: readonly {
@@ -144,7 +113,6 @@ export function rosterOfDay(day: {
   return buildRoster(seats, taken);
 }
 
-/** 「10:00 – 18:00 · 11명」이다. 시각은 `HH:MM:SS`로 와서 초를 버린다. */
 export function daySheetSubtitle(
   startsAt: string,
   endsAt: string,

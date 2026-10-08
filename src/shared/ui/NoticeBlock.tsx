@@ -10,19 +10,6 @@ import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
 
-/**
- * 화면 안에 끼는 안내 상자다. 종류는 안내·성공·경고·오류 넷이다.
- *
- * **넷 다 글자가 `fg.neutral`이다.** 옅은 배경 위에서는 뜻을 아이콘이 나르고 글자는 읽히는
- * 데만 집중한다 — 글자까지 색을 입히면 문장이 길어질수록 읽기 힘들어진다.
- *
- * 경고 아이콘만 역할 토큰 없이 계열색을 직접 부른다. `fg.warning`을 안 만들어서고 근거는
- * `docs/2-design/design-system/tokens.md`에 있다.
- *
- * 안쪽 여백은 `docs/2-design/design-system/foundation/spacing-shape.md` 「면의 안쪽 여백은
- * 20px이다」를 따른다 — 조각 표가 이 값을 따로 들고 있지 않다.
- */
-
 export type NoticeKind = "info" | "success" | "warning" | "error";
 
 type NoticeStyle = {

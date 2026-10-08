@@ -1,10 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/utils/personSheet.utils.ts
-//
-// 사람 시트가 쓰는 표기다(schedule-admin.md 「사람 시트」·「사람 픽커 문안」). 성별 기호는
-// lucide의 Venus·Mars로 색이 아니라 모양으로 가른다(ACC-002). 년생은 `birth_date`의 연도
-// 뒤 두 자리다 — 만 나이를 세지 않는다(writing.md 「숫자와 단위」). 자격 값은 제한 포지션
-// 중 이 사람이 들어갈 수 있는 것들이고 하나도 없으면 줄이 없다.
-
 import {
   genderSymbol,
   birthYearShort,

@@ -1,11 +1,3 @@
-// 구현 대상: src/screens/scheduleAdmin/model/confirmGate.policy.ts
-//
-// 날 상세가 「확정 시점에 있던 날」인지 「새로 연 날」인지를 가른다(schedule-admin.md
-// 「확정 뒤 날 상세」 — 「새로 연 날(`days.opened_at`이 `confirmed_at`보다 뒤)」, plan
-// 리스크 「확정 갈림이 두 값을 본다」). `opened_at > confirmed_at`을 엄격 부등호로 보고
-// 같은 시각은 확정 시점에 있던 날이다 — 경계를 테스트가 한 번 본다(plan). 자물쇠·끌기·자리
-// 추가의 유무가 이 갈림에서 나온다(schedule-admin.md 「확정 뒤 날 상세」 표).
-
 import {
   dayConfirmGate,
   allowsStructureChange,

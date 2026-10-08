@@ -1,7 +1,6 @@
 import { usePathname, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { Button } from "@/shared/ui/Button";
@@ -21,26 +20,8 @@ import {
 } from "@/screens/payroll/consts/payroll.const";
 import { usePayrollScreen } from "@/screens/payroll/hooks/usePayrollScreen";
 
-/**
- * 근무자가 자기 급여를 미리 보는 화면이다. 정본은
- * `docs/2-design/modules/payroll/screens/payroll.md`고 완료 조건은
- * `docs/2-design/spec/payroll-view.md`다.
- *
- * **금액도 기간도 여기서 안 낸다.** 질의 다섯과 조립과 기간 옮기기가
- * [`usePayrollScreen`](../hooks/usePayrollScreen.ts)에 산다 — 이 파일이 받는 것은 그릴 문구와
- * 줄 목록이다.
- *
- * **퇴사한 사람도 이 화면을 본다**([ACC-011](../../../../docs/2-design/modules/account/README.md#acc-011)).
- * 탭 바를 지우는 것은 탭 껍데기의 일이라 `src/app/(tabs)/_layout.tsx`가 맡고, 여기는 앱바의
- * 뒤로와 종 아이콘만 그 사람에 맞춰 바꾼다 — 퇴사한 뒤로는 알림이 안 온다. **그 둘이 이동이라
- * `.tsx`에 남는다** — controller가 내는 것은 「퇴사했나」와 「안 읽은 것이 있나」다.
- *
- * **`useState`가 하나도 없다.** 고른 단위와 보던 날짜가 읽는 달을 바꿔 통신을 움직인다.
- */
-
 const SKELETON_ROWS = [0, 1, 2];
 
-/** 못 가는 화살표는 안 그린다. 기간 글이 가운데에 그대로 서게 자리만 남긴다. */
 function ArrowSlot() {
   return <View className="h-8 w-8" />;
 }
@@ -48,7 +29,7 @@ function ArrowSlot() {
 export function PayrollScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const screen = usePayrollScreen(supabase);
+  const screen = usePayrollScreen();
 
   return (
     <Screen floor="plain">

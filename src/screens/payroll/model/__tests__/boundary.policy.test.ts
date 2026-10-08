@@ -1,16 +1,3 @@
-// 구현 대상: src/screens/payroll/model/boundary.policy.ts
-//
-// Period는 period.ts와 같은 꼴이다 — { unit: "week"; weekStart } |
-// { unit: "month"; month } | { unit: "year"; year }.
-//
-// canGoToPreviousPeriod(period, approvedAt) — 뒤로 가는 화살표가 서는지다. 바닥은 승인된
-// 달이다(첫 근무가 아니다 — payroll.md 「첫 달 앞」). approvedAt이 든 기간과
-// 같으면 더 뒤로 못 간다.
-//
-// canGoToNextPeriod(period, { today, leftAt }) — 앞으로 가는 화살표가 서는지다.
-// today(kstToday())가 든 기간 다음으로 못 간다. leftAt(퇴사한 달)이 있으면
-// 그 달이 바닥이 아니라 천장이 된다 — 퇴사한 달에서 앞으로가 사라진다.
-
 import {
   canGoToPreviousPeriod,
   canGoToNextPeriod,

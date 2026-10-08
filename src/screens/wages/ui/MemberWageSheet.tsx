@@ -12,23 +12,6 @@ import {
 } from "@/screens/wages/consts/wages.const";
 import type { WagesHistoryRow } from "@/screens/wages/hooks/useWagesScreen";
 
-/**
- * 한 사람의 시급을 정하는 시트다. 정본은
- * `docs/2-design/modules/payroll/screens/wages.md`의 「사람 시트」다.
- *
- * **열 때 지금 시급이 채워져 있다.** 기본을 쓰는 사람도 그 값이 채워져 있고, 고쳐 저장하면
- * 그때부터 개별이 된다.
- *
- * **이력은 받은 데이터에서 갈려 나온다.** 시트를 열 때 질의를 새로 안 던져 로딩이 없다
- * (plan payroll-wages AC-05).
- *
- * **이력 줄은 안 눌린다.** 화살표도 더보기도 없다 — 그 시점으로 되돌리는 문을 두면
- * 「지난 급여는 흔들리지 않는다」가 깨진다(PAY-010).
- *
- * **이력을 몇 줄 그릴지도 controller가 안다.** 「더 보기」가 늘리는 것이 조각의 모습이 아니라
- * 받는 줄 수라서다 — 이 파일이 받는 것은 이미 글자가 된 줄들이다.
- */
-
 export type MemberWageSheetProps = {
   name: string;
   photoUrl: string | null;

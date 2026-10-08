@@ -1,15 +1,3 @@
-// 구현 대상: src/screens/payroll/utils/historyRows.utils.ts
-//
-// PayrollHistoryDay = { date, amount, kind, position, startsAt, endsAt,
-// isEducation, overtimeMinutes }다. position·startsAt·endsAt은 배정이 없는 날
-// (리허설만 있는 날)에는 null이다.
-//
-// payrollHistoryRows(days) — 내역 줄이다(payroll.md 「내역 목록」). 최근 날짜가
-// 위로 온다. 결근은 금액 '–'에 보조 정보 '결근', wage-pending은 금액 '–'에
-// 보조 정보 뒤에 '시급 미정'이 붙는다. 연장이 붙은 날은 초과분을
-// '연장 1시간'·'연장 1시간 30분'·'연장 30분'으로 적는다. 교육 배정은 포지션
-// 뒤에 '교육'이 붙는다('메인 교육 · 10:00–19:00').
-
 import { payrollHistoryRows } from "@/screens/payroll/utils/historyRows.utils";
 
 function normalDay(overrides: Record<string, unknown> = {}) {

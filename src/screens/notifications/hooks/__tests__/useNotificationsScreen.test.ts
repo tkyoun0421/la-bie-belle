@@ -1,17 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/screens/notifications/hooks/useNotificationsScreen.ts
-//
-// 알림 목록 화면의 controller다. `.tsx`가 쪽을 이어 붙이고 상태를 고르고 날짜로 묶고
-// 제목·시각·목적지를 지어 줄마다 손을 달고 있었다 — 그 전부가 여기 온다.
-//
-// **읽음이 두 길로 찍힌다.** 관리자 공지는 갈 곳이 없어 화면에 들어오는 것으로 찍히고
-// (`useEffect`), 나머지는 누르는 것으로 찍힌다. 둘 다 통신이라 `.tsx`가 가질 것이 아니다.
-//
-// 제목·시각·목적지를 짓는 손은 각자 짝 테스트가 있어 여기서는 모킹한다 — 이 훅이 재는 것은
-// 그 손들을 어떤 줄에 어떻게 매다는지다.
-
 const getNotificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const markNotificationsReadMock =
@@ -31,8 +20,6 @@ jest.unstable_mockModule(
   () => ({ markNotificationsRead: markNotificationsReadMock }),
 );
 
-// 시계만 못 박고 나머지는 원래 것을 그대로 쓴다 — `clock.store`가 같은 모듈에서
-// `serverOffset`을 당긴다.
 const clockPolicy = await import("@/entities/clock/model/serverClock.policy");
 
 jest.unstable_mockModule("@/entities/clock/model/serverClock.policy", () => ({
@@ -58,6 +45,12 @@ jest.unstable_mockModule(
   }),
 );
 
+const FAKE_CLIENT = {} as never;
+
+jest.unstable_mockModule("@/shared/api/supabase", () => ({
+  supabase: FAKE_CLIENT,
+}));
+
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
@@ -81,8 +74,6 @@ function createWrapper() {
 
   return { wrapper };
 }
-
-const FAKE_CLIENT = {} as never;
 
 function fakeRouter(canGoBack = true) {
   return {
@@ -116,10 +107,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
   it("받은 알림이 없으면 상태가 empty다", async () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.state).toBe("empty"));
 
@@ -134,10 +124,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(2));
 
@@ -160,10 +149,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -182,10 +170,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -198,10 +185,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -215,10 +201,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, router),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(router), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -241,10 +226,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, router),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(router), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -264,7 +248,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    renderHook(() => useNotificationsScreen(FAKE_CLIENT, fakeRouter()), {
+    renderHook(() => useNotificationsScreen(fakeRouter()), {
       wrapper,
     });
 
@@ -280,7 +264,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, back, "/admin"),
+      () => useNotificationsScreen(back, "/admin"),
       { wrapper },
     );
 
@@ -296,10 +280,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     const fresh = fakeRouter(false);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fresh),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fresh), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.state).toBe("empty"));
 
@@ -314,10 +297,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.groups).toHaveLength(1));
 
@@ -332,10 +314,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.state).toBe("end"));
 
@@ -351,10 +332,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockResolvedValue(full);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.state).toBe("normal"));
 
@@ -367,10 +347,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockRejectedValue(new Error("끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(FAKE_CLIENT, fakeRouter()),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.state).toBe("error"));
 

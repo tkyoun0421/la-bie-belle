@@ -46,19 +46,6 @@ import { TrendChart } from "@/shared/ui/TrendChart";
 import { isCatalogVisible } from "@/shared/utils/catalogVisibility";
 import type { ShiftWindow } from "@/shared/utils/dayBand";
 
-/**
- * 조각을 한 줄로 늘어놓고 눈으로 보는 자리다. 절 제목과 순서는
- * `docs/2-design/design-system/components.md`를 그대로 따른다 — 새 조각이 그 문서에 서면
- * 여기도 같은 자리에 선다. Map은 네이티브 모듈이라 빠져 있다(ui-kit spec 「범위」).
- *
- * **개발 빌드에만 선다.** Expo Router는 파일이 있으면 경로를 만들어서 프로덕션 번들에서
- * 라우트를 뺄 길이 없다 — 그래서 화면이 판정을 받아 `Redirect`를 그린다. 판정이
- * `src/shared/utils/catalogVisibility.ts`에 사는 것은 `__DEV__` 전역이 대역을 안 받아
- * 여기서는 확인할 수 없기 때문이다.
- *
- * 라이트와 다크는 기기 설정을 그대로 따른다 — `globals.css`가 이미 두 벌을 낸다.
- */
-
 const SHIFT: ShiftWindow = {
   start: new Date("2026-09-12T10:00:00+09:00"),
   end: new Date("2026-09-12T19:00:00+09:00"),

@@ -1,20 +1,3 @@
-// 구현 대상: src/screens/payroll/utils/summary.utils.ts
-//
-// PayrollSummaryDay = { date, minutes, amount, kind, attendance }다. kind는
-// payrollDays.ts가 내는 'normal'·'overtime'·'absent'·'wage-pending' 넷이고,
-// attendance는 그날 배정이 있을 때만 채우는 AttendanceStatusInput이며 배정 없이
-// 리허설·조정만 있는 날은 null이다(지각은 배정이 있어야 판정된다).
-//
-// summarizeAmount(days) — 금액 문구다. 계산할 것이 없는 기간(빈 배열)은 '–',
-// 결근만 있어 합이 0인 기간(배열은 안 비었다)은 '0원'이다 — 둘이 갈린다
-// (payroll.md 「금액」·「빈 상태」).
-//
-// summarizeAccrual(days) — 누적 두 줄이다. work는 '12회 · 132시간'처럼 근무
-// 회수·시간 합이고, late는 '1회'거나 지각이 0회면 null이다(그 줄 자체가 없다).
-// wage-pending인 날은 회수·시간에 들고 결근은 셋 다 안 든다. 지각 판정은
-// entities/attendance의 getAttendanceStatus를 그대로 부른다 — 여기서 다시 짜지
-// 않는다. 상태를 안 들고 있어 다른 기간의 날짜를 넣으면 다른 값이 난다.
-
 import {
   summarizeAccrual,
   summarizeAmount,

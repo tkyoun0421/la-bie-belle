@@ -2,14 +2,6 @@ import { Button } from "@/shared/ui/Button";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
 
-/**
- * 제한 포지션에 교육 이력 없는 사람을 눌렀을 때 시트 내용이 바뀌어 서는 선택지다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「자격 없는 사람」이다.
- *
- * **버튼 둘이 아니라 줄 둘에 닫기다.** 같은 무게의 갈림길 둘이라 한쪽을 primary로 올리면
- * 화면이 답을 정해주는 것이 되는데, 이 결정은 관리자의 것이다(SCH-013).
- */
-
 export type QualificationSheetProps = {
   name: string;
   position: string;

@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Card } from "@/shared/ui/Card";
 import { ListRow } from "@/shared/ui/ListRow";
@@ -16,21 +15,6 @@ import {
 } from "@/screens/applications/consts/applications.const";
 import { useApplicationsScreen } from "@/screens/applications/hooks/useApplicationsScreen";
 
-/**
- * 그 달 근무 신청을 두 방향으로 보는 화면이다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 신청 모아보기 짜임」이고
- * 완료 조건은 `docs/2-design/spec/schedule-admin.md`의 AC-06이다.
- *
- * **무엇을 그리나가 `listState` 하나에 들어 있다.** 날짜순과 사람순이 로딩·빈 상태와 같은
- * 자리에서 갈려서, 접는 것과 세는 것은 전부 controller 몫이다.
- *
- * **마감일 시트가 여기와 달력 두 자리에서 열린다.** 당길 일이 생기는 문이 둘이라 시트는
- * 슬라이스 밖(`@/features/availabilitySubmit/ui`)에 산다.
- */
-
-/**
- * **같은 표가 저장소 열세 자리에 있다.** 묶음 여럿에 걸려 한 열이 못 접고 AC-13이 받는다.
- */
 const SKELETON_ROWS = [0, 1, 2];
 
 export type ApplicationsScreenProps = {
@@ -39,7 +23,7 @@ export type ApplicationsScreenProps = {
 
 export function ApplicationsScreen({ month }: ApplicationsScreenProps) {
   const router = useRouter();
-  const screen = useApplicationsScreen(supabase, month);
+  const screen = useApplicationsScreen(month);
 
   return (
     <Screen>

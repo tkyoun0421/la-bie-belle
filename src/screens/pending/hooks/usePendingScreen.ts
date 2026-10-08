@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DB } from "@/shared/api/database";
+import { supabase } from "@/shared/api/supabase";
 import { APP_STATE } from "@/shared/lib/appState.lib";
 import {
   isProfileGender,
@@ -56,35 +56,6 @@ import {
 } from "@/screens/pending/model/pendingForm.type";
 import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
 
-/**
- * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리의 controller다. 한 경로가 장면 넷을
- * 든다 — 프로필 작성, 보낸 뒤의 축하, 승인 대기, 거절된 뒤. 정본은
- * `docs/2-design/modules/account/screens/login.md`고 완료 조건은
- * `docs/2-design/spec/profile-form.md`다.
- *
- * **칸은 하나고 자리가 고정이다.** 다섯을 한 장에 세우지 않는다. 지금 답할 것 하나만 묻고,
- * 규칙에 맞으면 그 칸이 위 더미로 올라가 굳는다. 굳은 것을 누르면 다시 물음으로 내려온다.
- * 그래서 상태는 「값 넷」과 「굳은 것이 무엇인가」 둘이고, 열려 있는 칸은 그 둘에서
- * 계산된다 — 따로 들고 있지 않는다.
- *
- * **사진만 길이 다르다.** 고르는 즉시 서버에 쓰여서 보내기를 안 기다린다 — 그래서 값 넷에
- * 안 들고, 지금 사진은 프로필 행이 들고 있는 것이다.
- *
- * **장면은 프로필 행이 정하고 사람이 덮는다.** 시각 둘이 기본 장면을 내고
- * (`stageOfProfile`), 「다시 보내기」와 보낸 직후의 축하만 그 위를 덮는다 — 보내고 나면
- * 행이 낡아 다시 읽히는데, 그 결과가 축하를 덮어 버리면 안 된다.
- *
- * **축하는 계정마다 한 번이다.** 거절 뒤 다시 보낸 것이면 축하 없이 바로 승인 대기다.
- * 한 번이라도 보낸 적이 있는지는 개인정보 행이 있는지로 안다 — 차단이 풀린 사람은
- * `submitted_at`이 비워진 채 지난 값만 남아서 그 자리에 다시 선다.
- *
- * **알림은 저절로 안 묻는다.** 사람이 「알림 켜기」를 눌러야 기기가 묻는다 — 켜도 화면이
- * 안 넘어가고 안 켜도 안 막힌다
- * ([NTF-018](../../../../docs/2-design/modules/notification/README.md#ntf-018)).
- *
- * **보낼 데는 안 든다.** 세션이 없을 때 어디로 보내는지와 로그아웃 뒤의 자리는 `.tsx`가 쥔다.
- */
-
 export type PendingScreenController = {
   stage: PendingStage;
   email: string;
@@ -123,7 +94,7 @@ export type PendingScreenController = {
   signOut: (onDone: () => void) => void;
 };
 
-export function usePendingScreen(client: DB): PendingScreenController {
+export function usePendingScreen(): PendingScreenController {
   const [seeded, setSeeded] = useState(false);
   const [override, setOverride] = useState<PendingStage | null>(null);
   const [values, setValues] = useState<PendingFormValues>(EMPTY_PENDING_FORM);
@@ -138,11 +109,11 @@ export function usePendingScreen(client: DB): PendingScreenController {
   );
   const [pushToken, setPushToken] = useState<string | null>(null);
 
-  useSavePushTokenMutation(client, pushToken, APP_STATE);
+  useSavePushTokenMutation(supabase, pushToken, APP_STATE);
 
-  const { data: me } = useSessionUserQuery(client);
-  const { data: profile } = useMyProfileRowQuery(client, me?.id ?? null);
-  const privateQuery = useProfilePrivateQuery(client, profile?.id ?? null);
+  const { data: me } = useSessionUserQuery(supabase);
+  const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
+  const privateQuery = useProfilePrivateQuery(supabase, profile?.id ?? null);
 
   const {
     mutate: sendProfile,
@@ -150,7 +121,7 @@ export function usePendingScreen(client: DB): PendingScreenController {
     isSuccess: submitted,
     isError: submitFailed,
     reset: resetSubmit,
-  } = useSubmitProfileMutation(client);
+  } = useSubmitProfileMutation(supabase);
 
   const {
     mutate: sendPhoto,
@@ -158,9 +129,9 @@ export function usePendingScreen(client: DB): PendingScreenController {
     isSuccess: photoSaved,
     isError: photoSaveFailed,
     reset: resetPhoto,
-  } = useUpdatePhotoMutation(client);
+  } = useUpdatePhotoMutation(supabase);
 
-  const { signOut, isPending: signingOut } = useSignOutMutation(client);
+  const { signOut, isPending: signingOut } = useSignOutMutation(supabase);
 
   const freeze = useCallback((step: Step) => {
     setFrozen((at) => (at.includes(step) ? at : [...at, step]));
@@ -172,10 +143,6 @@ export function usePendingScreen(client: DB): PendingScreenController {
       (profile === undefined ||
         (profile !== null && privateQuery.data === undefined)));
 
-  /**
-   * 한 번만 씨를 뿌린다. 보낸 뒤 프로필 행이 낡아 다시 읽히는데, 그때 다시 뿌리면 적던
-   * 것과 굳은 것이 서버 값으로 되돌아간다.
-   */
   useEffect(() => {
     if (seeded || loading || !me) {
       return;
@@ -244,11 +211,9 @@ export function usePendingScreen(client: DB): PendingScreenController {
   const open = firstOpenStep(frozen);
   const errors: ProfileFormErrors = validateProfileForm(values);
 
-  /** 칸에서 손을 떼기 전에는 틀렸다고 말하지 않는다 — 적는 중에 빨개지지 않게. */
   const guideOf = (step: "birthDate" | "phone"): string | undefined =>
     touched.includes(step) ? errors[step] : undefined;
 
-  /** 적는 즉시 굳는 칸 둘이다 — 꼴이 맞는 순간 다음 칸으로 넘어간다. */
   const writeChecked = (step: "birthDate" | "phone", next: string) => {
     const edited = { ...values, [step]: next };
 

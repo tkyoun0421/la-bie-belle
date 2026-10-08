@@ -7,7 +7,8 @@ import {
 import { View } from "react-native";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
-import { Draggable, DropTarget } from "@/shared/ui/DragAndDrop";
+import { Draggable } from "@/shared/ui/Draggable";
+import { DropTarget } from "@/shared/ui/DropTarget";
 import { Icon } from "@/shared/ui/Icon";
 import { SlotCard } from "@/shared/ui/SlotCard";
 import { Text } from "@/shared/ui/Text";
@@ -21,23 +22,6 @@ import {
   slotFillCount,
   type PositionSlot,
 } from "@/screens/scheduleAdmin/utils/positionRows.utils";
-
-/**
- * 포지션 한 줄이다 — 줄 머리와 그 아래 자리 카드들
- * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「포지션과 자리」).
- *
- * **줄 머리의 이름과 셈이 한 글월이다.** 「안내 1/2」로 붙여 읽히는 하나라 두 조각으로
- * 쪼개지 않는다 — 크기와 색만 안쪽에서 갈린다.
- *
- * **집는 것이 둘이다.** 줄 머리는 다른 줄 머리로만 가고 자리 카드는 버리는 영역으로만 간다.
- * 어디에 놓였는지는 `shared/ui`의 끌기 조각이 알고, 받아도 되는지는 화면이 `mergeTarget.ts`로
- * 답한다.
- *
- * **교육 붙이기는 잠금과 무관하다.** 자리를 안 먹어 구조 변경이 아니다(SCH-012).
- *
- * **대기 배지는 카드 문구를 안 건드린다.** 비어 있다는 사실과 물어봤다는 사실은 다른 것이라
- * 「비어 있어요」 위에 배지가 얹힌다. 합친 자리면 겸임 배지와 나란히 선다.
- */
 
 const LOCK_ICON_SIZE = 18;
 

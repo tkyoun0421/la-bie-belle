@@ -1,19 +1,5 @@
 import { jest } from "@jest/globals";
 
-// 구현 대상: src/screens/scheduleAdmin/hooks/useDayDetail.ts
-//
-// 열린 날 하나의 상세를 쥐는 controller다. 조각이 `useState` 열하나와 `useEffect` 하나를
-// 들고 확정 갈림과 자격 갈림과 끌기 판정과 조정 실패 처리를 다 하고 있었다.
-//
-// **확정 뒤에는 모든 변경에 확인 시트가 선다.** 그 사람의 근무가 생기고 없어지는 사건이라
-// 「바로 보낼 것」과 「물어보고 보낼 것」이 같은 한 손(`commit`)에서 갈린다.
-//
-// **읽는 질의도 쓰는 손도 위에서 내려온다.** 조각은 제 controller를 못 가지니 부모가 모아
-// 넘기고, 이 자리는 그 손을 언제 어떤 인자로 부를지만 정한다.
-//
-// **조정 실패 둘이 갈린다.** `not_allowed`는 그날 배정이 사라진 것이라 고르기를 닫고 목록을
-// 다시 읽고, 나머지는 시트를 열어둔 채 문구만 띄운다 — 넣던 분이 남아야 다시 보낸다.
-
 const { renderHook, act } = await import("@testing-library/react-native");
 const { dayConfirmGate } =
   await import("@/screens/scheduleAdmin/model/confirmGate.policy");
@@ -61,7 +47,6 @@ function member(over: Record<string, unknown>) {
   };
 }
 
-/** 스캔은 자격을 보는 포지션이다 — p2는 자격이 있고 p3는 없다. */
 const MEMBERS = [
   member({ id: "p1", display_name: "이준호" }),
   member({ id: "p2", display_name: "박수진" }),
