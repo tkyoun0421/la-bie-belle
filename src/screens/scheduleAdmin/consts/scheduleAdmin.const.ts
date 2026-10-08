@@ -6,8 +6,6 @@ export const RESTRICTED_POSITIONS = [
   "드레스실",
 ] as const;
 
-export const ORIGIN_APPROVALS = "approvals";
-
 export const EMPTY_ICON_SIZE = 44;
 
 export const SCHEDULE_ADMIN_COPY = {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { ORIGIN_APPROVALS } from "@/shared/consts/navigation.const";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -34,10 +35,7 @@ import { useMergeSlotsMutation } from "@/features/scheduleSlot/services/useMerge
 import { useRemoveSlotMutation } from "@/features/scheduleSlot/services/useRemoveSlotMutation";
 import { useSplitSlotMutation } from "@/features/scheduleSlot/services/useSplitSlotMutation";
 import { useSendWorkRequestMutation } from "@/features/workRequest/services/useSendWorkRequestMutation";
-import {
-  ORIGIN_APPROVALS,
-  SCHEDULE_ADMIN_COPY,
-} from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
+import { SCHEDULE_ADMIN_COPY } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
   adminCalendarDayState,
   confirmedVacancyCount,

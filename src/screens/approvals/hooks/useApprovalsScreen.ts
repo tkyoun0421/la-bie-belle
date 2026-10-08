@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { ORIGIN_APPROVALS } from "@/shared/consts/navigation.const";
 import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -144,7 +145,7 @@ export function useApprovalsScreen(
 
     if (sent.decision === "approved") {
       router.replace(
-        `/admin/schedule?date=${sent.row.workDate}&from=approvals`,
+        `/admin/schedule?date=${sent.row.workDate}&from=${ORIGIN_APPROVALS}`,
       );
       return;
     }

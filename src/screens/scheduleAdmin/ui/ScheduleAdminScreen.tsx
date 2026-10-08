@@ -1,7 +1,10 @@
 import { useRouter } from "expo-router";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
-import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
+import {
+  ORIGIN_APPROVALS,
+  ORIGIN_NOTIFICATIONS,
+} from "@/shared/consts/navigation.const";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
 import { BottomCTA } from "@/shared/ui/BottomCTA";
@@ -18,7 +21,6 @@ import { Text } from "@/shared/ui/Text";
 import { DeadlineSheet } from "@/features/availabilitySubmit/ui/DeadlineSheet";
 import {
   EMPTY_ICON_SIZE,
-  ORIGIN_APPROVALS,
   SCHEDULE_ADMIN_COPY,
 } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import { useScheduleAdminScreen } from "@/screens/scheduleAdmin/hooks/useScheduleAdminScreen";
