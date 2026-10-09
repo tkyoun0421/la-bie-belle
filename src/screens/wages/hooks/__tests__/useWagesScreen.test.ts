@@ -13,6 +13,18 @@ const TODAY = "2026-10-03";
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const replaceMock = jest.fn();
+const canGoBackMock = jest.fn<() => boolean>();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    replace: replaceMock,
+    canGoBack: canGoBackMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -53,6 +65,7 @@ const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { WAGES_COPY } = await import("@/screens/wages/consts/wages.const");
 const { useWagesScreen } = await import("@/screens/wages/hooks/useWagesScreen");
+const { ADMIN_HOME_PATH } = await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -95,6 +108,10 @@ beforeEach(() => {
   setWageMock.mockReset();
   setDefaultWageMock.mockReset();
   resetWageToDefaultMock.mockReset();
+  backMock.mockClear();
+  replaceMock.mockClear();
+  canGoBackMock.mockReset();
+  canGoBackMock.mockReturnValue(true);
 
   listActiveMembersMock.mockResolvedValue(MEMBERS);
   getWageRatesMock.mockResolvedValue({
@@ -356,5 +373,27 @@ describe("useWagesScreen — 금액 칸 하나를 시트 둘이 같이 쓴다", 
     act(() => result.current.dismissToast());
 
     expect(result.current.toast).toBeNull();
+  });
+});
+
+describe("useWagesScreen — 갈 데를 controller가 정한다", () => {
+  it("돌아갈 데가 있으면 뒤로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("돌아갈 데가 없으면 관리자 홈으로 바꿔 넣는다", async () => {
+    canGoBackMock.mockReturnValue(false);
+
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(replaceMock).toHaveBeenCalledWith(ADMIN_HOME_PATH);
+    expect(backMock).not.toHaveBeenCalled();
   });
 });

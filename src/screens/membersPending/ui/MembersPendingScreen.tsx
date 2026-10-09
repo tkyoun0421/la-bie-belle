@@ -1,38 +1,29 @@
-import { useRouter } from "expo-router";
 import { EllipsisVertical } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
-import { Avatar } from "@/shared/ui/Avatar";
-import { Card } from "@/shared/ui/Card";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
-import { ListRow } from "@/shared/ui/ListRow";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Screen } from "@/shared/ui/Screen";
-import { SheetLayer } from "@/shared/ui/SheetLayer";
-import { SkeletonLine } from "@/shared/ui/Skeleton";
-import { Text } from "@/shared/ui/Text";
 import {
   MORE_HIT_SLOP,
   MORE_ICON_SIZE,
   PENDING_COPY,
 } from "@/screens/membersPending/consts/membersPending.const";
 import { useMembersPendingScreen } from "@/screens/membersPending/hooks/useMembersPendingScreen";
-import { MemberDetailSheet } from "@/screens/membersPending/ui/MemberDetailSheet";
-
-const SKELETON_ROWS = [0, 1, 2];
+import { MembersPendingSheets } from "@/screens/membersPending/ui/MembersPendingSheets";
+import { PendingEmpty } from "@/screens/membersPending/ui/PendingEmpty";
+import { PendingLoading } from "@/screens/membersPending/ui/PendingLoading";
+import { PendingRows } from "@/screens/membersPending/ui/PendingRows";
 
 export function MembersPendingScreen() {
-  const router = useRouter();
   const screen = useMembersPendingScreen();
 
   return (
     <Screen>
       <AppBar
         title={PENDING_COPY.appBarTitle}
-        onBack={() =>
-          router.canGoBack() ? router.back() : router.replace("/admin")
-        }
+        onBack={screen.goBack}
         right={
           <View className="relative">
             <Pressable
@@ -46,10 +37,7 @@ export function MembersPendingScreen() {
             <MorePopover open={screen.menuOpen}>
               <MorePopoverItem
                 label={PENDING_COPY.blockedMenu}
-                onPress={() => {
-                  screen.closeMenu();
-                  router.push("/admin/members/blocked");
-                }}
+                onPress={screen.openBlocked}
               />
             </MorePopover>
           </View>
@@ -58,54 +46,15 @@ export function MembersPendingScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {screen.listState === "loading" ? (
-            <Card>
-              {SKELETON_ROWS.map((at) => (
-                <SkeletonLine key={at} className="my-4 w-2/3" />
-              ))}
-            </Card>
-          ) : screen.listState === "empty" ? (
-            <Text size="sm" tone="subtle" className="py-4">
-              {PENDING_COPY.empty}
-            </Text>
-          ) : (
-            <Card className="py-0">
-              {screen.rows.map((row, at) => (
-                <ListRow
-                  key={row.id}
-                  title={row.name}
-                  detail={row.detail}
-                  left={<Avatar name={row.name} photoUrl={row.photoUrl} />}
-                  chevron
-                  divider={at > 0}
-                  onPress={() => {
-                    screen.closeMenu();
-                    row.press();
-                  }}
-                />
-              ))}
-            </Card>
-          )}
+          {screen.listState === "loading" ? <PendingLoading /> : null}
+          {screen.listState === "empty" ? <PendingEmpty /> : null}
+          {screen.listState === "rows" ? (
+            <PendingRows rows={screen.rows} />
+          ) : null}
         </View>
       </ScrollView>
 
-      {screen.sheet ? (
-        <SheetLayer onDismiss={screen.closeSheet}>
-          <MemberDetailSheet
-            name={screen.sheet.name}
-            photoUrl={screen.sheet.photoUrl}
-            sentAt={screen.sheet.sentAt}
-            values={screen.sheet.values}
-            today={screen.today}
-            face={screen.face}
-            sending={screen.sending}
-            failed={screen.failed}
-            onFace={screen.showFace}
-            onApprove={screen.approve}
-            onConfirm={screen.confirm}
-          />
-        </SheetLayer>
-      ) : null}
+      <MembersPendingSheets screen={screen} />
 
       {screen.toast ? (
         <FloatingToast

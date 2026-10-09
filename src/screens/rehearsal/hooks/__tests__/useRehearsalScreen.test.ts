@@ -64,6 +64,12 @@ jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
 
 const FAKE_CLIENT = {} as never;
 
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ replace: replaceMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -73,6 +79,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { ME_HOME_PATH } = await import("@/shared/consts/navigation.const");
 const { useRehearsalScreen } =
   await import("@/screens/rehearsal/hooks/useRehearsalScreen");
 
@@ -390,5 +397,36 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
     });
     expect(result.current.openDate).toBeNull();
     expect(result.current.closeTop).toBeNull();
+  });
+});
+
+describe("useRehearsalScreen — 갈 데를 controller가 정한다", () => {
+  beforeEach(() => {
+    replaceMock.mockClear();
+  });
+
+  it("뒤로는 내 화면으로 바꿔 넣는다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(replaceMock).toHaveBeenCalledWith(ME_HOME_PATH);
+  });
+
+  it("달을 고르면 달 고르는 시트가 닫힌다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openPicker());
+    expect(result.current.pickerYear).not.toBeNull();
+
+    act(() => result.current.pickMonth("2026-11"));
+
+    expect(result.current.pickerYear).toBeNull();
+  });
+
+  it("칸은 어느 날이든 누를 수 있다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.canPressDay("2026-10-05")).toBe(true);
   });
 });

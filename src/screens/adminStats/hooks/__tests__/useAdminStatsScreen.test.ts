@@ -12,6 +12,12 @@ const TODAY = "2026-10-03";
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ back: backMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -89,6 +95,7 @@ function scheduleDay(workDate: string) {
 }
 
 beforeEach(() => {
+  backMock.mockClear();
   getMonthScheduleMock.mockReset();
   getMonthAttendanceMock.mockReset();
   getFirstScheduleMonthMock.mockReset();
@@ -236,5 +243,32 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
     act(() => result.current.retry());
 
     await waitFor(() => expect(result.current.listState).toBe("empty"));
+  });
+});
+
+describe("useAdminStatsScreen — 갈 데를 controller가 정한다", () => {
+  it("뒤로가 뒤로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("빈 달의 근무 탭은 자리를 비워 두는 값을 든다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.listState).toBe("empty");
+    expect(result.current.emptyTotal).not.toBeNull();
+  });
+
+  it("빈 달의 근태 탭은 그 값을 안 든다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.chooseTab("attendance"));
+
+    await waitFor(() => expect(result.current.tab).toBe("attendance"));
+
+    expect(result.current.emptyTotal).toBeNull();
   });
 });

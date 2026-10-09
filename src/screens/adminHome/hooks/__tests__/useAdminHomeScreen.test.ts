@@ -17,6 +17,15 @@ const TODAY = "2026-10-03";
 
 const FAKE_CLIENT = {} as never;
 
+const pushMock = jest.fn();
+
+const PATHNAME = "/admin";
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ push: pushMock }),
+  usePathname: () => PATHNAME,
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -132,6 +141,7 @@ const NOON_OF_TODAY = Date.parse(`${TODAY}T03:00:00.000Z`);
 beforeEach(() => {
   jest.spyOn(Date, "now").mockReturnValue(NOON_OF_TODAY);
 
+  pushMock.mockClear();
   getMonthScheduleMock.mockReset();
   getMonthWindowMock.mockReset();
   getOpenSlotsMock.mockReset();
@@ -319,5 +329,85 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
     const { result } = await mounted();
 
     await waitFor(() => expect(result.current.unread).toBe(true));
+  });
+});
+
+describe("useAdminHomeScreen — 갈 데를 controller가 정한다", () => {
+  it("오늘 현황은 오늘 날짜를 달고 근무표로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goToday());
+
+    expect(pushMock).toHaveBeenCalledWith(`/admin/schedule?date=${TODAY}`);
+  });
+
+  it("근무표 타일은 타일이 보는 달을 달고 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goTileMonth());
+
+    expect(pushMock).toHaveBeenCalledWith("/admin/schedule?month=2026-10");
+  });
+
+  it("미니뷰는 오늘이 든 달을 달고 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goMonth());
+
+    expect(pushMock).toHaveBeenCalledWith("/admin/schedule?month=2026-10");
+  });
+
+  it("빈 자리 카드는 그 날을 달고 간다", async () => {
+    getMonthWindowMock.mockResolvedValue({
+      month: "2026-10",
+      confirmedAt: `${TODAY}T00:00:00.000Z`,
+    });
+    getOpenSlotsMock.mockResolvedValue([
+      { id: "s1", workDate: "2026-10-04", position: "메인" },
+    ]);
+
+    const { result } = await mounted();
+
+    await waitFor(() => expect(result.current.cards).toHaveLength(1));
+
+    act(() => result.current.cards[0].press());
+
+    expect(pushMock).toHaveBeenCalledWith("/admin/schedule?date=2026-10-04");
+  });
+
+  it("종은 어디서 왔는지를 달고 알림으로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goNotifications());
+
+    expect(pushMock).toHaveBeenCalledWith(`/notifications?from=${PATHNAME}`);
+  });
+
+  it("관리자 스위치는 근무자 홈으로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goWorkerHome());
+
+    expect(pushMock).toHaveBeenCalledWith("/");
+  });
+
+  it("아래 줄들이 각자 제 자리로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goApprovals());
+    act(() => result.current.goPending());
+    act(() => result.current.goMembers());
+    act(() => result.current.goWages());
+    act(() => result.current.goQr());
+    act(() => result.current.goStats());
+
+    expect(pushMock.mock.calls.map(([to]) => to)).toEqual([
+      "/admin/approvals",
+      "/admin/members/pending",
+      "/admin/members",
+      "/admin/wages",
+      "/admin/qr",
+      "/admin/stats",
+    ]);
   });
 });

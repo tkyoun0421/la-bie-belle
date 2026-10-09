@@ -20,6 +20,8 @@ export const PAYROLL_COPY = {
   lateLabel: "지각",
 };
 
+export const SKELETON_ROWS = [0, 1, 2] as const;
+
 export const SEGMENT_TEST_ID = "payroll-segment";
 
 export const PREV_PERIOD_TEST_ID = "payroll-period-prev";

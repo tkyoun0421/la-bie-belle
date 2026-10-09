@@ -2,6 +2,8 @@ export const BACK_BEARING_PREFIXES = ["/admin/schedule", "/admin/approvals"];
 
 export const NEXT_PAGE_SLACK = 240;
 
+export const SKELETON_ROWS = [0, 1, 2, 3, 4];
+
 export const NOTIFICATIONS_COPY = {
   appBarTitle: "알림",
   readFailed: "알림을 불러오지 못했어요",

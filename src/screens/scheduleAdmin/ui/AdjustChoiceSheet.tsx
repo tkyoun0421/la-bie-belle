@@ -3,16 +3,16 @@ import { AmountInput } from "@/shared/ui/AmountInput";
 import { Button } from "@/shared/ui/Button";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import { spellHours } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
+import { useAdjustChoiceSheet } from "@/screens/scheduleAdmin/hooks/useAdjustChoiceSheet";
+import type { AdjustChoiceSheetInput } from "@/screens/scheduleAdmin/model/adjustChoiceSheet.type";
 
 export const ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID =
   "adjustment-extra-minutes-input";
 
 const EXTRA_LABEL = "몇 분 더 일했나요?";
 
-export type AdjustChoiceSheetProps = {
+export type AdjustChoiceSheetProps = AdjustChoiceSheetInput & {
   name: string;
-  assignedMinutes: number;
   canRevert: boolean;
   extending: boolean;
   digits: string;
@@ -29,7 +29,6 @@ export type AdjustChoiceSheetProps = {
 
 export function AdjustChoiceSheet({
   name,
-  assignedMinutes,
   canRevert,
   extending,
   digits,
@@ -42,7 +41,10 @@ export function AdjustChoiceSheet({
   onWriteDigits,
   onExtend,
   onClose,
+  ...input
 }: AdjustChoiceSheetProps) {
+  const sheet = useAdjustChoiceSheet(input);
+
   return (
     <View>
       <Text size="lg" weight="semibold">
@@ -64,7 +66,7 @@ export function AdjustChoiceSheet({
             testID={ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID}
             unit="분"
             value={digits}
-            hint={`배정 ${spellHours(assignedMinutes)}에 더해져요`}
+            hint={sheet.extraHint}
             onChangeText={onWriteDigits}
           />
         </View>

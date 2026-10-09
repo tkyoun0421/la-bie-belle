@@ -29,6 +29,8 @@ export const ADMIN_STATS_COPY = {
   totalPrefix: "합계 · ",
 } as const;
 
+export const SKELETON_ROWS = [0, 1, 2];
+
 export const AVATAR_SIZE = 40;
 
 export const MONTH_LENGTH = 7;

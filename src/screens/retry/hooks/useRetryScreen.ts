@@ -1,22 +1,25 @@
+import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { LOGIN_PATH } from "@/shared/consts/navigation.const";
 import type { SessionUser } from "@/entities/session/model/session.type";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
-import type { EntryDecision } from "@/features/auth/model/auth.type";
 import { useRetryEntryMutation } from "@/features/auth/services/useRetryEntryMutation";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
-
-type RetryRouter = { replace: (href: EntryDecision) => void };
+import { RETRY_PATH } from "@/screens/retry/consts/retry.const";
 
 export type RetryScreenController = {
   me: SessionUser | null | undefined;
+  email: string;
+  photoUrl: string | null;
   retry: () => void;
   retrying: boolean;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   signingOut: boolean;
 };
 
-export function useRetryScreen(router: RetryRouter): RetryScreenController {
+export function useRetryScreen(): RetryScreenController {
+  const router = useRouter();
   const { data: me } = useSessionUserQuery(supabase);
   const { signOut, isPending: signingOut } = useSignOutMutation(supabase);
 
@@ -24,11 +27,23 @@ export function useRetryScreen(router: RetryRouter): RetryScreenController {
 
   const retry = useCallback(() => {
     decide((destination) => {
-      if (destination !== "/retry") {
+      if (destination !== RETRY_PATH) {
         router.replace(destination);
       }
     });
   }, [decide, router]);
 
-  return { me, retry, retrying: isPending, signOut, signingOut };
+  const goLogin = useCallback(() => router.replace(LOGIN_PATH), [router]);
+
+  const leave = useCallback(() => signOut(goLogin), [signOut, goLogin]);
+
+  return {
+    me,
+    email: me?.email ?? "",
+    photoUrl: me?.googlePhotoUrl ?? null,
+    retry,
+    retrying: isPending,
+    leave,
+    signingOut,
+  };
 }

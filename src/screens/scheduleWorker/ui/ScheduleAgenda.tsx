@@ -3,39 +3,18 @@ import { AccordionRow } from "@/shared/ui/Accordion";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { Text } from "@/shared/ui/Text";
-import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
+import { useScheduleAgenda } from "@/screens/scheduleWorker/hooks/useScheduleAgenda";
+import type { ScheduleAgendaInput } from "@/screens/scheduleWorker/model/scheduleAgenda.type";
 import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
-import {
-  agendaRowStatusLabel,
-  spellWorkDate,
-  type MyAssignment,
-} from "@/screens/scheduleWorker/utils/agendaRow.utils";
 
-export type AgendaEntry = {
-  workDate: string;
-  myAssignment: MyAssignment | null;
-  rows: RosterRowValue[];
-  showActions: boolean;
-};
-
-export type ScheduleAgendaProps = {
-  entries: AgendaEntry[];
-  expanded: string[];
+export type ScheduleAgendaProps = ScheduleAgendaInput & {
   myProfileId: string | null;
-  onToggle: (workDate: string) => void;
-  onCancelShift: (workDate: string) => void;
-  onRequestSwap: (workDate: string) => void;
 };
 
-export function ScheduleAgenda({
-  entries,
-  expanded,
-  myProfileId,
-  onToggle,
-  onCancelShift,
-  onRequestSwap,
-}: ScheduleAgendaProps) {
-  if (entries.length === 0) {
+export function ScheduleAgenda({ myProfileId, ...input }: ScheduleAgendaProps) {
+  const agenda = useScheduleAgenda(input);
+
+  if (agenda.empty) {
     return (
       <EmptyState
         scene="no-schedule"
@@ -47,36 +26,33 @@ export function ScheduleAgenda({
 
   return (
     <View>
-      {entries.map((entry, at) => (
+      {agenda.days.map((day) => (
         <AccordionRow
-          key={entry.workDate}
-          divider={at > 0}
-          title={spellWorkDate(entry.workDate)}
-          expanded={expanded.includes(entry.workDate)}
-          onToggle={() => onToggle(entry.workDate)}
+          key={day.workDate}
+          divider={day.divider}
+          title={day.title}
+          expanded={day.expanded}
+          onToggle={day.toggle}
           status={
-            <Text
-              size="xs"
-              tone={entry.myAssignment === null ? "subtle" : "brand"}
-            >
-              {agendaRowStatusLabel(entry.myAssignment)}
+            <Text size="xs" tone={day.statusTone}>
+              {day.statusLabel}
             </Text>
           }
         >
-          <DayRoster rows={entry.rows} myProfileId={myProfileId} />
-          {entry.showActions ? (
+          <DayRoster rows={day.rows} myProfileId={myProfileId} />
+          {day.showActions ? (
             <View className="mt-3 flex-row gap-2">
               <Button
                 variant="secondary"
                 className="flex-1"
-                onPress={() => onCancelShift(entry.workDate)}
+                onPress={day.cancelShift}
               >
                 근무 취소
               </Button>
               <Button
                 variant="primary"
                 className="flex-1"
-                onPress={() => onRequestSwap(entry.workDate)}
+                onPress={day.requestSwap}
               >
                 교대 요청
               </Button>

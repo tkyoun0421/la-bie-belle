@@ -1,5 +1,17 @@
+import { usePathname, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import {
+  ADMIN_APPROVALS_PATH,
+  ADMIN_MEMBERS_PATH,
+  ADMIN_MEMBERS_PENDING_PATH,
+  ADMIN_QR_PATH,
+  ADMIN_SCHEDULE_PATH,
+  ADMIN_STATS_PATH,
+  ADMIN_WAGES_PATH,
+  NOTIFICATIONS_PATH,
+  WORKER_HOME_PATH,
+} from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -38,6 +50,7 @@ export type AdminHomeVacancyCard = {
   workDate: string;
   title: string;
   daysLeftLine: string;
+  press: () => void;
 };
 
 export type AdminHomeSheet = {
@@ -46,8 +59,6 @@ export type AdminHomeSheet = {
 };
 
 export type AdminHomeScreenController = {
-  today: string;
-  month: string;
   monthLabel: string;
   tileMonth: string;
   status: TodayStatus;
@@ -71,6 +82,17 @@ export type AdminHomeScreenController = {
   writeStarts: (typed: string) => void;
   writeEnds: (typed: string) => void;
   saveDefaults: () => void;
+  goToday: () => void;
+  goMonth: () => void;
+  goTileMonth: () => void;
+  goNotifications: () => void;
+  goWorkerHome: () => void;
+  goApprovals: () => void;
+  goPending: () => void;
+  goMembers: () => void;
+  goWages: () => void;
+  goQr: () => void;
+  goStats: () => void;
 };
 
 function clockLabel(clock: string): string {
@@ -78,6 +100,8 @@ function clockLabel(clock: string): string {
 }
 
 export function useAdminHomeScreen(): AdminHomeScreenController {
+  const router = useRouter();
+  const pathname = usePathname();
   const [sheet, setSheet] = useState<AdminHomeSheet | null>(null);
 
   const today = kstToday();
@@ -120,6 +144,16 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     }
   }, [saved, closeSheet]);
 
+  const goMonthOf = useCallback(
+    (asked: string) => router.push(`${ADMIN_SCHEDULE_PATH}?month=${asked}`),
+    [router],
+  );
+
+  const goDay = useCallback(
+    (date: string) => router.push(`${ADMIN_SCHEDULE_PATH}?date=${date}`),
+    [router],
+  );
+
   const nowMs = nowWithOffset(Date.now(), clockOffset);
 
   const openDays = days ?? [];
@@ -161,9 +195,10 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
             workDate: card.workDate,
             title: vacancyCardTitle(card),
             daysLeftLine: vacancyDaysLeftLine(card.daysLeft),
+            press: () => goDay(card.workDate),
           }))
         : [],
-    [confirmed, openSlots, nowMs],
+    [confirmed, openSlots, nowMs, goDay],
   );
 
   const loads = useMemo(
@@ -178,8 +213,6 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
   );
 
   return {
-    today,
-    month,
     monthLabel: monthName(month),
     tileMonth: tiled,
     status,
@@ -233,5 +266,17 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
         ends: sheet.ends,
       });
     },
+    goToday: () => goDay(today),
+    goMonth: () => goMonthOf(month),
+    goTileMonth: () => goMonthOf(tiled),
+    goNotifications: () =>
+      router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`),
+    goWorkerHome: () => router.push(WORKER_HOME_PATH),
+    goApprovals: () => router.push(ADMIN_APPROVALS_PATH),
+    goPending: () => router.push(ADMIN_MEMBERS_PENDING_PATH),
+    goMembers: () => router.push(ADMIN_MEMBERS_PATH),
+    goWages: () => router.push(ADMIN_WAGES_PATH),
+    goQr: () => router.push(ADMIN_QR_PATH),
+    goStats: () => router.push(ADMIN_STATS_PATH),
   };
 }

@@ -36,7 +36,7 @@ export type AdjustSheetRow = {
   rehearsalLine: string | null;
 };
 
-export type AdjustSheetInput = {
+export type AdjustSheetRowsInput = {
   day: WorkDayHours;
   assignments: readonly AdjustSheetAssignment[];
   adjustments: readonly AdjustSheetAdjustment[];
@@ -101,7 +101,7 @@ function rehearsalLineOf(rows: readonly RehearsalClock[]): string | null {
   return `리허설 ${total.count}건 · ${spellHours(total.minutes)}`;
 }
 
-export function adjustSheetRows(input: AdjustSheetInput): AdjustSheetRow[] {
+export function adjustSheetRows(input: AdjustSheetRowsInput): AdjustSheetRow[] {
   return input.assignments
     .filter((assignment) => assignment.endedAt === null)
     .map((assignment) => {

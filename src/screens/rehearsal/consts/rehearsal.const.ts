@@ -21,6 +21,15 @@ export const REHEARSAL_COPY = {
   removeConfirm: "지우기",
 };
 
+export const FORM_COPY = {
+  addTitle: "리허설 넣기",
+  editTitle: "리허설 고치기",
+  timeGuide: "이 날은 근무가 없어서 시각으로 넣어요",
+  countGuide: "이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요",
+  addSubmit: "넣기",
+  editSubmit: "저장",
+};
+
 export const MONTH_TEST_ID = "rehearsal-month";
 
 export const REMOVE_CONFIRM_TEST_ID = "rehearsal-remove-confirm-button";

@@ -22,6 +22,8 @@ export const MONTH_LENGTH = 7;
 
 export const ABSENT: PayrollDayKind = "absent";
 
+export const SKELETON_ROWS = [0, 1, 2] as const;
+
 export const STATS_TABS = ["attendance", "position", "payroll"] as const;
 
 export const TAB_OPTIONS: readonly { value: string; label: string }[] = [

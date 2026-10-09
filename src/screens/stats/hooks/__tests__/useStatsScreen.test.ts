@@ -18,6 +18,13 @@ const TODAY = "2026-10-03";
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const pushMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ back: backMock, push: pushMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -72,6 +79,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useStatsScreen } = await import("@/screens/stats/hooks/useStatsScreen");
+const { PAYROLL_PATH } = await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -122,6 +130,8 @@ function scheduleDay(workDate: string) {
 }
 
 beforeEach(() => {
+  backMock.mockClear();
+  pushMock.mockClear();
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
   getProfilePrivateMock.mockReset();
@@ -271,5 +281,23 @@ describe("useStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => {
     act(() => result.current.retry());
 
     await waitFor(() => expect(result.current.listState).toBe("empty"));
+  });
+});
+
+describe("useStatsScreen — 갈 데를 controller가 정한다", () => {
+  it("뒤로는 쌓인 자리로 되돌아간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("내역 보기는 급여 화면을 쌓는다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openPayrollHistory());
+
+    expect(pushMock).toHaveBeenCalledWith(PAYROLL_PATH);
   });
 });

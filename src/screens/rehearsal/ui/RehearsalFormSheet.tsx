@@ -4,20 +4,11 @@ import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
 import { COUNT_MAX_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
-import {
-  canSubmitForm,
-  type AddSheetState,
-  type AddSheetValues,
-} from "@/screens/rehearsal/model/addSheetState.reducer";
+import { useRehearsalFormSheet } from "@/screens/rehearsal/hooks/useRehearsalFormSheet";
+import type { AddSheetValues } from "@/screens/rehearsal/model/addSheetState.reducer";
+import type { RehearsalFormSheetInput } from "@/screens/rehearsal/model/rehearsalFormSheet.type";
 
-const TIME_GUIDE = "이 날은 근무가 없어서 시각으로 넣어요";
-
-const COUNT_GUIDE = "이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요";
-
-export type RehearsalFormSheetProps = {
-  mode: "add" | "edit";
-  dateLabel: string;
-  state: AddSheetState;
+export type RehearsalFormSheetProps = RehearsalFormSheetInput & {
   saving: boolean;
   onChange: (values: Partial<AddSheetValues>) => void;
   onSubmit: () => void;
@@ -26,44 +17,41 @@ export type RehearsalFormSheetProps = {
 };
 
 export function RehearsalFormSheet({
-  mode,
-  dateLabel,
-  state,
   saving,
   onChange,
   onSubmit,
   onClose,
   onRemove,
+  ...input
 }: RehearsalFormSheetProps) {
-  const { formKind, values, notice } = state;
-  const adding = mode === "add";
+  const form = useRehearsalFormSheet(input);
 
   return (
     <View>
       <Text size="lg" weight="semibold">
-        {`${adding ? "리허설 넣기" : "리허설 고치기"} · ${dateLabel}`}
+        {form.title}
       </Text>
 
-      {notice?.kind === "wrong_kind" ? (
+      {form.wrongKindNotice ? (
         <NoticeBlock kind="info" className="mt-4">
-          {notice.message}
+          {form.wrongKindNotice}
         </NoticeBlock>
       ) : null}
 
-      {formKind === "time" ? (
+      {form.formKind === "time" ? (
         <View className="mt-4 flex-row gap-3">
           <Input
             className="flex-1"
             label="시작"
             testID="rehearsal-starts-input"
-            value={values.startsAt}
+            value={form.values.startsAt}
             onChangeText={(startsAt) => onChange({ startsAt })}
           />
           <Input
             className="flex-1"
             label="끝"
             testID="rehearsal-ends-input"
-            value={values.endsAt}
+            value={form.values.endsAt}
             onChangeText={(endsAt) => onChange({ endsAt })}
           />
         </View>
@@ -75,7 +63,7 @@ export function RehearsalFormSheet({
             testID="rehearsal-count-input"
             keyboardType="number-pad"
             maxLength={COUNT_MAX_LENGTH}
-            value={values.count}
+            value={form.values.count}
             onChangeText={(count) => onChange({ count })}
           />
           <Text size="sm" tone="subtle" className="pb-3">
@@ -85,18 +73,18 @@ export function RehearsalFormSheet({
       )}
 
       <Text size="xs" tone="subtle" className="mt-2">
-        {formKind === "time" ? TIME_GUIDE : COUNT_GUIDE}
+        {form.guide}
       </Text>
 
-      {notice?.kind === "overlaps" ? (
+      {form.overlapsNotice ? (
         <Text size="xs" tone="critical" className="mt-2">
-          {notice.message}
+          {form.overlapsNotice}
         </Text>
       ) : null}
 
-      {notice?.kind === "transport_error" ? (
+      {form.transportNotice ? (
         <NoticeBlock kind="error" className="mt-4">
-          {`${notice.message}\n${notice.detail}`}
+          {form.transportNotice}
         </NoticeBlock>
       ) : null}
 
@@ -123,10 +111,10 @@ export function RehearsalFormSheet({
           <Button
             variant="primary"
             loading={saving}
-            disabled={!canSubmitForm(state)}
+            disabled={!form.canSubmit}
             onPress={onSubmit}
           >
-            {adding ? "넣기" : "저장"}
+            {form.submitLabel}
           </Button>
         </View>
       </View>

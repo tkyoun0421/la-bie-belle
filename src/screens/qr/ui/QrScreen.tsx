@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -13,17 +12,16 @@ import {
 } from "@/screens/qr/consts/qr.const";
 import { useQrScreen } from "@/screens/qr/hooks/useQrScreen";
 import { QrFullscreen } from "@/screens/qr/ui/QrFullscreen";
-import { qrStartLine } from "@/screens/qr/utils/qrStartLine.utils";
 
 export function QrScreen() {
-  const router = useRouter();
   const {
-    qr,
     svg,
+    startLine,
     exporting,
     asking,
-    rotateFailed,
+    rotateNotice,
     toast,
+    goBack,
     exportPaper,
     askRotate,
     cancelRotate,
@@ -40,16 +38,16 @@ export function QrScreen() {
 
   return (
     <Screen>
-      <AppBar title={QR_SCREEN_COPY.appBarTitle} onBack={() => router.back()} />
+      <AppBar title={QR_SCREEN_COPY.appBarTitle} onBack={goBack} />
 
       <View className="px-5">
         <View className="mt-8">
           <QrCard svg={svg} />
         </View>
 
-        {qr == null ? null : (
+        {startLine === null ? null : (
           <Text size="sm" tone="subtle" numeric className="mt-4">
-            {qrStartLine(qr.rotatedAt)}
+            {startLine}
           </Text>
         )}
 
@@ -77,7 +75,7 @@ export function QrScreen() {
       <Dialog
         visible={asking}
         title={QR_SCREEN_COPY.rotateTitle}
-        notice={rotateFailed ? QR_SCREEN_COPY.sendFailed : undefined}
+        notice={rotateNotice}
         onClose={cancelRotate}
         confirmLabel={QR_SCREEN_COPY.rotate}
         confirmTestID={ROTATE_CONFIRM_TEST_ID}

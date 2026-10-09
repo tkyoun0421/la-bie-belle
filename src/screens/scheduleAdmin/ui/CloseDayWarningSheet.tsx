@@ -1,32 +1,31 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { closeDayWarningLine } from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
-import { formatBareDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+import { useCloseDayWarningSheet } from "@/screens/scheduleAdmin/hooks/useCloseDayWarningSheet";
+import type { CloseDayWarningSheetInput } from "@/screens/scheduleAdmin/model/closeDayWarningSheet.type";
 
-export type CloseDayWarningSheetProps = {
-  workDate: string;
-  assignmentCount: number;
+export type CloseDayWarningSheetProps = CloseDayWarningSheetInput & {
   closing: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
 export function CloseDayWarningSheet({
-  workDate,
-  assignmentCount,
   closing,
   onCancel,
   onConfirm,
+  ...input
 }: CloseDayWarningSheetProps) {
+  const sheet = useCloseDayWarningSheet(input);
+
   return (
     <>
       <Text size="lg" weight="bold">
-        {`${formatBareDate(workDate)}을 닫을까요?`}
+        {sheet.title}
       </Text>
 
       <Text size="sm" tone="muted" className="mt-2">
-        {closeDayWarningLine(assignmentCount)}
+        {sheet.warningLine}
       </Text>
 
       <View className="mt-6 flex-row gap-3">

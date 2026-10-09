@@ -6,6 +6,12 @@ const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 
 const FAKE_CLIENT = {} as never;
 
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ replace: replaceMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -29,6 +35,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { useBlockedScreen } =
   await import("@/screens/blocked/hooks/useBlockedScreen");
+const { LOGIN_PATH } = await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -49,6 +56,7 @@ function createWrapper() {
 beforeEach(() => {
   getCurrentUserMock.mockReset();
   signOutMock.mockReset();
+  replaceMock.mockClear();
 
   getCurrentUserMock.mockResolvedValue({
     id: "user-1",
@@ -97,7 +105,7 @@ describe("useBlockedScreen — service 둘이 내준 것이 그대로 나온다"
 
     expect(result.current.isPending).toBe(false);
 
-    act(() => result.current.signOut(() => {}));
+    act(() => result.current.leave());
     await waitFor(() => expect(result.current.isPending).toBe(true));
 
     act(() => release());
@@ -105,15 +113,35 @@ describe("useBlockedScreen — service 둘이 내준 것이 그대로 나온다"
   });
 });
 
-describe("useBlockedScreen — 보낼 데는 안 든다", () => {
-  it("로그아웃이 끝나면 받은 손을 그대로 부른다", async () => {
-    const onDone = jest.fn();
+describe("useBlockedScreen — 갈 데와 보일 값을 controller가 정한다", () => {
+  it("로그아웃이 끝나면 로그인으로 바꿔 넣는다", async () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useBlockedScreen(), { wrapper });
 
-    act(() => result.current.signOut(onDone));
+    act(() => result.current.leave());
 
-    await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
+  });
+
+  it("세션이 아직 없으면 보일 값이 빈 자리로 선다", () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useBlockedScreen(), { wrapper });
+
+    expect(result.current.email).toBe("");
+    expect(result.current.photoUrl).toBeNull();
+  });
+
+  it("세션이 오면 그 사람의 메일과 사진이 값으로 선다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useBlockedScreen(), { wrapper });
+
+    await waitFor(() =>
+      expect(result.current.email).toBe("blocked@example.com"),
+    );
+
+    expect(result.current.photoUrl).toBe("https://example.com/photo.png");
   });
 });

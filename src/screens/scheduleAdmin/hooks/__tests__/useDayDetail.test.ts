@@ -583,4 +583,29 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
     expect(input.onReloadDay).toHaveBeenCalled();
     expect(result.current.choice).toBeNull();
   });
+
+  it("열린 시트를 쌓인 순서대로 돌려준다", () => {
+    const { result } = mounted();
+
+    expect(result.current.sheets).toEqual([]);
+
+    act(() => positionRow(result.current, "스캔").onPressSlot("s2"));
+
+    expect(result.current.sheets.map((one) => one.kind)).toEqual(["picker"]);
+
+    const entry = result.current.picker?.entries.find(
+      (one) => one.profileId === "p2",
+    );
+
+    act(() => result.current.picker?.inspect(entry!));
+
+    expect(result.current.sheets.map((one) => one.kind)).toEqual([
+      "picker",
+      "person",
+    ]);
+
+    act(() => result.current.sheets[1].dismiss());
+
+    expect(result.current.sheets.map((one) => one.kind)).toEqual(["picker"]);
+  });
 });

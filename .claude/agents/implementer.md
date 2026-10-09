@@ -118,6 +118,10 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm bundle`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
 
+**worktree에서 시작하면 `pnpm install --frozen-lockfile`이 첫 수다.** `git worktree add`는 추적되는 파일만 복사해서 `node_modules/`가 없고, 그러면 `pnpm typecheck`가 `pnpm routes:types`에서 `node_modules/.bin/expo`를 못 찾아 죽고 `tests/lint/formatCheck.test.ts`가 `node_modules/.bin/prettier`를 `spawnSync`해 세 단언이 빨개진다. 바이너리를 본 저장소에서 절대 경로로 부르거나 심링크를 거는 우회는 쓰지 않는다 — 심링크는 `.gitignore`의 `node_modules/`가 트레일링 슬래시라 안 걸러져 `git status`에 뜬다.
+
+**병렬로 띄워졌으면 전체 `pnpm test`를 돌리지 않는다.** 담당 슬라이스만 돌리고(`pnpm test <경로>`) 전체는 총괄이 한 번 돌린다. 여럿이 동시에 jest를 돌리면 5초 훅 타임아웃을 넘긴 스위트가 실행마다 다른 자리에서 떨어져, 내 변경과 무관한 실패를 진단하는 데 시간이 든다. 「병렬로」라는 말이 프롬프트에 있거나 다른 worktree가 보이면 그 상태다.
+
 `pnpm format:check`는 pre-commit 훅이 이미 지킨다. staged 파일 중 포맷이 어긋난 것을 훅이 고쳐서 인덱스에 다시 올리니 손으로 돌릴 일이 없다. 목록에 남긴 것은 훅을 안 건 클론에서도 CI 전에 알기 위해서다. 마크다운은 `.prettierignore`가 빼놔서 대상이 아니다.
 
 `pnpm test:integration`은 로컬 Supabase가 떠 있어야 돈다. `supabase status`로 확인하고 안 떠 있으면 `supabase start`로 띄운다. Docker가 없어서 못 돌린 채로 PR을 열지 않는다 — 그 사실을 리턴에 적고 멈춘다. `pnpm test`는 unit만 집으므로 그것만 초록불인 것은 확인이 아니다.

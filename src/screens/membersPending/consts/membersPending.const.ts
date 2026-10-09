@@ -48,6 +48,10 @@ export const CONFIRM_COPY = {
 
 export const UNBLOCK_CONFIRM_TEST_ID = "members-pending-unblock-confirm";
 
+export const PENDING_SKELETON_ROWS = [0, 1, 2];
+
+export const BLOCKED_SKELETON_ROWS = [0, 1];
+
 export const SHEET_AVATAR_SIZE = 64;
 
 export const MORE_ICON_SIZE = 20;

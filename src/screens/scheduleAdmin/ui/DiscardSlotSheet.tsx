@@ -1,21 +1,23 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { discardSlotWarningLine } from "@/screens/scheduleAdmin/model/discardSlot.policy";
+import { useDiscardSlotSheet } from "@/screens/scheduleAdmin/hooks/useDiscardSlotSheet";
+import type { DiscardSlotSheetInput } from "@/screens/scheduleAdmin/model/discardSlotSheet.type";
 
-export type DiscardSlotSheetProps = {
-  name: string;
+export type DiscardSlotSheetProps = DiscardSlotSheetInput & {
   removing: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
 export function DiscardSlotSheet({
-  name,
   removing,
   onCancel,
   onConfirm,
+  ...input
 }: DiscardSlotSheetProps) {
+  const sheet = useDiscardSlotSheet(input);
+
   return (
     <>
       <Text size="lg" weight="bold">
@@ -23,7 +25,7 @@ export function DiscardSlotSheet({
       </Text>
 
       <Text size="sm" tone="muted" className="mt-2">
-        {discardSlotWarningLine(name)}
+        {sheet.warningLine}
       </Text>
 
       <View className="mt-6 flex-row gap-3">

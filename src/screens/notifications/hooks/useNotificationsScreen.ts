@@ -1,5 +1,8 @@
+import { useRouter, type Href } from "expo-router";
 import { useCallback, useEffect } from "react";
+import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { supabase } from "@/shared/api/supabase";
+import { WORKER_HOME_PATH } from "@/shared/consts/navigation.const";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
@@ -17,13 +20,7 @@ import {
   type NotificationsListState,
 } from "@/screens/notifications/model/notificationRows.policy";
 import { pressNotification } from "@/screens/notifications/model/pressNotification.policy";
-
-type NotificationsRouter = {
-  canGoBack: () => boolean;
-  back: () => void;
-  replace: (destination: string) => void;
-  push: (destination: string) => void;
-};
+import { nearBottom } from "@/screens/notifications/utils/nearBottom.utils";
 
 export type NotificationsScreenRow = {
   id: string;
@@ -40,19 +37,39 @@ export type NotificationsScreenGroup = {
   rows: NotificationsScreenRow[];
 };
 
+export type NotificationsBody = "loading" | "failed" | "empty" | "rows";
+
 export type NotificationsScreenController = {
   state: NotificationsListState;
+  body: NotificationsBody;
   groups: NotificationsScreenGroup[];
   goBack: () => void;
   retry: () => void;
   retryNextPage: () => void;
   loadNextWhenNear: (near: boolean) => void;
+  loadNextOnScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
+function bodyOf(state: NotificationsListState): NotificationsBody {
+  if (state === "loading") {
+    return "loading";
+  }
+
+  if (state === "error") {
+    return "failed";
+  }
+
+  if (state === "empty") {
+    return "empty";
+  }
+
+  return "rows";
+}
+
 export function useNotificationsScreen(
-  router: NotificationsRouter,
   from?: string,
 ): NotificationsScreenController {
+  const router = useRouter();
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset));
 
@@ -105,7 +122,7 @@ export function useNotificationsScreen(
                   void pressNotification({
                     ids: [row.id],
                     destination,
-                    navigate: (to) => router.push(to),
+                    navigate: (to) => router.push(to as Href),
                     markRead: markReadAsync,
                   }),
         },
@@ -120,7 +137,7 @@ export function useNotificationsScreen(
       return;
     }
 
-    router.replace(from ?? "/");
+    router.replace((from ?? WORKER_HOME_PATH) as Href);
   }, [router, from]);
 
   const retry = useCallback(() => {
@@ -144,5 +161,20 @@ export function useNotificationsScreen(
     [notifications],
   );
 
-  return { state, groups, goBack, retry, retryNextPage, loadNextWhenNear };
+  const loadNextOnScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) =>
+      loadNextWhenNear(nearBottom(event)),
+    [loadNextWhenNear],
+  );
+
+  return {
+    state,
+    body: bodyOf(state),
+    groups,
+    goBack,
+    retry,
+    retryNextPage,
+    loadNextWhenNear,
+    loadNextOnScroll,
+  };
 }

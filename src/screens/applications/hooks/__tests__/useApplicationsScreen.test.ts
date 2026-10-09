@@ -9,6 +9,12 @@ const setApplicationDeadlineMock =
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ back: backMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -70,6 +76,7 @@ beforeEach(() => {
   getMonthAvailabilitiesMock.mockReset();
   getMonthWindowMock.mockReset();
   setApplicationDeadlineMock.mockReset();
+  backMock.mockClear();
 
   getMonthAvailabilitiesMock.mockResolvedValue(APPLICATIONS);
   getMonthWindowMock.mockResolvedValue({
@@ -289,5 +296,15 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
 
     expect(result.current.sheet).toBeNull();
     expect(result.current.failed).toBe(false);
+  });
+});
+
+describe("useApplicationsScreen — 갈 데를 controller가 정한다", () => {
+  it("뒤로는 쌓인 자리로 되돌아간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
   });
 });

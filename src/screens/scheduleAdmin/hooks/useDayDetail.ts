@@ -14,9 +14,18 @@ import {
 import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
 import { allowsStructureChange } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type {
+  DayDetailAdjust,
+  DayDetailChoice,
+  DayDetailConfirmChange,
   DayDetailController,
+  DayDetailDiscard,
   DayDetailInput,
+  DayDetailOpenSheet,
+  DayDetailPerson,
+  DayDetailPicker,
   DayDetailPositionRow,
+  DayDetailQualification,
+  DayDetailSlotSheet,
   PendingChange,
   PickerEntry,
   PickerTarget,
@@ -430,6 +439,191 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     onAddSlot: () => onAddSlot(dayId, position),
   }));
 
+  const closeAdjust = () => {
+    setAdjustOpen(false);
+    setChosen(null);
+    setExtra(null);
+  };
+
+  const closeInspecting = () => setInspecting(null);
+
+  const closeQualifying = () => setQualifying(null);
+
+  const closeSlotSheet = () => setOpenSlotSheet(null);
+
+  const closePending = () => setPending(null);
+
+  const closeDiscarding = () => setDiscarding(null);
+
+  const pickerSheet: DayDetailPicker | null =
+    picker === null
+      ? null
+      : {
+          title: `${picker.position} · ${formatScheduleDate(workDate)}`,
+          entries,
+          expanded:
+            expanded ||
+            entries.every((entry) => entry.category !== "assignable"),
+          picked,
+          sending: saving,
+          expand: () => setExpanded(true),
+          pick,
+          inspect: setInspecting,
+          toggle: toggleRequested,
+          send: sendRequest,
+          close: closePicker,
+        };
+
+  const personSheet: DayDetailPerson | null =
+    inspecting === null
+      ? null
+      : {
+          name: inspecting.displayName,
+          photoUrl: inspecting.photoUrl,
+          gender: inspecting.gender,
+          birthDate:
+            members.find((one) => one.id === inspecting.profileId)?.birthDate ??
+            null,
+          qualifications: qualifications
+            .filter((one) => one.profileId === inspecting.profileId)
+            .map((one) => one.position),
+          close: closeInspecting,
+        };
+
+  const qualificationSheet: DayDetailQualification | null =
+    qualifying === null || picker === null
+      ? null
+      : {
+          name: qualifying.displayName,
+          position: picker.position,
+          once: () => resolveQualification(false),
+          grant: () => resolveQualification(true),
+          close: closeQualifying,
+        };
+
+  const slotSheet: DayDetailSlotSheet | null =
+    openSlot === null || openAssignment === null
+      ? null
+      : {
+          confirmed: isConfirmed,
+          merged: openSlot.positions.length > 1,
+          replace: () => {
+            setPicker({
+              position: openSlot.positions[0],
+              slotId: openSlot.id,
+              replacing: {
+                assignmentId: openAssignment.id,
+                outgoingProfileId: openAssignment.profileId,
+                outgoingName: nameOf(openAssignment.profileId),
+              },
+            });
+            setExpanded(false);
+            setOpenSlotSheet(null);
+          },
+          split: () => {
+            setOpenSlotSheet(null);
+            onSplitSlot(openSlot.id);
+          },
+          remove: () =>
+            commit({
+              kind: "remove",
+              assignmentId: openAssignment.id,
+              outgoingProfileId: openAssignment.profileId,
+              outgoingName: nameOf(openAssignment.profileId),
+            }),
+          close: closeSlotSheet,
+        };
+
+  const adjustSheet: DayDetailAdjust | null = adjustOpen
+    ? {
+        head: adjustSheetHead(dayHours),
+        rows: adjustRows,
+        pickPerson: choosePerson,
+        close: closeAdjust,
+      }
+    : null;
+
+  const choiceSheet: DayDetailChoice | null =
+    chosenRow === null
+      ? null
+      : {
+          name: chosenRow.name,
+          assignedMinutes: assignedMinutes(dayHours),
+          canRevert: showRevertOption(chosenAdjustments),
+          extending: extra !== null,
+          digits: extra ?? "",
+          canSend: extraMinutes(extra ?? "") !== null,
+          sending: adjusting,
+          failureMessage: failure === null ? null : failure.message,
+          absent: () =>
+            sendAdjustment(absenceMinutes(dayHours), ADJUSTMENT_REASON.absence),
+          revert: () =>
+            sendAdjustment(REVERT_MINUTES, ADJUSTMENT_REASON.revert),
+          startExtending: () => setExtra(""),
+          writeDigits: (text) => setExtra(nextMinuteDigits(text)),
+          extend: () => {
+            const minutes = extraMinutes(extra ?? "");
+
+            if (minutes !== null) {
+              sendAdjustment(minutes, ADJUSTMENT_REASON.extra);
+            }
+          },
+          close: closeChoice,
+        };
+
+  const confirmChangeSheet: DayDetailConfirmChange | null =
+    pending === null
+      ? null
+      : {
+          copy: confirmChangeCopyOf(pending, canNotify),
+          saving,
+          confirm: () => {
+            run(pending);
+            setPending(null);
+          },
+          close: closePending,
+        };
+
+  const discardSheet: DayDetailDiscard | null =
+    discarding === null
+      ? null
+      : {
+          name: discarding.name,
+          removing: saving,
+          confirm: () => {
+            onRemoveSlot(discarding.slotId);
+            setDiscarding(null);
+          },
+          close: closeDiscarding,
+        };
+
+  const openSheets: DayDetailOpenSheet[] = [
+    pickerSheet === null
+      ? null
+      : { kind: "picker" as const, dismiss: pickerSheet.close },
+    personSheet === null
+      ? null
+      : { kind: "person" as const, dismiss: personSheet.close },
+    qualificationSheet === null
+      ? null
+      : { kind: "qualification" as const, dismiss: qualificationSheet.close },
+    slotSheet === null
+      ? null
+      : { kind: "slot" as const, dismiss: slotSheet.close },
+    adjustSheet === null
+      ? null
+      : { kind: "adjust" as const, dismiss: adjustSheet.close },
+    choiceSheet === null
+      ? null
+      : { kind: "choice" as const, dismiss: choiceSheet.close },
+    confirmChangeSheet === null
+      ? null
+      : { kind: "confirmChange" as const, dismiss: confirmChangeSheet.close },
+    discardSheet === null
+      ? null
+      : { kind: "discard" as const, dismiss: discardSheet.close },
+  ].filter((one) => one !== null);
+
   return {
     title: formatScheduleDate(workDate),
     fillLabel: `${fill.filled}/${fill.total}`,
@@ -444,147 +638,15 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     canDrop,
     drop,
     openAdjust: () => setAdjustOpen(true),
-    picker:
-      picker === null
-        ? null
-        : {
-            title: `${picker.position} · ${formatScheduleDate(workDate)}`,
-            entries,
-            expanded:
-              expanded ||
-              entries.every((entry) => entry.category !== "assignable"),
-            picked,
-            sending: saving,
-            expand: () => setExpanded(true),
-            pick,
-            inspect: setInspecting,
-            toggle: toggleRequested,
-            send: sendRequest,
-            close: closePicker,
-          },
-    person:
-      inspecting === null
-        ? null
-        : {
-            name: inspecting.displayName,
-            photoUrl: inspecting.photoUrl,
-            gender: inspecting.gender,
-            birthDate:
-              members.find((one) => one.id === inspecting.profileId)
-                ?.birthDate ?? null,
-            qualifications: qualifications
-              .filter((one) => one.profileId === inspecting.profileId)
-              .map((one) => one.position),
-            close: () => setInspecting(null),
-          },
-    qualification:
-      qualifying === null || picker === null
-        ? null
-        : {
-            name: qualifying.displayName,
-            position: picker.position,
-            once: () => resolveQualification(false),
-            grant: () => resolveQualification(true),
-            close: () => setQualifying(null),
-          },
-    slotSheet:
-      openSlot === null || openAssignment === null
-        ? null
-        : {
-            confirmed: isConfirmed,
-            merged: openSlot.positions.length > 1,
-            replace: () => {
-              setPicker({
-                position: openSlot.positions[0],
-                slotId: openSlot.id,
-                replacing: {
-                  assignmentId: openAssignment.id,
-                  outgoingProfileId: openAssignment.profileId,
-                  outgoingName: nameOf(openAssignment.profileId),
-                },
-              });
-              setExpanded(false);
-              setOpenSlotSheet(null);
-            },
-            split: () => {
-              setOpenSlotSheet(null);
-              onSplitSlot(openSlot.id);
-            },
-            remove: () =>
-              commit({
-                kind: "remove",
-                assignmentId: openAssignment.id,
-                outgoingProfileId: openAssignment.profileId,
-                outgoingName: nameOf(openAssignment.profileId),
-              }),
-            close: () => setOpenSlotSheet(null),
-          },
-    adjust: adjustOpen
-      ? {
-          head: adjustSheetHead(dayHours),
-          rows: adjustRows,
-          pickPerson: choosePerson,
-          close: () => {
-            setAdjustOpen(false);
-            setChosen(null);
-            setExtra(null);
-          },
-        }
-      : null,
-    choice:
-      chosenRow === null
-        ? null
-        : {
-            name: chosenRow.name,
-            assignedMinutes: assignedMinutes(dayHours),
-            canRevert: showRevertOption(chosenAdjustments),
-            extending: extra !== null,
-            digits: extra ?? "",
-            canSend: extraMinutes(extra ?? "") !== null,
-            sending: adjusting,
-            failureMessage: failure === null ? null : failure.message,
-            absent: () =>
-              sendAdjustment(
-                absenceMinutes(dayHours),
-                ADJUSTMENT_REASON.absence,
-              ),
-            revert: () =>
-              sendAdjustment(REVERT_MINUTES, ADJUSTMENT_REASON.revert),
-            startExtending: () => setExtra(""),
-            writeDigits: (text) => setExtra(nextMinuteDigits(text)),
-            extend: () => {
-              const minutes = extraMinutes(extra ?? "");
-
-              if (minutes !== null) {
-                sendAdjustment(minutes, ADJUSTMENT_REASON.extra);
-              }
-            },
-            close: closeChoice,
-          },
-    confirmChange:
-      pending === null
-        ? null
-        : {
-            copy: confirmChangeCopyOf(pending, canNotify),
-            saving,
-            confirm: () => {
-              run(pending);
-              setPending(null);
-            },
-            close: () => setPending(null),
-          },
-    discard:
-      discarding === null
-        ? null
-        : {
-            name: discarding.name,
-            removing: saving,
-            confirm: () => {
-              onRemoveSlot(discarding.slotId);
-              setDiscarding(null);
-            },
-            close: () => setDiscarding(null),
-          },
+    picker: pickerSheet,
+    person: personSheet,
+    qualification: qualificationSheet,
+    slotSheet,
+    adjust: adjustSheet,
+    choice: choiceSheet,
+    confirmChange: confirmChangeSheet,
+    discard: discardSheet,
+    sheets: openSheets,
     toast,
     dismissToast: () => setToast(null),
   };

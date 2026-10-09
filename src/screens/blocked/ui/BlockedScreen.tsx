@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -14,9 +13,8 @@ import {
 import { useBlockedScreen } from "@/screens/blocked/hooks/useBlockedScreen";
 
 export function BlockedScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { me, signOut, isPending } = useBlockedScreen();
+  const screen = useBlockedScreen();
 
   return (
     <Screen
@@ -37,20 +35,16 @@ export function BlockedScreen() {
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar
-            name={me?.email ?? ""}
-            photoUrl={me?.googlePhotoUrl ?? null}
-            size={24}
-          />
+          <Avatar name={screen.email} photoUrl={screen.photoUrl} size={24} />
           <Text size="sm" tone="subtle">
-            {me?.email ?? ""}
+            {screen.email}
           </Text>
         </View>
         <Button
           variant="ghost"
           className="mt-4"
-          loading={isPending}
-          onPress={() => signOut(() => router.replace("/login"))}
+          loading={screen.isPending}
+          onPress={screen.leave}
         >
           {BLOCKED_COPY.signOut}
         </Button>

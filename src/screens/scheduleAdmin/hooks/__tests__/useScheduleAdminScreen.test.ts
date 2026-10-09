@@ -31,6 +31,18 @@ const FIXED_NOW_MS = Date.parse("2026-10-05T03:00:00.000Z");
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const pushMock = jest.fn();
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    push: pushMock,
+    replace: replaceMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -218,6 +230,10 @@ beforeEach(() => {
     mock.mockReset();
     mock.mockResolvedValue(undefined);
   }
+
+  backMock.mockReset();
+  pushMock.mockReset();
+  replaceMock.mockReset();
 
   getMonthScheduleMock.mockResolvedValue([DAY]);
   getMonthWindowMock.mockResolvedValue(WINDOW_OPEN);
@@ -730,5 +746,50 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     expect(result.current.calendar.stateOf("2026-10-10")).toBe("admin-open");
     expect(result.current.calendar.isToday("2026-10-05")).toBe(true);
     expect(result.current.applicationsTitle).toContain("1건");
+  });
+
+  it("달력에서 뒤로는 그대로 뒤로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalled();
+  });
+
+  it("승인에서 왔으면 승인으로 돌아간다", async () => {
+    const { result } = await mounted({ date: "2026-10-10", from: "approvals" });
+
+    act(() => result.current.backFromDay());
+
+    expect(replaceMock).toHaveBeenCalledWith("/admin/approvals");
+    expect(result.current.day).not.toBeNull();
+  });
+
+  it("알림에서 왔으면 알림으로 돌아간다", async () => {
+    const { result } = await mounted({
+      date: "2026-10-10",
+      from: "notifications",
+    });
+
+    act(() => result.current.backFromDay());
+
+    expect(replaceMock).toHaveBeenCalledWith("/notifications");
+  });
+
+  it("어디서 온 것도 아니면 달력으로 돌아간다", async () => {
+    const { result } = await mounted({ date: "2026-10-10" });
+
+    act(() => result.current.backFromDay());
+
+    expect(replaceMock).not.toHaveBeenCalled();
+    expect(result.current.day).toBeNull();
+  });
+
+  it("모아보기는 그 달을 쿼리로 달고 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openApplications());
+
+    expect(pushMock).toHaveBeenCalledWith("/admin/applications?month=2026-10");
   });
 });
