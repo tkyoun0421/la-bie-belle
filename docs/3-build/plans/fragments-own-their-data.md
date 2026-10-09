@@ -34,7 +34,7 @@ sources:
 
 **쓰기가 먼저다.** `features`로 가는 조각은 `useMutation`을 부르고, `useMutation`은 `Suspense`에 걸리지 않는다. RN의 Suspense 확인 결과와 무관하게 갈 수 있고 무게도 거기 가장 크다.
 
-**읽기는 실기기 확인 뒤다.** `entities`로 가는 조각은 `useSuspenseQuery`로 받을지 `useQuery`로 받을지가 그 확인에 달렸다.
+**읽기는 `useQuery`로 간다.** 실기기 확인을 못 했다 — 맥과 기기가 같은 네트워크에 없고 시뮬레이터도 없다. `useQuery`는 어느 쪽이든 돌고, 확인이 되면 조각마다 한 줄 교체다.
 
 ## 완료 조건
 
@@ -95,11 +95,11 @@ sources:
 
 `useScheduleAdminScreen` 698줄이 **200줄 아래**로 내려간다.
 
-### AC-05 — 경계가 화면마다 하나 이상 선다
+### AC-05 — 조각이 제 로딩과 실패를 든다
 
-`QueryBoundary`가 조각을 감싸고, 함께 채워질 조각이 한 경계에 묶인다. 조각 controller에 `isPending`·`isError` 분기가 없다.
+조각 controller가 `useQuery`로 받고 `isPending`·`isError`를 상태 이름으로 내준다. `.tsx`는 그 이름으로 조각을 고른다.
 
-**실기기 확인이 통과하지 못하면 이 AC를 뒤집는다** — 조각이 `useQuery`로 제 로딩을 그리고 `QueryBoundary`는 실패만 든다.
+**원래 이 AC는 「경계가 화면마다 하나 이상 선다」였고 뒤집었다.** 실기기 확인을 못 해서다. `QueryBoundary`와 `UnreadCountLine`은 그대로 둔다 — 확인이 되면 그 꼴이 본보기고, 그때 조각마다 `useQuery`를 `useSuspenseQuery`로 바꾸고 분기를 지운다.
 
 ### AC-06 — 갈 데는 올라가지 않는다
 

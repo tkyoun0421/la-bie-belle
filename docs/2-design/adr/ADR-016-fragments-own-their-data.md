@@ -74,7 +74,9 @@ ADR-015는 「`features/*/ui`만 service를 부를 수 있다」고 적었다. �
 
 `QueryErrorResetBoundary`가 안에 있어서 `retry`가 ErrorBoundary만 되돌리지 않고 쿼리의 에러 상태까지 되돌린다. 그것이 없으면 다시 그려도 같은 에러가 바로 또 던져진다.
 
-**실기기 확인이 조건이다.** RN에서 Suspense fallback이 안 풀린다는 보고가 [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)(RN 0.77 · Query v5.68 · New Architecture)와 [react-native#49129](https://github.com/react/react-native/issues/49129)(RN 0.78-rc · React 19)에 있다. 둘 다 어느 쪽 책임인지 결론이 없다. 여기 버전은 RN 0.86.3 · React 19.2.3이라 보고보다 뒤지만, 저장소에 `Suspense`가 한 자리도 없었으므로 `UnreadCountLine`이 그 확인을 맡는다. 안 풀리면 이 절만 뒤집고 조각이 `useQuery`로 제 로딩을 그린다 — 나머지 결정은 그대로 산다.
+**지금은 `useQuery`로 간다.** 실기기 확인이 조건인데 그 확인을 못 했다 — 맥과 기기가 같은 네트워크에 없고 시뮬레이터도 없다. `useQuery`는 어느 쪽이든 돈다. 조각이 자기 데이터를 부르는 것이 이 ADR의 핵심이고 경계는 그 위의 선택이라, 조각마다 `isPending`·`isError`를 들고 가다가 확인이 되면 `useSuspenseQuery` 한 줄로 바꾼다. 대가는 한 화면에 스켈리톤이 여럿 뜨는 것이다.
+
+**확인이 필요한 까닭은 이렇다.** RN에서 Suspense fallback이 안 풀린다는 보고가 [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)(RN 0.77 · Query v5.68 · New Architecture)와 [react-native#49129](https://github.com/react/react-native/issues/49129)(RN 0.78-rc · React 19)에 있다. 둘 다 어느 쪽 책임인지 결론이 없다. 여기 버전은 RN 0.86.3 · React 19.2.3이라 보고보다 뒤지만, 저장소에 `Suspense`가 한 자리도 없었으므로 `UnreadCountLine`이 그 확인을 맡는다. 안 풀리면 이 절만 뒤집고 조각이 `useQuery`로 제 로딩을 그린다 — 나머지 결정은 그대로 산다.
 
 ## 쓰기는 조각이 삼킨다
 
