@@ -6,30 +6,36 @@
 
 ## 다음 작업
 
-**[fragments-own-their-data](3-build/plans/fragments-own-their-data.md)가 돌고 있다 — 조각이 자기 데이터를 들게 한다.** 브랜치는 `feat/suspense-probe`고 [screens-orchestration-only](3-build/plans/screens-orchestration-only.md)는 PR [#511](https://github.com/tkyoun0421/la-bie-belle/pull/511)·[#512](https://github.com/tkyoun0421/la-bie-belle/pull/512)로 merge됐다.
+**[fragments-own-their-data](3-build/plans/fragments-own-their-data.md)의 쓰기 묶음이 PR [#514](https://github.com/tkyoun0421/la-bie-belle/pull/514)로 올라갔다 — CI 확인하고 merge하는 것이 첫 수다.** 브랜치는 `feat/suspense-probe`고 커밋 열일곱이다. 로컬 검증은 다 통과했다(`pnpm lint` 0 · `typecheck` 0 · `test` 3057+17).
 
-**`.tsx`는 조립만 하게 됐다.** `ui/`의 값 import 27 → 0, `.tsx`의 `useRouter` 20 → 0, 한 파일의 `<Screen>`과 `SheetLayer` 각각 1이다. 규칙 서른아홉 `house/ui-value-import`가 재발을 막는다 — **면제는 `shared` 층의 `utils`다**(`cn`·`miniCalendarGrid`·`buildYearMonths`·`dayBandFillRatio` 넷이 그리기 기하학이라서).
+**그다음이 AC-02 — 읽기 조각 쉰넷을 `entities/<도메인>/ui`로 옮긴다.** plan의 AC-02 표가 어느 조각이 어느 도메인으로 가는지 전부 든다. `screens/*/ui` 백열아홉 가운데 뼈가 예순다섯이고 나머지가 그 쉰넷이다.
 
-**그 대가로 무게가 화면 controller 한 자리에 모였다.** `useScheduleAdminScreen`이 698줄에 service 스물여섯(query 9 · mutation 17)을 들고, 조각 서른여섯이 그 한 controller가 완성한 값을 받아 그린다. [ADR-016](2-design/adr/ADR-016-fragments-own-their-data.md)이 그 자리를 뒤집는다 — 조각이 자기 데이터를 부르고 조각마다 controller가 서고 화면은 경계를 든다.
+**뼈의 기준은 열하나다** — `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`, 그리고 **조각을 배치하는 자리**(`ProfileSettings`처럼 라우팅 줄과 시트를 꽂고 도메인을 모르는 것). 「쓰기로 들어가는 문」은 뼈가 아니다 — `DaySheet`·`RehearsalDaySheet`·`WorkDaysSheet`가 mutation을 안 불러 `features`로 못 가지만 도메인을 읽어 보여주는 것이 본업이라 `entities`로 가고, 시트를 여는 행위는 `onPress`로 받는다.
 
-**ADR-015의 기준이 이미 거짓이었다.** 「`features/*/ui`만 service를 부를 수 있다」고 적었지만 그 자리의 유일한 조각 `DeadlineSheet`가 service를 하나도 부르지 않는다. 실제로 일하던 기준은 무엇을 부르나가 아니라 **무엇에 관한 것이냐**였다. 「`entities/*/ui`가 0인 것은 정상이다」도 그 기준에 매달려 있었다 — 값을 부르는 쪽이 들고 와야 하니 두 번째 화면이 쓰려면 같은 query를 또 부르고 같은 props를 또 엮는다.
+**읽기는 `useQuery`로 간다.** RN에서 Suspense fallback이 안 풀린다는 보고가 [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)·[react-native#49129](https://github.com/react/react-native/issues/49129)에 있고, 맥과 기기가 같은 네트워크에 없고 시뮬레이터도 없어(Xcode는 Command Line Tools만) 확인을 못 했다. 조각이 자기 데이터를 부르는 것이 ADR-016의 핵심이고 경계는 그 위의 선택이라 확인 하나로 전체를 미루지 않는다 — 확인되면 조각마다 `useSuspenseQuery` 한 줄 교체다. `shared/ui/QueryBoundary`와 `entities/notification`의 조각 넷이 그때의 본보기다.
 
-**`screens/*/ui` 152개 중 149개가 도메인 층을 하나도 import하지 않는다.** 이름에 도메인이 있어도(`DayRoster`·`PositionSlotCard`·`WageRows`) 타입으로는 모른다 — controller가 원시 타입으로 평평하게 풀어서 준다. 그것이 조각이 자립 못 하는 진짜 까닭이다.
+**기기 확인은 사용자가 나중에 한다.** 막힌 자리는 `.env`의 `EXPO_PUBLIC_SUPABASE_URL`이 `127.0.0.1`이라 폰에서 자기 자신을 가리키는 것이고, LAN 주소로 덮어 띄우면 된다(`EXPO_PUBLIC_SUPABASE_URL=http://$(ipconfig getifaddr en0):54321 pnpm dev`). 다만 맥과 기기가 같은 Wi-Fi여야 한다 — Metro는 `--tunnel`로 피할 수 있지만(ngrok 전역 설치가 권한으로 실패한다) 로컬 Supabase는 LAN 주소밖에 길이 없다.
 
-**본보기가 `entities/notification`이다(`408dc995`).** `services/useUnreadCountSuspenseQuery.ts` → `hooks/useUnreadCountLine.ts`(조각 controller) → `ui/UnreadCountLine.tsx`(꽂기만) 꼴이고, `shared/ui/QueryBoundary.tsx`가 `Suspense`와 ErrorBoundary와 `QueryErrorResetBoundary`를 묶는다.
+**본보기가 셋이다.**
 
-**쓰기가 먼저 돈다.** implementer 넷이 병렬로 `features/<use case>/ui`에 쓰기 조각을 세우는 중이다 — 묶음은 `scheduleAdmin` 하나(조각 열여섯) · `scheduleWorker`+`rehearsal` · `profile`+`pending` · 관리자 여섯(`members`·`membersPending`·`wages`·`adminHome`·`adminStats`·`approvals`)이다. base는 `f6a56307`이고 각자 커밋만 한다.
+- **쓰기 조각** — `features/memberAdmin/{ui/MemberSheet.tsx, hooks/useMemberSheet.ts}`. 조각 controller가 초안·보내는 중·실패를 들고 자기 mutation을 부르고 끝나면 `onDone`으로 화면에 알린다
+- **읽기 조각** — `entities/notification/{services/useUnreadCountSuspenseQuery.ts, hooks/useUnreadCountLine.ts, ui/UnreadCountLine.tsx, utils/spellUnreadCount.utils.ts}`. 다만 이 자리만 `useSuspenseQuery`고 나머지는 `useQuery`로 간다
+- **경계** — `shared/ui/QueryBoundary.tsx`가 `Suspense`·ErrorBoundary·`QueryErrorResetBoundary`를 묶는다. `retry`가 쿼리의 에러 상태까지 되돌린다
 
-**읽기는 실기기 확인에 막혀 있다 — 그것이 다음 세션의 첫 수다.** `pnpm dev`로 띄워 알림 화면에 들어가 AppBar 밑 한 줄을 본다. 「세는 중」이 「안 읽은 알림 N개」로 바뀌면 `useSuspenseQuery`로 가고, 안 바뀌면 조각이 `useQuery`로 제 로딩을 그린다(ADR-016의 그 절만 뒤집고 나머지는 산다).
+**옮기지 않기로 한 것 둘.**
 
-**까닭은 RN에서 Suspense fallback이 안 풀린다는 보고 둘이다** — [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)(RN 0.77 · Query v5.68 · New Architecture)와 [react-native#49129](https://github.com/react/react-native/issues/49129)(RN 0.78-rc · React 19). 둘 다 어느 쪽 책임인지 결론이 없다. 여기 버전은 RN 0.86.3 · React 19.2.3이라 보고보다 뒤지만 저장소에 `Suspense`가 한 자리도 없었다. jsdom 테스트는 통과했고 그것이 RN 렌더러를 말해주지 않는다.
+- **`useDayDetail`의 mutation 아홉.** `pick → commit → pending → run`을 지나고 확정 버튼 하나가 pending의 종류에 따라 넷 중 하나를 고른다. 조각이 mutation 하나를 삼키는 꼴이 아니라 옮기려면 653줄과 그 테스트 611줄을 다시 짜야 한다
+- **`pending`의 폼 로직.** 형제 셋이 같은 상태를 읽는다 — `PendingSummary`가 굳은 칸을, `PendingEditor`가 열린 칸을, BottomCTA가 `canSubmit`을 본다. 아무도 혼자 가질 수 없다
 
-**받아 둘 꼬리가 넷이다.**
+**읽기 묶음이 먼저 판정할 것이 관찰 065다** — `features` 사이를 잇는 계산의 집이 없다. `paidMinutes` 하나를 `scheduleAdmin`의 세 파일이 당기고 `screens`가 `features`의 계산을 모으는 파일이 여덟이다. 그것은 use case가 아니라 도메인 지식이라 `entities`로 내려갈 자리일 수 있고, 읽기 이동이 같은 벽을 또 밟는다.
 
-- `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
-- 테스트 아흔여덟이 `jest.fn<(...args: unknown[]) => Promise<unknown>>()`로 mock해 픽스처의 꼴을 아무도 안 본다(관찰 061). `jest.fn<typeof getMonthSchedule>()`로 바꾸면 `import type`이 런타임에 사라지니 mock을 우회하지 않는다
-- `useQrScreen`의 `qr`·`rotateFailed`와 `useProfileScreen`의 `contactRejected`가 테스트에서만 쓰인다. `loadNextWhenNear`도 `loadNextOnScroll`과 나란히 public으로 남았다
-- 조각 `.tsx`가 `useRouter`를 쥐는 것을 막는 규칙이 없다. 지금 서른아홉까지고 그 자리가 마흔이다(plan의 AC-07)
+**받아 둘 꼬리가 다섯이다.**
+
+- `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고 `useMyProfileQuery`와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
+- 테스트 아흔여덟이 `jest.fn<(...args: unknown[]) => Promise<unknown>>()`로 mock해 픽스처의 꼴을 아무도 안 본다(관찰 061)
+- `PENDING_COPY.alreadyDecided`와 `DETAIL_SHEET_TOAST.alreadyDecided`가 같은 문구를 두 자리에 든다. 차단 풀기까지 조각으로 가면 합친다
+- `MEMBER_SHEET_COPY.adminBadge`가 `features/memberAdmin`과 `screens/members`에 복사돼 있다. `MemberRows`가 `entities/member/ui`로 가는 묶음에서 합쳐진다
+- `CLOCK_LENGTH = 5`가 세 자리에 산다(`rehearsal/utils`·`features/rehearsalEdit`·`scheduleAdmin/utils`)
 
 ## 재개 맥락
 
