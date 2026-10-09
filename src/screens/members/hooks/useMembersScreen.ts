@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -42,6 +44,7 @@ export type MembersScreenRow = {
 };
 
 export type MembersScreenController = {
+  goBack: () => void;
   listState: MembersListState;
   query: string;
   searchEmpty: boolean;
@@ -73,6 +76,7 @@ export type MembersScreenController = {
 };
 
 export function useMembersScreen(): MembersScreenController {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -220,7 +224,17 @@ export function useMembersScreen(): MembersScreenController {
     setAsked(null);
   };
 
+  const goBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(ADMIN_HOME_PATH);
+  }, [router]);
+
   return {
+    goBack,
     listState: loading ? "loading" : empty ? "empty" : "rows",
     query,
     searchEmpty: searched.isEmpty,

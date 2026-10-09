@@ -54,3 +54,5 @@ export const MORE_ICON_SIZE = 20;
 export const MORE_HIT_SLOP = 8;
 
 export const PHONE_ICON_SIZE = 18;
+
+export const SKELETON_ROWS = [0, 1, 2] as const;

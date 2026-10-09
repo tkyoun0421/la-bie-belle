@@ -59,3 +59,5 @@ export const AVATAR_SIZE = 88;
 export const PENCIL_ICON_SIZE = 14;
 
 export const PENCIL_HIT_SLOP = 8;
+
+export const SKELETON_ROWS = [0, 1, 2] as const;
