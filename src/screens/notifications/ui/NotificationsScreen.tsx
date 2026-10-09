@@ -1,6 +1,10 @@
 import { View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
+import { QueryBoundary } from "@/shared/ui/QueryBoundary";
 import { Screen } from "@/shared/ui/Screen";
+import { UnreadCountFailed } from "@/entities/notification/ui/UnreadCountFailed";
+import { UnreadCountLine } from "@/entities/notification/ui/UnreadCountLine";
+import { UnreadCountLoading } from "@/entities/notification/ui/UnreadCountLoading";
 import { NOTIFICATIONS_COPY } from "@/screens/notifications/consts/notifications.const";
 import { useNotificationsScreen } from "@/screens/notifications/hooks/useNotificationsScreen";
 import { NotificationsEmpty } from "@/screens/notifications/ui/NotificationsEmpty";
@@ -18,6 +22,13 @@ export function NotificationsScreen({ from }: NotificationsScreenProps) {
   return (
     <Screen floor="plain">
       <AppBar title={NOTIFICATIONS_COPY.appBarTitle} onBack={screen.goBack} />
+
+      <QueryBoundary
+        loading={<UnreadCountLoading />}
+        failed={(retry) => <UnreadCountFailed onRetry={retry} />}
+      >
+        <UnreadCountLine />
+      </QueryBoundary>
 
       {screen.body === "loading" ? <NotificationsLoading /> : null}
 
