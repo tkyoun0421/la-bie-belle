@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { LOGIN_PATH } from "@/shared/consts/navigation.const";
 import { APP_STATE } from "@/shared/lib/appState.lib";
 import {
   isProfileGender,
@@ -66,8 +68,10 @@ export type PendingScreenController = {
   open: Step | null;
   shown: Record<Step, boolean>;
   values: PendingFormValues;
+  headline: string;
   nameLine: string;
   genderLine: string;
+  genderValue: string;
   birthDateLine: string;
   phoneLine: string;
   birthDateGuide: string | undefined;
@@ -94,9 +98,11 @@ export type PendingScreenController = {
   retry: () => void;
   turnOnNotifications: () => Promise<void>;
   signOut: (onDone: () => void) => void;
+  goLogin: () => void;
 };
 
 export function usePendingScreen(): PendingScreenController {
+  const router = useRouter();
   const [seeded, setSeeded] = useState(false);
   const [override, setOverride] = useState<PendingStage | null>(null);
   const [values, setValues] = useState<PendingFormValues>(EMPTY_PENDING_FORM);
@@ -255,6 +261,10 @@ export function usePendingScreen(): PendingScreenController {
     );
   }, []);
 
+  const goLogin = useCallback(() => {
+    router.replace(LOGIN_PATH);
+  }, [router]);
+
   return {
     stage,
     email: me?.email ?? "",
@@ -269,8 +279,11 @@ export function usePendingScreen(): PendingScreenController {
       phone: frozen.includes("phone"),
     },
     values,
+    headline:
+      open === null ? PENDING_FORM_COPY.reviewing : PENDING_FORM_COPY.writing,
     nameLine: `${values.name}${PENDING_FORM_COPY.greetingSuffix}`,
     genderLine: spellGender(values.gender),
+    genderValue: values.gender ?? "",
     birthDateLine: spellBirthDate(values.birthDate),
     phoneLine: hyphenatePhone(values.phone),
     birthDateGuide: guideOf("birthDate"),
@@ -316,5 +329,6 @@ export function usePendingScreen(): PendingScreenController {
     retry: () => setOverride("form"),
     turnOnNotifications,
     signOut,
+    goLogin,
   };
 }

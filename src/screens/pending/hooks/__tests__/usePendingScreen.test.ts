@@ -14,6 +14,12 @@ const requestPushPermissionMock =
 const pickAndShrinkPhotoMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ replace: replaceMock }),
+}));
+
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
   getCurrentUser: getCurrentUserMock,
 }));
@@ -95,6 +101,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { PENDING_FORM_COPY } =
   await import("@/screens/pending/consts/pending.const");
+const { LOGIN_PATH } = await import("@/shared/consts/navigation.const");
 const { usePendingScreen } =
   await import("@/screens/pending/hooks/usePendingScreen");
 
@@ -443,5 +450,41 @@ describe("usePendingScreen — 알림과 로그아웃", () => {
     act(() => result.current.signOut(onDone));
 
     await waitFor(() => expect(onDone).toHaveBeenCalled());
+  });
+});
+
+describe("usePendingScreen — 화면에 꽂을 값을 완성해 준다", () => {
+  it("빈 칸이 남았으면 적으라는 머리말이고 다 채우면 확인하라는 머리말이다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.headline).toBe(PENDING_FORM_COPY.writing);
+
+    const { result: done } = await filled();
+
+    expect(done.current.headline).toBe(PENDING_FORM_COPY.reviewing);
+  });
+
+  it("성별을 안 골랐으면 고르는 자리에 빈 문자열이 간다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.genderValue).toBe("");
+
+    act(() => result.current.chooseGender("female"));
+
+    expect(result.current.genderValue).toBe("female");
+  });
+});
+
+describe("usePendingScreen — 갈 데를 controller가 정한다", () => {
+  beforeEach(() => {
+    replaceMock.mockClear();
+  });
+
+  it("로그인으로 보낼 때 경로를 controller가 쥔다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goLogin());
+
+    expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH);
   });
 });

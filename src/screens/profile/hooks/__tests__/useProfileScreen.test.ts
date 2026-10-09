@@ -21,6 +21,14 @@ const requestPushPermissionMock =
 const pickAndShrinkPhotoMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
+const pushMock = jest.fn();
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ push: pushMock, replace: replaceMock }),
+  usePathname: () => "/me",
+}));
+
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
   getCurrentUser: getCurrentUserMock,
 }));
@@ -118,6 +126,13 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { PROFILE_COPY } = await import("@/screens/profile/consts/profile.const");
+const {
+  ADMIN_HOME_PATH,
+  LOGIN_PATH,
+  NOTIFICATIONS_PATH,
+  REHEARSALS_PATH,
+  STATS_PATH,
+} = await import("@/shared/consts/navigation.const");
 const { useProfileScreen } =
   await import("@/screens/profile/hooks/useProfileScreen");
 
@@ -445,5 +460,73 @@ describe("useProfileScreen — 알림과 로그아웃", () => {
     act(() => result.current.signOut(onDone));
 
     await waitFor(() => expect(onDone).toHaveBeenCalled());
+  });
+});
+
+describe("useProfileScreen — 연락처가 틀렸다는 판정이 하나다", () => {
+  it("꼴이 안 맞게 열한 자리를 적으면 틀렸다고 한다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openContact());
+    act(() => result.current.writeContact("01100000002"));
+
+    expect(result.current.contactInvalid).toBe(true);
+  });
+
+  it("서버가 꼴을 물려도 같은 값이 선다", async () => {
+    updateMyContactMock.mockRejectedValue(new DomainError("invalid_phone"));
+
+    const { result } = await mounted();
+
+    act(() => result.current.openContact());
+    act(() => result.current.writeContact("01000000002"));
+    act(() => result.current.saveContact());
+
+    await waitFor(() => expect(result.current.contactInvalid).toBe(true));
+  });
+
+  it("열한 자리를 다 적기 전에는 틀렸다고 하지 않는다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openContact());
+    act(() => result.current.writeContact("0110000"));
+
+    expect(result.current.contactInvalid).toBe(false);
+  });
+});
+
+describe("useProfileScreen — 갈 데를 controller가 정한다", () => {
+  beforeEach(() => {
+    pushMock.mockClear();
+    replaceMock.mockClear();
+  });
+
+  it("알림으로 갈 때 지금 있는 자리를 실어 보낸다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goNotifications());
+
+    expect(pushMock).toHaveBeenCalledWith(`${NOTIFICATIONS_PATH}?from=/me`);
+  });
+
+  it("통계와 리허설과 관리자 모드는 그 경로로 민다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goStats());
+    act(() => result.current.goRehearsals());
+    act(() => result.current.goAdmin());
+
+    expect(pushMock).toHaveBeenNthCalledWith(1, STATS_PATH);
+    expect(pushMock).toHaveBeenNthCalledWith(2, REHEARSALS_PATH);
+    expect(pushMock).toHaveBeenNthCalledWith(3, ADMIN_HOME_PATH);
+  });
+
+  it("로그인으로는 바꿔 넣는다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goLogin());
+
+    expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH);
+    expect(pushMock).not.toHaveBeenCalled();
   });
 });
