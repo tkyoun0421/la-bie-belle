@@ -208,6 +208,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## `ui`가 사는 네 자리
 
+[ADR-016](ADR-016-fragments-own-their-data.md)이 이 절을 대체한다. 기준이 「통신하지 않는다」에서 「무엇을 아는가」로 바뀌었다.
+
 `ui`가 모든 층에 선다. 어디 사는지는 **무엇을 아는가**가 정한다.
 
 | 자리 | 기준 | 지금 |
