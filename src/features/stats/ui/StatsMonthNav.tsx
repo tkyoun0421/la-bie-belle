@@ -3,11 +3,10 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { useStatsMonthNav } from "@/features/stats/hooks/useStatsMonthNav";
 
-export type StatsMonthProps = {
-  label: string;
-  canGoPrev: boolean;
-  canGoNext: boolean;
+export type StatsMonthNavProps = {
+  month: string;
   onPrev: () => void;
   onNext: () => void;
 };
@@ -16,16 +15,12 @@ function ArrowSlot() {
   return <View className="h-8 w-8" />;
 }
 
-export function StatsMonth({
-  label,
-  canGoPrev,
-  canGoNext,
-  onPrev,
-  onNext,
-}: StatsMonthProps) {
+export function StatsMonthNav({ month, onPrev, onNext }: StatsMonthNavProps) {
+  const fragment = useStatsMonthNav(month);
+
   return (
     <View className="mt-2 flex-row items-center justify-center gap-2 py-2">
-      {canGoPrev ? (
+      {fragment.canGoPrev ? (
         <Button
           variant="ghost"
           size="compact"
@@ -40,10 +35,10 @@ export function StatsMonth({
       )}
 
       <Text size="base" weight="medium" numeric>
-        {label}
+        {fragment.label}
       </Text>
 
-      {canGoNext ? (
+      {fragment.canGoNext ? (
         <Button
           variant="ghost"
           size="compact"

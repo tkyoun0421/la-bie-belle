@@ -1,35 +1,51 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Avatar } from "@/shared/ui/Avatar";
 import { ListRow } from "@/shared/ui/ListRow";
 import { RatioBand } from "@/shared/ui/RatioBand";
 import { Text } from "@/shared/ui/Text";
-import { AVATAR_SIZE } from "@/screens/adminStats/consts/adminStats.const";
-import type { AdminStatsAttendanceRow } from "@/screens/adminStats/hooks/useAdminStatsScreen";
-import type { AdminAttendanceShare } from "@/screens/adminStats/utils/attendanceLine.utils";
+import { AVATAR_SIZE } from "@/features/stats/consts/stats.const";
+import { useAdminStatsAttendance } from "@/features/stats/hooks/useAdminStatsAttendance";
 
 export type AdminStatsAttendanceProps = {
-  attendanceLine: string;
-  shares: AdminAttendanceShare[];
-  rows: AdminStatsAttendanceRow[];
+  month: string;
+  loading: ReactNode;
+  failed: ReactNode;
+  empty: ReactNode;
 };
 
 export function AdminStatsAttendance({
-  attendanceLine,
-  shares,
-  rows,
+  month,
+  loading,
+  failed,
+  empty,
 }: AdminStatsAttendanceProps) {
+  const fragment = useAdminStatsAttendance(month);
+
+  if (fragment.state === "loading") {
+    return loading;
+  }
+
+  if (fragment.state === "failed") {
+    return failed;
+  }
+
+  if (fragment.state === "empty") {
+    return empty;
+  }
+
   return (
     <View>
       <Text size="sm" tone="muted" numeric className="mt-6">
-        {attendanceLine}
+        {fragment.line}
       </Text>
 
       <View className="mt-3">
-        <RatioBand testID="stats-attendance-legend" shares={shares} />
+        <RatioBand testID="stats-attendance-legend" shares={fragment.shares} />
       </View>
 
       <View className="mt-8">
-        {rows.map((row, at) => (
+        {fragment.rows.map((row, at) => (
           <ListRow
             key={row.key}
             divider={at > 0}

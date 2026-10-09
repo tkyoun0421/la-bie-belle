@@ -1,22 +1,3 @@
-import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
-import type { TalliedStatus } from "@/entities/attendance/model/attendance.type";
-
-export const STATUS_LABELS: Record<AttendanceStatus, string> = {
-  present: "출근",
-  late: "지각",
-  unmarked: "안 찍음",
-  pending: "확인 중",
-  excused: "인정",
-  absent: "결근",
-};
-
-export const SHARE_LABELS: readonly { key: TalliedStatus; label: string }[] = [
-  { key: "present", label: "출근" },
-  { key: "excused", label: "인정" },
-  { key: "late", label: "지각" },
-  { key: "absent", label: "결근" },
-];
-
 export const MONTH_LENGTH = 7;
 
 export const SKELETON_ROWS = [0, 1, 2] as const;

@@ -1,15 +1,15 @@
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
-import type {
-  AttendanceInputCheckIn,
-  AttendanceInputExcuseStatus,
-} from "@/features/stats/utils/attendanceInputs.utils";
 import {
   buildMyAttendanceDays,
   checkedTimeLabel,
   myAttendanceRow,
   type MyAttendanceDay,
-} from "@/screens/stats/utils/attendanceDays.utils";
+} from "@/features/stats/utils/attendanceDays.utils";
+import type {
+  AttendanceInputCheckIn,
+  AttendanceInputExcuseStatus,
+} from "@/features/stats/utils/attendanceInputs.utils";
 
 const ME = "p1";
 

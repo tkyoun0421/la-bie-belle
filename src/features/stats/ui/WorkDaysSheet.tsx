@@ -1,28 +1,40 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Divider } from "@/shared/ui/Divider";
 import { Text } from "@/shared/ui/Text";
-
-export type WorkDaysSheetRow = {
-  key: string;
-  title: string;
-  value: string;
-};
+import { useWorkDaysSheet } from "@/features/stats/hooks/useWorkDaysSheet";
 
 export type WorkDaysSheetProps = {
-  name: string;
-  rows: WorkDaysSheetRow[];
-  total: string;
+  month: string;
+  profileId: string;
+  loading: ReactNode;
+  failed: ReactNode;
 };
 
-export function WorkDaysSheet({ name, rows, total }: WorkDaysSheetProps) {
+export function WorkDaysSheet({
+  month,
+  profileId,
+  loading,
+  failed,
+}: WorkDaysSheetProps) {
+  const fragment = useWorkDaysSheet(month, profileId);
+
+  if (fragment.state === "loading") {
+    return loading;
+  }
+
+  if (fragment.state === "failed") {
+    return failed;
+  }
+
   return (
     <View>
       <Text size="lg" weight="semibold">
-        {name}
+        {fragment.name}
       </Text>
 
       <View className="mt-4">
-        {rows.map((row) => (
+        {fragment.rows.map((row) => (
           <View
             key={row.key}
             className="flex-row items-center justify-between py-3"
@@ -40,7 +52,7 @@ export function WorkDaysSheet({ name, rows, total }: WorkDaysSheetProps) {
       <Divider className="mt-2" />
 
       <Text size="base" weight="medium" numeric className="mt-3">
-        {total}
+        {fragment.total}
       </Text>
     </View>
   );

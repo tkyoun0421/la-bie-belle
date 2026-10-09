@@ -1,16 +1,16 @@
 import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
 import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
+import type {
+  AttendanceRow,
+  AttendanceTab,
+} from "@/features/stats/model/attendanceTab.type";
 import {
   buildAttendanceInputs,
   daysOfPerson,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
-import type {
-  AttendanceRow,
-  AttendanceTab,
-} from "@/screens/adminStats/model/adminStats.type";
 
 const KOREAN = "ko";
 

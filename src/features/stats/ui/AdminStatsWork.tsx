@@ -1,23 +1,19 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Divider } from "@/shared/ui/Divider";
 import { ListRow } from "@/shared/ui/ListRow";
 import { RowBars } from "@/shared/ui/RowBars";
 import { Text } from "@/shared/ui/Text";
-import {
-  ADMIN_STATS_COPY,
-  AVATAR_SIZE,
-} from "@/screens/adminStats/consts/adminStats.const";
-import type {
-  AdminStatsPersonRow,
-  AdminStatsPositionRow,
-} from "@/screens/adminStats/hooks/useAdminStatsScreen";
+import { AVATAR_SIZE, STATS_COPY } from "@/features/stats/consts/stats.const";
+import { useAdminStatsWork } from "@/features/stats/hooks/useAdminStatsWork";
 
 export type AdminStatsWorkProps = {
-  totalLabel: string;
-  countLine: string;
-  peopleRows: AdminStatsPersonRow[];
-  positionRows: AdminStatsPositionRow[];
+  month: string;
+  onPickPerson: (profileId: string) => void;
+  loading: ReactNode;
+  failed: ReactNode;
+  empty: ReactNode;
 };
 
 function SectionHeader({ label }: { label: string }) {
@@ -34,25 +30,40 @@ function SectionHeader({ label }: { label: string }) {
 }
 
 export function AdminStatsWork({
-  totalLabel,
-  countLine,
-  peopleRows,
-  positionRows,
+  month,
+  onPickPerson,
+  loading,
+  failed,
+  empty,
 }: AdminStatsWorkProps) {
+  const fragment = useAdminStatsWork(month);
+
+  if (fragment.state === "loading") {
+    return loading;
+  }
+
+  if (fragment.state === "failed") {
+    return failed;
+  }
+
+  if (fragment.state === "empty") {
+    return empty;
+  }
+
   return (
     <View>
       <Text size="3xl" weight="bold" numeric className="mt-6">
-        {totalLabel}
+        {fragment.totalLabel}
       </Text>
 
       <Text size="sm" tone="muted" numeric className="mt-3">
-        {countLine}
+        {fragment.countLine}
       </Text>
 
-      <SectionHeader label={ADMIN_STATS_COPY.peopleSection} />
+      <SectionHeader label={STATS_COPY.peopleSection} />
       <RowBars
         testID="stats-people"
-        items={peopleRows.map((row) => ({
+        items={fragment.peopleRows.map((row) => ({
           key: row.key,
           value: row.weight,
           row: (
@@ -64,16 +75,16 @@ export function AdminStatsWork({
               value={row.value}
               valueTone="answer"
               chevron
-              onPress={row.press}
+              onPress={() => onPickPerson(row.profileId)}
             />
           ),
         }))}
       />
 
-      <SectionHeader label={ADMIN_STATS_COPY.positionSection} />
+      <SectionHeader label={STATS_COPY.positionSection} />
       <RowBars
         testID="stats-positions"
-        items={positionRows.map((row) => ({
+        items={fragment.positionRows.map((row) => ({
           key: row.key,
           value: row.weight,
           row: (

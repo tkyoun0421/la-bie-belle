@@ -5,18 +5,13 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
 import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
-import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
-import {
-  canGoToNextMonth,
-  canGoToPreviousMonth,
-} from "@/shared/utils/monthBoundary";
+import { monthOf, shiftMonth } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
-import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import {
@@ -29,22 +24,10 @@ import {
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
+import { buildMyAttendanceDays } from "@/features/stats/utils/attendanceDays.utils";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
-import {
-  MONTH_LENGTH,
-  STATS_COPY,
-  STATS_TABS,
-} from "@/screens/stats/consts/stats.const";
-import {
-  buildMyAttendanceDays,
-  myAttendanceRow,
-} from "@/screens/stats/utils/attendanceDays.utils";
-import {
-  attendanceRatioShares,
-  type AttendanceShare,
-} from "@/screens/stats/utils/attendanceShares.utils";
-import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
+import { MONTH_LENGTH, STATS_TABS } from "@/screens/stats/consts/stats.const";
 import {
   joinPayrollByMonth,
   myAttendanceValues,
@@ -53,20 +36,11 @@ import {
   myWorkValues,
 } from "@/screens/stats/utils/chartValues.utils";
 import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
-import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
 
 export type StatsTab = (typeof STATS_TABS)[number];
 
 export type StatsListState =
   "loading" | "failed" | "empty" | "attendance" | "position" | "payroll";
-
-export type StatsRow = {
-  key: string;
-  title: string;
-  detail: string;
-  value: string;
-  weight: number;
-};
 
 export type StatsTrendPoint = {
   month: number;
@@ -78,18 +52,10 @@ export type StatsScreenController = {
   openPayrollHistory: () => void;
   tab: StatsTab;
   month: string;
-  monthLabel: string;
   selectedMonth: number;
-  canGoPrev: boolean;
-  canGoNext: boolean;
   points: StatsTrendPoint[];
   trendValueLabel: string | undefined;
   listState: StatsListState;
-  attendanceLine: string;
-  shares: AttendanceShare[];
-  attendanceRows: StatsRow[];
-  positionRows: StatsRow[];
-  totalLabel: string;
   payrollSpan: DateSpan;
   chooseTab: (value: string) => void;
   goPrev: () => void;
@@ -145,7 +111,6 @@ export function useStatsScreen(): StatsScreenController {
     supabase,
     tab === "payroll" ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const sources: readonly { isLoading: boolean; error: Error | null }[] =
     tab === "attendance"
@@ -159,18 +124,6 @@ export function useStatsScreen(): StatsScreenController {
 
   const shownAttendance = monthIn(attendance.data, month);
   const shownWork = monthIn(work.data, month);
-
-  const tally = useMemo(
-    () =>
-      myAttendanceTally(
-        shownAttendance?.days ?? [],
-        shownAttendance?.attendance.checkIns ?? [],
-        shownAttendance?.attendance.excuseStatuses ?? [],
-        profileId,
-        now,
-      ),
-    [shownAttendance, profileId, now],
-  );
 
   const attendanceDays = useMemo(
     () =>
@@ -258,7 +211,6 @@ export function useStatsScreen(): StatsScreenController {
         : tab;
 
   const payrollTotal = values.get(month) ?? 0;
-  const totalLabel = hoursLabel(totals.totalMinutes);
 
   const goBack = useCallback(() => router.back(), [router]);
 
@@ -272,11 +224,7 @@ export function useStatsScreen(): StatsScreenController {
     openPayrollHistory,
     tab,
     month,
-    monthLabel: spellMonth(month),
     selectedMonth: Number(month.slice(5, MONTH_LENGTH)),
-    canGoPrev:
-      firstMonth.data != null && canGoToPreviousMonth(month, firstMonth.data),
-    canGoNext: canGoToNextMonth(month, today),
     points,
     trendValueLabel:
       listState === "loading" || listState === "failed" || listState === "empty"
@@ -284,30 +232,9 @@ export function useStatsScreen(): StatsScreenController {
         : tab === "attendance"
           ? `${values.get(month) ?? 0}%`
           : tab === "position"
-            ? totalLabel
+            ? hoursLabel(totals.totalMinutes)
             : tenThousandWonLabel(payrollTotal),
     listState,
-    attendanceLine: monthAttendanceLine(tally),
-    shares: attendanceRatioShares(tally),
-    attendanceRows: attendanceDays.map((day) => {
-      const row = myAttendanceRow(day);
-
-      return {
-        key: day.workDate,
-        title: row.title,
-        detail: row.subtitle,
-        value: row.value,
-        weight: 0,
-      };
-    }),
-    positionRows: totals.byPosition.map((row) => ({
-      key: row.position,
-      title: row.position,
-      detail: `${row.count}${STATS_COPY.countSuffix}`,
-      value: hoursLabel(row.minutes),
-      weight: row.minutes,
-    })),
-    totalLabel,
     payrollSpan: monthSpan(month),
     chooseTab: (value) => setTab(tabOf(value)),
     goPrev: () => setMonth(shiftMonth(month, -1)),

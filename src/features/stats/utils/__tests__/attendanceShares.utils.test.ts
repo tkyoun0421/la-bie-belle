@@ -1,5 +1,5 @@
 import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
-import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
+import { attendanceRatioShares } from "@/features/stats/utils/attendanceShares.utils";
 
 const TALLY: MonthlyAttendanceTally = {
   present: 41,

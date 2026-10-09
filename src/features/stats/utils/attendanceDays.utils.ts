@@ -2,12 +2,12 @@ import { kstClockOf, spellDate } from "@/shared/utils/kstDate";
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
+import { STATUS_LABELS } from "@/features/stats/consts/stats.const";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
-import { STATUS_LABELS } from "@/screens/stats/consts/stats.const";
 
 const TRAINING_KIND = "training";
 

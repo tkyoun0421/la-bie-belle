@@ -1,14 +1,14 @@
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
+import type { AttendanceRow } from "@/features/stats/model/attendanceTab.type";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
-import type { AttendanceRow } from "@/screens/adminStats/model/adminStats.type";
 import {
   attendanceRowValue,
   buildAttendanceRows,
   buildAttendanceTab,
-} from "@/screens/adminStats/utils/attendanceRows.utils";
+} from "@/features/stats/utils/attendanceRows.utils";
 
 describe("buildAttendanceRows — 이름 가나다순이다(근무 탭과 반대)", () => {
   it("입력 순서와 무관하게 김지우·박서연·최윤아 순으로 선다", () => {

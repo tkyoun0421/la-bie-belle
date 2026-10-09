@@ -1,5 +1,5 @@
 import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
-import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
+import { monthAttendanceLine } from "@/features/stats/utils/monthAttendanceLine.utils";
 
 describe("monthAttendanceLine — 출근·지각·출근 인정·결근 순서로 한 줄을 낸다", () => {
   it("넷이 모두 값이 있으면 '출근 41 · 지각 4 · 출근 인정 2 · 결근 1'이다", () => {

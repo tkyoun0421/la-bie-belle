@@ -1,7 +1,7 @@
 import {
   adminAttendanceLine,
   adminAttendanceShares,
-} from "@/screens/adminStats/utils/attendanceLine.utils";
+} from "@/features/stats/utils/attendanceLine.utils";
 
 const TALLY = { present: 41, late: 4, excused: 2, absent: 1 };
 
