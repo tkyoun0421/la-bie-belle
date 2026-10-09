@@ -105,7 +105,9 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
   it("마감 줄이 며칠 남았는지를 센다", async () => {
     const { result } = await mounted("2026-10");
 
-    expect(result.current.deadlineLine).toContain("7일 남았어요");
+    await waitFor(() =>
+      expect(result.current.deadlineLine).toContain("7일 남았어요"),
+    );
   });
 
   it("마감일이 없으면 마감 줄도 없다", async () => {
