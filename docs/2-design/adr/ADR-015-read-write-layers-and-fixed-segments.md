@@ -66,7 +66,7 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 | 역할 | 파일 꼴 | 하는 일 |
 | --- | --- | --- |
 | presentation | `ui/*.tsx` | 그린다 |
-| controller | `hooks/use<화면>.ts` | 화면 하나의 교통정리 — 어떤 입력에 어떤 service를 부르고, 결과를 그릴 꼴로 |
+| controller | `hooks/use<조각>.ts` | 조각 하나의 교통정리 — 어떤 입력에 어떤 service를 부르고, 결과를 그릴 꼴로. 화면도 조각의 하나다 |
 | service | `services/use<Action>Query.ts` · `use<Action>Mutation.ts` · `stores/*` | repository를 부르고 결과를 해석하고 캐시를 정리한다 |
 | repository | `api/<action>.api.ts` | 쿼리 한 번 |
 
@@ -166,7 +166,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `[action].api.ts` | `api` | 통신 하나 |
 | `use[Action]Query.ts` | `services` | 읽기 service |
 | `use[Action]Mutation.ts` | `services` | 쓰기 service |
-| `use<화면>.ts` | `hooks` | controller |
+| `use<조각>.ts` | `hooks` | controller — `use<화면>Screen.ts`와 `use<조각>.ts`가 같은 꼴이다 |
 
 **store는 `use*`로 불려도 `stores/`에 접미사로 산다.** zustand의 `create`가 돌려주는 것이 훅이라 앞선 판은 「부르는 이름이 이긴다」로 `shared/hooks/useTheme.ts`를 뒀고, 훅으로 안 불리는 것만 `model/clock.store.ts`가 됐다. 자리가 둘로 갈린 것이 그 봉합의 값이었다. `stores/`가 서면 폴더가 성격을 말하니 둘이 같은 접미사를 받는다 — `shared/stores/theme.store.ts`고 쓰는 쪽은 그대로 `useTheme()`이다. 「`use*` export는 `hooks`·`services`·`stores`만」이 그 셋을 함께 허용한다.
 
@@ -223,6 +223,23 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **`shared/ui`가 도메인 낱말을 쓰는 열다섯은 그대로 둔다.** `RosterRow`·`SlotCard`·`ScheduleDayCell`이 이름에 도메인을 달고 있지만 **도메인 층을 하나도 import하지 않는다** — `position: string`을 받고, `stateOf: (date: string) => ScheduleDayCellState`처럼 콜백으로 판정을 받는다. `shared`가 위층을 모른다는 규칙을 지키려고 props를 평평하게 받는 우회고, 그 우회가 깨끗해서 옮길 이유가 없다. 대가는 「근무표 달력」이 근무표 도메인에 안 사는 것이다.
 
+## `.tsx`는 조립만 한다
+
+**`ui/*.tsx`는 최종 오케스트레이션 레이어다.** 조각을 배치하고 controller가 준 값을 꽂는다. 그 위의 어떤 일도 밖에 산다.
+
+| `.tsx`가 하는 일 | `.tsx`가 안 하는 일 | 어디로 |
+| --- | --- | --- |
+| 조각을 배치한다 | 값을 **만든다** — 포맷·문안·판정 | controller가 완성해 준다 |
+| controller가 준 값을 꽂는다 | 갈 데를 **고른다** | controller가 경로를 값으로 준다 |
+| 상태 이름으로 조각을 고른다 | 상태마다 **그린다** | 상태마다의 조각 |
+| 자기 UI 상태를 든다(아래 절) | 시트를 하나씩 **배선한다** | 고르는 자리 하나 |
+
+**조각도 controller를 가진다.** `ui/MemberSheet.tsx` 옆에 `hooks/useMemberSheet.ts`가 서고, 조각이 받는 것은 식별자뿐이다 — 문구와 판정과 열림 상태를 그 훅이 든다. controller를 화면 단위로만 두면 조각의 로직이 갈 데가 없어 `.tsx`에 남거나 화면 controller가 조각의 props까지 만드는 뭉치가 된다. 전자가 지금 상태고 **`screens/*/ui`가 `model`·`utils`를 값으로 당기는 스물다섯 건**이 그 증거다 — `MemberSheet.tsx` 하나가 `canSaveDisplayName`·`formatBirthDate`·`spellGender`·`spellLeftAt` 넷을 부른다.
+
+**그 값이 controller를 거치면 lint가 경계를 본다.** `ui` → `model`·`utils` import는 지금 아무 규칙도 안 문다 — `api`·`services`·supabase 셋만 막혀 있어서, 판정 함수를 당기는 길이 열려 있다. controller가 유일한 통로가 되면 그 import 자체를 막을 수 있다.
+
+**한 `.tsx`가 화면 둘을 들지 않는다.** `PendingScreen.tsx`가 `stage` 넷으로 각자 `<Screen>`을 그려 사실상 화면 넷이고, `ScheduleAdminScreen.tsx`는 `screen.day !== null`로 날 상세와 달력을 가른다. 조건으로 갈리는 화면은 파일로 갈린다 — 라우트가 고르거나, 상위 `.tsx`가 조각 둘 중 하나를 고른다.
+
 ## 화면 파일의 `useState`
 
 **UI를 담당하는 로직이면 `.tsx`에 있어도 된다.**
@@ -274,6 +291,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 | 부작용이 `model`·`utils`에 숨기 | `policy`와 `utils`가 순수하다는 것 | lint 규칙 |
 | `api`·`services`·`hooks`를 당기는 `.tsx`에서 상태 금지 | presentation이 controller를 겸하기 | 「화면 파일의 `useState`」 절 | lint 규칙 |
 | `.dto.ts`를 `api/` 밖에서 import 금지 | DB 열 이름이 화면까지 닿기 | DTO가 통신의 계약이라는 것 | lint 규칙 |
+| `api/` 밖에서 snake_case 필드 선언 금지 | DTO 꼴을 import 없이 베끼기 | 같은 축 — 규칙이 import만 보면 못 보는 길 | lint 규칙 |
+| `ui/`에서 `model`·`utils`를 **값으로** import 금지 | presentation이 값을 만들기 | 「`.tsx`는 조립만 한다」 절 | lint 규칙 |
 
 **`features/`의 Query를 이름으로 면제하지 않는다.** 앞선 판은 `useAttendanceMonths` 하나를 이름으로 빼줬는데, 이름 면제는 그 파일이 없어진 뒤 아무것도 안 가리키는 구멍이 된 전례가 있다(`dumbUi.mjs`가 사라진 `providers.tsx`를 빼주고 있었다). 조건으로 바꾸면 기계가 import를 세어 판정한다 — `entities` 둘 이상을 읽는 Query는 어느 `entities`에도 못 앉으므로 위층이 받는다.
 
@@ -281,16 +300,18 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 | 금지 | 지금 | 뜻 |
 | --- | --- | --- |
-| `ui` → `api` | 26 | presentation이 repository 직통 |
-| `ui` → Supabase 클라이언트 | 25 | 같은 축 |
-| `ui` → `services` | 96 | controller 없이 service 직접 |
-| `ui` → `model` 함수 | 91 | 업무 판정이 화면에 |
-| `ui` → `utils` 함수 | 68 | 가공이 화면에 |
-| `ui` → `.dto.ts` | 15 | DB 열 이름이 뷰에 |
-| `model` → `api` | 6 + 클라이언트 3 | 판정이 통신을 안다 |
-| `api` → `model` | 2 | repository가 판정을 부른다 |
-| `utils` → `api` | 6 | 순수 도구가 통신을 안다 |
-| `utils` → `hooks` | 2 | 순수 도구가 React를 안다 |
+| `ui` → `api` | 0 | presentation이 repository 직통 |
+| `ui` → Supabase 클라이언트 | 0 | 같은 축 |
+| `ui` → `services` | 0 | controller 없이 service 직접 |
+| `ui` → `.dto.ts` | 0 | DB 열 이름이 뷰에 |
+| `ui` → `utils` 함수 | 22 | 가공이 화면에 |
+| `ui` → `model` 함수 | 5 | 업무 판정이 화면에 |
+| `model` → `api` | 0 | 판정이 통신을 안다 |
+| `api` → `model` | 0 | repository가 판정을 부른다 |
+| `utils` → `api` | 0 | 순수 도구가 통신을 안다 |
+| `utils` → `hooks` | 0 | 순수 도구가 React를 안다 |
+
+**넷이 닫혔고 하나가 남았다.** 통신 쪽 축(`api`·`services`·클라이언트·`.dto.ts`)은 검사가 서서 0이다. 남은 `ui` → `utils`·`model` 스물일곱은 **아무 규칙도 안 문다** — 포맷과 판정을 당기는 길이 열려 있고, 그 스물일곱이 「`.tsx`가 값을 만든다」의 전부다.
 
 정상인 방향은 `ui` → `ui` 58(컴포넌트끼리) · `services` → `api` 66 · `api` → 클라이언트 77이다. **`ui` → `hooks`가 셋뿐인 것이 controller가 없다는 증거다** — 그 셋이 96+91+68을 받아야 한다.
 
