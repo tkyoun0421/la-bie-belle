@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 38;
+export const DOCUMENTED_LINT_RULE_COUNT = 39;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -307,6 +307,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-snake-case-field",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noSnakeCaseField.test.ts",
+  },
+  {
+    no: 39,
+    name: "ui의 model·utils 값 import",
+    mechanism: "house",
+    ruleId: "house/ui-value-import",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/uiValueImport.test.ts",
   },
 ];
 

@@ -22,6 +22,7 @@ import queryHookInServices from "./queryHookInServices.mjs";
 import queryKeyFactory from "./queryKeyFactory.mjs";
 import storeFactoryInStores from "./storeFactoryInStores.mjs";
 import supabasePackageInApi from "./supabasePackageInApi.mjs";
+import uiValueImport from "./uiValueImport.mjs";
 import useExportSegment from "./useExportSegment.mjs";
 
 const house = {
@@ -51,6 +52,7 @@ const house = {
     "query-key-factory": queryKeyFactory,
     "store-factory-in-stores": storeFactoryInStores,
     "supabase-package-in-api": supabasePackageInApi,
+    "ui-value-import": uiValueImport,
     "use-export-segment": useExportSegment,
   },
 };

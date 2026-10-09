@@ -172,6 +172,7 @@ const eslintConfig = defineConfig([
       "house/native-sdk-segment": "error",
       "house/dto-segment": "error",
       "house/no-snake-case-field": "error",
+      "house/ui-value-import": "error",
     },
   },
 
