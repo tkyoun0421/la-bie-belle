@@ -46,11 +46,11 @@ sources:
 
 | 조각 | 가는 자리 |
 | --- | --- |
-| `ConfirmSheet`·`ConfirmSheetAsk`·`ConfirmSheetDone`·`ConfirmSheetFailed`·`ConfirmChangeSheet`·`CreateScheduleSheet` | `features/scheduleConfirm/ui` |
+| `ConfirmSheet`·`ConfirmSheetAsk`·`ConfirmSheetDone`·`ConfirmSheetFailed`·`ConfirmChangeSheet` | `features/scheduleConfirm/ui` |
 | `SlotSheet`·`DiscardSlotSheet` | `features/scheduleSlot/ui` |
 | `PersonSheet`·`PersonPickerSheet`·`PersonPickerLine` | `features/scheduleAssign/ui` |
 | `AdjustSheet`·`AdjustChoiceSheet`·`AdjustRow` | `features/adjustment/ui` |
-| `CloseDayWarningSheet`·`DayHoursSheet` | `features/scheduleDay/ui` |
+| `CreateScheduleSheet`·`CloseDayWarningSheet`·`DayHoursSheet` | `features/scheduleDay/ui` |
 | `QualificationSheet` | `features/qualificationGrant/ui` |
 | `RequestSheet`·`CancelShiftSheet` | `features/workRequest/ui` |
 | `RehearsalFormSheet` | `features/rehearsalEdit/ui` |
@@ -63,6 +63,8 @@ sources:
 | `ApprovalDetailSheet` | `features/excuse/ui` |
 
 가는 자리가 애매한 것은 그 조각이 **어느 mutation을 부르나**로 정한다. 둘 이상 부르면 그 use case가 하나로 묶이는지 보고, 아니면 화면에 남긴다.
+
+**orchestration을 지나는 mutation은 안 옮긴다.** `useDayDetail`의 아홉(`useAddSlotMutation`·`useRemoveSlotMutation`·`useMergeSlotsMutation`·`useSplitSlotMutation`·`useAddAssignmentMutation`·`useRemoveAssignmentMutation`·`useForceChangeMutation`·`useGrantPositionMutation`·`useSetAdjustmentMutation`)이 그 자리다. 조각 하나가 mutation 하나를 삼키는 꼴이 아니라 `pick → commit → pending → run` 흐름을 지나서, `ConfirmChangeSheet`의 확정 버튼 하나가 pending의 종류에 따라 넷 중 하나를 고른다. 옮기려면 `useDayDetail` 653줄과 그 테스트 611줄을 다시 짜야 한다 — 이 plan의 범위가 아니다.
 
 ### AC-02 — 읽기 조각이 자기 도메인으로 간다
 
@@ -83,7 +85,9 @@ sources:
 
 ### AC-03 — 화면에 뼈만 남는다
 
-`screens/<슬라이스>/ui`에 남는 것이 `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`다. 도메인을 아는 조각이 없다.
+`screens/<슬라이스>/ui`에 남는 것이 `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`다.
+
+**그 열에 열한째가 선다 — 쓰기로 들어가는 문.** `DaySheet`·`RehearsalDaySheet`가 그 꼴이다. 날의 상세를 보여주면서 거기서 쓰기 시트를 여는데, mutation을 하나도 부르지 않아 `features`가 아니고, 여는 대상이 그 화면의 시트라 `entities`로도 못 간다. 「그 화면이 무엇을 열 수 있나」는 화면의 생김새다.
 
 ### AC-04 — 화면 controller가 경계와 교통정리만 든다
 
