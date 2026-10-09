@@ -1,5 +1,5 @@
-import { NEXT_PAGE_SLACK } from "@/screens/notifications/consts/notifications.const";
-import { nearBottom } from "@/screens/notifications/utils/nearBottom.utils";
+import { NEXT_PAGE_SLACK } from "@/entities/notification/consts/notification.const";
+import { nearBottom } from "@/entities/notification/utils/nearBottom.utils";
 
 function scrollAt(offsetY: number) {
   return {

@@ -4,7 +4,7 @@ const {
   groupNotificationsByDate,
   resolveNotificationsListState,
   unreadAdminNoticeIds,
-} = await import("@/screens/notifications/model/notificationRows.policy");
+} = await import("@/entities/notification/model/notificationRows.policy");
 
 function buildRow(
   id: string,

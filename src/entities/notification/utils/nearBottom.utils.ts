@@ -1,5 +1,5 @@
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { NEXT_PAGE_SLACK } from "@/screens/notifications/consts/notifications.const";
+import { NEXT_PAGE_SLACK } from "@/entities/notification/consts/notification.const";
 
 export function nearBottom(
   event: NativeSyntheticEvent<NativeScrollEvent>,

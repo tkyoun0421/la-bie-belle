@@ -59,3 +59,9 @@ export const REACH_SHEET_LINE: Partial<Record<ReachState, string>> = {
   off: "알림을 꺼두었어요",
   "no-device": "기기에서 알림을 꺼서 안 가요",
 };
+
+export const NEXT_PAGE_SLACK = 240;
+
+export const NOTIFICATION_LIST_COPY = {
+  end: "여기까지예요",
+} as const;
