@@ -98,7 +98,7 @@ export type ProfileScreenController = {
   askTurnOff: () => void;
   cancelTurnOff: () => void;
   confirmTurnOff: () => void;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   dismissToast: () => void;
   goNotifications: () => void;
   goStats: () => void;
@@ -246,6 +246,10 @@ export function useProfileScreen(): ProfileScreenController {
     router.replace(LOGIN_PATH);
   }, [router]);
 
+  const leave = useCallback(() => {
+    signOut(goLogin);
+  }, [signOut, goLogin]);
+
   return {
     loading: isLoading,
     unread: (unreadCount.data ?? 0) > 0,
@@ -319,7 +323,7 @@ export function useProfileScreen(): ProfileScreenController {
       setTurningOff(false);
       notification.turnOff();
     },
-    signOut,
+    leave,
     dismissToast: () => setToast(null),
     goNotifications,
     goStats,

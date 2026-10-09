@@ -65,7 +65,7 @@ export function PendingWaiting({ screen }: PendingWaitingProps) {
           photoUrl={screen.photoUrl}
           signingOut={screen.signingOut}
           signOutVariant="outline"
-          onSignOut={() => screen.signOut(screen.goLogin)}
+          onSignOut={screen.leave}
         />
       </View>
     </Screen>

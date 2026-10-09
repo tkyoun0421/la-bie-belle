@@ -44,7 +44,7 @@ export function PendingRejected({ screen }: PendingRejectedProps) {
           photoUrl={screen.photoUrl}
           signingOut={screen.signingOut}
           signOutVariant="ghost"
-          onSignOut={() => screen.signOut(screen.goLogin)}
+          onSignOut={screen.leave}
         >
           <Button variant="primary" className="mt-4" onPress={screen.retry}>
             {PENDING_WAIT_COPY.retry}

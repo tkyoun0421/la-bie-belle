@@ -97,7 +97,7 @@ export type PendingScreenController = {
   send: () => void;
   retry: () => void;
   turnOnNotifications: () => Promise<void>;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   goLogin: () => void;
 };
 
@@ -265,6 +265,10 @@ export function usePendingScreen(): PendingScreenController {
     router.replace(LOGIN_PATH);
   }, [router]);
 
+  const leave = useCallback(() => {
+    signOut(goLogin);
+  }, [signOut, goLogin]);
+
   return {
     stage,
     email: me?.email ?? "",
@@ -328,7 +332,7 @@ export function usePendingScreen(): PendingScreenController {
       }),
     retry: () => setOverride("form"),
     turnOnNotifications,
-    signOut,
+    leave,
     goLogin,
   };
 }

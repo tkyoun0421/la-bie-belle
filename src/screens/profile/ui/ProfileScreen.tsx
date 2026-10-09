@@ -38,7 +38,7 @@ export function ProfileScreen() {
             <Button
               variant="ghost"
               loading={screen.signingOut}
-              onPress={() => screen.signOut(screen.goLogin)}
+              onPress={screen.leave}
             >
               {PROFILE_COPY.signOut}
             </Button>

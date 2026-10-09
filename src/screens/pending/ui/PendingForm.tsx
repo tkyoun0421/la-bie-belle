@@ -23,10 +23,7 @@ export function PendingForm({ screen }: PendingFormProps) {
         <AppBar
           title={PENDING_FORM_COPY.appBarTitle}
           right={
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => screen.signOut(screen.goLogin)}
-            >
+            <Pressable accessibilityRole="button" onPress={screen.leave}>
               <Text size="sm" tone="subtle">
                 {PENDING_FORM_COPY.signOut}
               </Text>

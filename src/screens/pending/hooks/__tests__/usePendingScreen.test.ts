@@ -443,13 +443,12 @@ describe("usePendingScreen — 알림과 로그아웃", () => {
     expect(result.current.prompt.hasButton).toBe(false);
   });
 
-  it("로그아웃하면 끝나고 부르는 쪽이 보낼 데를 정한다", async () => {
+  it("로그아웃하면 끝나고 로그인으로 보낸다", async () => {
     const { result } = await mounted();
-    const onDone = jest.fn();
 
-    act(() => result.current.signOut(onDone));
+    act(() => result.current.leave());
 
-    await waitFor(() => expect(onDone).toHaveBeenCalled());
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
   });
 });
 
