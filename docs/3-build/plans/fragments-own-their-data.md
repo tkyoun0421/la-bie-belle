@@ -74,7 +74,7 @@ sources:
 
 목록과 행과 카드가 `entities/<도메인>/ui`에 살고 자기 슬라이스의 query를 부른다. 도메인 타입을 props로 받는 것으로 끝나지 않는다 — 부르는 쪽이 값을 들고 와야 하면 자립이 아니다.
 
-**`features/stats`가 먼저 `entities/stats`로 내려간다.** 그 슬라이스에 mutation이 하나도 없고 `useAttendanceMonthsQuery` 하나와 판정·도구뿐이다 — ADR-015 이전에 선 자리고 층의 뜻으로는 읽기다. 통계 조각 열이 그리로 간다.
+**`features/stats`는 그 자리에 머물고 통계 조각은 `features/stats/ui`로 간다.** 그 슬라이스에 mutation이 하나도 없지만 [ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 「도메인 둘 이상을 읽는 것은 읽기라도 `features`에 산다」고 적고 `features/stats`를 이름까지 들어 예로 쓴다. `useAttendanceMonthsQuery`가 `useWorkMonthsQuery`와 `useMonthsAttendanceQuery`를 합치고 자기 질의키조차 없다 — `queryKeys`에 `stats` 네임스페이스가 없다. `entities`로 내리면 규칙 3 `house/no-cross-slice-import`가 열두 자리에서 막는다(`import type`도 막는다).
 
 **`wage`는 새 슬라이스가 아니다.** `useWageRatesQuery`가 `entities/payroll/services`에 살아서 `WageRows`·`WagesList`도 거기로 간다.
 
@@ -90,15 +90,17 @@ sources:
 | `ApprovalRows`·`ApprovalsList` | `entities/workRequest/ui` |
 | `ApplicationsDateGroups`·`ApplicationsPersonGroups`·`ApplicationsList`·`ApplicationsDeadlineBar` | `entities/availability/ui` |
 | `NotificationsList` | `entities/notification/ui` |
-| `StatsAttendance`·`StatsPositions`·`StatsPayroll`·`StatsList`·`StatsMonth` | `entities/stats/ui` |
-| `AdminStatsWork`·`AdminStatsAttendance`·`AdminStatsBody`·`AdminStatsMonthNav`·`WorkDaysSheet` | `entities/stats/ui` |
+| `StatsAttendance`·`StatsPositions`·`StatsMonth` | `features/stats/ui` |
+| `AdminStatsWork`·`AdminStatsAttendance`·`AdminStatsMonthNav`·`WorkDaysSheet` | `features/stats/ui` |
 | `ProfileCard`·`ProfileFacts`·`PendingSummary` | `entities/profile/ui` |
 
 ### AC-03 — 화면에 뼈만 남는다
 
 `screens/<슬라이스>/ui`에 남는 것이 `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`다.
 
-**조각을 배치하는 자리도 뼈다.** `ProfileSettings`가 그 꼴이다 — 라우팅 줄 셋과 시트 하나를 꽂고 도메인을 모른다.
+**조각을 배치하는 자리도 뼈다.** `ProfileSettings`·`AdminStatsBody`·`StatsList`·`PayrollList`·`WagesList`·`ApplicationsList`·`ApprovalsList`가 그 꼴이다 — `screen:` controller를 통째로 받아 상태 이름으로 조각만 고르고 도메인 층을 하나도 import하지 않는다. 「통째로 받으면 그 조각은 그 화면에 묶인다」와 「상태마다의 자리」가 같은 답을 낸다.
+
+**`StatsPayroll`은 관찰 065가 풀려야 움직인다.** `features/payrollCompute`를 당기는데 `features`끼리 못 당긴다. 그때까지 화면에 남는다.
 
 **「쓰기로 들어가는 문」은 뼈가 아니다.** `DaySheet`·`RehearsalDaySheet`·`WorkDaysSheet`가 mutation을 안 불러 `features`로 못 가지만, 도메인을 읽어 보여주는 것이 그 조각의 본업이라 `entities`로 간다. 쓰기 시트를 여는 행위는 `onPress`로 받는다 — 갈 데를 받는 것과 같은 축이다.
 

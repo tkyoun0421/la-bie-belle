@@ -34,10 +34,12 @@ ADR-015는 「`features/*/ui`만 service를 부를 수 있다」고 적었다. �
 | --- | --- |
 | `shared/ui` | 도메인을 **모른다.** props가 원시 타입이거나 자기가 선언한 타입 |
 | `entities/<도메인>/ui` | **그 도메인을 읽어 보여준다.** 자기 슬라이스의 query를 부른다 |
-| `features/<use case>/ui` | **그 use case를 실행한다.** 자기 슬라이스의 mutation을 부른다 |
+| `features/<use case>/ui` | **그 use case를 실행한다.** 자기 슬라이스의 mutation을 부르거나, 도메인을 가로질러 읽는다 |
 | `screens/<슬라이스>/ui` | **그 화면의 뼈.** 앱바·바닥 버튼·상태마다의 자리·시트 고르는 자리·경계 |
 
-가름의 축은 **무엇을 아는가**다. 도메인을 모르면 `shared`, 읽으면 `entities`, 바꾸면 `features`, 화면의 생김새면 `screens`다.
+가름의 축은 **무엇을 아는가**다. 도메인을 모르면 `shared`, 도메인 하나를 읽으면 `entities`, 바꾸거나 **도메인 여럿을 맞추면** `features`, 화면의 생김새면 `screens`다.
+
+**도메인 여럿을 맞추는 읽기 조각은 `features`에 산다.** [ADR-015](ADR-015-read-write-layers-and-fixed-segments.md)의 「도메인 둘 이상을 읽는 것은 읽기라도 `features`에 산다」가 그대로 적용된다 — `entities` 슬라이스는 도메인 하나고 같은 층 슬라이스끼리 서로를 못 부른다. 통계 조각이 그 자리다: `features/stats`에 mutation이 하나도 없지만 근무·근태·급여를 합쳐 읽으니 `entities`에 앉을 데가 없고, 그 조각들도 `features/stats/ui`로 간다.
 
 `entities`가 query를 부르고 `features`가 mutation을 부르는 것은 ADR-015가 세운 층의 뜻 그대로다 — 조각이 그 층에 살면 그 층이 하는 일을 한다.
 
