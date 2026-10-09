@@ -1,4 +1,4 @@
-import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
+import type { ApprovalListRow } from "@/entities/workRequest/model/approvalList.type";
 
 export function sortApprovals<Row extends ApprovalListRow>(
   rows: readonly Row[],

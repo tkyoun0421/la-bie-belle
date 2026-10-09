@@ -1,4 +1,4 @@
-import { cancelApprovalDetail } from "@/features/workRequest/utils/approvalDetail.utils";
+import { cancelApprovalDetail } from "@/entities/workRequest/utils/approvalDetail.utils";
 
 const INPUT = {
   displayName: "이준호",

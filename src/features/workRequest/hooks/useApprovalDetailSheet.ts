@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
+import {
+  cancelApprovalConfirmBody,
+  cancelApprovalDetail,
+} from "@/entities/workRequest/utils/approvalDetail.utils";
 import { APPROVAL_SHEET_COPY } from "@/features/workRequest/consts/workRequest.const";
 import type {
   ApprovalDetailSheetController,
@@ -12,10 +16,6 @@ import {
   rejectReasonText,
 } from "@/features/workRequest/model/rejectReason.policy";
 import { useDecideCancelRequestMutation } from "@/features/workRequest/services/useDecideCancelRequestMutation";
-import {
-  cancelApprovalConfirmBody,
-  cancelApprovalDetail,
-} from "@/features/workRequest/utils/approvalDetail.utils";
 
 function sendLabelOf(sending: boolean, failed: boolean): string {
   if (sending) {

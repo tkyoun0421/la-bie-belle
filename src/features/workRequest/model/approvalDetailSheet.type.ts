@@ -1,5 +1,5 @@
 import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
-import type { CancelApprovalDetail } from "@/features/workRequest/utils/approvalDetail.utils";
+import type { CancelApprovalDetail } from "@/entities/workRequest/utils/approvalDetail.utils";
 
 export type ApprovalSheetFace = "detail" | "reject";
 

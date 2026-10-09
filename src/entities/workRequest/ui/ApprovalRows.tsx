@@ -1,11 +1,11 @@
 import { Badge } from "@/shared/ui/Badge";
 import { Card } from "@/shared/ui/Card";
 import { ListRow } from "@/shared/ui/ListRow";
-import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
-import type { ApprovalsScreenRow } from "@/screens/approvals/hooks/useApprovalsScreen";
+import { APPROVAL_ROW_COPY } from "@/entities/workRequest/consts/workRequest.const";
+import type { ApprovalRow } from "@/entities/workRequest/hooks/useApprovalRows";
 
 export type ApprovalRowsProps = {
-  rows: readonly ApprovalsScreenRow[];
+  rows: readonly ApprovalRow[];
 };
 
 export function ApprovalRows({ rows }: ApprovalRowsProps) {
@@ -20,7 +20,7 @@ export function ApprovalRows({ rows }: ApprovalRowsProps) {
             <Badge
               variant="neutral"
               size="sm"
-              label={APPROVALS_COPY.cancelBadge}
+              label={APPROVAL_ROW_COPY.cancelBadge}
             />
           }
           chevron

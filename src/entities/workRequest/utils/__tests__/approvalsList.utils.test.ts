@@ -1,8 +1,8 @@
-import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
+import type { ApprovalListRow } from "@/entities/workRequest/model/approvalList.type";
 import {
   removeApproval,
   sortApprovals,
-} from "@/screens/approvals/utils/approvalsList.utils";
+} from "@/entities/workRequest/utils/approvalsList.utils";
 
 const ROWS: ApprovalListRow[] = [
   { id: "cancel-3", kind: "cancel", workDate: "2026-10-20" },
