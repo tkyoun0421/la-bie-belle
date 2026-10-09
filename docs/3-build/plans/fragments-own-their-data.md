@@ -15,7 +15,7 @@ sources:
 **저장소에서 확인한 것.**
 
 - **`screens/*/ui`가 152개다.** 화면 파일 스물에 조각 백서른둘이다
-- **그 152개 중 149개가 도메인 층을 하나도 import하지 않는다.** `entities`든 `features`든 당기는 것이 셋뿐이다(`DeadlineSheet`·`PendingForm`이 `availabilitySubmit`, 새로 세운 `UnreadCountLine`이 `notification`). 나머지는 원시 타입 props만 받는다 — controller가 도메인을 평평하게 풀어서 준다
+- **그 152개 중 150개가 도메인 층을 하나도 import하지 않는다.** `entities`든 `features`든 당기는 것이 둘뿐이다(`DeadlineSheet`가 `availabilitySubmit`, 새로 세운 `UnreadCountLine`이 `notification`). 나머지는 원시 타입 props만 받는다 — controller가 도메인을 평평하게 풀어서 준다
 - **그래서 조각이 자립하지 못한다.** 이름에 도메인이 있어도(`DayRoster`·`PositionSlotCard`·`WageRows`) 타입으로는 모른다. 두 번째 화면이 쓰려면 그 화면 controller가 같은 query를 또 부르고 같은 props를 또 엮어야 한다
 - **무게가 다섯 화면에 몰렸다.**
 
@@ -54,13 +54,15 @@ sources:
 | `QualificationSheet` | `features/qualificationGrant/ui` |
 | `RequestSheet`·`CancelShiftSheet` | `features/workRequest/ui` |
 | `RehearsalFormSheet` | `features/rehearsalEdit/ui` |
-| `ContactSheet`·`PhotoSheet`·`ThemeSheet` | `features/profileEdit/ui` |
+| `ContactSheet`·`PhotoSheet` | `features/profileEdit/ui` |
 | `MemberSheet`·`MemberDialog`·`MemberDetailSheet` | `features/memberAdmin/ui` |
 | `DefaultWageSheet`·`MemberWageSheet`·`ResetWageDialog` | `features/wageAdmin/ui` |
 | `HallDefaultsSheet` | `features/hallDefaults/ui` |
-| `WorkDaysSheet` | `features/stats/ui` |
-| `PendingEditor`·`PendingForm`·`PendingFooter` | `features/availabilitySubmit/ui` |
-| `ApprovalDetailSheet` | `features/excuse/ui` |
+
+| `PendingEditor` | `features/profileEdit/ui` |
+| `ProfileNotificationRow` | `features/pushSwitch/ui` |
+| `ThemeSheet` | `shared/ui` — mutation이 없고 도메인을 모른다 |
+| `ApprovalDetailSheet` | `features/workRequest/ui` — 판정하는 것이 사정이 아니라 취소 요청이다 |
 
 가는 자리가 애매한 것은 그 조각이 **어느 mutation을 부르나**로 정한다. 둘 이상 부르면 그 use case가 하나로 묶이는지 보고, 아니면 화면에 남긴다.
 
@@ -68,26 +70,33 @@ sources:
 
 ### AC-02 — 읽기 조각이 자기 도메인으로 간다
 
+**대상이 쉰넷이다.** `screens/*/ui` 백열아홉 가운데 뼈가 예순다섯이고 나머지가 그 쉰넷이다.
+
 목록과 행과 카드가 `entities/<도메인>/ui`에 살고 자기 슬라이스의 query를 부른다. 도메인 타입을 props로 받는 것으로 끝나지 않는다 — 부르는 쪽이 값을 들고 와야 하면 자립이 아니다.
 
 | 조각 | 가는 자리 |
 | --- | --- |
-| `DayRoster`·`ScheduleAgenda`·`ScheduleCalendarCard`·`ScheduleWorkerRoster` | `entities/schedule/ui` |
+| `DayRoster`·`DaySheet`·`ScheduleAgenda`·`ScheduleCalendarCard`·`ScheduleWorkerRoster`·`ScheduleWorkerPicker` | `entities/schedule/ui` |
+| `DayDetail`·`DayDetailCard`·`ScheduleAdminCalendar`·`ScheduleAdminDay`·`ScheduleCalendarMonth`·`ScheduleCalendarMissing` | `entities/schedule/ui` |
+| `RehearsalDaySheet` | `entities/rehearsal/ui` |
 | `PositionRow`·`PositionRowHead`·`PositionSlotCard` | `entities/schedule/ui` |
-| `WageRows` | `entities/wage/ui` |
-| `PayrollMonthRows`·`PayrollHistoryRows`·`PayrollAccrual`·`PayrollSummary` | `entities/payroll/ui` |
+| `WageRows`·`WagesList` | `entities/wage/ui` |
+| `PayrollMonthRows`·`PayrollHistoryRows`·`PayrollAccrual`·`PayrollSummary`·`PayrollList`·`PeriodStepper` | `entities/payroll/ui` |
 | `MemberRows`·`PendingRows`·`BlockedRows` | `entities/member/ui` |
-| `ApprovalRows` | `entities/excuse/ui` |
-| `ApplicationsDateGroups`·`ApplicationsPersonGroups` | `entities/availability/ui` |
+| `ApprovalRows`·`ApprovalsList` | `entities/workRequest/ui` |
+| `ApplicationsDateGroups`·`ApplicationsPersonGroups`·`ApplicationsList`·`ApplicationsDeadlineBar` | `entities/availability/ui` |
 | `NotificationsList` | `entities/notification/ui` |
-| `StatsAttendance`·`StatsPositions`·`StatsPayroll`·`AdminStatsWork`·`AdminStatsAttendance` | `entities/stats/ui` |
-| `ProfileCard`·`ProfileFacts` | `entities/profile/ui` |
+| `StatsAttendance`·`StatsPositions`·`StatsPayroll`·`StatsList`·`StatsMonth` | `entities/stats/ui` |
+| `AdminStatsWork`·`AdminStatsAttendance`·`AdminStatsBody`·`AdminStatsMonthNav`·`WorkDaysSheet` | `entities/stats/ui` |
+| `ProfileCard`·`ProfileFacts`·`PendingSummary` | `entities/profile/ui` |
 
 ### AC-03 — 화면에 뼈만 남는다
 
 `screens/<슬라이스>/ui`에 남는 것이 `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`다.
 
-**그 열에 열한째가 선다 — 쓰기로 들어가는 문.** `DaySheet`·`RehearsalDaySheet`가 그 꼴이다. 날의 상세를 보여주면서 거기서 쓰기 시트를 여는데, mutation을 하나도 부르지 않아 `features`가 아니고, 여는 대상이 그 화면의 시트라 `entities`로도 못 간다. 「그 화면이 무엇을 열 수 있나」는 화면의 생김새다.
+**조각을 배치하는 자리도 뼈다.** `ProfileSettings`가 그 꼴이다 — 라우팅 줄 셋과 시트 하나를 꽂고 도메인을 모른다.
+
+**「쓰기로 들어가는 문」은 뼈가 아니다.** `DaySheet`·`RehearsalDaySheet`·`WorkDaysSheet`가 mutation을 안 불러 `features`로 못 가지만, 도메인을 읽어 보여주는 것이 그 조각의 본업이라 `entities`로 간다. 쓰기 시트를 여는 행위는 `onPress`로 받는다 — 갈 데를 받는 것과 같은 축이다.
 
 ### AC-04 — 화면 controller가 경계와 교통정리만 든다
 
