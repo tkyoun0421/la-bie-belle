@@ -11,3 +11,7 @@ export const NOTIFICATIONS_PATH = "/notifications" as const;
 export const STATS_PATH = "/stats" as const;
 
 export const REHEARSALS_PATH = "/me/rehearsals" as const;
+
+export const APPROVALS_PATH = "/admin/approvals" as const;
+
+export const APPLICATIONS_PATH = "/admin/applications" as const;

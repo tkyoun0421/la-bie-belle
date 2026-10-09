@@ -4,69 +4,53 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { Divider } from "@/shared/ui/Divider";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
-import { isProfileGender } from "@/entities/profile/model/profile.schema";
-import { spellGender } from "@/entities/profile/utils/spellGender.utils";
-import {
-  birthYearShort,
-  genderSymbol,
-  restrictedQualifications,
-} from "@/screens/scheduleAdmin/utils/personSheet.utils";
+import { usePersonSheet } from "@/screens/scheduleAdmin/hooks/usePersonSheet";
+import type { PersonSheetInput } from "@/screens/scheduleAdmin/model/personSheet.type";
 
 const GENDER_ICON_SIZE = 16;
 
-export type PersonSheetProps = {
-  name: string;
-  photoUrl: string | null;
-  gender: string | null;
-  birthDate: string | null;
-  qualifications: readonly string[];
-};
+const AVATAR_SIZE = 64;
 
-export function PersonSheet({
-  name,
-  photoUrl,
-  gender,
-  birthDate,
-  qualifications,
-}: PersonSheetProps) {
-  const known = isProfileGender(gender) ? gender : null;
-  const facts = [
-    known === null ? null : spellGender(known),
-    birthDate === null ? null : birthYearShort(birthDate),
-  ].filter((fact) => fact !== null);
-  const earned = restrictedQualifications(qualifications);
+export type PersonSheetProps = PersonSheetInput;
+
+export function PersonSheet(props: PersonSheetProps) {
+  const person = usePersonSheet(props);
 
   return (
     <View className="items-center">
-      <Avatar name={name} photoUrl={photoUrl} size={64} />
+      <Avatar
+        name={person.name}
+        photoUrl={person.photoUrl}
+        size={AVATAR_SIZE}
+      />
 
       <Text size="lg" weight="semibold" className="mt-3">
-        {name}
+        {person.name}
       </Text>
 
-      {facts.length === 0 ? null : (
+      {person.factsLine === null ? null : (
         <View className="mt-1 flex-row items-center gap-1">
-          {known === null ? null : (
+          {person.genderIcon === null ? null : (
             <Icon
-              icon={genderSymbol(known) === "Venus" ? Venus : Mars}
+              icon={person.genderIcon === "Venus" ? Venus : Mars}
               size={GENDER_ICON_SIZE}
               tone="muted"
             />
           )}
           <Text size="sm" tone="muted" numeric>
-            {facts.join(" · ")}
+            {person.factsLine}
           </Text>
         </View>
       )}
 
-      {earned.length === 0 ? null : (
+      {person.qualificationLine === null ? null : (
         <View className="mt-5 w-full">
           <Divider />
           <View className="gap-1 py-3">
             <Text size="sm" tone="subtle">
               자격
             </Text>
-            <Text size="sm">{earned.join(" · ")}</Text>
+            <Text size="sm">{person.qualificationLine}</Text>
           </View>
         </View>
       )}

@@ -1,23 +1,18 @@
 import { View } from "react-native";
-import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import {
-  adjustRowLabel,
-  spellHours,
-  type AdjustSheetRow,
-} from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
+import { useAdjustSheet } from "@/screens/scheduleAdmin/hooks/useAdjustSheet";
+import type { AdjustSheetInput } from "@/screens/scheduleAdmin/model/adjustSheet.type";
+import { AdjustRow } from "@/screens/scheduleAdmin/ui/AdjustRow";
 
 const HELP_LINE = "출근 인증이 없는 날은 급여에서 따로 빠져요";
 
 const EMPTY_LINE = "아직 배정된 사람이 없어요";
 
-export type AdjustSheetProps = {
-  head: string;
-  rows: readonly AdjustSheetRow[];
-  onPickPerson: (profileId: string) => void;
-};
+export type AdjustSheetProps = AdjustSheetInput;
 
-export function AdjustSheet({ head, rows, onPickPerson }: AdjustSheetProps) {
+export function AdjustSheet(props: AdjustSheetProps) {
+  const sheet = useAdjustSheet(props);
+
   return (
     <View>
       <Text size="lg" weight="semibold">
@@ -25,49 +20,23 @@ export function AdjustSheet({ head, rows, onPickPerson }: AdjustSheetProps) {
       </Text>
 
       <Text size="sm" tone="subtle" numeric className="mt-1">
-        {head}
+        {sheet.head}
       </Text>
 
-      {rows.length === 0 ? null : (
+      {sheet.showHelp ? (
         <Text size="xs" tone="muted" className="mt-1">
           {HELP_LINE}
         </Text>
-      )}
+      ) : null}
 
-      {rows.length === 0 ? (
+      {sheet.isEmpty ? (
         <Text size="sm" tone="subtle" className="py-4">
           {EMPTY_LINE}
         </Text>
       ) : (
         <View className="mt-2">
-          {rows.map((row, at) => (
-            <View key={row.profileId}>
-              <ListRow
-                title={row.name}
-                accessibilityLabel={adjustRowLabel(row)}
-                className={row.rehearsalLine === null ? undefined : "pb-1"}
-                divider={at > 0}
-                chevron
-                right={
-                  <View className="flex-row items-baseline gap-1">
-                    {row.adjustmentKind === null ? null : (
-                      <Text size="sm" tone="subtle">
-                        {row.adjustmentKind}
-                      </Text>
-                    )}
-                    <Text size="sm" weight="medium" numeric>
-                      {spellHours(row.finalMinutes)}
-                    </Text>
-                  </View>
-                }
-                onPress={() => onPickPerson(row.profileId)}
-              />
-              {row.rehearsalLine === null ? null : (
-                <Text size="xs" tone="muted" numeric className="pb-3">
-                  {row.rehearsalLine}
-                </Text>
-              )}
-            </View>
+          {sheet.rows.map((row) => (
+            <AdjustRow key={row.profileId} row={row} />
           ))}
         </View>
       )}

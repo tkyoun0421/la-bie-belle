@@ -196,6 +196,21 @@ export type DayDetailDiscard = {
   close: () => void;
 };
 
+export type DayDetailSheetKind =
+  | "picker"
+  | "person"
+  | "qualification"
+  | "slot"
+  | "adjust"
+  | "choice"
+  | "confirmChange"
+  | "discard";
+
+export type DayDetailOpenSheet = {
+  kind: DayDetailSheetKind;
+  dismiss: () => void;
+};
+
 export type DayDetailController = {
   title: string;
   fillLabel: string;
@@ -218,6 +233,7 @@ export type DayDetailController = {
   choice: DayDetailChoice | null;
   confirmChange: DayDetailConfirmChange | null;
   discard: DayDetailDiscard | null;
+  sheets: readonly DayDetailOpenSheet[];
   toast: string | null;
   dismissToast: () => void;
 };

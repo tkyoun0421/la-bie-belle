@@ -1,6 +1,13 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { ORIGIN_APPROVALS } from "@/shared/consts/navigation.const";
+import {
+  APPLICATIONS_PATH,
+  APPROVALS_PATH,
+  NOTIFICATIONS_PATH,
+  ORIGIN_APPROVALS,
+  ORIGIN_NOTIFICATIONS,
+} from "@/shared/consts/navigation.const";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -171,6 +178,9 @@ export type ScheduleAdminScreenController = {
   dismissToast: () => void;
   day: DayDetailInput | null;
   leaveDay: () => void;
+  goBack: () => void;
+  backFromDay: () => void;
+  openApplications: () => void;
 };
 
 type SheetState =
@@ -202,6 +212,7 @@ export function useScheduleAdminScreen({
   date: dateParam,
   from,
 }: ScheduleAdminScreenParams): ScheduleAdminScreenController {
+  const router = useRouter();
   const clockOffset = serverClockStore((at) => at.offset);
   const nowMs = nowWithOffset(Date.now(), clockOffset);
   const now = new Date(nowMs).toISOString();
@@ -262,6 +273,20 @@ export function useScheduleAdminScreen({
     setSheetState(null);
     setOpenDate(null);
   }, []);
+
+  const backFromDay = useCallback(() => {
+    if (from === ORIGIN_APPROVALS) {
+      router.replace(APPROVALS_PATH);
+      return;
+    }
+
+    if (from === ORIGIN_NOTIFICATIONS) {
+      router.replace(NOTIFICATIONS_PATH);
+      return;
+    }
+
+    leaveDay();
+  }, [from, router, leaveDay]);
 
   useEffect(() => {
     if (from === ORIGIN_APPROVALS) {
@@ -405,6 +430,33 @@ export function useScheduleAdminScreen({
           : deadlineLine({ applicationDeadline: deadline, now });
 
   const sheet = ((): ScheduleAdminSheet | null => {
+    if (day !== null) {
+      if (sheetState?.kind === "hours") {
+        return {
+          kind: "hours",
+          starts: sheetState.starts,
+          ends: sheetState.ends,
+          canSave: isDayHoursSaveEnabled({
+            starts: sheetState.starts,
+            ends: sheetState.ends,
+          }),
+          saving: setHours.isPending,
+          failed: setHours.isError,
+        };
+      }
+
+      if (sheetState?.kind === "close") {
+        return {
+          kind: "close",
+          workDate: day.workDate,
+          assignmentCount,
+          closing: close.isPending,
+        };
+      }
+
+      return null;
+    }
+
     if (sheetState?.kind === "create") {
       return {
         kind: "create",
@@ -435,33 +487,6 @@ export function useScheduleAdminScreen({
         confirming: confirm.isPending,
         done: confirm.isSuccess,
         failed: confirm.isError,
-      };
-    }
-
-    if (day === null) {
-      return null;
-    }
-
-    if (sheetState?.kind === "hours") {
-      return {
-        kind: "hours",
-        starts: sheetState.starts,
-        ends: sheetState.ends,
-        canSave: isDayHoursSaveEnabled({
-          starts: sheetState.starts,
-          ends: sheetState.ends,
-        }),
-        saving: setHours.isPending,
-        failed: setHours.isError,
-      };
-    }
-
-    if (sheetState?.kind === "close") {
-      return {
-        kind: "close",
-        workDate: day.workDate,
-        assignmentCount,
-        closing: close.isPending,
       };
     }
 
@@ -665,5 +690,8 @@ export function useScheduleAdminScreen({
             onReloadDay: reloadDays,
           },
     leaveDay,
+    goBack: () => router.back(),
+    backFromDay,
+    openApplications: () => router.push(`${APPLICATIONS_PATH}?month=${month}`),
   };
 }

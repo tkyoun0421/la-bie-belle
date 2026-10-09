@@ -1,106 +1,28 @@
-import { Mars, Venus } from "lucide-react-native";
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
-import { Avatar } from "@/shared/ui/Avatar";
+import { ScrollView, useWindowDimensions } from "react-native";
 import { Button } from "@/shared/ui/Button";
-import { Checkbox } from "@/shared/ui/Checkbox";
-import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
-import type { PickerEntry } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import { genderSymbol } from "@/screens/scheduleAdmin/utils/personSheet.utils";
-
-const GENDER_ICON_SIZE = 16;
+import { usePersonPickerSheet } from "@/screens/scheduleAdmin/hooks/usePersonPickerSheet";
+import type { PersonPickerSheetInput } from "@/screens/scheduleAdmin/model/personPickerSheet.type";
+import { PersonPickerLine } from "@/screens/scheduleAdmin/ui/PersonPickerLine";
 
 const SHEET_HEIGHT_RATIO = 0.7;
 
-export type PersonPickerSheetProps = {
+export type PersonPickerSheetProps = PersonPickerSheetInput & {
   title: string;
-  entries: readonly PickerEntry[];
-  expanded: boolean;
-  picked: readonly string[];
   sending: boolean;
   onExpand: () => void;
-  onPick: (entry: PickerEntry) => void;
-  onInspect: (entry: PickerEntry) => void;
-  onToggle: (profileId: string) => void;
   onSend: () => void;
 };
 
-function PersonLine({
-  entry,
-  checked,
-  onPick,
-  onInspect,
-  onToggle,
-}: {
-  entry: PickerEntry;
-  checked: boolean;
-  onPick: (entry: PickerEntry) => void;
-  onInspect: (entry: PickerEntry) => void;
-  onToggle: (profileId: string) => void;
-}) {
-  const dimmed = entry.category === "assigned";
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      className="flex-row items-center gap-3 py-3"
-      onPress={() => onPick(entry)}
-      onLongPress={() => onInspect(entry)}
-    >
-      <Avatar name={entry.displayName} photoUrl={entry.photoUrl} size={40} />
-
-      <View className="flex-row items-center">
-        <Text
-          size="base"
-          weight="medium"
-          tone={dimmed ? "disabled" : "neutral"}
-        >
-          {entry.displayName}
-        </Text>
-        {entry.gender === "female" || entry.gender === "male" ? (
-          <Icon
-            icon={genderSymbol(entry.gender) === "Venus" ? Venus : Mars}
-            size={GENDER_ICON_SIZE}
-            tone={dimmed ? "disabled" : "subtle"}
-            className="ml-1"
-          />
-        ) : null}
-      </View>
-
-      <View className="ml-auto flex-row items-center gap-3">
-        {entry.message === null ? null : (
-          <Text size="xs" tone="subtle">
-            {entry.message}
-          </Text>
-        )}
-        {entry.checkbox ? (
-          <Checkbox
-            label={entry.displayName}
-            labelHidden
-            checked={checked}
-            onCheckedChange={() => onToggle(entry.profileId)}
-          />
-        ) : null}
-      </View>
-    </Pressable>
-  );
-}
-
 export function PersonPickerSheet({
   title,
-  entries,
-  expanded,
-  picked,
   sending,
   onExpand,
-  onPick,
-  onInspect,
-  onToggle,
   onSend,
+  ...input
 }: PersonPickerSheetProps) {
   const { height } = useWindowDimensions();
-  const assignable = entries.filter((entry) => entry.category === "assignable");
-  const rest = entries.filter((entry) => entry.category !== "assignable");
+  const picker = usePersonPickerSheet(input);
 
   return (
     <>
@@ -109,33 +31,19 @@ export function PersonPickerSheet({
       </Text>
 
       <ScrollView style={{ maxHeight: height * SHEET_HEIGHT_RATIO }}>
-        {assignable.length === 0 ? (
+        {picker.assignable.length === 0 ? (
           <Text size="sm" tone="muted" className="py-3">
             지금 바로 넣을 수 있는 사람이 없어요
           </Text>
         ) : (
-          assignable.map((entry) => (
-            <PersonLine
-              key={entry.profileId}
-              entry={entry}
-              checked={picked.includes(entry.profileId)}
-              onPick={onPick}
-              onInspect={onInspect}
-              onToggle={onToggle}
-            />
+          picker.assignable.map((line) => (
+            <PersonPickerLine key={line.profileId} line={line} />
           ))
         )}
 
-        {expanded ? (
-          rest.map((entry) => (
-            <PersonLine
-              key={entry.profileId}
-              entry={entry}
-              checked={picked.includes(entry.profileId)}
-              onPick={onPick}
-              onInspect={onInspect}
-              onToggle={onToggle}
-            />
+        {picker.showRest ? (
+          picker.rest.map((line) => (
+            <PersonPickerLine key={line.profileId} line={line} />
           ))
         ) : (
           <Button variant="ghost" onPress={onExpand}>
@@ -144,9 +52,9 @@ export function PersonPickerSheet({
         )}
       </ScrollView>
 
-      {picked.length === 0 ? null : (
+      {picker.sendLabel === null ? null : (
         <Button className="mt-3" loading={sending} onPress={onSend}>
-          {`${picked.length}명에게 근무 요청 보내기`}
+          {picker.sendLabel}
         </Button>
       )}
     </>
