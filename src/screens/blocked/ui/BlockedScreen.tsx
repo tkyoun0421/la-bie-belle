@@ -44,7 +44,7 @@ export function BlockedScreen() {
           variant="ghost"
           className="mt-4"
           loading={screen.isPending}
-          onPress={() => screen.signOut(screen.goLogin)}
+          onPress={screen.leave}
         >
           {BLOCKED_COPY.signOut}
         </Button>

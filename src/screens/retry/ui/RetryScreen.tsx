@@ -52,7 +52,7 @@ export function RetryScreen() {
           variant="ghost"
           className="mt-4"
           loading={screen.signingOut}
-          onPress={() => screen.signOut(screen.goLogin)}
+          onPress={screen.leave}
         >
           {RETRY_COPY.signOut}
         </Button>

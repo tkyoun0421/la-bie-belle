@@ -14,9 +14,8 @@ export type RetryScreenController = {
   photoUrl: string | null;
   retry: () => void;
   retrying: boolean;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   signingOut: boolean;
-  goLogin: () => void;
 };
 
 export function useRetryScreen(): RetryScreenController {
@@ -36,14 +35,15 @@ export function useRetryScreen(): RetryScreenController {
 
   const goLogin = useCallback(() => router.replace(LOGIN_PATH), [router]);
 
+  const leave = useCallback(() => signOut(goLogin), [signOut, goLogin]);
+
   return {
     me,
     email: me?.email ?? "",
     photoUrl: me?.googlePhotoUrl ?? null,
     retry,
     retrying: isPending,
-    signOut,
+    leave,
     signingOut,
-    goLogin,
   };
 }

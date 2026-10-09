@@ -10,9 +10,8 @@ export type LeftScreenController = {
   me: SessionUser | null | undefined;
   email: string;
   photoUrl: string | null;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   isPending: boolean;
-  goLogin: () => void;
   openPayroll: () => void;
 };
 
@@ -22,15 +21,16 @@ export function useLeftScreen(): LeftScreenController {
   const { signOut, isPending } = useSignOutMutation(supabase);
 
   const goLogin = useCallback(() => router.replace(LOGIN_PATH), [router]);
+
+  const leave = useCallback(() => signOut(goLogin), [signOut, goLogin]);
   const openPayroll = useCallback(() => router.push(PAYROLL_PATH), [router]);
 
   return {
     me,
     email: me?.email ?? "",
     photoUrl: me?.googlePhotoUrl ?? null,
-    signOut,
+    leave,
     isPending,
-    goLogin,
     openPayroll,
   };
 }

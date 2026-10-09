@@ -173,7 +173,7 @@ describe("useRetryScreen — 갈 데와 보일 값을 controller가 정한다", 
 
     const { result } = renderHook(() => useRetryScreen(), { wrapper });
 
-    act(() => result.current.signOut(result.current.goLogin));
+    act(() => result.current.leave());
 
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
   });

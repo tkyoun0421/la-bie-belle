@@ -10,9 +10,8 @@ export type BlockedScreenController = {
   me: SessionUser | null | undefined;
   email: string;
   photoUrl: string | null;
-  signOut: (onDone: () => void) => void;
+  leave: () => void;
   isPending: boolean;
-  goLogin: () => void;
 };
 
 export function useBlockedScreen(): BlockedScreenController {
@@ -22,12 +21,13 @@ export function useBlockedScreen(): BlockedScreenController {
 
   const goLogin = useCallback(() => router.replace(LOGIN_PATH), [router]);
 
+  const leave = useCallback(() => signOut(goLogin), [signOut, goLogin]);
+
   return {
     me,
     email: me?.email ?? "",
     photoUrl: me?.googlePhotoUrl ?? null,
-    signOut,
+    leave,
     isPending,
-    goLogin,
   };
 }

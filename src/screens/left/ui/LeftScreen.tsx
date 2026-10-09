@@ -51,7 +51,7 @@ export function LeftScreen() {
           variant="ghost"
           className="mt-4"
           loading={screen.isPending}
-          onPress={() => screen.signOut(screen.goLogin)}
+          onPress={screen.leave}
         >
           {LEFT_COPY.signOut}
         </Button>

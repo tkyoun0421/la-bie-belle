@@ -107,24 +107,11 @@ describe("useLeftScreen — service 둘이 내준 것이 그대로 나온다", (
 
     expect(result.current.isPending).toBe(false);
 
-    act(() => result.current.signOut(() => {}));
+    act(() => result.current.leave());
     await waitFor(() => expect(result.current.isPending).toBe(true));
 
     act(() => release());
     await waitFor(() => expect(result.current.isPending).toBe(false));
-  });
-});
-
-describe("useLeftScreen — 보낼 데는 안 든다", () => {
-  it("로그아웃이 끝나면 받은 손을 그대로 부른다", async () => {
-    const onDone = jest.fn();
-    const { wrapper } = createWrapper();
-
-    const { result } = renderHook(() => useLeftScreen(), { wrapper });
-
-    act(() => result.current.signOut(onDone));
-
-    await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
   });
 });
 
@@ -144,7 +131,7 @@ describe("useLeftScreen — 갈 데와 보일 값을 controller가 정한다", (
 
     const { result } = renderHook(() => useLeftScreen(), { wrapper });
 
-    act(() => result.current.signOut(result.current.goLogin));
+    act(() => result.current.leave());
 
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
   });
