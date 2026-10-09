@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { MEMBERS_PENDING_PATH } from "@/shared/consts/navigation.const";
+import { ADMIN_MEMBERS_PENDING_PATH } from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -108,7 +108,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
       return;
     }
 
-    router.replace(MEMBERS_PENDING_PATH);
+    router.replace(ADMIN_MEMBERS_PENDING_PATH);
   }, [router]);
 
   return {

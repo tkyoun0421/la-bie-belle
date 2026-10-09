@@ -45,7 +45,7 @@ const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { BLOCKED_COPY, PENDING_COPY } =
   await import("@/screens/membersPending/consts/membersPending.const");
-const { MEMBERS_PENDING_PATH } =
+const { ADMIN_MEMBERS_PENDING_PATH } =
   await import("@/shared/consts/navigation.const");
 const { useMembersBlockedScreen } =
   await import("@/screens/membersPending/hooks/useMembersBlockedScreen");
@@ -237,7 +237,7 @@ describe("useMembersBlockedScreen — 갈 데를 controller가 정한다", () =>
 
     act(() => result.current.goBack());
 
-    expect(replaceMock).toHaveBeenCalledWith(MEMBERS_PENDING_PATH);
+    expect(replaceMock).toHaveBeenCalledWith(ADMIN_MEMBERS_PENDING_PATH);
     expect(backMock).not.toHaveBeenCalled();
   });
 });

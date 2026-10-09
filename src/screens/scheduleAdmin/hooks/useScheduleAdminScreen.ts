@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
-  APPLICATIONS_PATH,
-  APPROVALS_PATH,
+  ADMIN_APPLICATIONS_PATH,
+  ADMIN_APPROVALS_PATH,
   NOTIFICATIONS_PATH,
   ORIGIN_APPROVALS,
   ORIGIN_NOTIFICATIONS,
@@ -276,7 +276,7 @@ export function useScheduleAdminScreen({
 
   const backFromDay = useCallback(() => {
     if (from === ORIGIN_APPROVALS) {
-      router.replace(APPROVALS_PATH);
+      router.replace(ADMIN_APPROVALS_PATH);
       return;
     }
 
@@ -692,6 +692,7 @@ export function useScheduleAdminScreen({
     leaveDay,
     goBack: () => router.back(),
     backFromDay,
-    openApplications: () => router.push(`${APPLICATIONS_PATH}?month=${month}`),
+    openApplications: () =>
+      router.push(`${ADMIN_APPLICATIONS_PATH}?month=${month}`),
   };
 }

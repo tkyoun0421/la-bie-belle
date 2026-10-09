@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
   ADMIN_HOME_PATH,
-  MEMBERS_BLOCKED_PATH,
+  ADMIN_MEMBERS_BLOCKED_PATH,
 } from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
@@ -205,7 +205,7 @@ export function useMembersPendingScreen(): MembersPendingController {
 
   const openBlocked = useCallback(() => {
     setMenuOpen(false);
-    router.push(MEMBERS_BLOCKED_PATH);
+    router.push(ADMIN_MEMBERS_BLOCKED_PATH);
   }, [router]);
 
   return {
