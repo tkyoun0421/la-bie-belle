@@ -213,22 +213,33 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
     const { result } = await mounted();
 
     expect(result.current.listState).toBe("empty");
-    expect(result.current.amountLabel).toBeTruthy();
   });
 
-  it("근무한 날이 있으면 history 줄이 선다", async () => {
+  it("근무한 날이 있으면 history 자리가 선다", async () => {
     getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
 
     const { result } = await mounted();
 
     await waitFor(() => expect(result.current.listState).toBe("history"));
-
-    expect(result.current.historyRows).toHaveLength(1);
-    expect(result.current.historyRows[0].date).toBe("2026-10-02");
-    expect(result.current.accrual.work).toBeTruthy();
   });
 
-  it("연 단위에서는 달 줄이 서고 줄을 누르면 그 달로 내려간다", async () => {
+  it("조각에 넘기는 구간이 보고 있는 기간과 같다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.span).toEqual({
+      from: "2026-10-01",
+      to: "2026-10-31",
+    });
+
+    act(() => result.current.chooseUnit("year"));
+
+    expect(result.current.span).toEqual({
+      from: "2026-01-01",
+      to: "2026-12-31",
+    });
+  });
+
+  it("연 단위에서는 months 자리가 서고 달을 받으면 그 달로 내려간다", async () => {
     getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
 
     const { result } = await mounted();
@@ -237,16 +248,7 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
     await waitFor(() => expect(result.current.listState).toBe("months"));
 
-    const monthRow = result.current.monthRows.find(
-      (row) => row.type === "month",
-    );
-    expect(monthRow).toBeDefined();
-
-    act(() => {
-      if (monthRow?.type === "month") {
-        result.current.openMonth(monthRow.month);
-      }
-    });
+    act(() => result.current.openMonth("2026-10"));
 
     expect(result.current.unit).toBe("month");
     expect(result.current.periodLabel).toContain("10월");

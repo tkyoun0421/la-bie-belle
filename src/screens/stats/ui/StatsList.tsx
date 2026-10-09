@@ -1,9 +1,9 @@
+import { StatsPayroll } from "@/features/payrollCompute/ui/StatsPayroll";
 import type { StatsScreenController } from "@/screens/stats/hooks/useStatsScreen";
 import { StatsAttendance } from "@/screens/stats/ui/StatsAttendance";
 import { StatsEmpty } from "@/screens/stats/ui/StatsEmpty";
 import { StatsFailed } from "@/screens/stats/ui/StatsFailed";
 import { StatsLoading } from "@/screens/stats/ui/StatsLoading";
-import { StatsPayroll } from "@/screens/stats/ui/StatsPayroll";
 import { StatsPositions } from "@/screens/stats/ui/StatsPositions";
 
 export type StatsListProps = {
@@ -44,9 +44,7 @@ export function StatsList({ screen }: StatsListProps) {
 
   return (
     <StatsPayroll
-      amountLabel={screen.amountLabel}
-      estimateNote={screen.estimateNote}
-      subtitle={screen.payrollSubtitle}
+      span={screen.payrollSpan}
       onOpenHistory={screen.openPayrollHistory}
     />
   );

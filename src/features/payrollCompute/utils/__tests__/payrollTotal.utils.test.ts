@@ -1,4 +1,5 @@
 import {
+  amountTotal,
   monthTotal,
   weekTotals,
 } from "@/features/payrollCompute/utils/payrollTotal.utils";
@@ -72,5 +73,29 @@ describe("monthTotal — 월 합계는 그달 날짜별 금액의 합이다", ()
       .reduce((sum, day) => sum + day.amount, 0);
 
     expect(monthTotal(days, "2026-09")).toBe(expected);
+  });
+});
+
+describe("amountTotal — 받은 날의 금액을 그대로 더한다", () => {
+  it("날이 여럿이면 금액의 합이다", () => {
+    expect(
+      amountTotal([
+        payrollDay("2026-10-02", 50000),
+        payrollDay("2026-10-09", 60000),
+      ]),
+    ).toBe(110000);
+  });
+
+  it("날이 없으면 0이다", () => {
+    expect(amountTotal([])).toBe(0);
+  });
+
+  it("달을 가리지 않고 받은 것만 더한다", () => {
+    expect(
+      amountTotal([
+        payrollDay("2026-09-30", 10000),
+        payrollDay("2026-10-01", 20000),
+      ]),
+    ).toBe(30000);
   });
 });

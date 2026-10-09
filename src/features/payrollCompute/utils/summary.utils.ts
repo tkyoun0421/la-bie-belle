@@ -2,7 +2,7 @@ import { spellWon } from "@/shared/utils/spellNumber";
 import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { PayrollDayKind } from "@/entities/payroll/model/payroll.type";
-import { NO_AMOUNT } from "@/screens/payroll/consts/payroll.const";
+import { NO_AMOUNT } from "@/features/payrollCompute/consts/payrollCompute.const";
 
 const MINUTES_PER_HOUR = 60;
 

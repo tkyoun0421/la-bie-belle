@@ -1,4 +1,4 @@
-import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
+import { myPayrollSubtitle } from "@/features/payrollCompute/utils/payrollSummary.utils";
 
 function day(
   minutes: number,

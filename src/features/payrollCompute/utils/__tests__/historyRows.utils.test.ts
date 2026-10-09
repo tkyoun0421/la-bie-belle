@@ -1,4 +1,4 @@
-import { payrollHistoryRows } from "@/screens/payroll/utils/historyRows.utils";
+import { payrollHistoryRows } from "@/features/payrollCompute/utils/historyRows.utils";
 
 function normalDay(overrides: Record<string, unknown> = {}) {
   return {

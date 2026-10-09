@@ -1,5 +1,5 @@
 import type { PayrollDayKind } from "@/entities/payroll/model/payroll.type";
-import { ABSENT } from "@/screens/stats/consts/stats.const";
+import { ABSENT } from "@/features/payrollCompute/consts/payrollCompute.const";
 
 const MINUTES_PER_HOUR = 60;
 

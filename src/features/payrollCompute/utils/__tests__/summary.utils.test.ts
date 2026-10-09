@@ -1,7 +1,7 @@
 import {
   summarizeAccrual,
   summarizeAmount,
-} from "@/screens/payroll/utils/summary.utils";
+} from "@/features/payrollCompute/utils/summary.utils";
 
 const NO_ATTENDANCE = null;
 

@@ -1,8 +1,10 @@
+import { isInSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import {
   isInPeriod,
   periodLabel,
   periodMonthKeys,
   periodOf,
+  periodSpan,
   periodStartDate,
   periodUnitOf,
   shiftPeriod,
@@ -233,5 +235,68 @@ describe("periodUnitOf — 모르는 값은 월이다(PAY-025)", () => {
   it("빈 문자열이나 오타는 'month'로 읽는다", () => {
     expect(periodUnitOf("")).toBe("month");
     expect(periodUnitOf("weekly")).toBe("month");
+  });
+});
+
+describe("periodSpan — 주는 월요일부터 일요일까지다", () => {
+  it("2026-10-05(월)의 구간은 10-05부터 10-11까지다", () => {
+    expect(periodSpan({ unit: "week", weekStart: "2026-10-05" })).toEqual({
+      from: "2026-10-05",
+      to: "2026-10-11",
+    });
+  });
+
+  it("달을 걸친 주도 이어진 일곱 날이다", () => {
+    expect(periodSpan({ unit: "week", weekStart: "2026-10-26" })).toEqual({
+      from: "2026-10-26",
+      to: "2026-11-01",
+    });
+  });
+});
+
+describe("periodSpan — 월과 연은 그 기간의 첫날과 끝날이다", () => {
+  it("2026-10은 10-01부터 10-31까지다", () => {
+    expect(periodSpan({ unit: "month", month: "2026-10" })).toEqual({
+      from: "2026-10-01",
+      to: "2026-10-31",
+    });
+  });
+
+  it("2026년은 01-01부터 12-31까지다", () => {
+    expect(periodSpan({ unit: "year", year: "2026" })).toEqual({
+      from: "2026-01-01",
+      to: "2026-12-31",
+    });
+  });
+});
+
+describe("periodSpan — isInPeriod가 참인 날과 같은 날을 담는다", () => {
+  it("달을 걸친 주에서 두 판정이 어긋나지 않는다", () => {
+    const period = { unit: "week", weekStart: "2026-10-26" } as const;
+    const span = periodSpan(period);
+
+    for (const date of [
+      "2026-10-25",
+      "2026-10-26",
+      "2026-10-31",
+      "2026-11-01",
+      "2026-11-02",
+    ]) {
+      expect(isInSpan(span, date)).toBe(isInPeriod(period, date));
+    }
+  });
+
+  it("연 경계에서도 두 판정이 어긋나지 않는다", () => {
+    const period = { unit: "year", year: "2026" } as const;
+    const span = periodSpan(period);
+
+    for (const date of [
+      "2025-12-31",
+      "2026-01-01",
+      "2026-12-31",
+      "2027-01-01",
+    ]) {
+      expect(isInSpan(span, date)).toBe(isInPeriod(period, date));
+    }
   });
 });

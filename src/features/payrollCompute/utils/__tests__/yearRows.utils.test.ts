@@ -1,7 +1,7 @@
 import {
   monthRowsOfDays,
   yearRows,
-} from "@/screens/payroll/utils/yearRows.utils";
+} from "@/features/payrollCompute/utils/yearRows.utils";
 
 describe("yearRows — 최근이 위다(12월이 맨 위, 1월이 맨 아래)", () => {
   it("입력 순서와 무관하게 달을 내림차순으로 접는다", () => {

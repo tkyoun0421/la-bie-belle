@@ -212,7 +212,7 @@ describe("useStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => {
     expect(result.current.trendValueLabel).toBe(result.current.totalLabel);
   });
 
-  it("급여 탭은 금액과 예상치 안내와 보조 줄을 낸다", async () => {
+  it("급여 탭은 급여 자리를 세우고 보던 달을 구간으로 넘긴다", async () => {
     getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
 
     const { result } = await mounted();
@@ -221,9 +221,10 @@ describe("useStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => {
 
     await waitFor(() => expect(result.current.listState).toBe("payroll"));
 
-    expect(result.current.amountLabel).toBeTruthy();
-    expect(result.current.estimateNote).toBeTruthy();
-    expect(result.current.payrollSubtitle).toBeTruthy();
+    expect(result.current.payrollSpan).toEqual({
+      from: "2026-10-01",
+      to: "2026-10-31",
+    });
   });
 
   it("탭을 옮겨도 보던 달이 그대로다", async () => {

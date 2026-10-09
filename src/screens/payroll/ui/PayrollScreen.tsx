@@ -4,6 +4,7 @@ import { BellIcon } from "@/shared/ui/BellIcon";
 import { PeriodStepper } from "@/shared/ui/PeriodStepper";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
+import { PayrollSummary } from "@/features/payrollCompute/ui/PayrollSummary";
 import {
   PAYROLL_COPY,
   SEGMENT_TEST_ID,
@@ -11,7 +12,6 @@ import {
 } from "@/screens/payroll/consts/payroll.const";
 import { usePayrollScreen } from "@/screens/payroll/hooks/usePayrollScreen";
 import { PayrollList } from "@/screens/payroll/ui/PayrollList";
-import { PayrollSummary } from "@/screens/payroll/ui/PayrollSummary";
 
 export function PayrollScreen() {
   const screen = usePayrollScreen();
@@ -50,7 +50,7 @@ export function PayrollScreen() {
             onNext={screen.goNext}
           />
 
-          <PayrollSummary screen={screen} />
+          <PayrollSummary span={screen.span} />
 
           <View className="mt-8">
             <PayrollList screen={screen} />

@@ -11,7 +11,6 @@ import {
   canGoToPreviousMonth,
 } from "@/shared/utils/monthBoundary";
 import { monthIn } from "@/shared/utils/monthIn";
-import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
@@ -20,6 +19,10 @@ import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehear
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import {
+  monthSpan,
+  type DateSpan,
+} from "@/features/payrollCompute/model/dateSpan.policy";
 import type { MyWorkTotals } from "@/features/stats/model/stats.type";
 import {
   hoursLabel,
@@ -51,7 +54,6 @@ import {
 } from "@/screens/stats/utils/chartValues.utils";
 import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
 import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
-import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 export type StatsTab = (typeof STATS_TABS)[number];
 
@@ -88,9 +90,7 @@ export type StatsScreenController = {
   attendanceRows: StatsRow[];
   positionRows: StatsRow[];
   totalLabel: string;
-  amountLabel: string;
-  estimateNote: string;
-  payrollSubtitle: string;
+  payrollSpan: DateSpan;
   chooseTab: (value: string) => void;
   goPrev: () => void;
   goNext: () => void;
@@ -308,9 +308,7 @@ export function useStatsScreen(): StatsScreenController {
       weight: row.minutes,
     })),
     totalLabel,
-    amountLabel: spellWon(payrollTotal),
-    estimateNote: STATS_COPY.estimateNote,
-    payrollSubtitle: myPayrollSubtitle(payrollDays),
+    payrollSpan: monthSpan(month),
     chooseTab: (value) => setTab(tabOf(value)),
     goPrev: () => setMonth(shiftMonth(month, -1)),
     goNext: () => setMonth(shiftMonth(month, 1)),
