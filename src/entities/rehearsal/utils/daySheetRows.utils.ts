@@ -1,13 +1,13 @@
+import {
+  CLOCK_LENGTH,
+  MIN_ROWS_FOR_TOTAL,
+} from "@/entities/rehearsal/consts/rehearsal.const";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import {
   dayTotal,
   rehearsalHours,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import {
-  CLOCK_LENGTH,
-  MIN_ROWS_FOR_TOTAL,
-} from "@/screens/rehearsal/consts/rehearsal.const";
-import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
+import { spellMinutes } from "@/entities/rehearsal/utils/spellTotal.utils";
 
 export type DaySheetRow = Pick<
   Rehearsal,

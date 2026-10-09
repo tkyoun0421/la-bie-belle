@@ -1,7 +1,3 @@
-export const CLOCK_LENGTH = 5;
-
-export const MIN_ROWS_FOR_TOTAL = 2;
-
 export const MONTH_CHEVRON_SIZE = 14;
 
 export const REHEARSAL_COPY = {

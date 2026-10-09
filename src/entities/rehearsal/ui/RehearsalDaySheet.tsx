@@ -1,29 +1,45 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import type { DaySheetContent } from "@/screens/rehearsal/utils/daySheetRows.utils";
+import { DAY_SHEET_COPY } from "@/entities/rehearsal/consts/rehearsal.const";
+import {
+  useRehearsalDaySheet,
+  type RehearsalDaySheetInput,
+} from "@/entities/rehearsal/hooks/useRehearsalDaySheet";
 
-export type RehearsalDaySheetProps = {
-  title: string;
-  content: DaySheetContent;
-  canAdd: boolean;
+export type RehearsalDaySheetProps = RehearsalDaySheetInput & {
+  loading?: ReactNode;
+  failed?: ReactNode;
   onPressRow?: (id: string) => void;
   onAdd: () => void;
 };
 
 export function RehearsalDaySheet({
-  title,
-  content,
-  canAdd,
+  loading,
+  failed,
   onPressRow,
   onAdd,
+  ...input
 }: RehearsalDaySheetProps) {
+  const fragment = useRehearsalDaySheet(input);
+
+  if (fragment.state === "pending") {
+    return loading ?? null;
+  }
+
+  if (fragment.state === "failed") {
+    return failed ?? null;
+  }
+
+  const { content } = fragment;
+
   return (
     <View>
       <Text size="lg" weight="semibold">
-        {title}
+        {fragment.title}
       </Text>
 
       {content.kind === "empty" ? (
@@ -56,9 +72,9 @@ export function RehearsalDaySheet({
         </View>
       )}
 
-      {canAdd ? (
+      {fragment.canAdd ? (
         <Button variant="primary" className="mt-4" onPress={onAdd}>
-          리허설 넣기
+          {DAY_SHEET_COPY.add}
         </Button>
       ) : null}
     </View>

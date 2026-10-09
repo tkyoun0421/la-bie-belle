@@ -1,4 +1,4 @@
-import { daySheetRows } from "@/screens/rehearsal/utils/daySheetRows.utils";
+import { daySheetRows } from "@/entities/rehearsal/utils/daySheetRows.utils";
 
 const TIME_ROW = {
   id: "row-1",

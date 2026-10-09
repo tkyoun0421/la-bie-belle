@@ -1,4 +1,4 @@
-import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
+import { spellTotal } from "@/entities/rehearsal/utils/spellTotal.utils";
 
 describe("spellTotal — 0건이면 자리가 빈다", () => {
   it("count가 0이면 빈 문자열이다", () => {

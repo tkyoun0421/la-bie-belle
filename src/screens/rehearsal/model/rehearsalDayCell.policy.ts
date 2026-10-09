@@ -1,4 +1,4 @@
-import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
+import { spellMinutes } from "@/entities/rehearsal/utils/spellTotal.utils";
 
 export type RehearsalDayCellState = "empty" | "has";
 

@@ -5,26 +5,23 @@ import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-
-import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
-import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
+import type {
+  Rehearsal,
+  RehearsalKind,
+} from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import { spellTotal } from "@/entities/rehearsal/utils/spellTotal.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
-import {
-  daySheetRows,
-  type DaySheetContent,
-} from "@/screens/rehearsal/utils/daySheetRows.utils";
-import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 type Row = Rehearsal;
 
@@ -40,8 +37,7 @@ export type RehearsalScreenController = {
   failed: boolean;
   openDate: string | null;
   openDateLabel: string;
-  dayContent: DaySheetContent;
-  canAdd: boolean;
+  openKind: RehearsalKind;
   form: RehearsalFormTarget | null;
   removing: boolean;
   closeTop: (() => boolean) | null;
@@ -215,8 +211,7 @@ export function useRehearsalScreen(
     failed: (isAdmin ? all.error : mine.error) !== null,
     openDate,
     openDateLabel: openDate === null ? "" : spellDate(openDate),
-    dayContent: daySheetRows(openRows, isAdmin),
-    canAdd: !isAdmin && canAddOn(openKind, openRows),
+    openKind,
     form,
     removing,
     closeTop,
