@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { ChevronDown } from "lucide-react-native";
 import { Pressable, ScrollView, View } from "react-native";
 import { useHardwareBack } from "@/shared/hooks/useHardwareBack";
@@ -8,9 +7,7 @@ import { Card } from "@/shared/ui/Card";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import { MonthCalendar } from "@/shared/ui/MonthCalendar";
-import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
-import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import {
   MONTH_CHEVRON_SIZE,
@@ -19,25 +16,20 @@ import {
   REMOVE_CONFIRM_TEST_ID,
 } from "@/screens/rehearsal/consts/rehearsal.const";
 import { useRehearsalScreen } from "@/screens/rehearsal/hooks/useRehearsalScreen";
-import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
-import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
+import { RehearsalSheets } from "@/screens/rehearsal/ui/RehearsalSheets";
 
 export type RehearsalScreenProps = {
   month?: string;
 };
 
 export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
-  const router = useRouter();
   const screen = useRehearsalScreen(monthParam);
 
   useHardwareBack(screen.closeTop);
 
   return (
     <Screen>
-      <AppBar
-        title={REHEARSAL_COPY.appBarTitle}
-        onBack={() => router.replace("/me")}
-      />
+      <AppBar title={REHEARSAL_COPY.appBarTitle} onBack={screen.goBack} />
 
       <ScrollView>
         <View className="gap-3 px-5 pb-5">
@@ -67,7 +59,7 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
               month={screen.month}
               stateOf={screen.cellStateOf}
               isToday={screen.isToday}
-              canPress={() => true}
+              canPress={screen.canPressDay}
               onPressDay={screen.openDay}
               noteOf={screen.noteOf}
             />
@@ -90,45 +82,7 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
         </View>
       </ScrollView>
 
-      {screen.openDate === null ? null : (
-        <SheetLayer onDismiss={screen.closeDay}>
-          <RehearsalDaySheet
-            title={screen.openDateLabel}
-            content={screen.dayContent}
-            canAdd={screen.canAdd}
-            onPressRow={screen.openEdit}
-            onAdd={screen.openAdd}
-          />
-        </SheetLayer>
-      )}
-
-      {screen.form === null ? null : (
-        <SheetLayer onDismiss={screen.closeForm}>
-          <RehearsalFormSheet
-            mode={screen.form.mode}
-            dateLabel={screen.openDateLabel}
-            state={screen.sheet}
-            saving={screen.saving}
-            onChange={screen.change}
-            onSubmit={screen.submit}
-            onClose={screen.closeForm}
-            onRemove={screen.askRemove}
-          />
-        </SheetLayer>
-      )}
-
-      {screen.pickerYear === null ? null : (
-        <MonthPickerSheet
-          year={screen.pickerYear}
-          selectedMonth={screen.month}
-          onPick={(picked) => {
-            screen.pickMonth(picked);
-            screen.closePicker();
-          }}
-          onYearChange={screen.changePickerYear}
-          onDismiss={screen.closePicker}
-        />
-      )}
+      <RehearsalSheets screen={screen} />
 
       <Dialog
         visible={screen.removing}

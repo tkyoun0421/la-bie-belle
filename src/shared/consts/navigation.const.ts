@@ -15,3 +15,8 @@ export const REHEARSALS_PATH = "/me/rehearsals" as const;
 export const APPROVALS_PATH = "/admin/approvals" as const;
 
 export const APPLICATIONS_PATH = "/admin/applications" as const;
+export const MEMBERS_PENDING_PATH = "/admin/members/pending" as const;
+
+export const MEMBERS_BLOCKED_PATH = "/admin/members/blocked" as const;
+
+export const ME_HOME_PATH = "/me" as const;

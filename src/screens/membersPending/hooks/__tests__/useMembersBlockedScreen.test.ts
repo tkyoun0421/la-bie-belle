@@ -7,6 +7,18 @@ const unblockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const replaceMock = jest.fn();
+const canGoBackMock = jest.fn<() => boolean>();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    replace: replaceMock,
+    canGoBack: canGoBackMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -33,6 +45,8 @@ const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { BLOCKED_COPY, PENDING_COPY } =
   await import("@/screens/membersPending/consts/membersPending.const");
+const { MEMBERS_PENDING_PATH } =
+  await import("@/shared/consts/navigation.const");
 const { useMembersBlockedScreen } =
   await import("@/screens/membersPending/hooks/useMembersBlockedScreen");
 
@@ -197,5 +211,33 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
     act(() => result.current.dismissToast());
 
     expect(result.current.toast).toBeNull();
+  });
+});
+
+describe("useMembersBlockedScreen — 갈 데를 controller가 정한다", () => {
+  beforeEach(() => {
+    backMock.mockClear();
+    replaceMock.mockClear();
+    canGoBackMock.mockReset();
+  });
+
+  it("돌아갈 데가 있으면 뒤로 간다", async () => {
+    canGoBackMock.mockReturnValue(true);
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("돌아갈 데가 없으면 가입 대기로 바꿔 넣는다", async () => {
+    canGoBackMock.mockReturnValue(false);
+    const { result } = await mounted();
+
+    act(() => result.current.goBack());
+
+    expect(replaceMock).toHaveBeenCalledWith(MEMBERS_PENDING_PATH);
+    expect(backMock).not.toHaveBeenCalled();
   });
 });

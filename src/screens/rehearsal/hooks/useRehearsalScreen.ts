@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -42,6 +44,7 @@ export type RehearsalFormHandle =
   { mode: "add" } | { mode: "edit"; id: string };
 
 export type RehearsalScreenController = {
+  goBack: () => void;
   month: string;
   monthYear: number;
   monthLabel: string;
@@ -60,6 +63,7 @@ export type RehearsalScreenController = {
   cellStateOf: (date: string) => "admin-open" | "plain";
   noteOf: (date: string) => string | null;
   isToday: (date: string) => boolean;
+  canPressDay: (date: string) => boolean;
   openDay: (date: string) => void;
   closeDay: () => void;
   pickMonth: (month: string) => void;
@@ -81,6 +85,7 @@ export type RehearsalScreenController = {
 export function useRehearsalScreen(
   monthParam?: string,
 ): RehearsalScreenController {
+  const router = useRouter();
   const today = kstToday();
 
   const [month, setMonth] = useState(monthOf(monthParam ?? today));
@@ -266,6 +271,7 @@ export function useRehearsalScreen(
     setMonth(picked);
     setOpenDate(null);
     setForm(null);
+    setPickerYear(null);
   }, []);
 
   const closeTop = useMemo(() => {
@@ -288,7 +294,10 @@ export function useRehearsalScreen(
     return null;
   }, [form, openDate, closeForm]);
 
+  const goBack = useCallback(() => router.replace(ME_HOME_PATH), [router]);
+
   return {
+    goBack,
     month,
     monthYear: Number(month.slice(0, 4)),
     monthLabel: spellMonth(month),
@@ -312,6 +321,7 @@ export function useRehearsalScreen(
       return cell.state === "has" ? cell.label : null;
     },
     isToday: (date) => date === today,
+    canPressDay: () => true,
     openDay: setOpenDate,
     closeDay: () => setOpenDate(null),
     pickMonth,

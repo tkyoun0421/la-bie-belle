@@ -1,5 +1,10 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import {
+  ADMIN_HOME_PATH,
+  MEMBERS_BLOCKED_PATH,
+} from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -35,6 +40,8 @@ export type PendingSheet = {
 export type PendingListState = "loading" | "empty" | "rows";
 
 export type MembersPendingController = {
+  goBack: () => void;
+  openBlocked: () => void;
   listState: PendingListState;
   rows: PendingRow[];
   today: string;
@@ -50,10 +57,10 @@ export type MembersPendingController = {
   dismissToast: () => void;
   menuOpen: boolean;
   toggleMenu: () => void;
-  closeMenu: () => void;
 };
 
 export function useMembersPendingScreen(): MembersPendingController {
+  const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<SheetFace>("detail");
   const [toast, setToast] = useState<PendingToast | null>(null);
@@ -154,6 +161,7 @@ export function useMembersPendingScreen(): MembersPendingController {
     photoUrl: row.photoUrl,
     detail: spellSentLine(row.submittedAt, today),
     press: () => {
+      setMenuOpen(false);
       setOpenId(row.id);
       setFace("detail");
     },
@@ -186,7 +194,23 @@ export function useMembersPendingScreen(): MembersPendingController {
     send({ profileId: open.id });
   }, [open, face, sendReject, sendBlock]);
 
+  const goBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(ADMIN_HOME_PATH);
+  }, [router]);
+
+  const openBlocked = useCallback(() => {
+    setMenuOpen(false);
+    router.push(MEMBERS_BLOCKED_PATH);
+  }, [router]);
+
   return {
+    goBack,
+    openBlocked,
     listState,
     rows,
     today,
@@ -206,6 +230,5 @@ export function useMembersPendingScreen(): MembersPendingController {
     dismissToast: () => setToast(null),
     menuOpen,
     toggleMenu: () => setMenuOpen((opened) => !opened),
-    closeMenu: () => setMenuOpen(false),
   };
 }

@@ -1,8 +1,6 @@
-import { useKeepAwake } from "expo-keep-awake";
 import { useWindowDimensions } from "react-native";
 import { QrStage } from "@/shared/ui/QrFace";
-import { QR_SCREEN_COPY } from "@/screens/qr/consts/qr.const";
-import { fullscreenQrSize } from "@/screens/qr/utils/fullscreenQrSize.utils";
+import { useQrFullscreen } from "@/screens/qr/hooks/useQrFullscreen";
 
 export type QrFullscreenProps = {
   svg: string | null;
@@ -10,15 +8,14 @@ export type QrFullscreenProps = {
 };
 
 export function QrFullscreen({ svg, onClose }: QrFullscreenProps) {
-  useKeepAwake();
-
   const { width } = useWindowDimensions();
+  const fullscreen = useQrFullscreen({ width });
 
   return (
     <QrStage
       svg={svg}
-      size={fullscreenQrSize(width)}
-      closeLabel={QR_SCREEN_COPY.close}
+      size={fullscreen.size}
+      closeLabel={fullscreen.closeLabel}
       onClose={onClose}
     />
   );

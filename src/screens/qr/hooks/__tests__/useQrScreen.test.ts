@@ -36,6 +36,12 @@ jest.unstable_mockModule("expo-sharing", () => ({
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ back: backMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -255,5 +261,62 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     act(() => result.current.dismissToast());
 
     expect(result.current.toast).toBeNull();
+  });
+});
+
+describe("useQrScreen — 문구와 갈 데를 controller가 완성해 준다", () => {
+  beforeEach(() => {
+    backMock.mockClear();
+  });
+
+  it("언제부터 쓰는 QR인지 한 줄로 준다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
+
+    await waitFor(() =>
+      expect(result.current.startLine).toBe("2026년 10월 3일부터 쓰고 있어요"),
+    );
+  });
+
+  it("코드가 없으면 그 줄이 없다", async () => {
+    getQrCodeMock.mockResolvedValue(null);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.qr).toBeNull());
+
+    expect(result.current.startLine).toBeNull();
+  });
+
+  it("돌리기가 실패하면 물음에 띄울 알림을 준다", async () => {
+    rotateQrMock.mockRejectedValue(new Error("못 돌렸다"));
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.svg).toBe("<svg />"));
+
+    expect(result.current.rotateNotice).toBeUndefined();
+
+    act(() => result.current.askRotate());
+    act(() => result.current.rotate());
+
+    await waitFor(() =>
+      expect(result.current.rotateNotice).toBe(QR_SCREEN_COPY.sendFailed),
+    );
+  });
+
+  it("뒤로가 라우터의 뒤로를 부른다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useQrScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.svg).toBe("<svg />"));
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
   });
 });

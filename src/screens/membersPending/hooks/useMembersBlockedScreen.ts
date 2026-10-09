@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { MEMBERS_PENDING_PATH } from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -29,6 +31,7 @@ export type BlockedConfirm = {
 export type BlockedListState = "loading" | "empty" | "rows";
 
 export type MembersBlockedController = {
+  goBack: () => void;
   listState: BlockedListState;
   rows: BlockedRow[];
   confirming: BlockedConfirm | null;
@@ -41,6 +44,7 @@ export type MembersBlockedController = {
 };
 
 export function useMembersBlockedScreen(): MembersBlockedController {
+  const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
   const [toast, setToast] = useState<BlockedToast | null>(null);
 
@@ -98,7 +102,17 @@ export function useMembersBlockedScreen(): MembersBlockedController {
     press: () => setOpenId(row.id),
   }));
 
+  const goBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(MEMBERS_PENDING_PATH);
+  }, [router]);
+
   return {
+    goBack,
     listState: isLoading ? "loading" : rows.length === 0 ? "empty" : "rows",
     rows,
     confirming:
