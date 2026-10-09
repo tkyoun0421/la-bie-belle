@@ -3,7 +3,6 @@ export const PENDING_COPY = {
   more: "더보기",
   blockedMenu: "차단한 사람",
   empty: "기다리는 사람이 없어요",
-  alreadyDecided: "이미 처리된 사람이에요",
 } as const;
 
 export const BLOCKED_COPY = {

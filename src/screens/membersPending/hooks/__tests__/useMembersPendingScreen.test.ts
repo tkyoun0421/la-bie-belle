@@ -1,8 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-const listPendingMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
@@ -24,13 +22,6 @@ jest.unstable_mockModule("expo-router", () => ({
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
-}));
-
-jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
-  listActiveMembers: jest.fn(),
-  listBlockedMembers: jest.fn(),
-  listLeftMembers: jest.fn(),
-  listPendingMembers: listPendingMembersMock,
 }));
 
 jest.unstable_mockModule("@/entities/profile/api/profilePrivate.api", () => ({
@@ -63,20 +54,15 @@ function createWrapper() {
   return { wrapper };
 }
 
-const PENDING = [
-  {
-    id: "p1",
-    displayName: "이준호",
-    photoUrl: null,
-    submittedAt: "2026-10-01T05:00:00.000Z",
-  },
-  {
-    id: "p2",
-    displayName: "박수진",
-    photoUrl: null,
-    submittedAt: null,
-  },
-];
+const WAITING = {
+  id: "p1",
+  displayName: "이준호",
+  photoUrl: null,
+  submittedAt: "2026-10-01T05:00:00.000Z",
+  approvedAt: null,
+  rejectedAt: null,
+  blockedAt: null,
+};
 
 const VALUES = {
   email: "someone@example.com",
@@ -86,58 +72,21 @@ const VALUES = {
 };
 
 beforeEach(() => {
-  listPendingMembersMock.mockReset();
   getProfilePrivateMock.mockReset();
-
-  listPendingMembersMock.mockResolvedValue(PENDING);
   getProfilePrivateMock.mockResolvedValue(VALUES);
 });
 
-async function mounted() {
+function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useMembersPendingScreen(), {
-    wrapper,
-  });
 
-  await waitFor(() =>
-    expect(hook.result.current.listState).not.toBe("loading"),
-  );
-
-  return hook;
+  return renderHook(() => useMembersPendingScreen(), { wrapper });
 }
 
-describe("useMembersPendingScreen — 목록과 시트 고르는 자리를 든다", () => {
-  it("읽기 전에는 loading이다", () => {
-    const { wrapper } = createWrapper();
-
-    const { result } = renderHook(() => useMembersPendingScreen(), {
-      wrapper,
-    });
-
-    expect(result.current.listState).toBe("loading");
-  });
-
-  it("기다리는 사람이 없으면 empty다", async () => {
-    listPendingMembersMock.mockResolvedValue([]);
-
-    const { result } = await mounted();
-
-    expect(result.current.listState).toBe("empty");
-  });
-
-  it("줄이 언제 보냈는지를 말하고 안 보낸 사람은 빈 줄이다", async () => {
-    const { result } = await mounted();
-
-    expect(result.current.listState).toBe("rows");
-    expect(result.current.rows).toHaveLength(2);
-    expect(result.current.rows[0].detail).toContain("보냈어요");
-    expect(result.current.rows[1].detail).toBe("");
-  });
-
+describe("useMembersPendingScreen — 시트 고르는 자리와 더보기를 든다", () => {
   it("줄을 누르면 시트가 열리고 개인정보를 읽는다", async () => {
-    const { result } = await mounted();
+    const { result } = mounted();
 
-    act(() => result.current.rows[0].press());
+    act(() => result.current.openMember(WAITING));
 
     expect(result.current.sheet?.name).toBe("이준호");
     expect(result.current.sheet?.profileId).toBe("p1");
@@ -147,25 +96,25 @@ describe("useMembersPendingScreen — 목록과 시트 고르는 자리를 든�
     expect(getProfilePrivateMock).toHaveBeenCalledWith(FAKE_CLIENT, "p1");
   });
 
-  it("시트가 닫혀 있으면 개인정보를 안 읽는다", async () => {
-    await mounted();
+  it("시트가 닫혀 있으면 개인정보를 안 읽는다", () => {
+    mounted();
 
     expect(getProfilePrivateMock).not.toHaveBeenCalled();
   });
 
-  it("시트를 닫으면 걷힌다", async () => {
-    const { result } = await mounted();
+  it("시트를 닫으면 걷힌다", () => {
+    const { result } = mounted();
 
-    act(() => result.current.rows[0].press());
+    act(() => result.current.openMember(WAITING));
     act(() => result.current.closeSheet());
 
     expect(result.current.sheet).toBeNull();
   });
 
-  it("끝났다고 받으면 토스트가 서고 시트가 닫힌다", async () => {
-    const { result } = await mounted();
+  it("끝났다고 받으면 토스트가 서고 시트가 닫힌다", () => {
+    const { result } = mounted();
 
-    act(() => result.current.rows[0].press());
+    act(() => result.current.openMember(WAITING));
     act(() =>
       result.current.finish({
         kind: "success",
@@ -190,9 +139,9 @@ describe("useMembersPendingScreen — 갈 데를 controller가 정한다", () =>
     canGoBackMock.mockReset();
   });
 
-  it("돌아갈 데가 있으면 뒤로 간다", async () => {
+  it("돌아갈 데가 있으면 뒤로 간다", () => {
     canGoBackMock.mockReturnValue(true);
-    const { result } = await mounted();
+    const { result } = mounted();
 
     act(() => result.current.goBack());
 
@@ -200,9 +149,9 @@ describe("useMembersPendingScreen — 갈 데를 controller가 정한다", () =>
     expect(replaceMock).not.toHaveBeenCalled();
   });
 
-  it("돌아갈 데가 없으면 관리자 홈으로 바꿔 넣는다", async () => {
+  it("돌아갈 데가 없으면 관리자 홈으로 바꿔 넣는다", () => {
     canGoBackMock.mockReturnValue(false);
-    const { result } = await mounted();
+    const { result } = mounted();
 
     act(() => result.current.goBack());
 
@@ -210,8 +159,8 @@ describe("useMembersPendingScreen — 갈 데를 controller가 정한다", () =>
     expect(backMock).not.toHaveBeenCalled();
   });
 
-  it("차단한 사람으로 가면 더보기가 닫힌다", async () => {
-    const { result } = await mounted();
+  it("차단한 사람으로 가면 더보기가 닫힌다", () => {
+    const { result } = mounted();
 
     act(() => result.current.toggleMenu());
     expect(result.current.menuOpen).toBe(true);
@@ -222,12 +171,12 @@ describe("useMembersPendingScreen — 갈 데를 controller가 정한다", () =>
     expect(result.current.menuOpen).toBe(false);
   });
 
-  it("줄을 누르면 더보기가 닫히고 시트가 열린다", async () => {
-    const { result } = await mounted();
+  it("줄을 누르면 더보기가 닫히고 시트가 열린다", () => {
+    const { result } = mounted();
 
     act(() => result.current.toggleMenu());
 
-    act(() => result.current.rows[0].press());
+    act(() => result.current.openMember(WAITING));
 
     expect(result.current.menuOpen).toBe(false);
     expect(result.current.sheet).not.toBeNull();

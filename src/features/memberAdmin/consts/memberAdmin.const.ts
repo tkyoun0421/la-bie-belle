@@ -1,3 +1,8 @@
+import {
+  MEMBER_DECISION_COPY,
+  MEMBER_LIST_COPY,
+} from "@/entities/member/consts/member.const";
+
 export const HANDLED_CODES: readonly string[] = [
   "has_future_assignments",
   "last_admin",
@@ -6,7 +11,7 @@ export const HANDLED_CODES: readonly string[] = [
 
 export const MEMBER_SHEET_COPY = {
   more: "더보기",
-  adminBadge: "관리자",
+  adminBadge: MEMBER_LIST_COPY.adminBadge,
   markLeave: "퇴사 처리",
   undoLeave: "퇴사 되돌리기",
   leftSuffix: "에 퇴사했어요",
@@ -31,7 +36,7 @@ export const MEMBER_SHEET_TOAST = {
   demoted: "관리자에서 내렸어요",
   leaveDone: "퇴사 처리했어요",
   undoDone: "퇴사를 되돌렸어요",
-  alreadyDecided: "이미 처리된 사람이에요",
+  alreadyDecided: MEMBER_DECISION_COPY.alreadyDecided,
 } as const;
 
 export const DETAIL_SHEET_COPY = {
@@ -61,7 +66,7 @@ export const DECISION_COPY = {
 } as const;
 
 export const DETAIL_SHEET_TOAST = {
-  alreadyDecided: "이미 처리된 사람이에요",
+  alreadyDecided: MEMBER_DECISION_COPY.alreadyDecided,
   approvedSuffix: " 님을 승인했어요",
   rejectedSuffix: " 님을 안 받았어요",
   blockedSuffix: " 님을 차단했어요",

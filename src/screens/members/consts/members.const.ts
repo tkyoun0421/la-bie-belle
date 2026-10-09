@@ -6,7 +6,6 @@ export const MEMBERS_COPY = {
   emptyBody: "가입을 승인하면 여기 서요",
   leftSection: "퇴사",
   more: "더 보기",
-  adminBadge: "관리자",
 } as const;
 
 export const SKELETON_ROWS = [0, 1, 2] as const;

@@ -6,38 +6,25 @@ import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
+import { MEMBER_DECISION_COPY } from "@/entities/member/consts/member.const";
+import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useUnblockMemberMutation } from "@/features/memberAdmin/services/useUnblockMemberMutation";
-import {
-  BLOCKED_COPY,
-  PENDING_COPY,
-} from "@/screens/membersPending/consts/membersPending.const";
-import { spellBlockedLine } from "@/screens/membersPending/utils/elapsedLine.utils";
+import { BLOCKED_COPY } from "@/screens/membersPending/consts/membersPending.const";
 
 export type BlockedToast = { kind: ToastKind; message: string };
-
-export type BlockedRow = {
-  id: string;
-  name: string;
-  photoUrl: string | null;
-  detail: string;
-  press: () => void;
-};
 
 export type BlockedConfirm = {
   question: string;
 };
 
-export type BlockedListState = "loading" | "empty" | "rows";
-
 export type MembersBlockedController = {
   goBack: () => void;
-  listState: BlockedListState;
-  rows: BlockedRow[];
+  today: string;
   confirming: BlockedConfirm | null;
   sending: boolean;
   failed: boolean;
   toast: BlockedToast | null;
+  openMember: (member: MemberSummary) => void;
   unblock: () => void;
   close: () => void;
   dismissToast: () => void;
@@ -45,13 +32,11 @@ export type MembersBlockedController = {
 
 export function useMembersBlockedScreen(): MembersBlockedController {
   const router = useRouter();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [open, setOpen] = useState<MemberSummary | null>(null);
   const [toast, setToast] = useState<BlockedToast | null>(null);
 
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
-
-  const { data: blocked, isLoading } = useMembersQuery(supabase, "blocked");
 
   const {
     mutate: sendUnblock,
@@ -62,7 +47,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   } = useUnblockMemberMutation(supabase);
 
   const close = useCallback(() => {
-    setOpenId(null);
+    setOpen(null);
     reset();
   }, [reset]);
 
@@ -74,7 +59,6 @@ export function useMembersBlockedScreen(): MembersBlockedController {
     [close],
   );
 
-  const open = blocked?.find((row) => row.id === openId) ?? null;
   const openName = open?.displayName ?? "";
 
   useEffect(() => {
@@ -90,17 +74,9 @@ export function useMembersBlockedScreen(): MembersBlockedController {
 
   useEffect(() => {
     if (code === "already_decided") {
-      finish({ kind: "info", message: PENDING_COPY.alreadyDecided });
+      finish({ kind: "info", message: MEMBER_DECISION_COPY.alreadyDecided });
     }
   }, [code, finish]);
-
-  const rows: BlockedRow[] = (blocked ?? []).map((row) => ({
-    id: row.id,
-    name: row.displayName ?? "",
-    photoUrl: row.photoUrl,
-    detail: spellBlockedLine(row.blockedAt, now),
-    press: () => setOpenId(row.id),
-  }));
 
   const goBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -113,8 +89,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
 
   return {
     goBack,
-    listState: isLoading ? "loading" : rows.length === 0 ? "empty" : "rows",
-    rows,
+    today: now,
     confirming:
       open === null
         ? null
@@ -122,6 +97,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
     sending,
     failed: error !== null && code !== "already_decided",
     toast,
+    openMember: setOpen,
     unblock: () => {
       if (open !== null) {
         sendUnblock({ profileId: open.id });

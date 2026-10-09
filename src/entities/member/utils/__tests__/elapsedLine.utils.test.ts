@@ -1,7 +1,7 @@
 import {
   spellBlockedLine,
   spellSentLine,
-} from "@/screens/membersPending/utils/elapsedLine.utils";
+} from "@/entities/member/utils/elapsedLine.utils";
 
 const NOW = "2026-10-03T05:00:00.000Z";
 

@@ -7,22 +7,13 @@ import {
 } from "@/shared/consts/navigation.const";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
+import type { MemberSummary } from "@/entities/member/model/member.type";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import type { MemberAdminDone } from "@/features/memberAdmin/model/memberAdmin.type";
-import { spellSentLine } from "@/screens/membersPending/utils/elapsedLine.utils";
 import { formatSentAt } from "@/screens/membersPending/utils/formatSentAt.utils";
 
 export type PendingToast = MemberAdminDone;
-
-export type PendingRow = {
-  id: string;
-  name: string;
-  photoUrl: string | null;
-  detail: string;
-  press: () => void;
-};
 
 export type PendingSheet = {
   profileId: string;
@@ -32,16 +23,13 @@ export type PendingSheet = {
   values: ProfilePrivate | null;
 };
 
-export type PendingListState = "loading" | "empty" | "rows";
-
 export type MembersPendingController = {
   goBack: () => void;
   openBlocked: () => void;
-  listState: PendingListState;
-  rows: PendingRow[];
   today: string;
   sheet: PendingSheet | null;
   toast: PendingToast | null;
+  openMember: (member: MemberSummary) => void;
   finish: (done: MemberAdminDone) => void;
   closeSheet: () => void;
   dismissToast: () => void;
@@ -51,53 +39,26 @@ export type MembersPendingController = {
 
 export function useMembersPendingScreen(): MembersPendingController {
   const router = useRouter();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [open, setOpen] = useState<MemberSummary | null>(null);
   const [toast, setToast] = useState<PendingToast | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const clockOffset = serverClockStore((at) => at.offset);
   const today = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
 
-  const { data: pending, isLoading } = useMembersQuery(supabase, "pending");
-  const { data: values } = useProfilePrivateQuery(supabase, openId);
+  const { data: values } = useProfilePrivateQuery(supabase, open?.id ?? null);
 
-  const closeSheet = useCallback(() => setOpenId(null), []);
+  const closeSheet = useCallback(() => setOpen(null), []);
+
+  const openMember = useCallback((member: MemberSummary) => {
+    setMenuOpen(false);
+    setOpen(member);
+  }, []);
 
   const finish = useCallback((done: MemberAdminDone) => {
     setToast(done);
-    setOpenId(null);
+    setOpen(null);
   }, []);
-
-  const open = pending?.find((row) => row.id === openId) ?? null;
-
-  const rows: PendingRow[] = (pending ?? []).map((row) => ({
-    id: row.id,
-    name: row.displayName ?? "",
-    photoUrl: row.photoUrl,
-    detail: spellSentLine(row.submittedAt, today),
-    press: () => {
-      setMenuOpen(false);
-      setOpenId(row.id);
-    },
-  }));
-
-  const listState: PendingListState = isLoading
-    ? "loading"
-    : rows.length === 0
-      ? "empty"
-      : "rows";
-
-  const sheet: PendingSheet | null =
-    open === null
-      ? null
-      : {
-          profileId: open.id,
-          name: open.displayName ?? "",
-          photoUrl: open.photoUrl,
-          sentAt:
-            open.submittedAt === null ? "" : formatSentAt(open.submittedAt),
-          values: values ?? null,
-        };
 
   const goBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -116,11 +77,20 @@ export function useMembersPendingScreen(): MembersPendingController {
   return {
     goBack,
     openBlocked,
-    listState,
-    rows,
     today,
-    sheet,
+    sheet:
+      open === null
+        ? null
+        : {
+            profileId: open.id,
+            name: open.displayName ?? "",
+            photoUrl: open.photoUrl,
+            sentAt:
+              open.submittedAt === null ? "" : formatSentAt(open.submittedAt),
+            values: values ?? null,
+          },
     toast,
+    openMember,
     finish,
     closeSheet,
     dismissToast: () => setToast(null),
