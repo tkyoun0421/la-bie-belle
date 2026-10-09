@@ -70,7 +70,24 @@ sources:
 
 ### AC-02 — 읽기 조각이 자기 도메인으로 간다
 
-**대상이 쉰넷이다.** `screens/*/ui` 백열아홉 가운데 뼈가 예순다섯이고 나머지가 그 쉰넷이다.
+**대상이 쉰넷이 아니다 — 열여섯이다.** 처음 표는 파일을 열지 않고 이름으로 세어 과대 집계였다. worker가 「AC-02 표가 AC-03과 부딪힌다」고 집어 전수로 다시 쟀다.
+
+`screens/*/ui`의 `.tsx` **백열다섯**을 꼴로 가르면 이렇다. 넷은 `grep` 하나로 세어진다.
+
+| 꼴 | 수 | 뜻 |
+| --- | --- | --- |
+| `screen:`·`day:`를 통째로 받는다 | 39 | **못 올라간다** — `entities`가 `screens`를 몰라 그 타입을 따라갈 수 없다 |
+| `screens/<슬라이스>/consts`만 본다 | 30 | **화면 문안을 든 뼈** — 상태 자리와 빈 상태·실패 자리다 |
+| 같은 슬라이스의 `ui`를 꽂는다 | 16 | **묶음 자리** — 조각을 배치하고 도메인을 모른다 |
+| `hooks`·`model`·`utils`의 계산을 받아 그린다 | 20 | **후보** — 넷은 화면 꼭대기(`BlockedScreen`·`LeftScreen`·`RetryScreen`·`QrFullscreen`)고 **열여섯이 올라갈 자리다** |
+| 아무 층도 안 본다 | 6 | 둘은 기다리는 자리, **넷은 도메인을 모른다**(`AdminStatsMonthNav`·`WorkDaysSheet`·`ScheduleCalendarCard`·`StatsMonth` — `shared/ui` 자리) |
+| 도메인 값을 당기고 통째를 안 받는다 | 4 | `AdminHomeScreen`·`MembersScreen`·`NotificationsScreen`·`PendingFooter` |
+
+**열여섯이 이렇다** — `AdminStatsAttendance`·`AdminStatsWork`·`ApplicationsDateGroups`·`ApplicationsPersonGroups`·`ApprovalRows`·`MemberRows`·`BlockedRows`·`PendingRows`·`PayrollAccrual`·`PayrollHistoryRows`·`PayrollMonthRows`·`RehearsalDaySheet`·`PositionRowHead`·`PositionSlotCard`·`StatsAttendance`·`StatsPositions`.
+
+**통째로 받는 것은 손이 닿으면 풀 수 있다.** ADR-016이 「받는 모양이 그 조각이 어디까지 갈 수 있는지를 정한다」고 적었다 — `screen:`을 props 하나씩으로 푸는 것이 올리는 일의 일부고, 그 서른아홉이 영구히 묶인 것은 아니다. 다만 그중 상태 자리·시트 고르는 자리·앱바는 풀어도 뼈다.
+
+**조각이 도메인 타입을 타입으로 당기는 자리가 0건이다.** 백열다섯 가운데 하나도 없다 — 조각마다 자기 입력 타입을 따로 선언했다. 그래서 「무엇을 당기나」로는 주제를 못 가리고, 그 선언이 어느 도메인 타입의 투영인지는 사람이 본다. 기계가 가를 수 있는 것은 위 표의 넷까지다.
 
 목록과 행과 카드가 `entities/<도메인>/ui`에 살고 자기 슬라이스의 query를 부른다. 도메인 타입을 props로 받는 것으로 끝나지 않는다 — 부르는 쪽이 값을 들고 와야 하면 자립이 아니다.
 
