@@ -13,11 +13,6 @@ import { useTheme } from "@/shared/stores/theme.store";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import {
-  digitsOfBirthDate,
-  spellBirthDate,
-} from "@/entities/profile/utils/birthDateDigits.utils";
-import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
@@ -30,14 +25,10 @@ export type ProfileScreenController = {
   unread: boolean;
   userId: string | null;
   profileId: string | null;
-  name: string;
   photoUrl: string | null;
   googlePhotoUrl: string | null;
-  roleLabel: string;
   admin: boolean;
   rehearsal: boolean;
-  gender: string;
-  birthDate: string;
   phone: string;
   themeLabel: string;
   notificationEnabled: boolean | null;
@@ -122,16 +113,10 @@ export function useProfileScreen(): ProfileScreenController {
     unread: (unreadCount.data ?? 0) > 0,
     userId: me?.id ?? null,
     profileId: data?.id ?? null,
-    name: data?.displayName ?? "",
     photoUrl: data?.photoUrl ?? null,
     googlePhotoUrl: me?.googlePhotoUrl ?? null,
-    roleLabel: admin ? PROFILE_COPY.admin : PROFILE_COPY.worker,
     admin,
     rehearsal: admin || hasRehearsalGrant(grants ?? [], data?.id ?? null),
-    gender: spellGender(data?.gender ?? null),
-    birthDate: data?.birthDate
-      ? spellBirthDate(digitsOfBirthDate(data.birthDate))
-      : "",
     phone: data?.phone ?? "",
     themeLabel: THEME_LABEL[theme],
     notificationEnabled: data ? data.notificationsEnabled : null,

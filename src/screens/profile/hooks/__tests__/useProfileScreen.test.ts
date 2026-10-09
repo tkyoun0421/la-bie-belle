@@ -136,14 +136,12 @@ async function mounted() {
   return hook;
 }
 
-describe("useProfileScreen — 값 다섯을 글로 세운다", () => {
-  it("이름과 역할과 값 셋이 선다", async () => {
+describe("useProfileScreen — 조각을 배치하고 갈 데를 든다", () => {
+  it("시트가 쓸 값이 선다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.name).toBe("이준호");
-    expect(result.current.roleLabel).toBe(PROFILE_COPY.worker);
-    expect(result.current.gender).toBe("남성");
-    expect(result.current.birthDate).toBe("1993년 4월 21일");
+    expect(result.current.userId).toBe(USER.id);
+    expect(result.current.profileId).toBe("profile-1");
     expect(result.current.phone).toBe("010-0000-0001");
   });
 

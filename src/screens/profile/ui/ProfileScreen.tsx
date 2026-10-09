@@ -5,9 +5,10 @@ import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Screen } from "@/shared/ui/Screen";
+import { ProfileCard } from "@/entities/profile/ui/ProfileCard";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
 import { useProfileScreen } from "@/screens/profile/hooks/useProfileScreen";
-import { ProfileCard } from "@/screens/profile/ui/ProfileCard";
+import { ProfileFactsLoading } from "@/screens/profile/ui/ProfileFactsLoading";
 import { ProfileSettings } from "@/screens/profile/ui/ProfileSettings";
 import { ProfileSheets } from "@/screens/profile/ui/ProfileSheets";
 
@@ -29,7 +30,12 @@ export function ProfileScreen() {
 
       <ScrollView>
         <View className="gap-3 px-5 pb-5">
-          <ProfileCard screen={screen} />
+          <ProfileCard
+            userId={screen.userId}
+            onEditPhoto={screen.openPhoto}
+            onEditContact={screen.openContact}
+            factsLoading={<ProfileFactsLoading />}
+          />
 
           <ProfileSettings screen={screen} />
 
