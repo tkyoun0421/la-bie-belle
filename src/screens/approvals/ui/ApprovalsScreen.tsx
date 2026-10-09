@@ -1,6 +1,5 @@
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
-import { Dialog } from "@/shared/ui/Dialog";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Screen } from "@/shared/ui/Screen";
 import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
@@ -22,19 +21,6 @@ export function ApprovalsScreen() {
       </ScrollView>
 
       <ApprovalsSheets screen={screen} />
-
-      <Dialog
-        visible={screen.confirming}
-        title={APPROVALS_COPY.confirmTitle}
-        notice={screen.confirmNotice}
-        closeLabel={APPROVALS_COPY.confirmBack}
-        confirmLabel={screen.confirmLabel}
-        destructive
-        onClose={screen.cancelApprove}
-        onConfirm={screen.approve}
-      >
-        {screen.confirmBody}
-      </Dialog>
 
       {screen.toast ? (
         <FloatingToast

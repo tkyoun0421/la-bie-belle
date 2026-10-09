@@ -4,10 +4,6 @@ import type { ReactNode } from "react";
 const listActiveMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const listLeftMembersMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -34,30 +30,11 @@ jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listPendingMembers: jest.fn(),
 }));
 
-jest.unstable_mockModule(
-  "@/features/memberAdmin/api/setDisplayName.api",
-  () => ({ setDisplayName: setDisplayNameMock }),
-);
-
-jest.unstable_mockModule("@/features/memberAdmin/api/setRole.api", () => ({
-  setRole: setRoleMock,
-}));
-
-jest.unstable_mockModule("@/features/memberAdmin/api/markLeave.api", () => ({
-  markLeave: markLeaveMock,
-}));
-
-jest.unstable_mockModule("@/features/memberAdmin/api/undoLeave.api", () => ({
-  undoLeave: undoLeaveMock,
-}));
-
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
-const { MEMBERS_COPY } = await import("@/screens/members/consts/members.const");
 const { ADMIN_HOME_PATH } = await import("@/shared/consts/navigation.const");
 const { useMembersScreen } =
   await import("@/screens/members/hooks/useMembersScreen");
@@ -123,17 +100,9 @@ const LEFT = [
 beforeEach(() => {
   listActiveMembersMock.mockReset();
   listLeftMembersMock.mockReset();
-  setDisplayNameMock.mockReset();
-  setRoleMock.mockReset();
-  markLeaveMock.mockReset();
-  undoLeaveMock.mockReset();
 
   listActiveMembersMock.mockResolvedValue(ACTIVE);
   listLeftMembersMock.mockResolvedValue(LEFT);
-  setDisplayNameMock.mockResolvedValue(undefined);
-  setRoleMock.mockResolvedValue(undefined);
-  markLeaveMock.mockResolvedValue(undefined);
-  undoLeaveMock.mockResolvedValue(undefined);
 });
 
 async function mounted() {
@@ -147,7 +116,7 @@ async function mounted() {
   return hook;
 }
 
-describe("useMembersScreen — 쓰기 넷이 한 시트에서 나간다", () => {
+describe("useMembersScreen — 목록과 시트 고르는 자리를 든다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
@@ -208,62 +177,17 @@ describe("useMembersScreen — 쓰기 넷이 한 시트에서 나간다", () => 
     expect(result.current.searchEmpty).toBe(true);
   });
 
-  it("시트를 열면 그 사람과 고칠 이름이 실린다", async () => {
+  it("시트를 열면 그 사람과 그 시트가 쓸 값이 실린다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.activeRows[0].press());
 
     expect(result.current.sheet?.name).toBe("이준호");
-    expect(result.current.face).toBe("detail");
-
-    act(() => result.current.showFace("rename"));
-
-    expect(result.current.draft).toBe("이준호");
+    expect(result.current.sheet?.member.id).toBe("p1");
+    expect(result.current.reachLine).not.toBeUndefined();
   });
 
-  it("이름을 고쳐 저장하면 그 사람 id로 가고 시트가 닫힌다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.showFace("rename"));
-    act(() => result.current.writeDraft("이준서"));
-    act(() => result.current.saveName());
-
-    await waitFor(() =>
-      expect(setDisplayNameMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "p1",
-        "이준서",
-      ),
-    );
-
-    await waitFor(() =>
-      expect(result.current.toast?.message).toBe(MEMBERS_COPY.nameChanged),
-    );
-
-    expect(result.current.sheet).toBeNull();
-  });
-
-  it("관리자로 올리기는 확인을 받고 역할을 보낸다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.askRole());
-
-    expect(result.current.dialog).toBe("promote");
-
-    act(() => result.current.confirm());
-
-    await waitFor(() =>
-      expect(setRoleMock).toHaveBeenCalledWith(FAKE_CLIENT, "p1", "admin"),
-    );
-
-    await waitFor(() =>
-      expect(result.current.toast?.message).toBe(MEMBERS_COPY.promoted),
-    );
-  });
-
-  it("관리자가 한 명뿐이면 내리기를 미리 잠근다", async () => {
+  it("관리자가 한 명뿐이면 시트에 그렇다고 알린다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.activeRows[1].press());
@@ -271,122 +195,25 @@ describe("useMembersScreen — 쓰기 넷이 한 시트에서 나간다", () => 
     expect(result.current.lastAdmin).toBe(true);
   });
 
-  it("퇴사 처리는 확인을 받고 그 사람 id로 간다", async () => {
+  it("시트를 닫으면 걷힌다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.activeRows[0].press());
-    act(() => result.current.askLeave());
-
-    expect(result.current.dialog).toBe("leave");
-
-    act(() => result.current.confirm());
-
-    await waitFor(() =>
-      expect(markLeaveMock).toHaveBeenCalledWith(FAKE_CLIENT, "p1"),
-    );
-
-    await waitFor(() =>
-      expect(result.current.toast?.message).toBe(MEMBERS_COPY.leaveDone),
-    );
-  });
-
-  it("퇴사 되돌리기도 같은 꼴이다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.leftRows[0].press());
-    act(() => result.current.askUndo());
-
-    expect(result.current.dialog).toBe("undo");
-
-    act(() => result.current.confirm());
-
-    await waitFor(() =>
-      expect(undoLeaveMock).toHaveBeenCalledWith(FAKE_CLIENT, "p3"),
-    );
-
-    await waitFor(() =>
-      expect(result.current.toast?.message).toBe(MEMBERS_COPY.undoDone),
-    );
-  });
-
-  it("앞으로 배정이 남았다고 거절당하면 그 Dialog가 선다", async () => {
-    markLeaveMock.mockRejectedValue(new DomainError("has_future_assignments"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.askLeave());
-    act(() => result.current.confirm());
-
-    await waitFor(() => expect(result.current.dialog).toBe("blocked"));
-
-    expect(result.current.failed).toBe(false);
-  });
-
-  it("마지막 관리자라고 거절당하면 그 Dialog가 선다", async () => {
-    setRoleMock.mockRejectedValue(new DomainError("last_admin"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.askRole());
-    act(() => result.current.confirm());
-
-    await waitFor(() => expect(result.current.dialog).toBe("last-admin"));
-  });
-
-  it("이미 처리된 사람이면 토스트가 서고 시트가 닫힌다", async () => {
-    markLeaveMock.mockRejectedValue(new DomainError("already_decided"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.askLeave());
-    act(() => result.current.confirm());
-
-    await waitFor(() =>
-      expect(result.current.toast?.message).toBe(MEMBERS_COPY.alreadyDecided),
-    );
-
-    expect(result.current.sheet).toBeNull();
-  });
-
-  it("통신이 끊긴 것은 시트에 실패를 세운다", async () => {
-    setDisplayNameMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.showFace("rename"));
-    act(() => result.current.writeDraft("이준서"));
-    act(() => result.current.saveName());
-
-    await waitFor(() => expect(result.current.failed).toBe(true));
-
-    expect(result.current.sheet?.name).toBe("이준호");
-  });
-
-  it("시트를 닫으면 얼굴과 적은 값이 처음으로 돌아간다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.activeRows[0].press());
-    act(() => result.current.showFace("rename"));
-    act(() => result.current.writeDraft("이준서"));
     act(() => result.current.close());
 
     expect(result.current.sheet).toBeNull();
-    expect(result.current.face).toBe("detail");
-    expect(result.current.draft).toBe("");
   });
 
-  it("토스트를 치우면 사라진다", async () => {
+  it("끝났다고 받으면 토스트가 서고 시트가 닫힌다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.activeRows[0].press());
-    act(() => result.current.askLeave());
-    act(() => result.current.confirm());
+    act(() =>
+      result.current.finish({ kind: "success", message: "퇴사 처리했어요" }),
+    );
 
-    await waitFor(() => expect(result.current.toast).not.toBeNull());
+    expect(result.current.toast?.message).toBe("퇴사 처리했어요");
+    expect(result.current.sheet).toBeNull();
 
     act(() => result.current.dismissToast());
 

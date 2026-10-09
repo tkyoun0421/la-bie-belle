@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 
 const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const decideCancelRequestMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -29,17 +27,12 @@ jest.unstable_mockModule(
   () => ({ getPendingApprovals: getPendingApprovalsMock }),
 );
 
-jest.unstable_mockModule(
-  "@/features/workRequest/api/decideCancelRequest.api",
-  () => ({ decideCancelRequest: decideCancelRequestMock }),
-);
-
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { APPROVALS_COPY, CUSTOM_REJECT_REASON } =
+const { APPROVALS_COPY } =
   await import("@/screens/approvals/consts/approvals.const");
 const { useApprovalsScreen } =
   await import("@/screens/approvals/hooks/useApprovalsScreen");
@@ -79,14 +72,12 @@ function approval(id: string, workDate: string, name: string) {
 
 beforeEach(() => {
   getPendingApprovalsMock.mockReset();
-  decideCancelRequestMock.mockReset();
   backMock.mockClear();
   replaceMock.mockClear();
   canGoBackMock.mockReset();
   canGoBackMock.mockReturnValue(true);
 
   getPendingApprovalsMock.mockResolvedValue([]);
-  decideCancelRequestMock.mockResolvedValue(undefined);
 });
 
 async function mounted() {
@@ -102,7 +93,7 @@ async function mounted() {
   return hook;
 }
 
-describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 든다", () => {
+describe("useApprovalsScreen — 목록과 시트 고르는 자리를 든다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
@@ -134,77 +125,19 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
     expect(result.current.rows[0].detail).toBe("이준호의 사정");
   });
 
-  it("줄을 누르면 상세가 서고 얼굴은 detail이다", async () => {
+  it("줄을 누르면 그 요청이 시트에 실린다", async () => {
     getPendingApprovalsMock.mockResolvedValue([
       approval("one", "2026-10-05", "이준호"),
     ]);
 
     const { result } = await mounted();
 
-    expect(result.current.detail).toBeNull();
+    expect(result.current.sheet).toBeNull();
 
     act(() => result.current.rows[0].press());
 
-    expect(result.current.face).toBe("detail");
-    expect(result.current.detail?.title).toContain("이준호");
-    expect(result.current.detail?.reason).toBe("이준호의 사정");
-  });
-
-  it("이유를 안 고르면 거절을 못 보낸다", async () => {
-    getPendingApprovalsMock.mockResolvedValue([
-      approval("one", "2026-10-05", "이준호"),
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-
-    expect(result.current.canSend).toBe(false);
-
-    act(() => result.current.choose("no_replacement"));
-
-    expect(result.current.canSend).toBe(true);
-  });
-
-  it("직접 쓰기는 글이 있어야 보낸다", async () => {
-    getPendingApprovalsMock.mockResolvedValue([
-      approval("one", "2026-10-05", "이준호"),
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-    act(() => result.current.choose(CUSTOM_REJECT_REASON));
-
-    expect(result.current.canSend).toBe(false);
-
-    act(() => result.current.write("그날은 어려워요"));
-
-    expect(result.current.canSend).toBe(true);
-  });
-
-  it("고른 문장이 그대로 간다", async () => {
-    getPendingApprovalsMock.mockResolvedValue([
-      approval("one", "2026-10-05", "이준호"),
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-    act(() => result.current.choose("no_replacement"));
-    act(() => result.current.reject());
-
-    await waitFor(() =>
-      expect(decideCancelRequestMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "one",
-        "rejected",
-        "그날 대신 나올 사람이 없어요",
-      ),
-    );
+    expect(result.current.sheet?.id).toBe("one");
+    expect(result.current.sheet?.reason).toBe("이준호의 사정");
   });
 
   it("거절이 끝나면 그 줄이 빠지고 토스트가 선다", async () => {
@@ -215,15 +148,10 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
     const { result } = await mounted();
 
     act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-    act(() => result.current.choose("no_replacement"));
-    act(() => result.current.reject());
+    act(() => result.current.finishReject());
 
-    await waitFor(() =>
-      expect(result.current.toast).toBe(APPROVALS_COPY.rejected),
-    );
-
-    expect(result.current.detail).toBeNull();
+    expect(result.current.toast).toBe(APPROVALS_COPY.rejected);
+    expect(result.current.sheet).toBeNull();
     expect(result.current.listState).toBe("empty");
     expect(replaceMock).not.toHaveBeenCalled();
 
@@ -232,7 +160,7 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
     expect(result.current.toast).toBeNull();
   });
 
-  it("승인은 한 번 더 묻고 확인하면 그 자리를 채우는 날로 간다", async () => {
+  it("승인이 끝나면 그 자리를 채우는 날로 간다", async () => {
     getPendingApprovalsMock.mockResolvedValue([
       approval("one", "2026-10-05", "이준호"),
     ]);
@@ -240,35 +168,17 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
     const { result } = await mounted();
 
     act(() => result.current.rows[0].press());
+    act(() => result.current.finishApprove());
 
-    expect(result.current.confirming).toBe(false);
-
-    act(() => result.current.askApprove());
-
-    expect(result.current.confirming).toBe(true);
-    expect(result.current.confirmBody).toContain("이준호");
-
-    act(() => result.current.approve());
-
-    await waitFor(() =>
-      expect(decideCancelRequestMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "one",
-        "approved",
-        undefined,
-      ),
+    expect(replaceMock).toHaveBeenCalledWith(
+      "/admin/schedule?date=2026-10-05&from=approvals",
     );
-    await waitFor(() =>
-      expect(replaceMock).toHaveBeenCalledWith(
-        "/admin/schedule?date=2026-10-05&from=approvals",
-      ),
-    );
-
+    expect(result.current.sheet).toBeNull();
+    expect(result.current.listState).toBe("empty");
     expect(result.current.toast).toBeNull();
   });
 
-  it("확인창을 닫으면 실패도 함께 걷힌다", async () => {
-    decideCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
+  it("시트를 닫으면 상세가 걷힌다", async () => {
     getPendingApprovalsMock.mockResolvedValue([
       approval("one", "2026-10-05", "이준호"),
     ]);
@@ -276,60 +186,9 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
     const { result } = await mounted();
 
     act(() => result.current.rows[0].press());
-    act(() => result.current.askApprove());
-    act(() => result.current.approve());
-
-    await waitFor(() => expect(result.current.failed).toBe(true));
-
-    expect(result.current.confirming).toBe(true);
-    expect(result.current.confirmLabel).toBe(APPROVALS_COPY.confirmRetry);
-    expect(result.current.confirmNotice).toBe(APPROVALS_COPY.sendFailed);
-
-    act(() => result.current.cancelApprove());
-
-    expect(result.current.confirming).toBe(false);
-    expect(result.current.failed).toBe(false);
-  });
-
-  it("거절이 실패하면 시트가 열린 채로 쓴 글이 남는다", async () => {
-    decideCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
-    getPendingApprovalsMock.mockResolvedValue([
-      approval("one", "2026-10-05", "이준호"),
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-    act(() => result.current.choose(CUSTOM_REJECT_REASON));
-    act(() => result.current.write("그날은 어려워요"));
-    act(() => result.current.reject());
-
-    await waitFor(() => expect(result.current.failed).toBe(true));
-
-    expect(result.current.face).toBe("reject");
-    expect(result.current.written).toBe("그날은 어려워요");
-    expect(result.current.sendLabel).toBe(APPROVALS_COPY.resend);
-    expect(result.current.detail).not.toBeNull();
-  });
-
-  it("시트를 닫으면 얼굴과 고른 이유가 처음으로 돌아간다", async () => {
-    getPendingApprovalsMock.mockResolvedValue([
-      approval("one", "2026-10-05", "이준호"),
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.rows[0].press());
-    act(() => result.current.showFace("reject"));
-    act(() => result.current.choose(CUSTOM_REJECT_REASON));
-    act(() => result.current.write("그날은 어려워요"));
     act(() => result.current.closeSheet());
 
-    expect(result.current.detail).toBeNull();
-    expect(result.current.face).toBe("detail");
-    expect(result.current.chosen).toBeNull();
-    expect(result.current.written).toBe("");
+    expect(result.current.sheet).toBeNull();
   });
 
   it("뒤로는 쌓인 것이 있으면 되돌아가고 없으면 관리자 홈으로 간다", async () => {

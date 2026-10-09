@@ -7,11 +7,10 @@ import { Input } from "@/shared/ui/Input";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import { MemberSheet } from "@/features/memberAdmin/ui/MemberSheet";
 import { MEMBERS_COPY } from "@/screens/members/consts/members.const";
 import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
-import { MemberDialog } from "@/screens/members/ui/MemberDialog";
 import { MemberRows } from "@/screens/members/ui/MemberRows";
-import { MemberSheet } from "@/screens/members/ui/MemberSheet";
 import { MembersEmpty } from "@/screens/members/ui/MembersEmpty";
 import { MembersLoading } from "@/screens/members/ui/MembersLoading";
 
@@ -79,25 +78,10 @@ export function MembersScreen() {
             today={screen.today}
             lastAdmin={screen.lastAdmin}
             reachLine={screen.reachLine}
-            face={screen.face}
-            draft={screen.draft}
-            sending={screen.sending}
-            failed={screen.failed}
-            onFace={screen.showFace}
-            onDraft={screen.writeDraft}
-            onSaveName={screen.saveName}
-            onRole={screen.askRole}
-            onMarkLeave={screen.askLeave}
-            onUndoLeave={screen.askUndo}
+            onDone={screen.finish}
           />
         </SheetLayer>
       )}
-
-      <MemberDialog
-        kind={screen.dialog}
-        onClose={screen.closeDialog}
-        onConfirm={screen.confirm}
-      />
 
       {screen.toast ? (
         <FloatingToast

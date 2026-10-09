@@ -5,5 +5,3 @@ export type ApprovalListRow = {
   kind: ApprovalKind;
   workDate: string;
 };
-
-export type ApprovalSheetFace = "detail" | "reject";

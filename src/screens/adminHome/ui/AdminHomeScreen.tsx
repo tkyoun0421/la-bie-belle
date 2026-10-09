@@ -12,9 +12,9 @@ import { RatioBand } from "@/shared/ui/RatioBand";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import { HallDefaultsSheet } from "@/features/hallDefaults/ui/HallDefaultsSheet";
 import { ADMIN_HOME_COPY } from "@/screens/adminHome/consts/adminHome.const";
 import { useAdminHomeScreen } from "@/screens/adminHome/hooks/useAdminHomeScreen";
-import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
 
 export function AdminHomeScreen() {
   const screen = useAdminHomeScreen();
@@ -154,12 +154,9 @@ export function AdminHomeScreen() {
           <HallDefaultsSheet
             starts={screen.sheet.starts}
             ends={screen.sheet.ends}
-            saving={screen.saving}
-            failed={screen.saveFailed}
-            onStarts={screen.writeStarts}
-            onEnds={screen.writeEnds}
+            slots={screen.slots}
             onClose={screen.closeSheet}
-            onSave={screen.saveDefaults}
+            onSaved={screen.closeSheet}
           />
         </SheetLayer>
       )}

@@ -1,5 +1,5 @@
 import { usePathname, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
   ADMIN_APPROVALS_PATH,
@@ -15,6 +15,7 @@ import {
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
@@ -23,7 +24,6 @@ import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthSche
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
-import { useSetHallDefaultsMutation } from "@/features/hallDefaults/services/useSetHallDefaultsMutation";
 import { ADMIN_HOME_COPY } from "@/screens/adminHome/consts/adminHome.const";
 import {
   homeTileSummary,
@@ -74,14 +74,10 @@ export type AdminHomeScreenController = {
   approvalsTitle: string;
   pendingValue: string | undefined;
   sheet: AdminHomeSheet | null;
-  saving: boolean;
-  saveFailed: boolean;
+  slots: HallSlot[];
   unread: boolean;
   openSheet: () => void;
   closeSheet: () => void;
-  writeStarts: (typed: string) => void;
-  writeEnds: (typed: string) => void;
-  saveDefaults: () => void;
   goToday: () => void;
   goMonth: () => void;
   goTileMonth: () => void;
@@ -94,6 +90,8 @@ export type AdminHomeScreenController = {
   goQr: () => void;
   goStats: () => void;
 };
+
+const NO_SLOTS: HallSlot[] = [];
 
 function clockLabel(clock: string): string {
   return clock.slice(0, 5);
@@ -125,24 +123,9 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
   const { data: tileDays } = useMonthScheduleQuery(supabase, tiled);
   const { data: tileSlots } = useOpenSlotsQuery(supabase, tiled);
 
-  const {
-    mutate: sendDefaults,
-    isPending: saving,
-    isSuccess: saved,
-    isError: saveFailed,
-    reset: resetSave,
-  } = useSetHallDefaultsMutation(supabase);
-
   const closeSheet = useCallback(() => {
     setSheet(null);
-    resetSave();
-  }, [resetSave]);
-
-  useEffect(() => {
-    if (saved) {
-      closeSheet();
-    }
-  }, [saved, closeSheet]);
+  }, []);
 
   const goMonthOf = useCallback(
     (asked: string) => router.push(`${ADMIN_SCHEDULE_PATH}?month=${asked}`),
@@ -237,8 +220,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
         ? undefined
         : `${pending.length}${ADMIN_HOME_COPY.peopleSuffix}`,
     sheet,
-    saving,
-    saveFailed,
+    slots: defaults?.slots ?? NO_SLOTS,
     unread: (unreadCount.data ?? 0) > 0,
     openSheet: () => {
       if (defaults === undefined) {
@@ -251,21 +233,6 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
       });
     },
     closeSheet,
-    writeStarts: (typed) =>
-      setSheet((open) => (open === null ? null : { ...open, starts: typed })),
-    writeEnds: (typed) =>
-      setSheet((open) => (open === null ? null : { ...open, ends: typed })),
-    saveDefaults: () => {
-      if (sheet === null || defaults === undefined) {
-        return;
-      }
-
-      sendDefaults({
-        slots: defaults.slots,
-        starts: sheet.starts,
-        ends: sheet.ends,
-      });
-    },
     goToday: () => goDay(today),
     goMonth: () => goMonthOf(month),
     goTileMonth: () => goMonthOf(tiled),

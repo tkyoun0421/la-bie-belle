@@ -6,7 +6,6 @@ const getMonthScheduleMock =
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getOpenSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const listPendingMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getPendingApprovalsMock =
@@ -47,11 +46,6 @@ jest.unstable_mockModule("@/entities/schedule/api/getOpenSlots.api", () => ({
 jest.unstable_mockModule("@/entities/hall/api/getHallDefaults.api", () => ({
   getHallDefaults: getHallDefaultsMock,
 }));
-
-jest.unstable_mockModule(
-  "@/features/hallDefaults/api/setHallDefaults.api",
-  () => ({ setHallDefaults: setHallDefaultsMock }),
-);
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: jest.fn(),
@@ -146,7 +140,6 @@ beforeEach(() => {
   getMonthWindowMock.mockReset();
   getOpenSlotsMock.mockReset();
   getHallDefaultsMock.mockReset();
-  setHallDefaultsMock.mockReset();
   listPendingMembersMock.mockReset();
   getPendingApprovalsMock.mockReset();
   countUnreadMock.mockReset();
@@ -155,7 +148,6 @@ beforeEach(() => {
   getMonthWindowMock.mockResolvedValue({ month: "2026-10", confirmedAt: null });
   getOpenSlotsMock.mockResolvedValue([]);
   getHallDefaultsMock.mockResolvedValue(DEFAULTS);
-  setHallDefaultsMock.mockResolvedValue(undefined);
   listPendingMembersMock.mockResolvedValue([]);
   getPendingApprovalsMock.mockResolvedValue([]);
   countUnreadMock.mockResolvedValue(0);
@@ -276,40 +268,10 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
     });
   });
 
-  it("고친 값을 보내면 자리 수는 그대로 간다", async () => {
+  it("시트가 쓸 자리 수를 같이 낸다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.openSheet());
-    act(() => result.current.writeStarts("11:00"));
-    act(() => result.current.writeEnds("20:00"));
-
-    expect(result.current.sheet?.starts).toBe("11:00");
-
-    act(() => result.current.saveDefaults());
-
-    await waitFor(() =>
-      expect(setHallDefaultsMock).toHaveBeenCalledWith(FAKE_CLIENT, {
-        slots: 4,
-        starts: "11:00",
-        ends: "20:00",
-      }),
-    );
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
-  });
-
-  it("보내기가 넘어지면 시트가 열린 채로 적은 값이 남는다", async () => {
-    setHallDefaultsMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.openSheet());
-    act(() => result.current.writeStarts("11:00"));
-    act(() => result.current.saveDefaults());
-
-    await waitFor(() => expect(result.current.saveFailed).toBe(true));
-
-    expect(result.current.sheet?.starts).toBe("11:00");
+    expect(result.current.slots).toBe(DEFAULTS.slots);
   });
 
   it("승인할 일과 가입 대기가 셈을 글월에 담는다", async () => {
