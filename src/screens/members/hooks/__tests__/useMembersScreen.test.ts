@@ -11,6 +11,18 @@ const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const replaceMock = jest.fn();
+const canGoBackMock = jest.fn<() => boolean>();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    replace: replaceMock,
+    canGoBack: canGoBackMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -46,6 +58,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { MEMBERS_COPY } = await import("@/screens/members/consts/members.const");
+const { ADMIN_HOME_PATH } = await import("@/shared/consts/navigation.const");
 const { useMembersScreen } =
   await import("@/screens/members/hooks/useMembersScreen");
 
@@ -378,5 +391,37 @@ describe("useMembersScreen — 쓰기 넷이 한 시트에서 나간다", () => 
     act(() => result.current.dismissToast());
 
     expect(result.current.toast).toBeNull();
+  });
+});
+
+describe("useMembersScreen — 갈 데를 controller가 정한다", () => {
+  beforeEach(() => {
+    backMock.mockClear();
+    replaceMock.mockClear();
+    canGoBackMock.mockReset();
+    listActiveMembersMock.mockResolvedValue([]);
+    listLeftMembersMock.mockResolvedValue([]);
+  });
+
+  it("돌아갈 데가 있으면 뒤로 간다", async () => {
+    canGoBackMock.mockReturnValue(true);
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useMembersScreen(), { wrapper });
+
+    act(() => result.current.goBack());
+
+    expect(backMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("돌아갈 데가 없으면 관리자 홈으로 바꿔 넣는다", async () => {
+    canGoBackMock.mockReturnValue(false);
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useMembersScreen(), { wrapper });
+
+    act(() => result.current.goBack());
+
+    expect(replaceMock).toHaveBeenCalledWith(ADMIN_HOME_PATH);
+    expect(backMock).not.toHaveBeenCalled();
   });
 });

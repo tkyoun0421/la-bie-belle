@@ -1,6 +1,5 @@
 import { EllipsisVertical, Phone } from "lucide-react-native";
-import { useState } from "react";
-import { Linking, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
@@ -8,10 +7,6 @@ import { Icon } from "@/shared/ui/Icon";
 import { Input } from "@/shared/ui/Input";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { Member } from "@/entities/member/model/member.type";
-import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
-import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
-import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import {
   MEMBERS_COPY,
   MEMBER_SHEET_COPY,
@@ -22,43 +17,31 @@ import {
   RENAME_INPUT_TEST_ID,
   SHEET_AVATAR_SIZE,
 } from "@/screens/members/consts/members.const";
+import { useMemberSheet } from "@/screens/members/hooks/useMemberSheet";
+import type {
+  MemberSheetInput,
+  MemberSheetValueRow,
+} from "@/screens/members/model/memberSheet.type";
 import type { MemberSheetFace } from "@/screens/members/model/members.type";
-import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
-export type MemberSheetProps = {
-  member: Member;
-  today: string;
-  lastAdmin: boolean;
-  reachLine: string | null;
-  face: MemberSheetFace;
-  draft: string;
+export type MemberSheetProps = MemberSheetInput & {
   sending: boolean;
-  failed: boolean;
   onFace: (face: MemberSheetFace) => void;
   onDraft: (value: string) => void;
   onSaveName: () => void;
   onRole: () => void;
-  onMarkLeave: () => void;
-  onUndoLeave: () => void;
 };
 
-type ValueRowProps = {
-  label: string;
-  value: string;
-  numeric?: boolean;
-  onPress?: () => void;
-};
-
-function ValueRow({ label, value, numeric = false, onPress }: ValueRowProps) {
+function ValueRow({ label, value, numeric, press }: MemberSheetValueRow) {
   return (
     <View className="flex-row items-center justify-between gap-3 py-3">
       <Text size="sm" tone="muted">
         {label}
       </Text>
-      {onPress ? (
+      {press ? (
         <Pressable
           accessibilityRole="button"
-          onPress={onPress}
+          onPress={press}
           className="flex-1 flex-row items-center justify-end gap-2"
         >
           <Text size="base" numeric={numeric}>
@@ -76,90 +59,69 @@ function ValueRow({ label, value, numeric = false, onPress }: ValueRowProps) {
 }
 
 export function MemberSheet({
-  member,
-  today,
-  lastAdmin,
-  reachLine,
-  face,
-  draft,
   sending,
-  failed,
   onFace,
   onDraft,
   onSaveName,
   onRole,
-  onMarkLeave,
-  onUndoLeave,
+  ...input
 }: MemberSheetProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const name = member.displayName ?? "";
-  const left = member.leftAt !== null;
-  const erased = member.erasedAt !== null;
-  const admin = member.role === "admin";
-  const renaming = face === "rename";
+  const sheet = useMemberSheet(input);
 
   return (
     <>
       <View className="min-h-7 flex-row items-center justify-end">
-        {renaming || erased ? null : (
+        {sheet.menuLabel ? (
           <View className="relative">
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={MEMBER_SHEET_COPY.more}
               testID={MORE_TEST_ID}
               hitSlop={MORE_HIT_SLOP}
-              onPress={() => setMenuOpen((open) => !open)}
+              onPress={sheet.toggleMenu}
             >
               <Icon icon={EllipsisVertical} size={MORE_ICON_SIZE} />
             </Pressable>
-            <MorePopover open={menuOpen}>
+            <MorePopover open={sheet.menuOpen}>
               <MorePopoverItem
-                label={
-                  left
-                    ? MEMBER_SHEET_COPY.undoLeave
-                    : MEMBER_SHEET_COPY.markLeave
-                }
-                onPress={() => {
-                  setMenuOpen(false);
-                  if (left) {
-                    onUndoLeave();
-                  } else {
-                    onMarkLeave();
-                  }
-                }}
+                label={sheet.menuLabel}
+                onPress={sheet.pressMenu}
               />
             </MorePopover>
           </View>
-        )}
+        ) : null}
       </View>
 
-      <Avatar name={name} photoUrl={member.photoUrl} size={SHEET_AVATAR_SIZE} />
+      <Avatar
+        name={sheet.name}
+        photoUrl={sheet.photoUrl}
+        size={SHEET_AVATAR_SIZE}
+      />
       <View className="mt-4 flex-row items-center gap-2">
         <Text size="xl" weight="semibold">
-          {name}
+          {sheet.name}
         </Text>
-        {admin ? (
+        {sheet.showAdminBadge ? (
           <Badge variant="brand" label={MEMBERS_COPY.adminBadge} />
         ) : null}
       </View>
 
-      {left && member.leftAt ? (
+      {sheet.leftLine ? (
         <Text size="sm" tone="subtle" numeric className="mt-1">
-          {`${spellLeftAt(member.leftAt)}${MEMBER_SHEET_COPY.leftSuffix}`}
+          {sheet.leftLine}
         </Text>
       ) : null}
-      {erased ? (
+      {sheet.erasedLine ? (
         <Text size="xs" tone="subtle" className="mt-1">
-          {MEMBER_SHEET_COPY.erased}
+          {sheet.erasedLine}
         </Text>
       ) : null}
 
-      {renaming ? (
+      {sheet.body === "rename" ? (
         <>
           <Input
             label={MEMBER_SHEET_COPY.nameLabel}
-            value={draft}
+            value={input.draft}
             testID={RENAME_INPUT_TEST_ID}
             onChangeText={onDraft}
             className="mt-6"
@@ -168,44 +130,28 @@ export function MemberSheet({
             {MEMBER_SHEET_COPY.renameNote}
           </Text>
         </>
-      ) : erased ? null : (
+      ) : null}
+
+      {sheet.body === "detail" ? (
         <View className="mt-6">
-          <ValueRow
-            label={MEMBER_SHEET_COPY.phoneLabel}
-            numeric
-            value={member.phone ?? ""}
-            onPress={
-              member.phone
-                ? () => void Linking.openURL(`tel:${member.phone ?? ""}`)
-                : undefined
-            }
-          />
-          <ValueRow
-            label={MEMBER_SHEET_COPY.genderLabel}
-            value={spellGender(member.gender)}
-          />
-          <ValueRow
-            label={MEMBER_SHEET_COPY.birthLabel}
-            numeric
-            value={
-              member.birthDate ? formatBirthDate(member.birthDate, today) : ""
-            }
-          />
-          {reachLine ? (
+          {sheet.valueRows.map((row) => (
+            <ValueRow key={row.label} {...row} />
+          ))}
+          {sheet.reachLine ? (
             <Text size="xs" tone="subtle" className="mt-1">
-              {reachLine}
+              {sheet.reachLine}
             </Text>
           ) : null}
         </View>
-      )}
+      ) : null}
 
-      {failed ? (
+      {sheet.failedLine ? (
         <Text size="xs" tone="critical" className="mt-3">
-          {MEMBER_SHEET_COPY.sendFailed}
+          {sheet.failedLine}
         </Text>
       ) : null}
 
-      {renaming ? (
+      {sheet.footer === "rename" ? (
         <View className="mt-6 flex-row gap-3">
           <Button
             variant="secondary"
@@ -218,31 +164,33 @@ export function MemberSheet({
             variant="primary"
             className="flex-1"
             loading={sending}
-            disabled={!canSaveDisplayName(name, draft)}
+            disabled={!sheet.canSave}
             onPress={onSaveName}
           >
             {MEMBER_SHEET_COPY.save}
           </Button>
         </View>
-      ) : left ? null : (
+      ) : null}
+
+      {sheet.footer === "detail" ? (
         <View className="mt-6 gap-3">
           <Button variant="secondary" onPress={() => onFace("rename")}>
             {MEMBER_SHEET_COPY.rename}
           </Button>
           <Button
             variant="secondary"
-            disabled={admin && lastAdmin}
+            disabled={sheet.roleDisabled}
             onPress={onRole}
           >
-            {admin ? MEMBER_SHEET_COPY.demote : MEMBER_SHEET_COPY.promote}
+            {sheet.roleLabel}
           </Button>
-          {admin && lastAdmin ? (
+          {sheet.lastAdminNote ? (
             <Text size="xs" tone="subtle">
-              {MEMBER_SHEET_COPY.lastAdminNote}
+              {sheet.lastAdminNote}
             </Text>
           ) : null}
         </View>
-      )}
+      ) : null}
     </>
   );
 }

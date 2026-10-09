@@ -1,55 +1,33 @@
-import { useRouter } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
-import { Avatar } from "@/shared/ui/Avatar";
-import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
-import { EmptyState } from "@/shared/ui/EmptyState";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Input } from "@/shared/ui/Input";
-import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
-import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { MEMBERS_COPY } from "@/screens/members/consts/members.const";
 import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
 import { MemberDialog } from "@/screens/members/ui/MemberDialog";
+import { MemberRows } from "@/screens/members/ui/MemberRows";
 import { MemberSheet } from "@/screens/members/ui/MemberSheet";
-
-const SKELETON_ROWS = [0, 1, 2];
+import { MembersEmpty } from "@/screens/members/ui/MembersEmpty";
+import { MembersLoading } from "@/screens/members/ui/MembersLoading";
 
 export function MembersScreen() {
-  const router = useRouter();
   const screen = useMembersScreen();
 
   return (
     <Screen>
-      <AppBar
-        title={MEMBERS_COPY.appBarTitle}
-        onBack={() =>
-          router.canGoBack() ? router.back() : router.replace("/admin")
-        }
-      />
+      <AppBar title={MEMBERS_COPY.appBarTitle} onBack={screen.goBack} />
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {screen.listState === "loading" ? (
-            <Card>
-              {SKELETON_ROWS.map((at) => (
-                <SkeletonLine key={at} className="my-4 w-2/3" />
-              ))}
-            </Card>
-          ) : screen.listState === "empty" ? (
-            <Card>
-              <EmptyState
-                scene="no-members"
-                title={MEMBERS_COPY.emptyTitle}
-                description={MEMBERS_COPY.emptyBody}
-              />
-            </Card>
-          ) : (
+          {screen.listState === "loading" ? <MembersLoading /> : null}
+          {screen.listState === "empty" ? <MembersEmpty /> : null}
+
+          {screen.listState === "rows" ? (
             <>
               <Input
                 placeholder={MEMBERS_COPY.searchPlaceholder}
@@ -67,32 +45,7 @@ export function MembersScreen() {
               ) : null}
 
               {screen.activeRows.length > 0 ? (
-                <Card className="mt-4 py-0">
-                  {screen.activeRows.map((row, at) => (
-                    <ListRow
-                      key={row.key}
-                      title={row.displayName}
-                      detail={row.detail}
-                      left={
-                        <Avatar
-                          name={row.displayName}
-                          photoUrl={row.photoUrl}
-                        />
-                      }
-                      right={
-                        row.isAdmin ? (
-                          <Badge
-                            variant="brand"
-                            label={MEMBERS_COPY.adminBadge}
-                          />
-                        ) : undefined
-                      }
-                      chevron
-                      divider={at > 0}
-                      onPress={row.press}
-                    />
-                  ))}
-                </Card>
+                <MemberRows rows={screen.activeRows} className="mt-4 py-0" />
               ) : null}
 
               {screen.leftRows.length > 0 ? (
@@ -105,34 +58,17 @@ export function MembersScreen() {
                   >
                     {MEMBERS_COPY.leftSection}
                   </Text>
-                  <Card className="py-0">
-                    {screen.leftRows.map((row, at) => (
-                      <ListRow
-                        key={row.key}
-                        title={row.displayName}
-                        value={row.value}
-                        left={
-                          <Avatar
-                            name={row.displayName}
-                            photoUrl={row.photoUrl}
-                            className="opacity-60"
-                          />
-                        }
-                        chevron
-                        divider={at > 0}
-                        onPress={row.press}
-                      />
-                    ))}
+                  <MemberRows rows={screen.leftRows} faded className="py-0">
                     {screen.canExpand ? (
                       <Button variant="ghost" size="sm" onPress={screen.expand}>
                         {MEMBERS_COPY.more}
                       </Button>
                     ) : null}
-                  </Card>
+                  </MemberRows>
                 </>
               ) : null}
             </>
-          )}
+          ) : null}
         </View>
       </ScrollView>
 
