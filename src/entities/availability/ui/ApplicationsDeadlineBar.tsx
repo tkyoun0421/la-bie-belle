@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/shared/ui/Text";
-import { APPLICATIONS_COPY } from "@/screens/applications/consts/applications.const";
+import { APPLICATIONS_LIST_COPY } from "@/entities/availability/consts/availability.const";
 
 export type ApplicationsDeadlineBarProps = {
   line: string;
@@ -18,7 +18,7 @@ export function ApplicationsDeadlineBar({
       </Text>
       <Pressable accessibilityRole="button" onPress={onChange}>
         <Text size="xs" tone="muted">
-          {APPLICATIONS_COPY.changeDeadline}
+          {APPLICATIONS_LIST_COPY.changeDeadline}
         </Text>
       </Pressable>
     </View>

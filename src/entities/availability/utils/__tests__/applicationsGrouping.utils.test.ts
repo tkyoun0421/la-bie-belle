@@ -1,7 +1,7 @@
 import {
   groupApplicationsByDate,
   groupApplicationsByPerson,
-} from "@/screens/applications/utils/applicationsGrouping.utils";
+} from "@/entities/availability/utils/applicationsGrouping.utils";
 
 const ROWS = [
   { profileId: "profile-1", workDate: "2026-10-11", name: "박서연" },

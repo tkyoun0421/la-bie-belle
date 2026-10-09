@@ -2,10 +2,12 @@ import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Screen } from "@/shared/ui/Screen";
 import { Tabs } from "@/shared/ui/Tabs";
+import { ApplicationsDeadlineBar } from "@/entities/availability/ui/ApplicationsDeadlineBar";
+import { ApplicationsList } from "@/entities/availability/ui/ApplicationsList";
 import { TAB_OPTIONS } from "@/screens/applications/consts/applications.const";
 import { useApplicationsScreen } from "@/screens/applications/hooks/useApplicationsScreen";
-import { ApplicationsDeadlineBar } from "@/screens/applications/ui/ApplicationsDeadlineBar";
-import { ApplicationsList } from "@/screens/applications/ui/ApplicationsList";
+import { ApplicationsEmpty } from "@/screens/applications/ui/ApplicationsEmpty";
+import { ApplicationsLoading } from "@/screens/applications/ui/ApplicationsLoading";
 import { ApplicationsSheets } from "@/screens/applications/ui/ApplicationsSheets";
 
 export type ApplicationsScreenProps = {
@@ -34,7 +36,14 @@ export function ApplicationsScreen({ month }: ApplicationsScreenProps) {
             onChange={screen.chooseTab}
           />
 
-          <ApplicationsList screen={screen} />
+          <ApplicationsList
+            month={screen.month}
+            tab={screen.tab}
+            loading={<ApplicationsLoading />}
+            empty={
+              <ApplicationsEmpty deadlineLine={screen.emptyDeadlineLine} />
+            }
+          />
         </View>
       </ScrollView>
 

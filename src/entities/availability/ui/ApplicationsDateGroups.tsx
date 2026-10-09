@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { Card } from "@/shared/ui/Card";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import type { ApplicationsDateGroup } from "@/screens/applications/hooks/useApplicationsScreen";
+import type { ApplicationsDateGroup } from "@/entities/availability/hooks/useApplicationsList";
 
 export type ApplicationsDateGroupsProps = {
   groups: readonly ApplicationsDateGroup[];

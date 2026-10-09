@@ -2,41 +2,17 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { kstDateOf, monthOf } from "@/shared/utils/kstDate";
-import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
-import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
-import { APPLICATIONS_TABS } from "@/screens/applications/consts/applications.const";
+import { APPLICATIONS_TABS } from "@/entities/availability/consts/availability.const";
+import type { ApplicationsTab } from "@/entities/availability/hooks/useApplicationsList";
 import {
   applicationsDeadlineLine,
   applicationsEmptyDeadlineLine,
   applicationsTitle,
-  groupApplicationsByDate,
-  groupApplicationsByPerson,
-  spellApplicationDate,
-} from "@/screens/applications/utils/applicationsGrouping.utils";
-
-export type ApplicationsTab = (typeof APPLICATIONS_TABS)[number];
-
-export type ApplicationsListState = "loading" | "empty" | ApplicationsTab;
-
-export type ApplicationsName = {
-  key: string;
-  name: string;
-};
-
-export type ApplicationsDateGroup = {
-  key: string;
-  heading: string;
-  names: ApplicationsName[];
-};
-
-export type ApplicationsPersonGroup = {
-  key: string;
-  displayName: string;
-  dates: string;
-};
+} from "@/entities/availability/utils/applicationsGrouping.utils";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
+import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
+import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
 
 export type ApplicationsDeadlineSheet = {
   deadline: string;
@@ -46,13 +22,11 @@ export type ApplicationsDeadlineSheet = {
 
 export type ApplicationsScreenController = {
   goBack: () => void;
+  month: string;
   title: string;
   tab: ApplicationsTab;
   deadlineLine: string | null;
   emptyDeadlineLine: string | null;
-  listState: ApplicationsListState;
-  dateGroups: ApplicationsDateGroup[];
-  personGroups: ApplicationsPersonGroup[];
   sheet: ApplicationsDeadlineSheet | null;
   saving: boolean;
   failed: boolean;
@@ -81,10 +55,6 @@ export function useApplicationsScreen(
   const month = monthParam ?? monthOf(today);
 
   const { data: schedule } = useMonthWindowQuery(supabase, month);
-  const { data: rows, isLoading } = useMonthAvailabilitiesQuery(
-    supabase,
-    month,
-  );
 
   const {
     mutate: sendDeadline,
@@ -106,7 +76,6 @@ export function useApplicationsScreen(
     }
   }, [saved, close]);
 
-  const applications = rows ?? [];
   const deadline = schedule?.applicationDeadline ?? null;
   const typed = draft ?? deadline ?? today;
 
@@ -114,6 +83,7 @@ export function useApplicationsScreen(
 
   return {
     goBack,
+    month,
     title: applicationsTitle(month),
     tab,
     deadlineLine:
@@ -122,24 +92,6 @@ export function useApplicationsScreen(
         : applicationsDeadlineLine({ applicationDeadline: deadline, now }),
     emptyDeadlineLine:
       deadline === null ? null : applicationsEmptyDeadlineLine(deadline),
-    listState: isLoading
-      ? "loading"
-      : applications.length === 0
-        ? "empty"
-        : tab,
-    dateGroups: groupApplicationsByDate(applications).map((group) => ({
-      key: group.workDate,
-      heading: spellApplicationDate(group.workDate),
-      names: group.names.map((name, at) => ({
-        key: `${group.workDate}-${at}`,
-        name,
-      })),
-    })),
-    personGroups: groupApplicationsByPerson(applications).map((group) => ({
-      key: group.profileId,
-      displayName: group.displayName,
-      dates: group.workDates.map(spellApplicationDate).join(", "),
-    })),
     sheet: asking ? { deadline: typed, today, canSave: typed >= today } : null,
     saving,
     failed,
