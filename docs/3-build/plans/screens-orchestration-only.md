@@ -44,7 +44,7 @@ sources:
 
 ### AC-01 — 조각마다 controller가 선다
 
-- 전제: 로직을 든 조각이 열일곱이다. `MemberSheet`(4) · `PositionRow`(3) · `PersonSheet`(3) · `ConfirmSheet`(2) · `CloseDayWarningSheet`(2) · `MemberDetailSheet`(2)가 많은 쪽이고 나머지 열하나가 하나씩이다
+- 전제: 로직을 든 조각이 열일곱이다. `MemberSheet`(4) · `PositionRow`(3) · `PersonSheet`(3) · `ConfirmSheet`(2) · `CloseDayWarningSheet`(2) · `MemberDetailSheet`(2)가 많은 쪽이고 나머지 열하나가 하나씩이다. 한 슬라이스를 열어 보면 그 안에 값 import가 없는 조각이 섞여 있다 — `scheduleAdmin`의 열 중 `DayHoursSheet`·`SlotSheet`·`QualificationSheet` 셋이 그렇다. 세는 단위가 파일이 아니라 import라서 생기는 차이고, 그 셋은 controller 없이 지나간다
 - 행동: 그 조각마다 `hooks/use<조각>.ts`를 세운다. 조각이 받는 props는 식별자와 콜백이고, 문구·판정·열림 상태는 그 훅이 든다. `menuOpen` 둘도 거기로 간다
 - 관찰 결과: 그 조각들의 `.tsx`에 `model`·`utils` import가 없다. 짝 테스트가 controller를 본다
 
@@ -77,7 +77,8 @@ sources:
 
 - 전제: `SheetLayer`가 `DayDetail` 8 · `ScheduleAdminScreen` 5 · `ProfileScreen` 3에 쓰인다. 시트마다 `kind` 판정과 props 옮겨 적기가 반복된다
 - 행동: 화면마다 `ui/<화면>Sheets.tsx`가 `screen.sheet`를 받아 고른다. 화면 파일은 그것을 한 줄로 부른다
-- 관찰 결과: 한 `.tsx`의 `SheetLayer`가 하나를 넘지 않는다
+- 관찰 결과: 시트 배선과 props 옮겨 적기가 화면 파일을 떠난다. 화면 파일의 `SheetLayer`가 0이다
+- **겹쳐 뜨는 시트는 그 자리에서 둘일 수 있다.** `rehearsal`은 날 시트 위에 폼 시트가 쌓이고 닫기가 위에서부터라, 하나로 줄이면 보이는 것이 바뀐다 — 「UI가 보이는 결과를 바꾸지 않는다」가 이 수치보다 앞이다. 시트 스택을 한 `SheetLayer`로 접는 것은 그 컴포넌트를 다시 설계하는 일이라 이 task 밖이다
 
 ## 구현 순서
 
