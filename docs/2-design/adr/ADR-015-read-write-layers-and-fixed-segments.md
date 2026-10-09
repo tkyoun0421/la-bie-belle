@@ -238,6 +238,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **그 값이 controller를 거치면 lint가 경계를 본다.** `ui` → `model`·`utils` import는 지금 아무 규칙도 안 문다 — `api`·`services`·supabase 셋만 막혀 있어서, 판정 함수를 당기는 길이 열려 있다. controller가 유일한 통로가 되면 그 import 자체를 막을 수 있다.
 
+**조각이 controller를 통째로 받는 선은 「그 화면 밖에서 쓰일 수 있나」다.** 폼 조각처럼 실어 넘길 값이 스물을 넘으면 개별 props로 적는 것이 AC-06이 없애려던 배선 베끼기와 같은 종류가 되니, `screen: <화면>Controller` 하나를 받는다 — `PendingSummary`·`PendingEditor`·`ProfileSheets`가 그 꼴이다. 반대로 `MemberRows`처럼 다른 화면이 쓸 수 있는 조각은 개별 props로 받는다. 받는 꼴이 곧 올라갈 수 있는지를 말한다 — `entities/*/ui`는 도메인 타입을 props로 받는 자리라 화면 controller를 받는 조각은 거기 못 간다.
+
 **한 `.tsx`가 화면 둘을 들지 않는다.** `PendingScreen.tsx`가 `stage` 넷으로 각자 `<Screen>`을 그려 사실상 화면 넷이고, `ScheduleAdminScreen.tsx`는 `screen.day !== null`로 날 상세와 달력을 가른다. 조건으로 갈리는 화면은 파일로 갈린다 — 라우트가 고르거나, 상위 `.tsx`가 조각 둘 중 하나를 고른다.
 
 ## 화면 파일의 `useState`
