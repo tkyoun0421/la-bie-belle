@@ -74,13 +74,17 @@ sources:
 
 목록과 행과 카드가 `entities/<도메인>/ui`에 살고 자기 슬라이스의 query를 부른다. 도메인 타입을 props로 받는 것으로 끝나지 않는다 — 부르는 쪽이 값을 들고 와야 하면 자립이 아니다.
 
+**`features/stats`가 먼저 `entities/stats`로 내려간다.** 그 슬라이스에 mutation이 하나도 없고 `useAttendanceMonthsQuery` 하나와 판정·도구뿐이다 — ADR-015 이전에 선 자리고 층의 뜻으로는 읽기다. 통계 조각 열이 그리로 간다.
+
+**`wage`는 새 슬라이스가 아니다.** `useWageRatesQuery`가 `entities/payroll/services`에 살아서 `WageRows`·`WagesList`도 거기로 간다.
+
 | 조각 | 가는 자리 |
 | --- | --- |
 | `DayRoster`·`DaySheet`·`ScheduleAgenda`·`ScheduleCalendarCard`·`ScheduleWorkerRoster`·`ScheduleWorkerPicker` | `entities/schedule/ui` |
 | `DayDetail`·`DayDetailCard`·`ScheduleAdminCalendar`·`ScheduleAdminDay`·`ScheduleCalendarMonth`·`ScheduleCalendarMissing` | `entities/schedule/ui` |
 | `RehearsalDaySheet` | `entities/rehearsal/ui` |
 | `PositionRow`·`PositionRowHead`·`PositionSlotCard` | `entities/schedule/ui` |
-| `WageRows`·`WagesList` | `entities/wage/ui` |
+| `WageRows`·`WagesList` | `entities/payroll/ui` — `useWageRatesQuery`가 거기 산다 |
 | `PayrollMonthRows`·`PayrollHistoryRows`·`PayrollAccrual`·`PayrollSummary`·`PayrollList`·`PeriodStepper` | `entities/payroll/ui` |
 | `MemberRows`·`PendingRows`·`BlockedRows` | `entities/member/ui` |
 | `ApprovalRows`·`ApprovalsList` | `entities/workRequest/ui` |
