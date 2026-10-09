@@ -2,26 +2,18 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import type { RequestSheetState } from "@/screens/scheduleWorker/model/requestSheet.policy";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import { useRequestSheet } from "@/features/workRequest/hooks/useRequestSheet";
 
 export type RequestSheetProps = {
-  subtitle: string;
-  state: RequestSheetState;
-  sending: boolean;
-  failed: boolean;
-  onDecline: () => void;
-  onAccept: () => void;
+  request: SlotRequest;
+  onAnswered: () => void;
+  onSeatTaken: (line: string) => void;
 };
 
-export function RequestSheet({
-  subtitle,
-  state,
-  sending,
-  failed,
-  onDecline,
-  onAccept,
-}: RequestSheetProps) {
-  const ended = state === "ended";
+export function RequestSheet(props: RequestSheetProps) {
+  const fragment = useRequestSheet(props);
+  const ended = fragment.state === "ended";
 
   return (
     <View className="gap-3">
@@ -30,7 +22,7 @@ export function RequestSheet({
           {ended ? "근무 요청이 끝났어요" : "근무 요청이 왔어요"}
         </Text>
         <Text size="xs" tone="subtle" numeric>
-          {subtitle}
+          {fragment.subtitle}
         </Text>
       </View>
 
@@ -38,7 +30,7 @@ export function RequestSheet({
         {ended ? "자리가 찼거나 기간이 지났어요" : "바로 배정돼요"}
       </Text>
 
-      {failed ? (
+      {fragment.failed ? (
         <NoticeBlock kind="error" className="p-4">
           보내지 못했어요. 다시 시도해주세요
         </NoticeBlock>
@@ -49,16 +41,16 @@ export function RequestSheet({
           <Button
             variant="secondary"
             className="flex-1"
-            disabled={sending}
-            onPress={onDecline}
+            disabled={fragment.sending}
+            onPress={fragment.decline}
           >
             어려워요
           </Button>
           <Button
             variant="primary"
             className="flex-1"
-            loading={sending}
-            onPress={onAccept}
+            loading={fragment.sending}
+            onPress={fragment.accept}
           >
             근무할게요
           </Button>

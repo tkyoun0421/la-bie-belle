@@ -3,23 +3,16 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { COUNT_MAX_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
-import { useRehearsalFormSheet } from "@/screens/rehearsal/hooks/useRehearsalFormSheet";
-import type { AddSheetValues } from "@/screens/rehearsal/model/addSheetState.reducer";
-import type { RehearsalFormSheetInput } from "@/screens/rehearsal/model/rehearsalFormSheet.type";
+import { COUNT_MAX_LENGTH } from "@/features/rehearsalEdit/consts/rehearsalEdit.const";
+import { useRehearsalFormSheet } from "@/features/rehearsalEdit/hooks/useRehearsalFormSheet";
+import type { RehearsalFormSheetInput } from "@/features/rehearsalEdit/model/rehearsalFormSheet.type";
 
 export type RehearsalFormSheetProps = RehearsalFormSheetInput & {
-  saving: boolean;
-  onChange: (values: Partial<AddSheetValues>) => void;
-  onSubmit: () => void;
   onClose: () => void;
   onRemove?: () => void;
 };
 
 export function RehearsalFormSheet({
-  saving,
-  onChange,
-  onSubmit,
   onClose,
   onRemove,
   ...input
@@ -45,14 +38,14 @@ export function RehearsalFormSheet({
             label="시작"
             testID="rehearsal-starts-input"
             value={form.values.startsAt}
-            onChangeText={(startsAt) => onChange({ startsAt })}
+            onChangeText={(startsAt) => form.change({ startsAt })}
           />
           <Input
             className="flex-1"
             label="끝"
             testID="rehearsal-ends-input"
             value={form.values.endsAt}
-            onChangeText={(endsAt) => onChange({ endsAt })}
+            onChangeText={(endsAt) => form.change({ endsAt })}
           />
         </View>
       ) : (
@@ -64,7 +57,7 @@ export function RehearsalFormSheet({
             keyboardType="number-pad"
             maxLength={COUNT_MAX_LENGTH}
             value={form.values.count}
-            onChangeText={(count) => onChange({ count })}
+            onChangeText={(count) => form.change({ count })}
           />
           <Text size="sm" tone="subtle" className="pb-3">
             건
@@ -110,9 +103,9 @@ export function RehearsalFormSheet({
         <View className="flex-1">
           <Button
             variant="primary"
-            loading={saving}
+            loading={form.saving}
             disabled={!form.canSubmit}
-            onPress={onSubmit}
+            onPress={form.submit}
           >
             {form.submitLabel}
           </Button>

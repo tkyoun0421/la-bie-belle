@@ -10,8 +10,6 @@ const getAllRehearsalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const addRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const TODAY = "2026-10-03";
@@ -41,16 +39,6 @@ jest.unstable_mockModule(
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
   () => ({ getMonthSchedule: getMonthScheduleMock }),
-);
-
-jest.unstable_mockModule(
-  "@/features/rehearsalEdit/api/addRehearsal.api",
-  () => ({ addRehearsal: addRehearsalMock }),
-);
-
-jest.unstable_mockModule(
-  "@/features/rehearsalEdit/api/editRehearsal.api",
-  () => ({ editRehearsal: editRehearsalMock }),
 );
 
 jest.unstable_mockModule(
@@ -118,8 +106,6 @@ beforeEach(() => {
   getMyRehearsalsMock.mockReset();
   getAllRehearsalsMock.mockReset();
   getMonthScheduleMock.mockReset();
-  addRehearsalMock.mockReset();
-  editRehearsalMock.mockReset();
   removeRehearsalMock.mockReset();
 
   getCurrentUserMock.mockResolvedValue({ id: "user-1", user_metadata: {} });
@@ -128,8 +114,6 @@ beforeEach(() => {
   getMyRehearsalsMock.mockResolvedValue([]);
   getAllRehearsalsMock.mockResolvedValue([]);
   getMonthScheduleMock.mockResolvedValue([]);
-  addRehearsalMock.mockResolvedValue(undefined);
-  editRehearsalMock.mockResolvedValue(undefined);
   removeRehearsalMock.mockResolvedValue(undefined);
 });
 
@@ -232,87 +216,31 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
     await waitFor(() => expect(result.current.failed).toBe(false));
   });
 
-  it("넣기를 열면 폼이 서고 보낸 것이 그날로 간다", async () => {
+  it("넣기를 열면 그날과 그날의 갈래를 든 폼이 선다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.openDay("2026-10-05"));
     act(() => result.current.openAdd());
 
-    expect(result.current.form?.mode).toBe("add");
-
-    act(() =>
-      result.current.change({ startsAt: "14:00", endsAt: "16:00", count: "" }),
-    );
-    act(() => result.current.submit());
-
-    await waitFor(() =>
-      expect(addRehearsalMock).toHaveBeenCalledWith(FAKE_CLIENT, {
-        workDate: "2026-10-05",
-        startsAt: "14:00",
-        endsAt: "16:00",
-      }),
-    );
-  });
-
-  it("보내고 나면 폼이 저절로 닫힌다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openDay("2026-10-05"));
-    act(() => result.current.openAdd());
-    act(() =>
-      result.current.change({ startsAt: "14:00", endsAt: "16:00", count: "" }),
-    );
-    act(() => result.current.submit());
-
-    await waitFor(() => expect(result.current.form).toBeNull());
-  });
-
-  it("채우지 않은 폼은 안 보낸다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openDay("2026-10-05"));
-    act(() => result.current.openAdd());
-    act(() => result.current.submit());
-
-    expect(addRehearsalMock).not.toHaveBeenCalled();
-  });
-
-  it("보내기가 넘어지면 폼이 열린 채로 안내를 든다", async () => {
-    addRehearsalMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.openDay("2026-10-05"));
-    act(() => result.current.openAdd());
-    act(() =>
-      result.current.change({ startsAt: "14:00", endsAt: "16:00", count: "" }),
-    );
-    act(() => result.current.submit());
-
-    await waitFor(() => expect(result.current.sheet.notice).not.toBeNull());
-
-    expect(result.current.form?.mode).toBe("add");
-  });
-
-  it("줄을 눌러 고치면 그 줄의 값이 폼에 실려 온다", async () => {
-    getMyRehearsalsMock.mockResolvedValue([rehearsalAt("a", "2026-10-05")]);
-
-    const { result } = await mounted();
-
-    await withOneRowOn("2026-10-05", result);
-
-    act(() => result.current.openDay("2026-10-05"));
-    act(() => result.current.openEdit?.("a"));
-
-    expect(result.current.form).toEqual({ mode: "edit", id: "a" });
-    expect(result.current.sheet.values).toEqual({
-      startsAt: "14:00",
-      endsAt: "16:00",
-      count: "",
+    expect(result.current.form).toEqual({
+      mode: "add",
+      workDate: "2026-10-05",
+      formKind: "time",
     });
   });
 
-  it("고친 것을 보내면 그 줄의 id로 간다", async () => {
+  it("폼을 닫으면 그 자리가 비고 그 날은 열린 채로 남는다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openDay("2026-10-05"));
+    act(() => result.current.openAdd());
+    act(() => result.current.closeForm());
+
+    expect(result.current.form).toBeNull();
+    expect(result.current.openDate).toBe("2026-10-05");
+  });
+
+  it("줄을 눌러 고치면 그 줄이 폼에 실려 온다", async () => {
     getMyRehearsalsMock.mockResolvedValue([rehearsalAt("a", "2026-10-05")]);
 
     const { result } = await mounted();
@@ -321,18 +249,11 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
 
     act(() => result.current.openDay("2026-10-05"));
     act(() => result.current.openEdit?.("a"));
-    act(() =>
-      result.current.change({ startsAt: "15:00", endsAt: "17:00", count: "" }),
-    );
-    act(() => result.current.submit());
 
-    await waitFor(() =>
-      expect(editRehearsalMock).toHaveBeenCalledWith(FAKE_CLIENT, {
-        id: "a",
-        startsAt: "15:00",
-        endsAt: "17:00",
-      }),
-    );
+    expect(result.current.form).toEqual({
+      mode: "edit",
+      rehearsal: rehearsalAt("a", "2026-10-05"),
+    });
   });
 
   it("없는 줄을 고치려 하면 폼이 안 선다", async () => {

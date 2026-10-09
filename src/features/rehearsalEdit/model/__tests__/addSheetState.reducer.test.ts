@@ -1,7 +1,7 @@
 import {
   addSheetReducer,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState.reducer";
+} from "@/features/rehearsalEdit/model/addSheetState.reducer";
 
 const BASE_STATE: AddSheetState = {
   formKind: "time",

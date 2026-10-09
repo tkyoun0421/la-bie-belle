@@ -1,15 +1,15 @@
-import { FORM_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
-import { canSubmitForm } from "@/screens/rehearsal/model/addSheetState.reducer";
+import { FORM_COPY } from "@/features/rehearsalEdit/consts/rehearsalEdit.const";
+import { canSubmitForm } from "@/features/rehearsalEdit/model/addSheetState.reducer";
 import type {
-  RehearsalFormSheetController,
-  RehearsalFormSheetInput,
-} from "@/screens/rehearsal/model/rehearsalFormSheet.type";
+  RehearsalFormFace,
+  RehearsalFormFaceInput,
+} from "@/features/rehearsalEdit/model/rehearsalFormSheet.type";
 
-export function useRehearsalFormSheet({
+export function rehearsalFormFace({
   mode,
   dateLabel,
   state,
-}: RehearsalFormSheetInput): RehearsalFormSheetController {
+}: RehearsalFormFaceInput): RehearsalFormFace {
   const { formKind, values, notice } = state;
   const adding = mode === "add";
 

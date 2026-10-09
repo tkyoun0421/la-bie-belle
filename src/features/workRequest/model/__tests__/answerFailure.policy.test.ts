@@ -1,6 +1,6 @@
 const { DomainError } = await import("@/shared/model/error.type");
 const { answerFailure } =
-  await import("@/screens/scheduleWorker/model/answerFailure.policy");
+  await import("@/features/workRequest/model/answerFailure.policy");
 
 describe("answerFailure — 늦은 수락과 끊긴 통신을 가른다", () => {
   it("실패가 없으면 아무것도 아니다", () => {

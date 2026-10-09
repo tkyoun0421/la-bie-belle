@@ -1,5 +1,3 @@
-export const CANCEL_REASON_MAX_LENGTH = 100;
-
 export const ROSTER_MAX_HEIGHT = 360;
 
 export const SKELETON_ROWS = [0, 1, 2];

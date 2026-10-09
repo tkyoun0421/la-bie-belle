@@ -1,0 +1,1 @@
+export const CANCEL_REASON_MAX_LENGTH = 100;

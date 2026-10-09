@@ -1,8 +1,8 @@
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { CancelShiftSheet } from "@/features/workRequest/ui/CancelShiftSheet";
+import { RequestSheet } from "@/features/workRequest/ui/RequestSheet";
 import type { ScheduleWorkerScreenController } from "@/screens/scheduleWorker/hooks/useScheduleWorkerScreen";
-import { CancelShiftSheet } from "@/screens/scheduleWorker/ui/CancelShiftSheet";
 import { DaySheet } from "@/screens/scheduleWorker/ui/DaySheet";
-import { RequestSheet } from "@/screens/scheduleWorker/ui/RequestSheet";
 
 export type ScheduleWorkerSheetsProps = {
   screen: ScheduleWorkerScreenController;
@@ -19,24 +19,18 @@ export function ScheduleWorkerSheets({ screen }: ScheduleWorkerSheetsProps) {
     <SheetLayer onDismiss={screen.closeSheet}>
       {sheet.kind === "request" ? (
         <RequestSheet
-          subtitle={sheet.subtitle}
-          state={sheet.state}
-          sending={sheet.sending}
-          failed={sheet.failed}
-          onDecline={screen.decline}
-          onAccept={screen.accept}
+          request={sheet.request}
+          onAnswered={screen.closeSheet}
+          onSeatTaken={screen.seatTaken}
         />
       ) : null}
 
       {sheet.kind === "cancel" ? (
         <CancelShiftSheet
-          title={sheet.title}
-          reason={sheet.reason}
-          canSend={sheet.canSend}
-          sending={sheet.sending}
-          failed={sheet.failed}
-          onChangeReason={screen.writeReason}
-          onSend={screen.sendCancel}
+          assignmentId={sheet.assignmentId}
+          workDate={sheet.workDate}
+          position={sheet.position}
+          onSent={screen.closeSheet}
         />
       ) : null}
 

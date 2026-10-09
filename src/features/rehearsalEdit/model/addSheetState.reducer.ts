@@ -5,7 +5,7 @@ import {
   EMPTY_ADD_SHEET_VALUES,
   MAX_COUNT,
   MIN_COUNT,
-} from "@/screens/rehearsal/consts/rehearsal.const";
+} from "@/features/rehearsalEdit/consts/rehearsalEdit.const";
 
 export type AddSheetValues = {
   startsAt: string;

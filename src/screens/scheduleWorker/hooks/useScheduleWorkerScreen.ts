@@ -5,8 +5,6 @@ import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
@@ -17,15 +15,9 @@ import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type"
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
-import { useCreateCancelRequestMutation } from "@/features/workRequest/services/useCreateCancelRequestMutation";
-import { useRespondRequestMutation } from "@/features/workRequest/services/useRespondRequestMutation";
 import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
-import { answerFailure } from "@/screens/scheduleWorker/model/answerFailure.policy";
 import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState.policy";
-import {
-  cancelRequestBadge,
-  isValidCancelReason,
-} from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
+import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
 import {
   canShowShiftActions,
   daySheetSubtitle,
@@ -41,10 +33,6 @@ import {
   spellMonth,
   type MonthState,
 } from "@/screens/scheduleWorker/model/monthState.policy";
-import {
-  requestSheetState,
-  type RequestSheetState,
-} from "@/screens/scheduleWorker/model/requestSheet.policy";
 import type { AgendaEntry } from "@/screens/scheduleWorker/model/scheduleAgenda.type";
 import {
   myAssignmentOf,
@@ -52,9 +40,6 @@ import {
 } from "@/screens/scheduleWorker/utils/agendaRow.utils";
 import { toggleSelectedDate } from "@/screens/scheduleWorker/utils/submissionSelection.utils";
 import {
-  cancelSheetTitle,
-  claimedLine,
-  requestSubtitle,
   spellNotOpen,
   spellSubmitted,
 } from "@/screens/scheduleWorker/utils/workerCopy.utils";
@@ -73,18 +58,13 @@ export type ScheduleWorkerView = "calendar" | "position";
 export type ScheduleWorkerSheet =
   | {
       kind: "request";
-      subtitle: string;
-      state: RequestSheetState;
-      sending: boolean;
-      failed: boolean;
+      request: SlotRequest;
     }
   | {
       kind: "cancel";
-      title: string;
-      reason: string;
-      canSend: boolean;
-      sending: boolean;
-      failed: boolean;
+      assignmentId: string;
+      workDate: string;
+      position: string;
     }
   | {
       kind: "roster";
@@ -127,12 +107,9 @@ export type ScheduleWorkerScreenController = {
   toggleAgendaDay: (workDate: string) => void;
   askCancelOn: (workDate: string) => void;
   askCancel: () => void;
-  writeReason: (typed: string) => void;
-  sendCancel: () => void;
   requestSwap: () => void;
-  accept: () => void;
-  decline: () => void;
   submit: () => void;
+  seatTaken: (line: string) => void;
   closeSheet: () => void;
   dismissToast: () => void;
 };
@@ -155,12 +132,7 @@ export function useScheduleWorkerScreen({
   const [selected, setSelected] = useState<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
-  const [reason, setReason] = useState("");
   const [claimed, setClaimed] = useState<string | null>(null);
-  const [answering, setAnswering] = useState<SlotRequest | null>(null);
-
-  const clockOffset = serverClockStore((at) => at.offset);
-  const serverNowMs = nowWithOffset(Date.now(), clockOffset);
 
   const { data: sessionUser } = useSessionUserQuery(supabase);
   const { data: profile } = useMyProfileRowQuery(
@@ -181,22 +153,6 @@ export function useScheduleWorkerScreen({
     isError: sendFailed,
     reset: resetSend,
   } = useSubmitAvailabilityMutation(supabase);
-
-  const {
-    mutate: answer,
-    isPending: sendingAnswer,
-    isSuccess: answered,
-    error: answerError,
-    reset: resetAnswer,
-  } = useRespondRequestMutation(supabase);
-
-  const {
-    mutate: sendCancelRequest,
-    isPending: sendingCancel,
-    isSuccess: cancelAsked,
-    isError: cancelFailed,
-    reset: resetCancel,
-  } = useCreateCancelRequestMutation(supabase);
 
   const myProfileId = profile?.id ?? null;
 
@@ -231,30 +187,6 @@ export function useScheduleWorkerScreen({
     setToast(SCHEDULE_WORKER_COPY.sendFailed);
     resetSend();
   }, [sendFailed, resetSend]);
-
-  useEffect(() => {
-    if (!answered) {
-      return;
-    }
-
-    setAnswering(null);
-    setOpenDate(null);
-    resetAnswer();
-  }, [answered, resetAnswer]);
-
-  const failedAnswer = answerFailure(answerError);
-
-  useEffect(() => {
-    if (failedAnswer !== "seat_taken") {
-      return;
-    }
-
-    setClaimed(answering === null ? null : claimedLine(answering));
-    setAnswering(null);
-    setOpenDate(null);
-    setToast(SCHEDULE_WORKER_COPY.seatTaken);
-    resetAnswer();
-  }, [failedAnswer, answering, resetAnswer]);
 
   const dayOf = useMemo(() => {
     const byDate = new Map<string, ScheduleDay>();
@@ -338,16 +270,16 @@ export function useScheduleWorkerScreen({
   const closeSheet = useCallback(() => {
     setOpenDate(null);
     setCancelling(false);
-    setReason("");
-    resetAnswer();
-    resetCancel();
-  }, [resetAnswer, resetCancel]);
+  }, []);
 
-  useEffect(() => {
-    if (cancelAsked) {
+  const seatTaken = useCallback(
+    (line: string) => {
+      setClaimed(line);
+      setToast(SCHEDULE_WORKER_COPY.seatTaken);
       closeSheet();
-    }
-  }, [cancelAsked, closeSheet]);
+    },
+    [closeSheet],
+  );
 
   const closeTop = useMemo(() => {
     if (openDate === null) {
@@ -365,7 +297,6 @@ export function useScheduleWorkerScreen({
     setMonth(shiftMonth(month, step));
     setOpenDate(null);
     setCancelling(false);
-    setReason("");
     setClaimed(null);
     setExpanded([]);
   };
@@ -373,32 +304,19 @@ export function useScheduleWorkerScreen({
   const openSheetOn = (date: string, asCancel: boolean) => {
     setOpenDate(date);
     setCancelling(asCancel);
-    setReason("");
   };
 
   const sheet: ScheduleWorkerSheet | null =
     openRequest !== null
-      ? {
-          kind: "request",
-          subtitle: requestSubtitle(openRequest),
-          state: requestSheetState({
-            closedAt: openRequest.closedAt,
-            expiresAt: openRequest.expiresAt,
-            serverNowMs,
-          }),
-          sending: sendingAnswer,
-          failed: failedAnswer === "unreachable",
-        }
+      ? { kind: "request", request: openRequest }
       : openDay === null
         ? null
         : cancelling && myShift !== null
           ? {
               kind: "cancel",
-              title: cancelSheetTitle(openDay.workDate, myShift.position),
-              reason,
-              canSend: isValidCancelReason(reason),
-              sending: sendingCancel,
-              failed: cancelFailed,
+              assignmentId: myShift.id,
+              workDate: openDay.workDate,
+              position: myShift.position,
             }
           : {
               kind: "roster",
@@ -496,29 +414,9 @@ export function useScheduleWorkerScreen({
       setExpanded(toggleSelectedDate(expanded, workDate)),
     askCancelOn: (workDate) => openSheetOn(workDate, true),
     askCancel: () => setCancelling(true),
-    writeReason: setReason,
-    sendCancel: () => {
-      if (myShift !== null) {
-        sendCancelRequest({
-          assignmentId: myShift.id,
-          reason: reason.trim(),
-        });
-      }
-    },
     requestSwap: () => undefined,
-    accept: () => {
-      if (openRequest !== null) {
-        setAnswering(openRequest);
-        answer({ requestId: openRequest.id, answer: "accept" });
-      }
-    },
-    decline: () => {
-      if (openRequest !== null) {
-        setAnswering(openRequest);
-        answer({ requestId: openRequest.id, answer: "decline" });
-      }
-    },
     submit: () => send({ month, dates: selected }),
+    seatTaken,
     closeSheet,
     dismissToast: () => setToast(null),
   };

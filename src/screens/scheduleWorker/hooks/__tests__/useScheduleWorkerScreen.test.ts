@@ -19,10 +19,6 @@ const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const submitAvailabilityMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const createCancelRequestMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-
 const FAKE_CLIENT = {} as never;
 
 const pushMock = jest.fn();
@@ -89,24 +85,11 @@ jest.unstable_mockModule(
   () => ({ submitAvailability: submitAvailabilityMock }),
 );
 
-jest.unstable_mockModule(
-  "@/features/workRequest/api/respondRequest.api",
-  () => ({
-    respondRequest: respondRequestMock,
-  }),
-);
-
-jest.unstable_mockModule(
-  "@/features/workRequest/api/createCancelRequest.api",
-  () => ({ createCancelRequest: createCancelRequestMock }),
-);
-
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
 const { SCHEDULE_WORKER_COPY } =
   await import("@/screens/scheduleWorker/consts/scheduleWorker.const");
 const { useScheduleWorkerScreen } =
@@ -214,8 +197,6 @@ beforeEach(() => {
     getSlotRequestsMock,
     getPendingApprovalsMock,
     submitAvailabilityMock,
-    respondRequestMock,
-    createCancelRequestMock,
   ]) {
     mock.mockReset();
   }
@@ -250,8 +231,6 @@ beforeEach(() => {
   getSlotRequestsMock.mockResolvedValue([]);
   getPendingApprovalsMock.mockResolvedValue([]);
   submitAvailabilityMock.mockResolvedValue(undefined);
-  respondRequestMock.mockResolvedValue(undefined);
-  createCancelRequestMock.mockResolvedValue(undefined);
 });
 
 async function mounted(params: { month?: string; date?: string } = {}) {
@@ -417,26 +396,7 @@ describe("useScheduleWorkerScreen — 날짜 하나에 문이 둘이다", () => 
       throw new Error("요청 시트가 아니다");
     }
 
-    expect(result.current.sheet.subtitle).toBe(
-      "10월 20일(화) · 서빙 · 10:00 – 18:00",
-    );
-    expect(result.current.sheet.state).toBe("normal");
-  });
-
-  it("만료된 요청은 끝난 것으로 선다", async () => {
-    getSlotRequestsMock.mockResolvedValue([
-      { ...REQUEST, expiresAt: "2020-01-01T00:00:00.000Z" },
-    ]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-20"));
-
-    if (result.current.sheet?.kind !== "request") {
-      throw new Error("요청 시트가 아니다");
-    }
-
-    expect(result.current.sheet.state).toBe("ended");
+    expect(result.current.sheet.request.id).toBe("r1");
   });
 
   it("요청이 온 날이 있으면 달력 아래 줄이 점선을 설명한다", async () => {
@@ -452,51 +412,16 @@ describe("useScheduleWorkerScreen — 날짜 하나에 문이 둘이다", () => 
   });
 });
 
-describe("useScheduleWorkerScreen — 늦은 수락은 오류 블록이 아니다", () => {
-  it("수락이 그 요청 id로 가고 성공하면 시트가 닫힌다", async () => {
-    getSlotRequestsMock.mockResolvedValue([REQUEST]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-20"));
-    act(() => result.current.accept());
-
-    await waitFor(() =>
-      expect(respondRequestMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "r1",
-        "accept",
-      ),
-    );
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
-  });
-
-  it("거절도 같은 문으로 나간다", async () => {
-    getSlotRequestsMock.mockResolvedValue([REQUEST]);
-
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-20"));
-    act(() => result.current.decline());
-
-    await waitFor(() =>
-      expect(respondRequestMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "r1",
-        "decline",
-      ),
-    );
-  });
-
+describe("useScheduleWorkerScreen — 늦은 수락은 조각이 올려 보낸다", () => {
   it("자리가 찼으면 시트를 닫고 사건을 달력 아래 줄에 남긴다", async () => {
     getSlotRequestsMock.mockResolvedValue([REQUEST]);
-    respondRequestMock.mockRejectedValue(new DomainError("slot_full"));
 
     const { result } = await mounted();
 
     act(() => result.current.pressDay?.("2026-10-20"));
-    act(() => result.current.accept());
+    act(() =>
+      result.current.seatTaken("10월 20일 서빙 자리는 다른 분이 맡았어요"),
+    );
 
     await waitFor(() =>
       expect(result.current.toast).toBe(SCHEDULE_WORKER_COPY.seatTaken),
@@ -507,28 +432,10 @@ describe("useScheduleWorkerScreen — 늦은 수락은 오류 블록이 아니�
       "10월 20일 서빙 자리는 다른 분이 맡았어요",
     );
   });
-
-  it("통신이 끊긴 것은 시트를 열어 둔 채 실패를 세운다", async () => {
-    getSlotRequestsMock.mockResolvedValue([REQUEST]);
-    respondRequestMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-20"));
-    act(() => result.current.accept());
-
-    await waitFor(() => {
-      if (result.current.sheet?.kind !== "request") {
-        throw new Error("요청 시트가 아니다");
-      }
-
-      expect(result.current.sheet.failed).toBe(true);
-    });
-  });
 });
 
-describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
-  it("명단 시트에서 취소로 얼굴이 바뀌고 사유를 적어야 보낼 수 있다", async () => {
+describe("useScheduleWorkerScreen — 취소 시트가 어느 근무를 가리키는지가 여기 산다", () => {
+  it("명단 시트에서 취소로 얼굴이 바뀌고 그 배정을 가리킨다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.pressDay?.("2026-10-17"));
@@ -538,82 +445,19 @@ describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
       throw new Error("취소 시트가 아니다");
     }
 
-    expect(result.current.sheet.title).toBe("근무 취소 · 10월 17일(토) 안내");
-    expect(result.current.sheet.canSend).toBe(false);
-
-    act(() => result.current.writeReason("   "));
-
-    if (result.current.sheet?.kind !== "cancel") {
-      throw new Error("취소 시트가 아니다");
-    }
-
-    expect(result.current.sheet.canSend).toBe(false);
-
-    act(() => result.current.writeReason(" 몸이 아파요 "));
-
-    if (result.current.sheet?.kind !== "cancel") {
-      throw new Error("취소 시트가 아니다");
-    }
-
-    expect(result.current.sheet.canSend).toBe(true);
+    expect(result.current.sheet.assignmentId).toBe("a1");
+    expect(result.current.sheet.workDate).toBe("2026-10-17");
+    expect(result.current.sheet.position).toBe("안내");
   });
 
-  it("취소 요청이 그 배정 id와 다듬은 사유로 가고 보낸 뒤 시트가 닫힌다", async () => {
+  it("보낸 뒤에는 시트가 닫힌다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.pressDay?.("2026-10-17"));
     act(() => result.current.askCancel());
-    act(() => result.current.writeReason(" 몸이 아파요 "));
-    act(() => result.current.sendCancel());
+    act(() => result.current.closeSheet());
 
-    await waitFor(() =>
-      expect(createCancelRequestMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "a1",
-        "몸이 아파요",
-      ),
-    );
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
-  });
-
-  it("보낸 뒤 다시 취소를 열면 적었던 글이 안 남는다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-17"));
-    act(() => result.current.askCancel());
-    act(() => result.current.writeReason("몸이 아파요"));
-    act(() => result.current.sendCancel());
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
-
-    act(() => result.current.askCancelOn("2026-10-17"));
-
-    if (result.current.sheet?.kind !== "cancel") {
-      throw new Error("취소 시트가 아니다");
-    }
-
-    expect(result.current.sheet.reason).toBe("");
-  });
-
-  it("못 보내면 시트가 열린 채 적은 글이 남는다", async () => {
-    createCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.pressDay?.("2026-10-17"));
-    act(() => result.current.askCancel());
-    act(() => result.current.writeReason("몸이 아파요"));
-    act(() => result.current.sendCancel());
-
-    await waitFor(() => {
-      if (result.current.sheet?.kind !== "cancel") {
-        throw new Error("취소 시트가 아니다");
-      }
-
-      expect(result.current.sheet.failed).toBe(true);
-      expect(result.current.sheet.reason).toBe("몸이 아파요");
-    });
+    expect(result.current.sheet).toBeNull();
   });
 
   it("이미 요청을 걸어둔 근무는 배지가 서고 버튼이 잠긴다", async () => {
@@ -674,13 +518,14 @@ describe("useScheduleWorkerScreen — 보기와 달 이동", () => {
 
   it("달을 넘기면 연 것과 남은 사건이 처음으로 돌아간다", async () => {
     getSlotRequestsMock.mockResolvedValue([REQUEST]);
-    respondRequestMock.mockRejectedValue(new DomainError("slot_full"));
 
     const { result } = await mounted();
 
     act(() => result.current.toggleAgendaDay("2026-10-17"));
     act(() => result.current.pressDay?.("2026-10-20"));
-    act(() => result.current.accept());
+    act(() =>
+      result.current.seatTaken("10월 20일 서빙 자리는 다른 분이 맡았어요"),
+    );
 
     await waitFor(() =>
       expect(result.current.calendarNote).toBe(
