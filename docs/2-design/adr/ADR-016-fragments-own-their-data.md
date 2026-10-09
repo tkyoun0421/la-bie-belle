@@ -12,7 +12,11 @@
 
 **`screens/<슬라이스>/ui`에 남는 것은 그 화면의 뼈다.** 앱바와 바닥 버튼, 상태마다의 자리, 시트 고르는 자리다. 도메인을 아는 조각은 올라간다.
 
-**`features` 여럿을 맞추는 조각도 거기 남는다.** `screens`만 `features` 여럿을 당길 수 있다 — 규칙 3이 같은 층 슬라이스끼리를 막으니 `features/stats`가 `features/payrollCompute`를 못 당긴다. 그 조각은 못 올라가는 것이 아니라 **그 자리가 맞다.** 뼈의 뜻이 「생김새뿐」이 아니라 「위층에서만 할 수 있는 조립」까지다.
+**`features` 여럿을 맞추는 조각도 거기 남는다.** `screens`만 `features` 여럿을 당길 수 있다 — 규칙 3이 같은 층 슬라이스끼리를 막는다. 시트 고르는 자리가 그 꼴이다: `DayDetailSheetBody`가 다섯을, `ScheduleAdminSheetBody`가 셋을 꽂는다. 뼈의 뜻이 「생김새뿐」이 아니라 「위층에서만 할 수 있는 조립」까지다.
+
+**먼저 물을 것은 「그 슬라이스에 service가 있나」다.** 조각이 당기는 계산이 `features/<슬라이스>/model`에 살고 그 슬라이스에 query가 없으면, 못 올라가는 것이 아니라 **올라갈 자리를 아직 안 만든 것이다.** 규칙 28이 「`features`의 읽기 service는 `entities` 도메인 둘 이상을 맞출 때 선다」고 허락하니 그 자리에 composing read를 세우고 조각을 그 슬라이스의 `ui`로 보낸다.
+
+`features/payrollCompute`가 그 꼴이었다 — `payrollViewDays`가 `attendance`·`payroll`·`rehearsal`·`schedule` 넷을 맞추는데 `services/`가 비어 있어서 급여 조각 넷이 `screens`에 묶여 있었다. `entities/payroll`로 내리는 길은 막혀 있다(규칙 3이 `attendance`를, `no-restricted-imports`가 `features` 쪽을 막고 `import type`도 막는다) — 올라갈 자리는 `features/payrollCompute` 자신이다.
 
 ## 왜 지금
 

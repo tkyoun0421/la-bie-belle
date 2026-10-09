@@ -84,13 +84,15 @@ sources:
 | `DayDetail`·`DayDetailCard`·`ScheduleAdminCalendar`·`ScheduleAdminDay`·`ScheduleCalendarMonth`·`ScheduleCalendarMissing` | `entities/schedule/ui` |
 | `RehearsalDaySheet` | `entities/rehearsal/ui` |
 | `PositionRow`·`PositionRowHead`·`PositionSlotCard` | `entities/schedule/ui` |
-| `WageRows`·`WagesList` | `entities/payroll/ui` — `useWageRatesQuery`가 거기 산다 |
-| `PayrollMonthRows`·`PayrollHistoryRows`·`PayrollAccrual`·`PayrollSummary`·`PayrollList`·`PeriodStepper` | `entities/payroll/ui` |
+| `WageRows` | `entities/payroll/ui` — `useWageRatesQuery`가 거기 산다 |
+| `PayrollMonthRows`·`PayrollHistoryRows`·`PayrollAccrual`·`PayrollSummary` | `features/payrollCompute/ui` — `services/`에 composing read를 먼저 세운다 |
+| `PeriodStepper` | `shared/ui` — `label`·`canGoPrev`·`canGoNext`·`onPrev`·`onNext`만 받고 도메인을 모른다. `PREV_PERIOD_TEST_ID`·`NEXT_PERIOD_TEST_ID`도 같이 내린다 |
 | `MemberRows`·`PendingRows`·`BlockedRows` | `entities/member/ui` |
 | `ApprovalRows`·`ApprovalsList` | `entities/workRequest/ui` |
 | `ApplicationsDateGroups`·`ApplicationsPersonGroups`·`ApplicationsList`·`ApplicationsDeadlineBar` | `entities/availability/ui` |
 | `NotificationsList` | `entities/notification/ui` |
 | `StatsAttendance`·`StatsPositions`·`StatsMonth` | `features/stats/ui` |
+| `StatsPayroll` | `features/payrollCompute/ui` — 주제가 급여고 그 슬라이스의 composing read를 부른다 |
 | `AdminStatsWork`·`AdminStatsAttendance`·`AdminStatsMonthNav`·`WorkDaysSheet` | `features/stats/ui` |
 | `ProfileCard`·`ProfileFacts`·`PendingSummary` | `entities/profile/ui` |
 
@@ -100,7 +102,9 @@ sources:
 
 **조각을 배치하는 자리도 뼈다.** `ProfileSettings`·`AdminStatsBody`·`StatsList`·`PayrollList`·`WagesList`·`ApplicationsList`·`ApprovalsList`가 그 꼴이다 — `screen:` controller를 통째로 받아 상태 이름으로 조각만 고르고 도메인 층을 하나도 import하지 않는다. 「통째로 받으면 그 조각은 그 화면에 묶인다」와 「상태마다의 자리」가 같은 답을 낸다.
 
-**`StatsPayroll`은 관찰 065가 풀려야 움직인다.** `features/payrollCompute`를 당기는데 `features`끼리 못 당긴다. 그때까지 화면에 남는다.
+**급여 계산을 쓰는 조각 다섯은 `features/payrollCompute`에 service가 서야 움직인다.** `payrollViewDays`가 `attendance`·`payroll`·`rehearsal`·`schedule` 넷을 맞추는데 그 슬라이스에 `services/`가 없다 — 규칙 28이 그 자리를 허락하니 composing read를 세우면 조각이 그 슬라이스의 `ui`로 간다. `entities/payroll`로 내리는 길은 막혀 있다(규칙 3이 `attendance`를, `no-restricted-imports`가 `import type`까지 막는다).
+
+딸린 것 둘 — `PayrollDayKind`가 `features/payrollCompute`에 섰는데 `DayKind | "wage-pending"`이라 `entities/payroll/model/payroll.type.ts`가 자리다. `screens/payroll/utils/yearRows.utils.ts`는 `shared`만 당겨 지금도 옮길 수 있다.
 
 **「쓰기로 들어가는 문」은 뼈가 아니다.** `DaySheet`·`RehearsalDaySheet`·`WorkDaysSheet`가 mutation을 안 불러 `features`로 못 가지만, 도메인을 읽어 보여주는 것이 그 조각의 본업이라 `entities`로 간다. 쓰기 시트를 여는 행위는 `onPress`로 받는다 — 갈 데를 받는 것과 같은 축이다.
 

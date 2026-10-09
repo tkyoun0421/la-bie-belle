@@ -51,4 +51,14 @@ AC-02(읽기 조각 이동)가 같은 자리를 또 밟는다. 그때 전수가 
 
 **남은 것은 하나다 — 그것을 쓰는 조각이 `screens`를 떠날 수 없다.** 규칙 3이 `features`끼리도 막으니 `features/stats/ui`도 `entities/payroll/ui`도 `payrollCompute`에 못 닿는다. 그래서 `StatsPayroll`과 `screens/payroll/utils` 넷, `screens/stats/utils` 넷이 그 자리에 남는다.
 
-그 자리가 **맞는 자리다.** [ADR-016](../2-design/adr/ADR-016-fragments-own-their-data.md)에 「`features` 여럿을 맞추는 조각도 `screens`에 남는다」를 명시로 넣었다 — 뼈의 뜻이 「생김새뿐」이 아니라 「위층에서만 할 수 있는 조립」까지다. 올리는 일을 더 할 것이 없다.
+## 한 칸 더 있었다 — 그 슬라이스에 service가 없었던 것이다
+
+worker가 사본으로 두 길을 막힌 것까지 확인하고 **세 번째를 냈다.** `payrollViewDays`는 entity 슬라이스 **넷**을 맞춘다 — `attendance`(`getAttendanceStatus`)·`payroll`·`rehearsal`(`rehearsalHours`)·`schedule`이다. `entities/payroll`로 내려도 그 안에서 못 산다.
+
+그런데 규칙 28 `house/features-query-composes`가 「`features`의 읽기 service는 `entities` 도메인 둘 이상을 맞출 때만 선다」고 **허락한다.** `features/payrollCompute`에 `services/`가 없었을 뿐이다 — `model`과 `utils`만 있다.
+
+**그래서 조각이 못 올라가는 것이 아니라 올라갈 자리를 안 만든 것이었다.** `features/payrollCompute/services`에 composing read를 세우면 `PayrollSummary`·`PayrollAccrual`·`PayrollHistoryRows`·`PayrollMonthRows`와 `StatsPayroll`이 `features/payrollCompute/ui`로 간다. [ADR-016](../2-design/adr/ADR-016-fragments-own-their-data.md)에 「먼저 물을 것은 그 슬라이스에 service가 있나다」를 넣었다.
+
+`screens`에 남는 것은 **진짜로 `features` 둘 이상을 당기는 자리**뿐이다 — 전수로 세니 여덟이고 그중 `ui`는 시트 고르는 자리 둘(`DayDetailSheetBody` 다섯, `ScheduleAdminSheetBody` 셋)이다.
+
+**딸린 사고 하나.** `PayrollDayKind`가 `features/payrollCompute`에 선언됐는데 `DayKind | "wage-pending"`이고 둘 다 `entities/payroll/model/payroll.type.ts`에 있다. 거기로 내려갈 타입이다.
