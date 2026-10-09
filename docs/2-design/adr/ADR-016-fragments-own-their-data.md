@@ -57,6 +57,14 @@ ADR-015는 「`features/*/ui`만 service를 부를 수 있다」고 적었다. �
 
 [ADR-015](ADR-015-read-write-layers-and-fixed-segments.md)의 「갈 데를 controller가 정한다」는 그대로 산다. 조각의 controller는 그 조각 안의 값을 완성하고, 경로는 화면 controller에서 내려온다.
 
+## 상태마다의 그림은 조각이 받는다
+
+조각이 자기 query를 부르면 「기다리는 중」·「실패」·「비었다」가 조각 안에서 갈린다. 그 그림까지 조각이 가지면 화면 문안이 도메인 층으로 올라가고, 화면에 두면 조각이 상태를 못 쓴다.
+
+**조각이 상태 기계를 들고 그림을 `ReactNode`로 받는다.** `loading`·`failed`·`empty`를 props로 받아 자기 상태 이름으로 고른다 — `QueryBoundary`의 `loading=`·`failed=`와 같은 꼴이다. query는 화면을 떠나고 `<화면>Loading`·`Empty`·`Failed`는 `screens/<슬라이스>/ui`에 남는다.
+
+**그래서 목록을 고르는 자리가 뼈가 아닐 수 있다.** 상태로 조각을 고르던 `ApplicationsList`·`ApprovalsList`는 그 판정이 조각 안으로 들어가 올라갔다. 가름은 **고르는 조각들이 한 슬라이스에 사나**다 — `StatsList`는 탭마다 다른 슬라이스(`features/stats`와 `features/payrollCompute`)의 조각을 고르니 올라갈 자리가 없고, `ProfileSettings`는 라우팅 줄과 시트를 꽂아 도메인을 모른다.
+
 ## 조각이 controller를 받는 꼴
 
 조각은 `screen: <화면>Controller`를 통째로 받거나 props를 하나씩 받는다. 가름은 **그 화면 밖에서 쓰일 수 있나**다.

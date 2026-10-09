@@ -117,7 +117,7 @@ sources:
 
 `screens/<슬라이스>/ui`에 남는 것이 `<화면>Screen`·`Loading`·`Empty`·`Failed`·`Sheets`·`Toast`·`AppBar`·`BottomCta`·`SheetBody`·`SheetFace`다.
 
-**조각을 배치하는 자리도 뼈다.** `ProfileSettings`·`AdminStatsBody`·`StatsList`·`PayrollList`·`WagesList`·`ApplicationsList`·`ApprovalsList`가 그 꼴이다 — `screen:` controller를 통째로 받아 상태 이름으로 조각만 고르고 도메인 층을 하나도 import하지 않는다. 「통째로 받으면 그 조각은 그 화면에 묶인다」와 「상태마다의 자리」가 같은 답을 낸다.
+**조각을 배치하는 자리도 뼈다.** `ProfileSettings`·`StatsList`가 그 꼴이다 — `screen:` controller를 통째로 받아 상태 이름으로 조각만 고르고 도메인 층을 하나도 import하지 않는다. 「통째로 받으면 그 조각은 그 화면에 묶인다」와 「상태마다의 자리」가 같은 답을 낸다.
 
 **급여 계산을 쓰는 조각 다섯은 `features/payrollCompute`에 service가 서야 움직인다.** `payrollViewDays`가 `attendance`·`payroll`·`rehearsal`·`schedule` 넷을 맞추는데 그 슬라이스에 `services/`가 없다 — 규칙 28이 그 자리를 허락하니 composing read를 세우면 조각이 그 슬라이스의 `ui`로 간다. `entities/payroll`로 내리는 길은 막혀 있다(규칙 3이 `attendance`를, `no-restricted-imports`가 `import type`까지 막는다).
 
