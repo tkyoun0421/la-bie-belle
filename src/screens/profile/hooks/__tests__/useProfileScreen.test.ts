@@ -8,18 +8,7 @@ const getProfilePrivateMock =
 const listQualificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setNotificationsEnabledMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const signOutMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const requestPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const pickAndShrinkPhotoMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const pushMock = jest.fn();
 const replaceMock = jest.fn();
@@ -50,61 +39,12 @@ jest.unstable_mockModule(
   () => ({ countUnreadNotifications: countUnreadMock }),
 );
 
-jest.unstable_mockModule(
-  "@/features/profileEdit/api/updateMyContact.api",
-  () => ({ updateMyContact: updateMyContactMock }),
-);
-
-jest.unstable_mockModule(
-  "@/features/profileEdit/api/updateMyPhoto.api",
-  () => ({
-    updateMyPhoto: updateMyPhotoMock,
-  }),
-);
-
-jest.unstable_mockModule(
-  "@/features/profileEdit/api/avatarsBucket.api",
-  () => ({ uploadAvatar: uploadAvatarMock }),
-);
-
-jest.unstable_mockModule(
-  "@/features/pushSwitch/api/setNotificationsEnabled.api",
-  () => ({ setNotificationsEnabled: setNotificationsEnabledMock }),
-);
-
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
   DEVICE_CLEANUP_NOT_WIRED_YET: {
     deleteDeviceRow: async () => {},
     clearDeviceToken: async () => {},
   },
   signOut: signOutMock,
-}));
-
-jest.unstable_mockModule(
-  "@/features/pushSwitch/lib/pushPermission.lib",
-  () => ({
-    getPushPermission: getPushPermissionMock,
-    requestPushPermission: requestPushPermissionMock,
-  }),
-);
-
-jest.unstable_mockModule("@/features/profileEdit/lib/pickPhoto.lib", () => ({
-  pickAndShrinkPhoto: pickAndShrinkPhotoMock,
-}));
-
-jest.unstable_mockModule("@/features/pushSwitch/lib/pushDeps.lib", () => ({
-  PUSH_DEPS: { getPermissionsAsync: jest.fn() },
-}));
-
-jest.unstable_mockModule(
-  "@/features/profileEdit/lib/photoPickDeps.lib",
-  () => ({
-    PHOTO_PICK_DEPS: {},
-  }),
-);
-
-jest.unstable_mockModule("@/shared/lib/appState.lib", () => ({
-  APP_STATE: { addEventListener: () => ({ remove: () => {} }) },
 }));
 
 jest.unstable_mockModule("@/shared/lib/themeStorage.lib", () => ({
@@ -124,8 +64,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
 const { PROFILE_COPY } = await import("@/screens/profile/consts/profile.const");
+const { THEME_LABEL } = await import("@/shared/consts/theme.const");
 const {
   ADMIN_HOME_PATH,
   LOGIN_PATH,
@@ -184,20 +124,7 @@ beforeEach(() => {
   getProfilePrivateMock.mockReset().mockResolvedValue(PRIVATE);
   listQualificationsMock.mockReset().mockResolvedValue([]);
   countUnreadMock.mockReset().mockResolvedValue(2);
-  updateMyContactMock.mockReset().mockResolvedValue(undefined);
-  updateMyPhotoMock.mockReset().mockResolvedValue(undefined);
-  uploadAvatarMock.mockReset().mockResolvedValue("https://example.test/up.jpg");
-  setNotificationsEnabledMock.mockReset().mockResolvedValue(undefined);
   signOutMock.mockReset().mockResolvedValue(undefined);
-  getPushPermissionMock.mockReset().mockResolvedValue("granted");
-  requestPushPermissionMock
-    .mockReset()
-    .mockResolvedValue({ permission: "granted", token: "tok-1" });
-  pickAndShrinkPhotoMock.mockReset().mockResolvedValue({
-    uri: "file:///shrunk.jpg",
-    contentType: "image/jpeg",
-    extension: "jpg",
-  });
 });
 
 async function mounted() {
@@ -241,256 +168,106 @@ describe("useProfileScreen — 값 다섯을 글로 세운다", () => {
     expect(result.current.admin).toBe(true);
     expect(result.current.rehearsal).toBe(true);
   });
-});
 
-describe("useProfileScreen — 시트는 한 번에 하나다", () => {
-  it("연락처를 열면 적힌 번호가 숫자로 들어 있다", async () => {
+  it("화면 이름은 지금 쓰는 테마의 문안이다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.openContact());
-
-    expect(result.current.sheet).toBe("contact");
-    expect(result.current.contactDraft).toBe("01000000001");
-    expect(result.current.canSaveContact).toBe(false);
-  });
-
-  it("고치면 저장할 수 있다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01000000002"));
-
-    expect(result.current.canSaveContact).toBe(true);
-
-    act(() => result.current.saveContact());
-
-    await waitFor(() =>
-      expect(updateMyContactMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "profile-1",
-        "010-0000-0002",
-      ),
-    );
-  });
-
-  it("저장하면 시트가 닫히고 토스트가 선다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01000000002"));
-    act(() => result.current.saveContact());
-
-    await waitFor(() =>
-      expect(result.current.toast).toBe(PROFILE_COPY.contactSaved),
-    );
-
-    expect(result.current.sheet).toBeNull();
-  });
-
-  it("서버가 꼴을 물리면 시트를 연 채로 그 말을 한다", async () => {
-    updateMyContactMock.mockRejectedValue(new DomainError("invalid_phone"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01000000002"));
-    act(() => result.current.saveContact());
-
-    await waitFor(() => expect(result.current.contactRejected).toBe(true));
-
-    expect(result.current.contactFailed).toBe(false);
-    expect(result.current.sheet).toBe("contact");
-  });
-
-  it("통신이 끊기면 「보내지 못했어요」다", async () => {
-    updateMyContactMock.mockRejectedValue(new Error("끊겼다"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01000000002"));
-    act(() => result.current.saveContact());
-
-    await waitFor(() => expect(result.current.contactFailed).toBe(true));
-
-    expect(result.current.contactRejected).toBe(false);
-  });
-
-  it("화면 시트에서 고르면 바로 닫힌다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openTheme());
-    act(() => result.current.chooseTheme("dark"));
-
-    expect(result.current.sheet).toBeNull();
-    expect(result.current.theme).toBe("dark");
+    expect(result.current.themeLabel).toBe(THEME_LABEL.system);
   });
 });
 
-describe("useProfileScreen — 사진", () => {
-  it("구글 사진이 있고 내 사진이 없으면 권한다", async () => {
+describe("useProfileScreen — 조각이 쓸 것을 교통정리한다", () => {
+  it("조각에 넘길 임자를 다 쥐고 있다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.openPhoto());
-
-    expect(result.current.offerGoogle).toBe(true);
-  });
-
-  it("고른 사진은 올려 앉힌다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openPhoto());
-    act(() => void result.current.pickPhoto());
-
-    await waitFor(() =>
-      expect(uploadAvatarMock).toHaveBeenCalledWith(FAKE_CLIENT, {
-        userId: "user-1",
-        uri: "file:///shrunk.jpg",
-        contentType: "image/jpeg",
-        extension: "jpg",
-      }),
-    );
-
-    await waitFor(() =>
-      expect(result.current.toast).toBe(PROFILE_COPY.photoSaved),
+    expect(result.current.userId).toBe("user-1");
+    expect(result.current.profileId).toBe("profile-1");
+    expect(result.current.googlePhotoUrl).toBe(
+      "https://example.test/google.jpg",
     );
   });
 
-  it("고르다 말면 아무 일도 없다", async () => {
-    pickAndShrinkPhotoMock.mockResolvedValue(null);
+  it("프로필을 읽기 전에는 알림이 켜졌는지 모른다고 한다", () => {
+    getMyProfileMock.mockImplementation(() => new Promise(() => {}));
 
-    const { result } = await mounted();
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useProfileScreen(), { wrapper });
 
-    act(() => result.current.openPhoto());
-    await act(async () => {
-      await result.current.pickPhoto();
-    });
-
-    expect(uploadAvatarMock).not.toHaveBeenCalled();
-    expect(result.current.photoFailed).toBe(false);
-    expect(result.current.sheet).toBe("photo");
+    expect(result.current.notificationEnabled).toBeNull();
   });
 
-  it("고르다 넘어지면 시트 안에 실패가 선다", async () => {
-    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
-
+  it("읽고 나면 켜졌는지를 그대로 내려준다", async () => {
     const { result } = await mounted();
-
-    act(() => result.current.openPhoto());
-    await act(async () => {
-      await result.current.pickPhoto();
-    });
-
-    expect(result.current.photoFailed).toBe(true);
-    expect(result.current.sheet).toBe("photo");
-  });
-
-  it("구글 사진은 올릴 것 없이 앉힌다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openPhoto());
-    act(() => result.current.useGooglePhoto());
-
-    await waitFor(() =>
-      expect(updateMyPhotoMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "https://example.test/google.jpg",
-      ),
-    );
-
-    expect(uploadAvatarMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("useProfileScreen — 알림과 로그아웃", () => {
-  it("권한이 허락이면 스위치가 선다", async () => {
-    const { result } = await mounted();
-
-    await waitFor(() =>
-      expect(result.current.notificationRow.kind).toBe("switch"),
-    );
 
     expect(result.current.notificationEnabled).toBe(true);
   });
+});
 
-  it("거부된 기기에는 스위치 대신 안내가 선다", async () => {
-    getPushPermissionMock.mockResolvedValue("denied");
-
+describe("useProfileScreen — 시트는 한 번에 하나다", () => {
+  it("연락처를 열면 연락처 시트만 선다", async () => {
     const { result } = await mounted();
 
-    await waitFor(() =>
-      expect(result.current.notificationRow.kind).toBe("notice"),
-    );
+    act(() => result.current.openContact());
+
+    expect(result.current.sheet).toBe("contact");
   });
 
-  it("끄기는 묻고 나서 보낸다", async () => {
+  it("사진과 화면도 각자 자기 시트를 연다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.askTurnOff());
+    act(() => result.current.openPhoto());
+    expect(result.current.sheet).toBe("photo");
 
-    expect(result.current.turningOff).toBe(true);
-    expect(setNotificationsEnabledMock).not.toHaveBeenCalled();
-
-    act(() => result.current.confirmTurnOff());
-
-    expect(result.current.turningOff).toBe(false);
-
-    await waitFor(() =>
-      expect(setNotificationsEnabledMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        false,
-      ),
-    );
+    act(() => result.current.openTheme());
+    expect(result.current.sheet).toBe("theme");
   });
 
-  it("묻다 말면 안 보낸다", async () => {
+  it("닫으면 아무 시트도 안 선다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.askTurnOff());
-    act(() => result.current.cancelTurnOff());
+    act(() => result.current.openTheme());
+    act(() => result.current.closeSheet());
 
-    expect(result.current.turningOff).toBe(false);
-    expect(setNotificationsEnabledMock).not.toHaveBeenCalled();
+    expect(result.current.sheet).toBeNull();
   });
 
+  it("연락처를 바꾸고 나면 시트가 닫히고 토스트가 선다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openContact());
+    act(() => result.current.savedContact());
+
+    expect(result.current.toast).toBe(PROFILE_COPY.contactSaved);
+    expect(result.current.sheet).toBeNull();
+  });
+
+  it("사진을 바꾸고 나면 사진을 바꿨다고 한다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openPhoto());
+    act(() => result.current.savedPhoto());
+
+    expect(result.current.toast).toBe(PROFILE_COPY.photoSaved);
+    expect(result.current.sheet).toBeNull();
+  });
+
+  it("토스트는 지울 수 있다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.savedPhoto());
+    act(() => result.current.dismissToast());
+
+    expect(result.current.toast).toBeNull();
+  });
+});
+
+describe("useProfileScreen — 로그아웃", () => {
   it("로그아웃하면 끝나고 로그인으로 보낸다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.leave());
 
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
-  });
-});
-
-describe("useProfileScreen — 연락처가 틀렸다는 판정이 하나다", () => {
-  it("꼴이 안 맞게 열한 자리를 적으면 틀렸다고 한다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01100000002"));
-
-    expect(result.current.contactInvalid).toBe(true);
-  });
-
-  it("서버가 꼴을 물려도 같은 값이 선다", async () => {
-    updateMyContactMock.mockRejectedValue(new DomainError("invalid_phone"));
-
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("01000000002"));
-    act(() => result.current.saveContact());
-
-    await waitFor(() => expect(result.current.contactInvalid).toBe(true));
-  });
-
-  it("열한 자리를 다 적기 전에는 틀렸다고 하지 않는다", async () => {
-    const { result } = await mounted();
-
-    act(() => result.current.openContact());
-    act(() => result.current.writeContact("0110000"));
-
-    expect(result.current.contactInvalid).toBe(false);
   });
 });
 

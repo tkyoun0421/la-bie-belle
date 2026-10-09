@@ -5,29 +5,24 @@ import { Text } from "@/shared/ui/Text";
 import {
   CONTACT_SHEET_COPY,
   PHONE_LENGTH,
-} from "@/screens/profile/consts/profile.const";
+} from "@/features/profileEdit/consts/profileEdit.const";
+import { useContactSheet } from "@/features/profileEdit/hooks/useContactSheet";
 
 export type ContactSheetProps = {
-  draft: string;
-  saving: boolean;
-  failed: boolean;
-  invalid: boolean;
-  canSave: boolean;
-  onWrite: (typed: string) => void;
+  profileId: string;
+  phone: string;
   onClose: () => void;
-  onSave: () => void;
+  onSaved: () => void;
 };
 
 export function ContactSheet({
-  draft,
-  saving,
-  failed,
-  invalid,
-  canSave,
-  onWrite,
+  profileId,
+  phone,
   onClose,
-  onSave,
+  onSaved,
 }: ContactSheetProps) {
+  const fragment = useContactSheet({ profileId, phone, onSaved });
+
   return (
     <>
       <Text size="lg" weight="semibold">
@@ -40,19 +35,19 @@ export function ContactSheet({
         placeholder={CONTACT_SHEET_COPY.placeholder}
         keyboardType="number-pad"
         autoFocus
-        value={draft}
+        value={fragment.draft}
         maxLength={PHONE_LENGTH}
-        error={invalid ? CONTACT_SHEET_COPY.invalid : undefined}
-        onChangeText={onWrite}
+        error={fragment.invalid ? CONTACT_SHEET_COPY.invalid : undefined}
+        onChangeText={fragment.write}
       />
 
-      {invalid ? null : (
+      {fragment.invalid ? null : (
         <Text size="sm" tone="subtle" className="mt-2">
           {CONTACT_SHEET_COPY.guide}
         </Text>
       )}
 
-      {failed ? (
+      {fragment.failed ? (
         <Text size="sm" tone="critical" className="mt-2">
           {CONTACT_SHEET_COPY.sendFailed}
         </Text>
@@ -65,9 +60,9 @@ export function ContactSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={saving}
-          disabled={!canSave}
-          onPress={onSave}
+          loading={fragment.saving}
+          disabled={!fragment.canSave}
+          onPress={fragment.save}
         >
           {CONTACT_SHEET_COPY.save}
         </Button>

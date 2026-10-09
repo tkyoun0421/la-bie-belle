@@ -1,4 +1,4 @@
-import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
+import { shouldOfferGooglePhoto } from "@/features/profileEdit/model/shouldOfferGooglePhoto.policy";
 
 describe("shouldOfferGooglePhoto — 되돌릴 구글 사진이 따로 있을 때만 줄을 보인다", () => {
   it("구글 계정에 사진이 없으면 줄을 안 보인다", () => {

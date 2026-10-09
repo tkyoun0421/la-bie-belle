@@ -4,10 +4,8 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { Text } from "@/shared/ui/Text";
-import {
-  EMAIL_AVATAR_SIZE,
-  PENDING_FORM_COPY,
-} from "@/screens/pending/consts/pending.const";
+import { PROFILE_FORM_COPY } from "@/features/profileEdit/consts/profileEdit.const";
+import { EMAIL_AVATAR_SIZE } from "@/screens/pending/consts/pending.const";
 
 export type PendingFooterProps = {
   email: string;
@@ -42,7 +40,7 @@ export function PendingFooter({
         loading={signingOut}
         onPress={onSignOut}
       >
-        {PENDING_FORM_COPY.signOut}
+        {PROFILE_FORM_COPY.signOut}
       </Button>
     </>
   );

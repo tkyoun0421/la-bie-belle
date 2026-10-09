@@ -3,7 +3,6 @@ import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
-import { Dialog } from "@/shared/ui/Dialog";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Screen } from "@/shared/ui/Screen";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
@@ -47,17 +46,6 @@ export function ProfileScreen() {
       </ScrollView>
 
       <ProfileSheets screen={screen} />
-
-      <Dialog
-        visible={screen.turningOff}
-        title={PROFILE_COPY.turnOffTitle}
-        closeLabel={PROFILE_COPY.turnOffClose}
-        confirmLabel={PROFILE_COPY.turnOffConfirm}
-        onClose={screen.cancelTurnOff}
-        onConfirm={screen.confirmTurnOff}
-      >
-        {PROFILE_COPY.turnOffNote}
-      </Dialog>
 
       {screen.toast ? (
         <FloatingToast message={screen.toast} onDone={screen.dismissToast} />

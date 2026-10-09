@@ -23,26 +23,24 @@ import {
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
-import { PHOTO_PICK_DEPS } from "@/features/profileEdit/lib/photoPickDeps.lib";
-import { pickAndShrinkPhoto } from "@/features/profileEdit/lib/pickPhoto.lib";
+import {
+  PROFILE_FORM_COPY,
+  PROFILE_FORM_STEPS,
+} from "@/features/profileEdit/consts/profileEdit.const";
+import type { ProfileFormStep } from "@/features/profileEdit/model/profileFormStep.type";
 import { useSubmitProfileMutation } from "@/features/profileEdit/services/useSubmitProfileMutation";
-import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import { requestPushPermission } from "@/features/pushSwitch/lib/pushPermission.lib";
 import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
 import {
   BIRTH_DATE_LENGTH,
   CELEBRATION_STAY_MS,
+  EMPTY_PENDING_FORM,
   INITIAL_NOTIFICATION_PROMPT_VIEW,
-  PENDING_FORM_COPY,
   PENDING_PHONE_LENGTH,
   PROMPT_OUTCOME_OF,
   ROTATE_INTERVAL_MS,
   ROTATING_LINES,
-} from "@/screens/pending/consts/pending.const";
-import {
-  EMPTY_PENDING_FORM,
-  PENDING_STEPS,
 } from "@/screens/pending/consts/pending.const";
 import {
   transitionNotificationPromptView,
@@ -56,17 +54,17 @@ import {
 import type {
   PendingFormValues,
   PendingStage,
-  Step,
 } from "@/screens/pending/model/pendingForm.type";
 import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
 
 export type PendingScreenController = {
   stage: PendingStage;
+  userId: string | null;
   email: string;
   photoUrl: string | null;
   name: string;
-  open: Step | null;
-  shown: Record<Step, boolean>;
+  open: ProfileFormStep | null;
+  shown: Record<ProfileFormStep, boolean>;
   values: PendingFormValues;
   headline: string;
   nameLine: string;
@@ -76,8 +74,6 @@ export type PendingScreenController = {
   phoneLine: string;
   birthDateGuide: string | undefined;
   phoneGuide: string | undefined;
-  uploading: boolean;
-  photoFailed: boolean;
   submitting: boolean;
   submitFailed: boolean;
   canSubmit: boolean;
@@ -90,10 +86,9 @@ export type PendingScreenController = {
   chooseGender: (picked: string) => void;
   writeBirthDate: (typed: string) => void;
   writePhone: (typed: string) => void;
-  touch: (step: Step) => void;
-  thaw: (step: Step) => void;
+  touch: (step: ProfileFormStep) => void;
+  thaw: (step: ProfileFormStep) => void;
   freezePhoto: () => void;
-  pickPhoto: () => Promise<void>;
   send: () => void;
   retry: () => void;
   turnOnNotifications: () => Promise<void>;
@@ -106,11 +101,9 @@ export function usePendingScreen(): PendingScreenController {
   const [seeded, setSeeded] = useState(false);
   const [override, setOverride] = useState<PendingStage | null>(null);
   const [values, setValues] = useState<PendingFormValues>(EMPTY_PENDING_FORM);
-  const [frozen, setFrozen] = useState<Step[]>([]);
-  const [touched, setTouched] = useState<Step[]>([]);
+  const [frozen, setFrozen] = useState<ProfileFormStep[]>([]);
+  const [touched, setTouched] = useState<ProfileFormStep[]>([]);
   const [everSubmitted, setEverSubmitted] = useState(false);
-  const [pickFailed, setPickFailed] = useState(false);
-  const [picking, setPicking] = useState(false);
   const [line, setLine] = useState(0);
   const [promptView, setPromptView] = useState<NotificationPromptView>(
     INITIAL_NOTIFICATION_PROMPT_VIEW,
@@ -131,17 +124,9 @@ export function usePendingScreen(): PendingScreenController {
     reset: resetSubmit,
   } = useSubmitProfileMutation(supabase);
 
-  const {
-    mutate: sendPhoto,
-    isPending: savingPhoto,
-    isSuccess: photoSaved,
-    isError: photoSaveFailed,
-    reset: resetPhoto,
-  } = useUpdatePhotoMutation(supabase);
-
   const { signOut, isPending: signingOut } = useSignOutMutation(supabase);
 
-  const freeze = useCallback((step: Step) => {
+  const freeze = useCallback((step: ProfileFormStep) => {
     setFrozen((at) => (at.includes(step) ? at : [...at, step]));
   }, []);
 
@@ -167,7 +152,7 @@ export function usePendingScreen(): PendingScreenController {
       birthDate: digitsOfBirthDate(contact?.birthDate ?? null),
       phone: digitsOnly(contact?.phone ?? "", PENDING_PHONE_LENGTH),
     });
-    setFrozen(answered ? [...PENDING_STEPS] : []);
+    setFrozen(answered ? [...PROFILE_FORM_STEPS] : []);
     setEverSubmitted(answered);
     setSeeded(true);
   }, [seeded, loading, me, profile, privateQuery.data]);
@@ -179,13 +164,6 @@ export function usePendingScreen(): PendingScreenController {
       resetSubmit();
     }
   }, [submitted, everSubmitted, resetSubmit]);
-
-  useEffect(() => {
-    if (photoSaved) {
-      freeze("photo");
-      resetPhoto();
-    }
-  }, [photoSaved, freeze, resetPhoto]);
 
   const stage: PendingStage = loading
     ? "loading"
@@ -232,22 +210,7 @@ export function usePendingScreen(): PendingScreenController {
     }
   };
 
-  const pickPhoto = useCallback(async () => {
-    setPicking(true);
-    setPickFailed(false);
-
-    try {
-      const picked = await pickAndShrinkPhoto(PHOTO_PICK_DEPS);
-
-      if (picked !== null && me) {
-        sendPhoto({ userId: me.id, ...picked });
-      }
-    } catch {
-      setPickFailed(true);
-    } finally {
-      setPicking(false);
-    }
-  }, [me, sendPhoto]);
+  const freezePhoto = useCallback(() => freeze("photo"), [freeze]);
 
   const turnOnNotifications = useCallback(async () => {
     const asked = await requestPushPermission(PUSH_DEPS);
@@ -271,6 +234,7 @@ export function usePendingScreen(): PendingScreenController {
 
   return {
     stage,
+    userId: me?.id ?? null,
     email: me?.email ?? "",
     photoUrl: profile?.photoUrl ?? me?.googlePhotoUrl ?? null,
     name: values.name,
@@ -284,16 +248,14 @@ export function usePendingScreen(): PendingScreenController {
     },
     values,
     headline:
-      open === null ? PENDING_FORM_COPY.reviewing : PENDING_FORM_COPY.writing,
-    nameLine: `${values.name}${PENDING_FORM_COPY.greetingSuffix}`,
+      open === null ? PROFILE_FORM_COPY.reviewing : PROFILE_FORM_COPY.writing,
+    nameLine: `${values.name}${PROFILE_FORM_COPY.greetingSuffix}`,
     genderLine: spellGender(values.gender),
     genderValue: values.gender ?? "",
     birthDateLine: spellBirthDate(values.birthDate),
     phoneLine: hyphenatePhone(values.phone),
     birthDateGuide: guideOf("birthDate"),
     phoneGuide: guideOf("phone"),
-    uploading: picking || savingPhoto,
-    photoFailed: pickFailed || photoSaveFailed,
     submitting,
     submitFailed,
     canSubmit: open === null,
@@ -317,12 +279,11 @@ export function usePendingScreen(): PendingScreenController {
       writeChecked("birthDate", digitsOnly(typed, BIRTH_DATE_LENGTH)),
     writePhone: (typed: string) =>
       writeChecked("phone", digitsOnly(typed, PENDING_PHONE_LENGTH)),
-    touch: (step: Step) =>
+    touch: (step: ProfileFormStep) =>
       setTouched((at) => (at.includes(step) ? at : [...at, step])),
-    thaw: (step: Step) =>
+    thaw: (step: ProfileFormStep) =>
       setFrozen((at) => at.filter((frozenStep) => frozenStep !== step)),
-    freezePhoto: () => freeze("photo"),
-    pickPhoto,
+    freezePhoto,
     send: () =>
       sendProfile({
         displayName: values.name.trim(),

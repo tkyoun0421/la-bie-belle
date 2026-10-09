@@ -1,4 +1,4 @@
-import { canSaveContact } from "@/screens/profile/model/canSaveContact.policy";
+import { canSaveContact } from "@/features/profileEdit/model/canSaveContact.policy";
 
 describe("canSaveContact — 010으로 시작하는 11자리이고 지금 번호와 달라야 켜진다", () => {
   it("010으로 시작하지 않으면 저장하지 않는다", () => {
