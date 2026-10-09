@@ -1,7 +1,8 @@
 ---
-status: open
+status: actioned
 target: tests/lint/rules.ts
 date: 2026-10-09
+resolved: 2026-10-09
 ---
 
 # 뜻이 다른 두 상수가 같은 값이라 하나만 고치게 만든다
@@ -34,6 +35,8 @@ export const ENFORCED_RULE_COUNT = 38;
 
 ## 고칠 길
 
-**`ENFORCED_RULE_COUNT`를 상수로 두지 않고 세는 쪽이 있다.** `RULES`와 `RULE_NUMBERS_NEVER_ASSIGNED`에서 최댓값을 뽑으면 손으로 올릴 자리가 하나 줄고, 「끊김 없이」 테스트가 재는 것이 「번호가 빠졌나」만 남는다. 지금은 그 테스트가 두 가지를 겸한다 — 번호의 연속성과 상수의 최신성이다.
+**`ENFORCED_RULE_COUNT`가 세는 쪽이 됐다.** `RULES`와 `RULE_NUMBERS_NEVER_ASSIGNED`에서 최댓값을 뽑으니 손으로 올릴 자리가 하나 줄고, 「끊김 없이」 테스트가 재는 것이 「번호가 빠졌나」만 남는다. 그 전에는 그 테스트가 두 가지를 겸했다 — 번호의 연속성과 상수의 최신성이다.
+
+훅 규칙 하나를 사본에 넣어 재 보니 「끊김 없이」가 통과하고 등록·표 쪽 셋만 깨진다 — 세 자리가 각자 자기 축만 문다.
 
 `DOCUMENTED_LINT_RULE_COUNT`는 남는다. 그것은 문서가 말하는 수라서 손으로 쓴 값과 코드가 어긋나는 것을 잡는 것이 일이다.

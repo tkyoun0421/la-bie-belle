@@ -9,8 +9,6 @@ export type EnforcedRule = {
 
 export const DOCUMENTED_LINT_RULE_COUNT = 38;
 
-export const ENFORCED_RULE_COUNT = 38;
-
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
 export const RULES: EnforcedRule[] = [
@@ -311,3 +309,8 @@ export const RULES: EnforcedRule[] = [
     test: "eslint-rules/__tests__/noSnakeCaseField.test.ts",
   },
 ];
+
+export const ENFORCED_RULE_COUNT = Math.max(
+  ...RULES.map((rule) => rule.no),
+  ...RULE_NUMBERS_NEVER_ASSIGNED,
+);
