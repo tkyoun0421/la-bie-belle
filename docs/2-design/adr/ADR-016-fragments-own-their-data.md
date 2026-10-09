@@ -12,6 +12,8 @@
 
 **`screens/<슬라이스>/ui`에 남는 것은 그 화면의 뼈다.** 앱바와 바닥 버튼, 상태마다의 자리, 시트 고르는 자리다. 도메인을 아는 조각은 올라간다.
 
+**`features` 여럿을 맞추는 조각도 거기 남는다.** `screens`만 `features` 여럿을 당길 수 있다 — 규칙 3이 같은 층 슬라이스끼리를 막으니 `features/stats`가 `features/payrollCompute`를 못 당긴다. 그 조각은 못 올라가는 것이 아니라 **그 자리가 맞다.** 뼈의 뜻이 「생김새뿐」이 아니라 「위층에서만 할 수 있는 조립」까지다.
+
 ## 왜 지금
 
 [#511](https://github.com/tkyoun0421/la-bie-belle/pull/511)과 [#512](https://github.com/tkyoun0421/la-bie-belle/pull/512)가 `.tsx`를 조립만 하게 만들면서 조각 수가 51에서 97로 늘었다. 늘어난 것은 좋은데 전부 `screens/*/ui`에 쌓였다.

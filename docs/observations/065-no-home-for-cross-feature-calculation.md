@@ -1,5 +1,5 @@
 ---
-status: open
+status: actioned
 target: ADR-016
 date: 2026-10-09
 ---
@@ -42,3 +42,13 @@ ADR-016이 조각을 층으로 올리면 이 자리가 전부 드러난다. 「`
 ## 지금은 왜 안 고치나
 
 AC-02(읽기 조각 이동)가 같은 자리를 또 밟는다. 그때 전수가 보이니 한 번에 판정하는 쪽이 싸다 — 지금 고치면 읽기 묶음이 또 옮긴다.
+
+## 판정 — 집은 있었다. 조각이 못 올라가는 것이 답이다
+
+`features/payrollCompute`가 그 집이다. 거기 사는 셋이 당기는 것을 세면 `paidMinutes`가 `entities/payroll`·`entities/schedule`, `payrollDays`가 거기에 `entities/attendance`까지 셋이다 — 도메인을 가로지르는 읽기라 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)대로 `features`가 맞다. `entities`로 내리면 규칙 3이 막는다.
+
+**사본도 없었다.** `payrollDays`를 `screens/payroll` 넷과 `screens/stats` 넷이 당기는데 둘 다 `features/payrollCompute`를 당기는 것이고 각자 복사한 것이 아니다. `paidMinutes`를 당기는 `scheduleAdmin` 셋은 같은 슬라이스 안이다.
+
+**남은 것은 하나다 — 그것을 쓰는 조각이 `screens`를 떠날 수 없다.** 규칙 3이 `features`끼리도 막으니 `features/stats/ui`도 `entities/payroll/ui`도 `payrollCompute`에 못 닿는다. 그래서 `StatsPayroll`과 `screens/payroll/utils` 넷, `screens/stats/utils` 넷이 그 자리에 남는다.
+
+그 자리가 **맞는 자리다.** [ADR-016](../2-design/adr/ADR-016-fragments-own-their-data.md)에 「`features` 여럿을 맞추는 조각도 `screens`에 남는다」를 명시로 넣었다 — 뼈의 뜻이 「생김새뿐」이 아니라 「위층에서만 할 수 있는 조립」까지다. 올리는 일을 더 할 것이 없다.
