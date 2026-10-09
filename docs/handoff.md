@@ -6,24 +6,30 @@
 
 ## 다음 작업
 
-**[screens-orchestration-only](3-build/plans/screens-orchestration-only.md)이 돌고 있다 — `.tsx`가 조립만 하게 한다.** 브랜치는 `feat/screens-orchestration-only`고 `dto-to-domain-shape`는 PR [#510](https://github.com/tkyoun0421/la-bie-belle/pull/510)으로 merge됐다.
+**[fragments-own-their-data](3-build/plans/fragments-own-their-data.md)가 돌고 있다 — 조각이 자기 데이터를 들게 한다.** 브랜치는 `feat/suspense-probe`고 [screens-orchestration-only](3-build/plans/screens-orchestration-only.md)는 PR [#511](https://github.com/tkyoun0421/la-bie-belle/pull/511)·[#512](https://github.com/tkyoun0421/la-bie-belle/pull/512)로 merge됐다.
 
-**통신 쪽 경계는 섰다.** `ui`가 `api`·`services`·Supabase 클라이언트·`.dto.ts`를 당기는 자리가 전부 0이다. 남은 것은 **값을 만드는 일**이 화면에 있다는 것 — `ui`가 `utils`를 값으로 당기는 자리가 스물둘, `model`이 다섯이고 아무 lint 규칙도 안 문다. 통신 축 넷만 막혀 있어서 포맷과 판정을 당기는 길이 열려 있다.
+**`.tsx`는 조립만 하게 됐다.** `ui/`의 값 import 27 → 0, `.tsx`의 `useRouter` 20 → 0, 한 파일의 `<Screen>`과 `SheetLayer` 각각 1이다. 규칙 서른아홉 `house/ui-value-import`가 재발을 막는다 — **면제는 `shared` 층의 `utils`다**(`cn`·`miniCalendarGrid`·`buildYearMonths`·`dayBandFillRatio` 넷이 그리기 기하학이라서).
 
-**그 스물일곱이 조각에 몰렸다.** `screens/*/ui` 쉰넷 중 화면 파일은 스물이고 조각이 서른넷인데, 값 import 스물다섯 중 **화면 파일은 둘**이다. `MemberSheet.tsx` 하나가 `canSaveDisplayName`·`formatBirthDate`·`spellGender`·`spellLeftAt` 넷을 불렀다.
+**그 대가로 무게가 화면 controller 한 자리에 모였다.** `useScheduleAdminScreen`이 698줄에 service 스물여섯(query 9 · mutation 17)을 들고, 조각 서른여섯이 그 한 controller가 완성한 값을 받아 그린다. [ADR-016](2-design/adr/ADR-016-fragments-own-their-data.md)이 그 자리를 뒤집는다 — 조각이 자기 데이터를 부르고 조각마다 controller가 서고 화면은 경계를 든다.
 
-**ADR-015가 controller의 정의를 넓혔다** — 파일 꼴이 `hooks/use<화면>.ts`에서 `hooks/use<조각>.ts`가 되고 「`.tsx`는 조립만 한다」 절이 섰다. controller를 화면 단위로만 두면 조각의 로직이 갈 데가 없어 `.tsx`에 남거나 화면 controller가 조각의 props까지 만드는 뭉치가 된다. 집행 표에 「`ui/`에서 `model`·`utils`를 값으로 import 금지」가 더해졌고 깨진 경계 표는 실측으로 갱신했다.
+**ADR-015의 기준이 이미 거짓이었다.** 「`features/*/ui`만 service를 부를 수 있다」고 적었지만 그 자리의 유일한 조각 `DeadlineSheet`가 service를 하나도 부르지 않는다. 실제로 일하던 기준은 무엇을 부르나가 아니라 **무엇에 관한 것이냐**였다. 「`entities/*/ui`가 0인 것은 정상이다」도 그 기준에 매달려 있었다 — 값을 부르는 쪽이 들고 와야 하니 두 번째 화면이 쓰려면 같은 query를 또 부르고 같은 props를 또 엮는다.
 
-**본보기가 `members`다(`d88167cc`).** 꼴이 넷이다 — `model/<조각>.type.ts`가 `<조각>Input`·`<조각>Controller`를 선언하고, `hooks/use<조각>.ts`가 포맷·판정을 불러 완성된 값을 주고, 조각 `.tsx`는 `const view = use<조각>(input)`로 받아 꽂고, 상태마다의 렌더는 조각으로 갈린다(`MembersLoading`·`MembersEmpty`·`MemberRows`). `Linking.openURL`은 `shared/lib/openPhone.lib.ts`로 갔다 — 부작용을 내는 손이 `lib`의 일이다. `useRouter`도 controller로 올라가 `screen.goBack` 하나가 됐고 경로는 `shared/consts/navigation.const.ts`의 `ADMIN_HOME_PATH`로 간다. 줄 수는 `MemberSheet` 248 → 196, `MembersScreen` 175 → 111이다.
+**`screens/*/ui` 152개 중 149개가 도메인 층을 하나도 import하지 않는다.** 이름에 도메인이 있어도(`DayRoster`·`PositionSlotCard`·`WageRows`) 타입으로는 모른다 — controller가 원시 타입으로 평평하게 풀어서 준다. 그것이 조각이 자립 못 하는 진짜 까닭이다.
 
-**나머지 열아홉 슬라이스를 implementer 다섯이 병렬로 한다.** 묶음은 `scheduleAdmin` 하나(파일 열다섯, 값 열여섯, `SheetLayer` 열셋) · `pending`+`profile` · `membersPending`+`rehearsal`+`qr` · `scheduleWorker`+`notifications`+`adminHome`+`adminStats` · 나머지 여덟(`wages`·`approvals`·`applications`·`payroll`·`stats`·`left`·`blocked`·`retry`)이다. 슬라이스가 경계라 파일이 안 겹친다. 각자 커밋만 하고 PR은 총괄이 연다.
+**본보기가 `entities/notification`이다(`408dc995`).** `services/useUnreadCountSuspenseQuery.ts` → `hooks/useUnreadCountLine.ts`(조각 controller) → `ui/UnreadCountLine.tsx`(꽂기만) 꼴이고, `shared/ui/QueryBoundary.tsx`가 `Suspense`와 ErrorBoundary와 `QueryErrorResetBoundary`를 묶는다.
 
-**규칙 `house/ui-value-import`는 썼지만 안 켰다.** `eslint-rules/uiValueImport.mjs`와 짝 테스트 열셋이 디스크에 있고 등록 다섯 자리가 비어 있다 — `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts`(`RULES` 행 + `ENFORCED_RULE_COUNT`와 `DOCUMENTED_LINT_RULE_COUNT` **둘 다** 39로) · `docs/4-test/execution.md`의 표다. **두 상수가 쌍이라 하나만 올리면 「1부터 끝 번호까지 끊김 없이」가 깨진다.** `ruleCatalogue.test.ts`가 live config를 읽어 교차검증하므로 다섯이 한 커밋이어야 하고, 켜는 시점은 AC-01이 0에 닿은 뒤다.
+**쓰기가 먼저 돈다.** implementer 넷이 병렬로 `features/<use case>/ui`에 쓰기 조각을 세우는 중이다 — 묶음은 `scheduleAdmin` 하나(조각 열여섯) · `scheduleWorker`+`rehearsal` · `profile`+`pending` · 관리자 여섯(`members`·`membersPending`·`wages`·`adminHome`·`adminStats`·`approvals`)이다. base는 `f6a56307`이고 각자 커밋만 한다.
 
-**받아 둘 꼬리가 둘이다.**
+**읽기는 실기기 확인에 막혀 있다 — 그것이 다음 세션의 첫 수다.** `pnpm dev`로 띄워 알림 화면에 들어가 AppBar 밑 한 줄을 본다. 「세는 중」이 「안 읽은 알림 N개」로 바뀌면 `useSuspenseQuery`로 가고, 안 바뀌면 조각이 `useQuery`로 제 로딩을 그린다(ADR-016의 그 절만 뒤집고 나머지는 산다).
+
+**까닭은 RN에서 Suspense fallback이 안 풀린다는 보고 둘이다** — [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)(RN 0.77 · Query v5.68 · New Architecture)와 [react-native#49129](https://github.com/react/react-native/issues/49129)(RN 0.78-rc · React 19). 둘 다 어느 쪽 책임인지 결론이 없다. 여기 버전은 RN 0.86.3 · React 19.2.3이라 보고보다 뒤지만 저장소에 `Suspense`가 한 자리도 없었다. jsdom 테스트는 통과했고 그것이 RN 렌더러를 말해주지 않는다.
+
+**받아 둘 꼬리가 넷이다.**
 
 - `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
-- 테스트 아흔여덟이 `jest.fn<(...args: unknown[]) => Promise<unknown>>()`로 mock해 픽스처의 꼴을 아무도 안 본다(관찰 061). `useAdminHomeScreen.test.ts`의 `check_ins` 픽스처가 없는 열(`checked_in_at`)을 들고 있었고 어떤 검사도 안 잡았다. `jest.fn<typeof getMonthSchedule>()`로 바꾸면 `import type`이 런타임에 사라지니 mock을 우회하지 않는다
+- 테스트 아흔여덟이 `jest.fn<(...args: unknown[]) => Promise<unknown>>()`로 mock해 픽스처의 꼴을 아무도 안 본다(관찰 061). `jest.fn<typeof getMonthSchedule>()`로 바꾸면 `import type`이 런타임에 사라지니 mock을 우회하지 않는다
+- `useQrScreen`의 `qr`·`rotateFailed`와 `useProfileScreen`의 `contactRejected`가 테스트에서만 쓰인다. `loadNextWhenNear`도 `loadNextOnScroll`과 나란히 public으로 남았다
+- 조각 `.tsx`가 `useRouter`를 쥐는 것을 막는 규칙이 없다. 지금 서른아홉까지고 그 자리가 마흔이다(plan의 AC-07)
 
 ## 재개 맥락
 
