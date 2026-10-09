@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -14,9 +13,8 @@ import {
 import { useRetryScreen } from "@/screens/retry/hooks/useRetryScreen";
 
 export function RetryScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { me, retry, retrying, signOut, signingOut } = useRetryScreen(router);
+  const screen = useRetryScreen();
 
   return (
     <Screen
@@ -35,8 +33,8 @@ export function RetryScreen() {
         <Button
           variant="primary"
           className="mt-8 self-stretch"
-          loading={retrying}
-          onPress={retry}
+          loading={screen.retrying}
+          onPress={screen.retry}
         >
           {RETRY_COPY.retry}
         </Button>
@@ -45,20 +43,16 @@ export function RetryScreen() {
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar
-            name={me?.email ?? ""}
-            photoUrl={me?.googlePhotoUrl ?? null}
-            size={24}
-          />
+          <Avatar name={screen.email} photoUrl={screen.photoUrl} size={24} />
           <Text size="sm" tone="subtle">
-            {me?.email ?? ""}
+            {screen.email}
           </Text>
         </View>
         <Button
           variant="ghost"
           className="mt-4"
-          loading={signingOut}
-          onPress={() => signOut(() => router.replace("/login"))}
+          loading={screen.signingOut}
+          onPress={() => screen.signOut(screen.goLogin)}
         >
           {RETRY_COPY.signOut}
         </Button>

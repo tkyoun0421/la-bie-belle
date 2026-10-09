@@ -11,6 +11,8 @@ export const WAGE_TODAY_NOTE = "오늘부터 적용돼요";
 
 export const WAGE_AMOUNT_INPUT_TEST_ID = "wage-amount-input";
 
+export const SKELETON_ROWS = [0, 1, 2] as const;
+
 export const WAGES_COPY = {
   appBarTitle: "시급",
   baseTitle: "기본 시급",

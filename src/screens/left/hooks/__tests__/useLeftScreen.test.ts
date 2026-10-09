@@ -6,6 +6,13 @@ const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 
 const FAKE_CLIENT = {} as never;
 
+const pushMock = jest.fn();
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ push: pushMock, replace: replaceMock }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -28,6 +35,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useLeftScreen } = await import("@/screens/left/hooks/useLeftScreen");
+const { LOGIN_PATH, PAYROLL_PATH } =
+  await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -48,6 +57,8 @@ function createWrapper() {
 beforeEach(() => {
   getCurrentUserMock.mockReset();
   signOutMock.mockReset();
+  pushMock.mockClear();
+  replaceMock.mockClear();
 
   getCurrentUserMock.mockResolvedValue({
     id: "user-2",
@@ -114,5 +125,46 @@ describe("useLeftScreen — 보낼 데는 안 든다", () => {
     act(() => result.current.signOut(onDone));
 
     await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
+  });
+});
+
+describe("useLeftScreen — 갈 데와 보일 값을 controller가 정한다", () => {
+  it("급여 보기는 급여 화면을 쌓는다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useLeftScreen(), { wrapper });
+
+    act(() => result.current.openPayroll());
+
+    expect(pushMock).toHaveBeenCalledWith(PAYROLL_PATH);
+  });
+
+  it("로그아웃이 끝나면 로그인으로 바꿔 넣는다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useLeftScreen(), { wrapper });
+
+    act(() => result.current.signOut(result.current.goLogin));
+
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith(LOGIN_PATH));
+  });
+
+  it("세션이 아직 없으면 보일 값이 빈 자리로 선다", () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useLeftScreen(), { wrapper });
+
+    expect(result.current.email).toBe("");
+    expect(result.current.photoUrl).toBeNull();
+  });
+
+  it("세션이 오면 그 사람의 메일과 사진이 값으로 선다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useLeftScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.email).toBe("left@example.com"));
+
+    expect(result.current.photoUrl).toBeNull();
   });
 });

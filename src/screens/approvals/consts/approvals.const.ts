@@ -8,6 +8,8 @@ export const CANCEL_REJECT_REASONS = [
 
 export const CUSTOM_REJECT_MAX_LENGTH = 100;
 
+export const SKELETON_ROWS = [0, 1, 2] as const;
+
 export const APPROVALS_COPY = {
   appBarTitle: "승인할 일",
   emptyTitle: "승인할 일이 없어요",

@@ -1,6 +1,11 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { ORIGIN_APPROVALS } from "@/shared/consts/navigation.const";
+import {
+  ADMIN_HOME_PATH,
+  ADMIN_SCHEDULE_PATH,
+  ORIGIN_APPROVALS,
+} from "@/shared/consts/navigation.const";
 import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -24,12 +29,6 @@ import {
   removeApproval,
   sortApprovals,
 } from "@/screens/approvals/utils/approvalsList.utils";
-
-export type ApprovalsRouter = {
-  canGoBack: () => boolean;
-  back: () => void;
-  replace: (destination: string) => void;
-};
 
 export type ApprovalsListState = "loading" | "empty" | "rows";
 
@@ -109,9 +108,8 @@ function sendLabelOf(sending: boolean, failed: boolean): string {
   return failed ? APPROVALS_COPY.resend : APPROVALS_COPY.sendReject;
 }
 
-export function useApprovalsScreen(
-  router: ApprovalsRouter,
-): ApprovalsScreenController {
+export function useApprovalsScreen(): ApprovalsScreenController {
+  const router = useRouter();
   const { data: approvals } = usePendingApprovalsQuery(supabase);
   const { mutate, isPending, isSuccess, isError, reset } =
     useDecideCancelRequestMutation(supabase);
@@ -145,7 +143,7 @@ export function useApprovalsScreen(
 
     if (sent.decision === "approved") {
       router.replace(
-        `/admin/schedule?date=${sent.row.workDate}&from=${ORIGIN_APPROVALS}`,
+        `${ADMIN_SCHEDULE_PATH}?date=${sent.row.workDate}&from=${ORIGIN_APPROVALS}`,
       );
       return;
     }
@@ -156,6 +154,15 @@ export function useApprovalsScreen(
   const all = cancelRowsOf(approvals ?? []);
   const visible = answered === null ? all : removeApproval(all, answered);
   const open = visible.find((row) => row.id === openId) ?? null;
+
+  const goBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(ADMIN_HOME_PATH);
+  }, [router]);
 
   const listState: ApprovalsListState =
     approvals === undefined
@@ -193,8 +200,7 @@ export function useApprovalsScreen(
       : APPROVALS_COPY.confirmApprove,
     confirmNotice: isError ? APPROVALS_COPY.sendFailed : undefined,
     toast,
-    goBack: () =>
-      router.canGoBack() ? router.back() : router.replace("/admin"),
+    goBack,
     closeSheet,
     showFace: setFace,
     choose: setChosen,

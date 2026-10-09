@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -14,9 +13,8 @@ import {
 import { useLeftScreen } from "@/screens/left/hooks/useLeftScreen";
 
 export function LeftScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { me, signOut, isPending } = useLeftScreen();
+  const screen = useLeftScreen();
 
   return (
     <Screen
@@ -35,7 +33,7 @@ export function LeftScreen() {
         <Button
           variant="primary"
           className="mt-8 self-stretch"
-          onPress={() => router.push("/payroll")}
+          onPress={screen.openPayroll}
         >
           {LEFT_COPY.payroll}
         </Button>
@@ -44,20 +42,16 @@ export function LeftScreen() {
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar
-            name={me?.email ?? ""}
-            photoUrl={me?.googlePhotoUrl ?? null}
-            size={24}
-          />
+          <Avatar name={screen.email} photoUrl={screen.photoUrl} size={24} />
           <Text size="sm" tone="subtle">
-            {me?.email ?? ""}
+            {screen.email}
           </Text>
         </View>
         <Button
           variant="ghost"
           className="mt-4"
-          loading={isPending}
-          onPress={() => signOut(() => router.replace("/login"))}
+          loading={screen.isPending}
+          onPress={() => screen.signOut(screen.goLogin)}
         >
           {LEFT_COPY.signOut}
         </Button>

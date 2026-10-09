@@ -8,6 +8,18 @@ const decideCancelRequestMock =
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const replaceMock = jest.fn();
+const canGoBackMock = jest.fn<() => boolean>();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    replace: replaceMock,
+    canGoBack: canGoBackMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -31,6 +43,7 @@ const { APPROVALS_COPY, CUSTOM_REJECT_REASON } =
   await import("@/screens/approvals/consts/approvals.const");
 const { useApprovalsScreen } =
   await import("@/screens/approvals/hooks/useApprovalsScreen");
+const { ADMIN_HOME_PATH } = await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -46,14 +59,6 @@ function createWrapper() {
   }
 
   return { wrapper };
-}
-
-function fakeRouter() {
-  return {
-    canGoBack: jest.fn(() => true),
-    back: jest.fn(),
-    replace: jest.fn(),
-  };
 }
 
 function approval(id: string, workDate: string, name: string) {
@@ -75,14 +80,18 @@ function approval(id: string, workDate: string, name: string) {
 beforeEach(() => {
   getPendingApprovalsMock.mockReset();
   decideCancelRequestMock.mockReset();
+  backMock.mockClear();
+  replaceMock.mockClear();
+  canGoBackMock.mockReset();
+  canGoBackMock.mockReturnValue(true);
 
   getPendingApprovalsMock.mockResolvedValue([]);
   decideCancelRequestMock.mockResolvedValue(undefined);
 });
 
-async function mounted(router = fakeRouter()) {
+async function mounted() {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useApprovalsScreen(router), {
+  const hook = renderHook(() => useApprovalsScreen(), {
     wrapper,
   });
 
@@ -90,14 +99,14 @@ async function mounted(router = fakeRouter()) {
     expect(hook.result.current.listState).not.toBe("loading"),
   );
 
-  return { ...hook, router };
+  return hook;
 }
 
 describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 든다", () => {
   it("읽기 전에는 loading이다", () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useApprovalsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useApprovalsScreen(), {
       wrapper,
     });
 
@@ -203,7 +212,7 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
       approval("one", "2026-10-05", "이준호"),
     ]);
 
-    const { result, router } = await mounted();
+    const { result } = await mounted();
 
     act(() => result.current.rows[0].press());
     act(() => result.current.showFace("reject"));
@@ -216,7 +225,7 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
 
     expect(result.current.detail).toBeNull();
     expect(result.current.listState).toBe("empty");
-    expect(router.replace).not.toHaveBeenCalled();
+    expect(replaceMock).not.toHaveBeenCalled();
 
     act(() => result.current.dismissToast());
 
@@ -228,7 +237,7 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
       approval("one", "2026-10-05", "이준호"),
     ]);
 
-    const { result, router } = await mounted();
+    const { result } = await mounted();
 
     act(() => result.current.rows[0].press());
 
@@ -250,7 +259,7 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
       ),
     );
     await waitFor(() =>
-      expect(router.replace).toHaveBeenCalledWith(
+      expect(replaceMock).toHaveBeenCalledWith(
         "/admin/schedule?date=2026-10-05&from=approvals",
       ),
     );
@@ -324,17 +333,16 @@ describe("useApprovalsScreen — 목록과 시트와 확인창을 한 자리가 
   });
 
   it("뒤로는 쌓인 것이 있으면 되돌아가고 없으면 관리자 홈으로 간다", async () => {
-    const router = fakeRouter();
-    const { result } = await mounted(router);
+    const { result } = await mounted();
 
     act(() => result.current.goBack());
 
-    expect(router.back).toHaveBeenCalledTimes(1);
+    expect(backMock).toHaveBeenCalledTimes(1);
 
-    router.canGoBack.mockReturnValue(false);
+    canGoBackMock.mockReturnValue(false);
 
     act(() => result.current.goBack());
 
-    expect(router.replace).toHaveBeenCalledWith("/admin");
+    expect(replaceMock).toHaveBeenCalledWith(ADMIN_HOME_PATH);
   });
 });

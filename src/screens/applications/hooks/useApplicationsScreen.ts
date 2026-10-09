@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { kstDateOf, monthOf } from "@/shared/utils/kstDate";
@@ -44,6 +45,7 @@ export type ApplicationsDeadlineSheet = {
 };
 
 export type ApplicationsScreenController = {
+  goBack: () => void;
   title: string;
   tab: ApplicationsTab;
   deadlineLine: string | null;
@@ -68,6 +70,7 @@ function tabOf(value: string): ApplicationsTab {
 export function useApplicationsScreen(
   monthParam?: string,
 ): ApplicationsScreenController {
+  const router = useRouter();
   const [tab, setTab] = useState<ApplicationsTab>(APPLICATIONS_TABS[0]);
   const [asking, setAsking] = useState(false);
   const [draft, setDraft] = useState<string | null>(null);
@@ -107,7 +110,10 @@ export function useApplicationsScreen(
   const deadline = schedule?.applicationDeadline ?? null;
   const typed = draft ?? deadline ?? today;
 
+  const goBack = useCallback(() => router.back(), [router]);
+
   return {
+    goBack,
     title: applicationsTitle(month),
     tab,
     deadlineLine:

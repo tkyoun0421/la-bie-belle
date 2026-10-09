@@ -1,7 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
+import {
+  LEFT_PATH,
+  NOTIFICATIONS_PATH,
+} from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
@@ -46,6 +51,9 @@ export type PayrollListState =
   "loading" | "failed" | "empty" | "history" | "months";
 
 export type PayrollScreenController = {
+  goBack: (() => void) | undefined;
+  showBell: boolean;
+  openNotifications: () => void;
   unit: PeriodUnit;
   periodLabel: string;
   amountLabel: string;
@@ -72,6 +80,8 @@ const RETRY_KEYS = [
 ];
 
 export function usePayrollScreen(): PayrollScreenController {
+  const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const today = kstToday();
 
@@ -147,7 +157,17 @@ export function usePayrollScreen(): PayrollScreenController {
           ? "months"
           : "history";
 
+  const goLeft = useCallback(() => router.replace(LEFT_PATH), [router]);
+
+  const openNotifications = useCallback(
+    () => router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`),
+    [router, pathname],
+  );
+
   return {
+    goBack: hasLeft ? goLeft : undefined,
+    showBell: !hasLeft,
+    openNotifications,
     unit,
     periodLabel: periodLabel(period),
     amountLabel: summarizeAmount(shown),

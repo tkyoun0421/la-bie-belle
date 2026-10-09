@@ -1,7 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
+import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import {
@@ -70,6 +72,8 @@ export type StatsTrendPoint = {
 };
 
 export type StatsScreenController = {
+  goBack: () => void;
+  openPayrollHistory: () => void;
   tab: StatsTab;
   month: string;
   monthLabel: string;
@@ -107,6 +111,7 @@ function tabOf(value: string): StatsTab {
 }
 
 export function useStatsScreen(): StatsScreenController {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const today = kstToday();
 
@@ -255,7 +260,16 @@ export function useStatsScreen(): StatsScreenController {
   const payrollTotal = values.get(month) ?? 0;
   const totalLabel = hoursLabel(totals.totalMinutes);
 
+  const goBack = useCallback(() => router.back(), [router]);
+
+  const openPayrollHistory = useCallback(
+    () => router.push(PAYROLL_PATH),
+    [router],
+  );
+
   return {
+    goBack,
+    openPayrollHistory,
     tab,
     month,
     monthLabel: spellMonth(month),

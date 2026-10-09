@@ -1,5 +1,7 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellWon } from "@/shared/utils/spellNumber";
@@ -54,6 +56,7 @@ export type WagesHistoryRow = {
 };
 
 export type WagesScreenController = {
+  goBack: () => void;
   listState: WagesListState;
   rows: WagesScreenRow[];
   baseValue: string;
@@ -94,6 +97,7 @@ function digitsOf(amount: number | null): string {
 }
 
 export function useWagesScreen(): WagesScreenController {
+  const router = useRouter();
   const [target, setTarget] = useState<SheetTarget | null>(null);
   const [digits, setDigits] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -201,7 +205,17 @@ export function useWagesScreen(): WagesScreenController {
 
   const loading = members === undefined || wages === undefined;
 
+  const goBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(ADMIN_HOME_PATH);
+  }, [router]);
+
   return {
+    goBack,
     listState: loading ? "loading" : rows.length === 0 ? "empty" : "rows",
     rows: rows.map((row) => ({
       profileId: row.profileId,
@@ -228,7 +242,13 @@ export function useWagesScreen(): WagesScreenController {
     defaultWage,
     followerCount,
     sheet:
-      target === null ? null : target.kind === "default" ? "default" : "member",
+      target === null
+        ? null
+        : target.kind === "default"
+          ? "default"
+          : openRow === null
+            ? null
+            : "member",
     member:
       openRow === null
         ? null

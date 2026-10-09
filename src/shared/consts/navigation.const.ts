@@ -8,7 +8,11 @@ export const ME_HOME_PATH = "/me" as const;
 
 export const LOGIN_PATH = "/login" as const;
 
+export const LEFT_PATH = "/left" as const;
+
 export const NOTIFICATIONS_PATH = "/notifications" as const;
+
+export const PAYROLL_PATH = "/payroll" as const;
 
 export const STATS_PATH = "/stats" as const;
 

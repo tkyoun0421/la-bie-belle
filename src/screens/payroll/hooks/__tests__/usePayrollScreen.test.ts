@@ -50,6 +50,16 @@ jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
 
 const FAKE_CLIENT = {} as never;
 
+const PATHNAME = "/payroll";
+
+const pushMock = jest.fn();
+const replaceMock = jest.fn();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ push: pushMock, replace: replaceMock }),
+  usePathname: () => PATHNAME,
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -61,6 +71,8 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { usePayrollScreen } =
   await import("@/screens/payroll/hooks/usePayrollScreen");
+const { LEFT_PATH, NOTIFICATIONS_PATH } =
+  await import("@/shared/consts/navigation.const");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -109,6 +121,8 @@ function scheduleDay(workDate: string) {
 }
 
 beforeEach(() => {
+  pushMock.mockClear();
+  replaceMock.mockClear();
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
   getProfilePrivateMock.mockReset();
@@ -293,5 +307,42 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
     act(() => result.current.retry());
 
     await waitFor(() => expect(result.current.listState).toBe("empty"));
+  });
+});
+
+describe("usePayrollScreen — 갈 데를 controller가 정한다", () => {
+  it("종을 누르면 어디서 왔는지를 달고 알림으로 간다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.showBell).toBe(true);
+
+    act(() => result.current.openNotifications());
+
+    expect(pushMock).toHaveBeenCalledWith(
+      `${NOTIFICATIONS_PATH}?from=${PATHNAME}`,
+    );
+  });
+
+  it("안 퇴사했으면 뒤로가 없다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.goBack).toBeUndefined();
+  });
+
+  it("퇴사했으면 뒤로가 퇴사 화면으로 바꿔 넣고 종이 없다", async () => {
+    getMyProfileMock.mockResolvedValue({
+      id: "me",
+      role: "worker",
+      approvedAt: "2026-01-02T00:00:00.000Z",
+      leftAt: "2026-09-30T00:00:00.000Z",
+    });
+
+    const { result } = await mounted();
+
+    expect(result.current.showBell).toBe(false);
+
+    act(() => result.current.goBack?.());
+
+    expect(replaceMock).toHaveBeenCalledWith(LEFT_PATH);
   });
 });
