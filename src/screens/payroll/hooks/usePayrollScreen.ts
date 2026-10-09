@@ -11,7 +11,7 @@ import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadC
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { usePayrollViewDaysQuery } from "@/features/payrollCompute/services/usePayrollViewDaysQuery";
+import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
   canGoToNextPeriod,
   canGoToPreviousPeriod,
@@ -67,7 +67,7 @@ export function usePayrollScreen(): PayrollScreenController {
   const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);
   const span = useMemo(() => periodSpan(period), [period]);
 
-  const payroll = usePayrollViewDaysQuery(supabase, span);
+  const payroll = useMyPayrollViewDaysQuery(supabase, span);
 
   const loading = profileLoading || payroll.isLoading;
 

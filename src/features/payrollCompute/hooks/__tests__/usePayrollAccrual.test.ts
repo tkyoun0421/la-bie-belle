@@ -1,10 +1,11 @@
 import { jest } from "@jest/globals";
 
-const usePayrollViewDaysQueryMock = jest.fn<(...args: unknown[]) => unknown>();
+const useMyPayrollViewDaysQueryMock =
+  jest.fn<(...args: unknown[]) => unknown>();
 
 jest.unstable_mockModule(
-  "@/features/payrollCompute/services/usePayrollViewDaysQuery",
-  () => ({ usePayrollViewDaysQuery: usePayrollViewDaysQueryMock }),
+  "@/features/payrollCompute/services/useMyPayrollViewDaysQuery",
+  () => ({ useMyPayrollViewDaysQuery: useMyPayrollViewDaysQueryMock }),
 );
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
@@ -34,7 +35,7 @@ function day(kind: string, minutes: number) {
 }
 
 function reads(result: Record<string, unknown>) {
-  usePayrollViewDaysQueryMock.mockReturnValue({
+  useMyPayrollViewDaysQueryMock.mockReturnValue({
     data: undefined,
     isLoading: false,
     error: null,
@@ -44,7 +45,7 @@ function reads(result: Record<string, unknown>) {
 }
 
 beforeEach(() => {
-  usePayrollViewDaysQueryMock.mockReset();
+  useMyPayrollViewDaysQueryMock.mockReset();
 });
 
 describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {

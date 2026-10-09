@@ -6,7 +6,7 @@ import {
   fragmentStateOf,
   type PayrollFragmentState,
 } from "@/features/payrollCompute/model/fragmentState.policy";
-import { usePayrollViewDaysQuery } from "@/features/payrollCompute/services/usePayrollViewDaysQuery";
+import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import { myPayrollSubtitle } from "@/features/payrollCompute/utils/payrollSummary.utils";
 import { amountTotal } from "@/features/payrollCompute/utils/payrollTotal.utils";
 
@@ -19,7 +19,7 @@ export type StatsPayrollController = {
 };
 
 export function useStatsPayroll(span: DateSpan): StatsPayrollController {
-  const read = usePayrollViewDaysQuery(supabase, span);
+  const read = useMyPayrollViewDaysQuery(supabase, span);
   const days = read.data ?? [];
 
   return {

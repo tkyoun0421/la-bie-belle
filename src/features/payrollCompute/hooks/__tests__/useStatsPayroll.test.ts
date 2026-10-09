@@ -1,10 +1,11 @@
 import { jest } from "@jest/globals";
 
-const usePayrollViewDaysQueryMock = jest.fn<(...args: unknown[]) => unknown>();
+const useMyPayrollViewDaysQueryMock =
+  jest.fn<(...args: unknown[]) => unknown>();
 
 jest.unstable_mockModule(
-  "@/features/payrollCompute/services/usePayrollViewDaysQuery",
-  () => ({ usePayrollViewDaysQuery: usePayrollViewDaysQueryMock }),
+  "@/features/payrollCompute/services/useMyPayrollViewDaysQuery",
+  () => ({ useMyPayrollViewDaysQuery: useMyPayrollViewDaysQueryMock }),
 );
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
@@ -36,7 +37,7 @@ function day(amount: number, kind = "normal", minutes = 300) {
 }
 
 function reads(result: Record<string, unknown>) {
-  usePayrollViewDaysQueryMock.mockReturnValue({
+  useMyPayrollViewDaysQueryMock.mockReturnValue({
     data: undefined,
     isLoading: false,
     error: null,
@@ -46,7 +47,7 @@ function reads(result: Record<string, unknown>) {
 }
 
 beforeEach(() => {
-  usePayrollViewDaysQueryMock.mockReset();
+  useMyPayrollViewDaysQueryMock.mockReset();
   refetch.mockReset();
 });
 

@@ -31,8 +31,18 @@ export function monthKeysOf(span: DateSpan): string[] {
   return months;
 }
 
+function lastDayOf(month: string): number {
+  const year = Number(month.slice(0, 4));
+  const at = Number(month.slice(5, MONTH_LENGTH));
+
+  return new Date(Date.UTC(year, at, 0)).getUTCDate();
+}
+
 export function monthSpan(month: string): DateSpan {
-  return { from: `${month}-01`, to: `${month}-31` };
+  return {
+    from: `${month}-01`,
+    to: `${month}-${String(lastDayOf(month)).padStart(2, "0")}`,
+  };
 }
 
 export function isInSpan(span: DateSpan, date: string): boolean {

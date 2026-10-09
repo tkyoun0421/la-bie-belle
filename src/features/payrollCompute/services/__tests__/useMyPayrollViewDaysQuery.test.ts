@@ -41,8 +41,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { usePayrollViewDaysQuery } =
-  await import("@/features/payrollCompute/services/usePayrollViewDaysQuery");
+const { useMyPayrollViewDaysQuery } =
+  await import("@/features/payrollCompute/services/useMyPayrollViewDaysQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -113,7 +113,7 @@ const OCTOBER = { from: "2026-10-01", to: "2026-10-31" };
 
 async function mounted(span: { from: string; to: string } = OCTOBER) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => usePayrollViewDaysQuery(FAKE_CLIENT, span), {
+  const hook = renderHook(() => useMyPayrollViewDaysQuery(FAKE_CLIENT, span), {
     wrapper,
   });
 
@@ -122,7 +122,7 @@ async function mounted(span: { from: string; to: string } = OCTOBER) {
   return hook;
 }
 
-describe("usePayrollViewDaysQuery — 네 도메인을 맞춰 급여 날을 낸다", () => {
+describe("useMyPayrollViewDaysQuery — 네 도메인을 맞춰 급여 날을 낸다", () => {
   it("구간이 걸친 달마다 세 질의를 부른다", async () => {
     await mounted({ from: "2026-09-28", to: "2026-10-04" });
 
@@ -162,13 +162,13 @@ describe("usePayrollViewDaysQuery — 네 도메인을 맞춰 급여 날을 낸�
   });
 });
 
-describe("usePayrollViewDaysQuery — 다 오기 전에는 값을 안 낸다", () => {
+describe("useMyPayrollViewDaysQuery — 다 오기 전에는 값을 안 낸다", () => {
   it("읽는 중에는 data가 undefined고 isLoading이다", () => {
     getMonthScheduleMock.mockImplementation(() => new Promise(() => {}));
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => usePayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
       { wrapper },
     );
 
@@ -177,13 +177,13 @@ describe("usePayrollViewDaysQuery — 다 오기 전에는 값을 안 낸다", (
   });
 });
 
-describe("usePayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", () => {
+describe("useMyPayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", () => {
   it("급여 쪽이 넘어지면 error가 그 오류다", async () => {
     getPayrollMonthMock.mockRejectedValue(new Error("급여가 안 왔다"));
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => usePayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
       { wrapper },
     );
 
@@ -198,7 +198,7 @@ describe("usePayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", ()
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => usePayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
       { wrapper },
     );
 
@@ -208,7 +208,7 @@ describe("usePayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", ()
   });
 });
 
-describe("usePayrollViewDaysQuery — 다시 시도할 손을 내준다", () => {
+describe("useMyPayrollViewDaysQuery — 다시 시도할 손을 내준다", () => {
   it("refetch를 부르면 세 질의를 다시 읽는다", async () => {
     const { result } = await mounted();
 

@@ -32,7 +32,7 @@ const STALE_KEYS = [
   queryKeys.rehearsal.all,
 ];
 
-export function usePayrollViewDaysQuery(
+export function useMyPayrollViewDaysQuery(
   client: DB,
   span: DateSpan,
 ): PayrollViewDaysResult {

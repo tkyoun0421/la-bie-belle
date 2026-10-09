@@ -5,7 +5,7 @@ import {
   fragmentStateOf,
   type PayrollFragmentState,
 } from "@/features/payrollCompute/model/fragmentState.policy";
-import { usePayrollViewDaysQuery } from "@/features/payrollCompute/services/usePayrollViewDaysQuery";
+import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
   monthRowsOfDays,
   yearRows,
@@ -33,7 +33,7 @@ export function usePayrollMonthRows({
   span,
   onOpenMonth,
 }: PayrollMonthRowsSource): PayrollMonthRowsController {
-  const read = usePayrollViewDaysQuery(supabase, span);
+  const read = useMyPayrollViewDaysQuery(supabase, span);
 
   return {
     state: fragmentStateOf(read),

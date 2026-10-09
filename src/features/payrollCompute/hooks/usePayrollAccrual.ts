@@ -4,7 +4,7 @@ import {
   fragmentStateOf,
   type PayrollFragmentState,
 } from "@/features/payrollCompute/model/fragmentState.policy";
-import { usePayrollViewDaysQuery } from "@/features/payrollCompute/services/usePayrollViewDaysQuery";
+import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import { summarizeAccrual } from "@/features/payrollCompute/utils/summary.utils";
 
 export type PayrollAccrualController = {
@@ -14,7 +14,7 @@ export type PayrollAccrualController = {
 };
 
 export function usePayrollAccrual(span: DateSpan): PayrollAccrualController {
-  const read = usePayrollViewDaysQuery(supabase, span);
+  const read = useMyPayrollViewDaysQuery(supabase, span);
 
   return { state: fragmentStateOf(read), ...summarizeAccrual(read.data ?? []) };
 }

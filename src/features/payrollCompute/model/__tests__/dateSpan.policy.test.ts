@@ -53,6 +53,15 @@ describe("monthSpan — 달 하나를 구간으로 펼친다", () => {
     expect(isInSpan(monthSpan("2026-02"), "2026-02-28")).toBe(true);
     expect(isInSpan(monthSpan("2026-02"), "2026-03-01")).toBe(false);
   });
+
+  it("끝은 실재하는 날짜다 — 짧은 달에 없는 날을 내지 않는다", () => {
+    expect(monthSpan("2026-02").to).toBe("2026-02-28");
+    expect(monthSpan("2026-04").to).toBe("2026-04-30");
+  });
+
+  it("윤년 2월은 29일까지다", () => {
+    expect(monthSpan("2028-02").to).toBe("2028-02-29");
+  });
 });
 
 describe("isInSpan — 양 끝을 포함한다", () => {
