@@ -152,12 +152,14 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
     expect(result.current.hasDefaultWage).toBe(false);
   });
 
-  it("줄이 사람마다 제 시급을 말하고 기본을 따르는 사람도 금액이 선다", async () => {
+  it("승인된 사람을 조각이 그릴 꼴로 넘긴다", async () => {
     const { result } = await mounted();
 
     expect(result.current.listState).toBe("rows");
-    expect(result.current.rows).toHaveLength(2);
-    expect(result.current.rows[0].valueLabel).toContain("11,000");
+    expect(result.current.people).toEqual([
+      { profileId: "p1", displayName: "이준호", photoUrl: null },
+      { profileId: "p2", displayName: "박수진", photoUrl: null },
+    ]);
   });
 
   it("기본 시트를 열면 그 시트가 쓸 값이 실린다", async () => {
@@ -173,7 +175,7 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
   it("사람 시트를 열면 그 사람과 그 사람 시급 줄이 실린다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.rows[1].press());
+    act(() => result.current.openPerson("p2"));
 
     expect(result.current.sheet).toBe("member");
     expect(result.current.member?.profileId).toBe("p2");
@@ -184,7 +186,7 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
   it("시트를 닫으면 걷힌다", async () => {
     const { result } = await mounted();
 
-    act(() => result.current.rows[1].press());
+    act(() => result.current.openPerson("p2"));
     act(() => result.current.close());
 
     expect(result.current.sheet).toBeNull();

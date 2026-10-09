@@ -2,13 +2,12 @@ import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
-import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import {
-  buildWageRows,
   wageRatesOf,
+  type WageRowMember,
 } from "@/entities/payroll/model/wageRows.policy";
 import { useWageRatesQuery } from "@/entities/payroll/services/useWageRatesQuery";
 import {
@@ -18,14 +17,6 @@ import {
 import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 
 export type WagesListState = "loading" | "empty" | "rows";
-
-export type WagesScreenRow = {
-  profileId: string;
-  displayName: string;
-  photoUrl: string | null;
-  valueLabel: string;
-  press: () => void;
-};
 
 export type WagesScreenMember = {
   profileId: string;
@@ -37,7 +28,7 @@ export type WagesScreenMember = {
 export type WagesScreenController = {
   goBack: () => void;
   listState: WagesListState;
-  rows: WagesScreenRow[];
+  people: WageRowMember[];
   baseValue: string;
   baseNote: string;
   hasDefaultWage: boolean;
@@ -47,6 +38,7 @@ export type WagesScreenController = {
   member: WagesScreenMember | null;
   toast: string | null;
   openBase: () => void;
+  openPerson: (profileId: string) => void;
   finish: (message: string) => void;
   close: () => void;
   dismissToast: () => void;
@@ -73,23 +65,20 @@ export function useWagesScreen(): WagesScreenController {
   const defaultWage = wages?.defaultWageRate?.amount ?? null;
   const hasDefaultWage = defaultWage !== null;
 
-  const rows = buildWageRows(
-    (members ?? []).map((member) => ({
-      profileId: member.id,
-      displayName: member.displayName ?? "",
-      photoUrl: member.photoUrl,
-    })),
-    wageRates,
-  );
+  const people = (members ?? []).map((member) => ({
+    profileId: member.id,
+    displayName: member.displayName ?? "",
+    photoUrl: member.photoUrl,
+  }));
 
   const followerCount = countFollowers(
-    rows.map((row) => row.profileId),
+    people.map((person) => person.profileId),
     wageRates,
   );
 
-  const openRow =
+  const chosen =
     target?.kind === "member"
-      ? (rows.find((row) => row.profileId === target.profileId) ?? null)
+      ? (people.find((person) => person.profileId === target.profileId) ?? null)
       : null;
 
   const loading = members === undefined || wages === undefined;
@@ -105,14 +94,8 @@ export function useWagesScreen(): WagesScreenController {
 
   return {
     goBack,
-    listState: loading ? "loading" : rows.length === 0 ? "empty" : "rows",
-    rows: rows.map((row) => ({
-      profileId: row.profileId,
-      displayName: row.displayName,
-      photoUrl: row.photoUrl ?? null,
-      valueLabel: row.amount === null ? NO_VALUE : spellWon(row.amount),
-      press: () => setTarget({ kind: "member", profileId: row.profileId }),
-    })),
+    listState: loading ? "loading" : people.length === 0 ? "empty" : "rows",
+    people,
     baseValue: hasDefaultWage ? spellWon(defaultWage) : WAGES_COPY.noBase,
     baseNote: spellBaseWageNote({ hasDefaultWage, followerCount }),
     hasDefaultWage,
@@ -123,20 +106,21 @@ export function useWagesScreen(): WagesScreenController {
         ? null
         : target.kind === "default"
           ? "default"
-          : openRow === null
+          : chosen === null
             ? null
             : "member",
     member:
-      openRow === null
+      chosen === null
         ? null
         : {
-            profileId: openRow.profileId,
-            displayName: openRow.displayName,
-            photoUrl: openRow.photoUrl ?? null,
-            rates: wageRatesOf(wageRates, openRow.profileId),
+            profileId: chosen.profileId,
+            displayName: chosen.displayName,
+            photoUrl: chosen.photoUrl ?? null,
+            rates: wageRatesOf(wageRates, chosen.profileId),
           },
     toast,
     openBase: () => setTarget({ kind: "default" }),
+    openPerson: (profileId) => setTarget({ kind: "member", profileId }),
     finish,
     close,
     dismissToast: () => setToast(null),
