@@ -101,9 +101,9 @@ sources:
 
 옮긴 조각이 `useRouter`를 들지 않고 `onPress`를 props로 받는다. 경로는 화면 controller에서 내려온다.
 
-### AC-07 — 검사가 그 자리를 지킨다
+### AC-07 — 검사가 그 자리를 지킨다 ✅
 
-조각 `.tsx`가 `useRouter`를 쥐는 것을 lint가 막는다. 지금 규칙 서른아홉까지 있고 이 자리가 마흔이다.
+규칙 마흔 `house/ui-no-router`가 `ui/`에서 `expo-router`의 라우팅 훅 여섯을 막는다. `Link`와 `import type { Href }`는 통과하고 `src/app/`은 밖이다.
 
 ## 하지 않는 것
 
