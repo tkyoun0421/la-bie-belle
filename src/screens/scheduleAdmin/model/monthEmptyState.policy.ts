@@ -1,5 +1,5 @@
 import { lastDateOfMonth, shiftMonth } from "@/shared/utils/kstDate";
-import { kstDateOf } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+import { kstDateOf } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 export type MonthEmptyStateInput = {
   month: string;

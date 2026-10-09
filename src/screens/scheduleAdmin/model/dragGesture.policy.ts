@@ -2,8 +2,8 @@ import type {
   ScheduleAssignment,
   ScheduleSlot,
 } from "@/entities/schedule/model/schedule.type";
+import { discardSlotJudgement } from "@/features/scheduleSlot/model/discardSlot.policy";
 import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
-import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot.policy";
 import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
 import { positionOf, slotOf } from "@/screens/scheduleAdmin/utils/dragId.utils";
 import { assignmentForSlot } from "@/screens/scheduleAdmin/utils/positionRows.utils";

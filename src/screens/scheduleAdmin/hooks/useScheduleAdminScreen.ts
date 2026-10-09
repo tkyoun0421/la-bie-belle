@@ -23,6 +23,13 @@ import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
+import {
+  confirmedLine,
+  formatMonthName,
+  formatMonthTitle,
+  kstDateOf,
+} from "@/entities/schedule/utils/formatScheduleDate.utils";
+import { countOpenSlotsByDate } from "@/entities/schedule/utils/groupOpenSlots.utils";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
 import { useSetAdjustmentMutation } from "@/features/adjustment/services/useSetAdjustmentMutation";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
@@ -31,12 +38,9 @@ import { useGrantPositionMutation } from "@/features/qualificationGrant/services
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import { useAddAssignmentMutation } from "@/features/scheduleAssign/services/useAddAssignmentMutation";
 import { useRemoveAssignmentMutation } from "@/features/scheduleAssign/services/useRemoveAssignmentMutation";
-import { useConfirmScheduleMutation } from "@/features/scheduleConfirm/services/useConfirmScheduleMutation";
 import { useForceChangeMutation } from "@/features/scheduleConfirm/services/useForceChangeMutation";
 import { useCloseDayMutation } from "@/features/scheduleDay/services/useCloseDayMutation";
-import { useCreateScheduleMutation } from "@/features/scheduleDay/services/useCreateScheduleMutation";
 import { useOpenDayMutation } from "@/features/scheduleDay/services/useOpenDayMutation";
-import { useSetDayHoursMutation } from "@/features/scheduleDay/services/useSetDayHoursMutation";
 import { useAddSlotMutation } from "@/features/scheduleSlot/services/useAddSlotMutation";
 import { useMergeSlotsMutation } from "@/features/scheduleSlot/services/useMergeSlotsMutation";
 import { useRemoveSlotMutation } from "@/features/scheduleSlot/services/useRemoveSlotMutation";
@@ -53,7 +57,6 @@ import {
 } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
 import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type { DayDetailInput } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import { isDayHoursSaveEnabled } from "@/screens/scheduleAdmin/model/dayHoursForm.policy";
 import {
   isMonthFullyPast,
   shiftMonth,
@@ -65,13 +68,6 @@ import {
 } from "@/screens/scheduleAdmin/model/openModeSelection.policy";
 
 import { deadlineLine } from "@/screens/scheduleAdmin/utils/deadlineLine.utils";
-import {
-  confirmedLine,
-  formatMonthName,
-  formatMonthTitle,
-  kstDateOf,
-} from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
-import { countOpenSlotsByDate } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
 export type ScheduleAdminListState = "loading" | "missing" | "calendar";
 
@@ -87,13 +83,7 @@ export type ScheduleAdminCalendar = {
 };
 
 export type ScheduleAdminSheet =
-  | {
-      kind: "create";
-      deadline: string;
-      canSave: boolean;
-      saving: boolean;
-      failed: boolean;
-    }
+  | { kind: "create" }
   | {
       kind: "deadline";
       deadline: string;
@@ -105,24 +95,9 @@ export type ScheduleAdminSheet =
       kind: "confirm";
       openSlots: readonly OpenSlot[];
       notifiedCount: number;
-      confirming: boolean;
-      done: boolean;
-      failed: boolean;
     }
-  | {
-      kind: "hours";
-      starts: string;
-      ends: string;
-      canSave: boolean;
-      saving: boolean;
-      failed: boolean;
-    }
-  | {
-      kind: "close";
-      workDate: string;
-      assignmentCount: number;
-      closing: boolean;
-    };
+  | { kind: "hours"; workDate: string; startsAt: string; endsAt: string }
+  | { kind: "close"; workDate: string; assignmentCount: number };
 
 export type ScheduleAdminScreenParams = {
   month?: string;
@@ -165,15 +140,8 @@ export type ScheduleAdminScreenController = {
   openConfirmSheet: () => void;
   sheet: ScheduleAdminSheet | null;
   closeSheet: () => void;
-  writeCreateDeadline: (typed: string) => void;
-  createSchedule: () => void;
   changeDeadlineDraft: (typed: string) => void;
   saveDeadline: () => void;
-  confirmMonth: () => void;
-  writeHoursStarts: (typed: string) => void;
-  writeHoursEnds: (typed: string) => void;
-  saveHours: () => void;
-  closeDay: () => void;
   toast: ScheduleAdminToast | null;
   dismissToast: () => void;
   day: DayDetailInput | null;
@@ -184,15 +152,11 @@ export type ScheduleAdminScreenController = {
 };
 
 type SheetState =
-  | { kind: "create"; deadline: string }
+  | { kind: "create" }
   | { kind: "deadline"; draft: string | null }
   | { kind: "confirm" }
-  | { kind: "hours"; starts: string; ends: string }
+  | { kind: "hours" }
   | { kind: "close" };
-
-function clockLabel(clock: string): string {
-  return clock.slice(0, 5);
-}
 
 function useCloseSheetOnSuccess(
   succeeded: boolean,
@@ -243,12 +207,9 @@ export function useScheduleAdminScreen({
   const { data: payroll } = usePayrollMonthsQuery(supabase, [month]);
   const { data: rehearsals } = useAllRehearsalsQuery(supabase, month);
 
-  const create = useCreateScheduleMutation(supabase);
   const changeDeadline = useSetApplicationDeadlineMutation(supabase);
   const open = useOpenDayMutation(supabase);
   const close = useCloseDayMutation(supabase);
-  const setHours = useSetDayHoursMutation(supabase);
-  const confirm = useConfirmScheduleMutation(supabase);
   const addSlot = useAddSlotMutation(supabase);
   const removeSlot = useRemoveSlotMutation(supabase);
   const mergeSlots = useMergeSlotsMutation(supabase);
@@ -263,11 +224,8 @@ export function useScheduleAdminScreen({
 
   const closeSheet = useCallback(() => {
     setSheetState(null);
-    create.reset();
     changeDeadline.reset();
-    setHours.reset();
-    confirm.reset();
-  }, [create.reset, changeDeadline.reset, setHours.reset, confirm.reset]);
+  }, [changeDeadline.reset]);
 
   const leaveDay = useCallback(() => {
     setSheetState(null);
@@ -306,13 +264,11 @@ export function useScheduleAdminScreen({
     setOpenDate(dateParam ?? null);
   }, [monthParam, dateParam]);
 
-  useCloseSheetOnSuccess(create.isSuccess, create.reset, closeSheet);
   useCloseSheetOnSuccess(
     changeDeadline.isSuccess,
     changeDeadline.reset,
     closeSheet,
   );
-  useCloseSheetOnSuccess(setHours.isSuccess, setHours.reset, closeSheet);
   useCloseSheetOnSuccess(close.isSuccess, close.reset, leaveDay);
 
   const dayList = days ?? [];
@@ -434,37 +390,21 @@ export function useScheduleAdminScreen({
       if (sheetState?.kind === "hours") {
         return {
           kind: "hours",
-          starts: sheetState.starts,
-          ends: sheetState.ends,
-          canSave: isDayHoursSaveEnabled({
-            starts: sheetState.starts,
-            ends: sheetState.ends,
-          }),
-          saving: setHours.isPending,
-          failed: setHours.isError,
+          workDate: day.workDate,
+          startsAt: day.startsAt,
+          endsAt: day.endsAt,
         };
       }
 
       if (sheetState?.kind === "close") {
-        return {
-          kind: "close",
-          workDate: day.workDate,
-          assignmentCount,
-          closing: close.isPending,
-        };
+        return { kind: "close", workDate: day.workDate, assignmentCount };
       }
 
       return null;
     }
 
     if (sheetState?.kind === "create") {
-      return {
-        kind: "create",
-        deadline: sheetState.deadline,
-        canSave: sheetState.deadline >= today,
-        saving: create.isPending,
-        failed: create.isError,
-      };
+      return { kind: "create" };
     }
 
     if (sheetState?.kind === "deadline") {
@@ -480,14 +420,7 @@ export function useScheduleAdminScreen({
     }
 
     if (sheetState?.kind === "confirm") {
-      return {
-        kind: "confirm",
-        openSlots: slotRows,
-        notifiedCount,
-        confirming: confirm.isPending,
-        done: confirm.isSuccess,
-        failed: confirm.isError,
-      };
+      return { kind: "confirm", openSlots: slotRows, notifiedCount };
     }
 
     return null;
@@ -557,20 +490,11 @@ export function useScheduleAdminScreen({
       affordance === "locked"
         ? SCHEDULE_ADMIN_COPY.confirmLocked
         : `${monthName}${SCHEDULE_ADMIN_COPY.confirmSuffix}`,
-    openCreateSheet: () => setSheetState({ kind: "create", deadline: "" }),
+    openCreateSheet: () => setSheetState({ kind: "create" }),
     openDeadlineSheet: () => setSheetState({ kind: "deadline", draft: null }),
     openConfirmSheet: () => setSheetState({ kind: "confirm" }),
     sheet,
     closeSheet,
-    writeCreateDeadline: (typed) =>
-      setSheetState((open) =>
-        open?.kind === "create" ? { ...open, deadline: typed } : open,
-      ),
-    createSchedule: () => {
-      if (sheetState?.kind === "create") {
-        create.mutate({ month, deadline: sheetState.deadline });
-      }
-    },
     changeDeadlineDraft: (typed) =>
       setSheetState((open) =>
         open?.kind === "deadline" ? { ...open, draft: typed } : open,
@@ -581,29 +505,6 @@ export function useScheduleAdminScreen({
           month,
           deadline: sheetState.draft ?? deadline ?? today,
         });
-      }
-    },
-    confirmMonth: () => confirm.mutate({ month }),
-    writeHoursStarts: (typed) =>
-      setSheetState((open) =>
-        open?.kind === "hours" ? { ...open, starts: typed } : open,
-      ),
-    writeHoursEnds: (typed) =>
-      setSheetState((open) =>
-        open?.kind === "hours" ? { ...open, ends: typed } : open,
-      ),
-    saveHours: () => {
-      if (day !== null && sheetState?.kind === "hours") {
-        setHours.mutate({
-          workDate: day.workDate,
-          starts: sheetState.starts,
-          ends: sheetState.ends,
-        });
-      }
-    },
-    closeDay: () => {
-      if (day !== null) {
-        close.mutate({ workDate: day.workDate });
       }
     },
     toast,
@@ -649,12 +550,7 @@ export function useScheduleAdminScreen({
             adjusting: setAdjustment.isPending,
             adjusted: setAdjustment.isSuccess,
             adjustError: setAdjustment.error,
-            onPressHours: () =>
-              setSheetState({
-                kind: "hours",
-                starts: clockLabel(day.startsAt),
-                ends: clockLabel(day.endsAt),
-              }),
+            onPressHours: () => setSheetState({ kind: "hours" }),
             onCloseDay: () =>
               assignmentCount === 0
                 ? close.mutate({ workDate: day.workDate })

@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import { kstToday } from "@/shared/lib/kstToday.lib";
-import { formatBareDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+import { formatBareDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
 import {
   spellDeadline,
   spellMonth,

@@ -3,6 +3,11 @@ import {
   type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
+import type {
+  AdjustmentKind,
+  AdjustSheetRow,
+} from "@/features/adjustment/model/adjustSheetRow.type";
+import { spellHours } from "@/features/adjustment/utils/spellHours.utils";
 import {
   adjustedMinutes,
   paidMinutes,
@@ -10,8 +15,6 @@ import {
   type WorkDayHours,
 } from "@/features/payrollCompute/model/paidMinutes.policy";
 import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
-
-const MINUTES_PER_HOUR = 60;
 
 const CLOCK_LENGTH = 5;
 
@@ -26,33 +29,12 @@ export type AdjustSheetAdjustment = TimedAdjustment & { profileId: string };
 
 export type AdjustSheetRehearsal = RehearsalClock & { profileId: string };
 
-export type AdjustmentKind = "결근" | "연장";
-
-export type AdjustSheetRow = {
-  profileId: string;
-  name: string;
-  finalMinutes: number;
-  adjustmentKind: AdjustmentKind | null;
-  rehearsalLine: string | null;
-};
-
 export type AdjustSheetRowsInput = {
   day: WorkDayHours;
   assignments: readonly AdjustSheetAssignment[];
   adjustments: readonly AdjustSheetAdjustment[];
   rehearsals: readonly AdjustSheetRehearsal[];
 };
-
-export function spellHours(minutes: number): string {
-  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-  const rest = minutes % MINUTES_PER_HOUR;
-
-  if (rest === 0) {
-    return `${hours}시간`;
-  }
-
-  return hours === 0 ? `${rest}분` : `${hours}시간 ${rest}분`;
-}
 
 function clock(value: string): string {
   return value.slice(0, CLOCK_LENGTH);
@@ -62,14 +44,6 @@ export function adjustSheetHead(day: WorkDayHours): string {
   return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellHours(
     assignedMinutes(day),
   )}`;
-}
-
-export function adjustRowLabel(row: AdjustSheetRow): string {
-  const time = spellHours(row.finalMinutes);
-  const spelled =
-    row.adjustmentKind === null ? time : `${row.adjustmentKind} ${time}`;
-
-  return `${row.name} · ${spelled}`;
 }
 
 function kindOf(minutes: number): AdjustmentKind | null {

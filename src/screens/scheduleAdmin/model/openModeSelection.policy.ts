@@ -1,7 +1,7 @@
 import {
   formatBareDate,
   kstDateOf,
-} from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+} from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 export type SelectableInput = {
   workDate: string;
