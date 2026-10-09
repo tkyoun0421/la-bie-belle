@@ -4,9 +4,9 @@ import { Card } from "@/shared/ui/Card";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
+import { ScheduleAgenda } from "@/entities/schedule/ui/ScheduleAgenda";
 import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 import type { ScheduleWorkerScreenController } from "@/screens/scheduleWorker/hooks/useScheduleWorkerScreen";
-import { ScheduleAgenda } from "@/screens/scheduleWorker/ui/ScheduleAgenda";
 import { ScheduleCalendarCard } from "@/screens/scheduleWorker/ui/ScheduleCalendarCard";
 
 const VIEW_OPTIONS = [
@@ -46,9 +46,10 @@ export function ScheduleWorkerRoster({ screen }: ScheduleWorkerRosterProps) {
       {screen.view === "position" ? (
         <Card className="py-0">
           <ScheduleAgenda
-            entries={screen.agendaEntries}
-            expanded={screen.expanded}
+            month={screen.month}
             myProfileId={screen.myProfileId}
+            showMineOnly={screen.showMineOnly}
+            expanded={screen.expanded}
             onToggle={screen.toggleAgendaDay}
             onCancelShift={screen.askCancelOn}
             onRequestSwap={screen.requestSwap}

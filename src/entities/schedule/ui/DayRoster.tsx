@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { RosterRow } from "@/shared/ui/RosterRow";
-import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
+import type { RosterRow as RosterRowValue } from "@/entities/schedule/model/daySheet.policy";
 
 export type DayRosterProps = {
   rows: RosterRowValue[];

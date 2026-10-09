@@ -372,11 +372,9 @@ describe("useScheduleWorkerScreen — 날짜 하나에 문이 둘이다", () => 
       throw new Error("명단 시트가 아니다");
     }
 
-    expect(result.current.sheet.title).toBe("10월 17일(토)");
-    expect(result.current.sheet.subtitle).toBe("10:00 – 18:00 · 1명");
-    expect(result.current.sheet.rows).toHaveLength(2);
-    expect(result.current.sheet.showActions).toBe(true);
-    expect(result.current.sheet.actionsEnabled).toBe(true);
+    expect(result.current.sheet.workDate).toBe("2026-10-17");
+    expect(result.current.sheet.myProfileId).toBe("p1");
+    expect(result.current.sheet.cancelRequested).toBe(false);
   });
 
   it("요청이 살아 있는 날은 요청 시트가 먼저 선다", async () => {
@@ -460,7 +458,7 @@ describe("useScheduleWorkerScreen — 취소 시트가 어느 근무를 가리�
     expect(result.current.sheet).toBeNull();
   });
 
-  it("이미 요청을 걸어둔 근무는 배지가 서고 버튼이 잠긴다", async () => {
+  it("이미 요청을 걸어둔 근무는 명단 조각에 그 사실을 넘긴다", async () => {
     getPendingApprovalsMock.mockResolvedValue([MY_CANCEL_REQUEST]);
 
     const { result } = await mounted();
@@ -472,9 +470,7 @@ describe("useScheduleWorkerScreen — 취소 시트가 어느 근무를 가리�
         throw new Error("명단 시트가 아니다");
       }
 
-      expect(result.current.sheet.myBadge).toBe("취소 요청 중");
-      expect(result.current.sheet.showActions).toBe(true);
-      expect(result.current.sheet.actionsEnabled).toBe(false);
+      expect(result.current.sheet.cancelRequested).toBe(true);
     });
   });
 
@@ -488,19 +484,16 @@ describe("useScheduleWorkerScreen — 취소 시트가 어느 근무를 가리�
 });
 
 describe("useScheduleWorkerScreen — 보기와 달 이동", () => {
-  it("포지션 순으로 바꾸면 줄이 서고 「내 근무만」이 남의 날을 지운다", async () => {
+  it("포지션 순으로 바꾸면 줄이 서고 「내 근무만」이 달력을 옅게 만든다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.showView("position"));
 
     expect(result.current.view).toBe("position");
-    expect(result.current.agendaEntries).toHaveLength(2);
 
     act(() => result.current.showMine(true));
 
     expect(result.current.showMineOnly).toBe(true);
-    expect(result.current.agendaEntries).toHaveLength(1);
-    expect(result.current.agendaEntries[0].workDate).toBe("2026-10-17");
     expect(result.current.cellStateOf("2026-10-20")).toBe("muted");
   });
 

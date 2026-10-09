@@ -1,4 +1,4 @@
-import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
+import { cancelRequestBadge } from "@/entities/schedule/model/cancelRequestSheet.policy";
 
 describe("cancelRequestBadge — 살아 있는 취소 요청이면 「취소 요청 중」이다", () => {
   it("살아 있으면 배지 문구를 낸다", () => {

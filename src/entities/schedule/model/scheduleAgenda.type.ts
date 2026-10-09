@@ -1,16 +1,12 @@
 import type { TextTone } from "@/shared/ui/Text";
-import type { RosterRow } from "@/screens/scheduleWorker/model/daySheet.policy";
-import type { MyAssignment } from "@/screens/scheduleWorker/utils/agendaRow.utils";
+import type { RosterRow } from "@/entities/schedule/model/daySheet.policy";
 
-export type AgendaEntry = {
-  workDate: string;
-  myAssignment: MyAssignment | null;
-  rows: RosterRow[];
-  showActions: boolean;
-};
+export type ScheduleAgendaState = "loading" | "failed" | "ready";
 
 export type ScheduleAgendaInput = {
-  entries: AgendaEntry[];
+  month: string;
+  myProfileId: string | null;
+  showMineOnly: boolean;
   expanded: string[];
   onToggle: (workDate: string) => void;
   onCancelShift: (workDate: string) => void;
@@ -32,6 +28,9 @@ export type ScheduleAgendaDay = {
 };
 
 export type ScheduleAgendaController = {
+  state: ScheduleAgendaState;
   empty: boolean;
   days: ScheduleAgendaDay[];
+  myProfileId: string | null;
+  retry: () => void;
 };

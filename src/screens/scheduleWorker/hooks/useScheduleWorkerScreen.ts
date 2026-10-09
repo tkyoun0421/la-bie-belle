@@ -10,6 +10,7 @@ import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRo
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
+import { myAssignmentOf } from "@/entities/schedule/utils/agendaRow.utils";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -17,14 +18,6 @@ import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotReq
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
 import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState.policy";
-import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
-import {
-  canShowShiftActions,
-  daySheetSubtitle,
-  rosterHeadcount,
-  rosterOfDay,
-  type RosterRow,
-} from "@/screens/scheduleWorker/model/daySheet.policy";
 import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest.policy";
 import {
   monthState,
@@ -33,11 +26,6 @@ import {
   spellMonth,
   type MonthState,
 } from "@/screens/scheduleWorker/model/monthState.policy";
-import type { AgendaEntry } from "@/screens/scheduleWorker/model/scheduleAgenda.type";
-import {
-  myAssignmentOf,
-  spellWorkDate,
-} from "@/screens/scheduleWorker/utils/agendaRow.utils";
 import { toggleSelectedDate } from "@/screens/scheduleWorker/utils/submissionSelection.utils";
 import {
   spellNotOpen,
@@ -68,13 +56,9 @@ export type ScheduleWorkerSheet =
     }
   | {
       kind: "roster";
-      title: string;
-      subtitle: string;
-      rows: RosterRow[];
+      workDate: string;
       myProfileId: string | null;
-      myBadge: string | undefined;
-      showActions: boolean;
-      actionsEnabled: boolean;
+      cancelRequested: boolean;
     };
 
 export type ScheduleWorkerScreenController = {
@@ -92,7 +76,6 @@ export type ScheduleWorkerScreenController = {
   isToday: (date: string) => boolean;
   canPressDay: (date: string) => boolean;
   pressDay: ((date: string) => void) | undefined;
-  agendaEntries: AgendaEntry[];
   expanded: string[];
   myProfileId: string | null;
   sending: boolean;
@@ -217,9 +200,6 @@ export function useScheduleWorkerScreen({
   const deadline = monthWindow?.applicationDeadline ?? null;
 
   const openDay = dayOf.get(openDate ?? "") ?? null;
-  const openRoster = openDay === null ? [] : rosterOfDay(openDay);
-  const openMine =
-    openDay === null ? null : myAssignmentOf(openDay.assignments, myProfileId);
 
   const openRequest =
     openDate === null || myProfileId === null
@@ -245,23 +225,6 @@ export function useScheduleWorkerScreen({
   const cancelAsking = (myCancelRequests ?? []).some(
     (request) => request.assignmentId === myShift?.id,
   );
-
-  const agendaEntries: AgendaEntry[] = (days ?? [])
-    .map((day) => {
-      const mine = myAssignmentOf(day.assignments, myProfileId);
-
-      return {
-        workDate: day.workDate,
-        myAssignment: mine,
-        rows: rosterOfDay(day),
-        showActions: canShowShiftActions({
-          isMyAssignment: mine !== null,
-          workDate: day.workDate,
-          today,
-        }),
-      };
-    })
-    .filter((entry) => !showMineOnly || entry.myAssignment !== null);
 
   const anyIncoming = [...requestsOf.keys()].some((date) =>
     hasIncomingRequest(requestsOf.get(date) ?? [], myProfileId),
@@ -320,26 +283,9 @@ export function useScheduleWorkerScreen({
             }
           : {
               kind: "roster",
-              title: spellWorkDate(openDay.workDate),
-              subtitle: daySheetSubtitle(
-                openDay.startsAt,
-                openDay.endsAt,
-                rosterHeadcount(openRoster),
-              ),
-              rows: openRoster,
+              workDate: openDay.workDate,
               myProfileId,
-              myBadge: cancelRequestBadge(cancelAsking) ?? undefined,
-              showActions: canShowShiftActions({
-                isMyAssignment: openMine !== null,
-                workDate: openDay.workDate,
-                today,
-              }),
-              actionsEnabled: canShowShiftActions({
-                isMyAssignment: openMine !== null,
-                workDate: openDay.workDate,
-                today,
-                hasActiveCancelRequest: cancelAsking,
-              }),
+              cancelRequested: cancelAsking,
             };
 
   return {
@@ -397,7 +343,6 @@ export function useScheduleWorkerScreen({
             openSheetOn(date, false);
           }
         : undefined,
-    agendaEntries,
     expanded,
     myProfileId,
     sending,

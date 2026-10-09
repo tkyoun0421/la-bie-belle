@@ -1,8 +1,8 @@
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { DaySheet } from "@/entities/schedule/ui/DaySheet";
 import { CancelShiftSheet } from "@/features/workRequest/ui/CancelShiftSheet";
 import { RequestSheet } from "@/features/workRequest/ui/RequestSheet";
 import type { ScheduleWorkerScreenController } from "@/screens/scheduleWorker/hooks/useScheduleWorkerScreen";
-import { DaySheet } from "@/screens/scheduleWorker/ui/DaySheet";
 
 export type ScheduleWorkerSheetsProps = {
   screen: ScheduleWorkerScreenController;
@@ -36,13 +36,9 @@ export function ScheduleWorkerSheets({ screen }: ScheduleWorkerSheetsProps) {
 
       {sheet.kind === "roster" ? (
         <DaySheet
-          title={sheet.title}
-          subtitle={sheet.subtitle}
-          rows={sheet.rows}
+          workDate={sheet.workDate}
           myProfileId={sheet.myProfileId}
-          myBadge={sheet.myBadge}
-          showActions={sheet.showActions}
-          actionsEnabled={sheet.actionsEnabled}
+          cancelRequested={sheet.cancelRequested}
           onCancelShift={screen.askCancel}
           onRequestSwap={screen.requestSwap}
         />
