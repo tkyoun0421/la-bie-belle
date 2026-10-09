@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ORIGIN_APPROVALS } from "@/shared/consts/navigation.const";
-import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
+import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useDecideCancelRequestMutation } from "@/features/workRequest/services/useDecideCancelRequestMutation";
@@ -77,7 +77,7 @@ function cancelRowsOf(approvals: readonly PendingApproval[]): CancelRow[] {
     approvals.map((one) => ({
       id: one.id,
       kind: "cancel" as const,
-      workDate: one.assignments.days.work_date,
+      workDate: one.workDate,
       source: one,
     })),
   );
@@ -85,18 +85,18 @@ function cancelRowsOf(approvals: readonly PendingApproval[]): CancelRow[] {
 
 function namesOf(row: CancelRow) {
   return {
-    displayName: row.source.profiles?.display_name ?? "",
+    displayName: row.source.name ?? "",
     workDate: row.workDate,
-    position: row.source.assignments.position,
+    position: row.source.position,
   };
 }
 
 function detailOf(row: CancelRow): CancelApprovalDetail {
   return cancelApprovalDetail({
     ...namesOf(row),
-    startsAt: row.source.assignments.days.starts_at,
-    endsAt: row.source.assignments.days.ends_at,
-    sentAt: row.source.created_at,
+    startsAt: row.source.startsAt,
+    endsAt: row.source.endsAt,
+    sentAt: row.source.createdAt,
     reason: row.source.reason,
   });
 }

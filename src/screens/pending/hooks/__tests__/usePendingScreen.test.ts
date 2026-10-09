@@ -122,15 +122,15 @@ const USER = {
 
 const BLANK_PROFILE = {
   id: "profile-1",
-  display_name: null,
-  photo_url: null,
+  displayName: null,
+  photoUrl: null,
   role: "worker",
-  submitted_at: null,
-  approved_at: null,
-  rejected_at: null,
-  blocked_at: null,
-  left_at: null,
-  notifications_enabled: false,
+  submittedAt: null,
+  approvedAt: null,
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: false,
 };
 
 beforeEach(() => {
@@ -204,13 +204,13 @@ describe("usePendingScreen — 장면이 넷이다", () => {
   it("보냈으면 기다리는 중이고 적은 것이 다 굳어 있다", async () => {
     getMyProfileMock.mockResolvedValue({
       ...BLANK_PROFILE,
-      display_name: "이준호",
-      submitted_at: "2026-10-01T00:00:00.000Z",
+      displayName: "이준호",
+      submittedAt: "2026-10-01T00:00:00.000Z",
     });
     getProfilePrivateMock.mockResolvedValue({
       email: "someone@example.com",
       phone: "010-0000-0001",
-      birth_date: "1993-04-21",
+      birthDate: "1993-04-21",
       gender: "male",
     });
 
@@ -225,9 +225,9 @@ describe("usePendingScreen — 장면이 넷이다", () => {
   it("거절된 뒤에는 고쳐서 다시 보낼 수 있다", async () => {
     getMyProfileMock.mockResolvedValue({
       ...BLANK_PROFILE,
-      display_name: "이준호",
-      submitted_at: "2026-10-01T00:00:00.000Z",
-      rejected_at: "2026-10-02T00:00:00.000Z",
+      displayName: "이준호",
+      submittedAt: "2026-10-01T00:00:00.000Z",
+      rejectedAt: "2026-10-02T00:00:00.000Z",
     });
 
     const { result } = await mounted();
@@ -327,14 +327,14 @@ describe("usePendingScreen — 보내기와 사진", () => {
   it("한 번이라도 보낸 적이 있으면 축하 없이 바로 기다린다", async () => {
     getMyProfileMock.mockResolvedValue({
       ...BLANK_PROFILE,
-      display_name: "이준호",
-      submitted_at: "2026-10-01T00:00:00.000Z",
-      rejected_at: "2026-10-02T00:00:00.000Z",
+      displayName: "이준호",
+      submittedAt: "2026-10-01T00:00:00.000Z",
+      rejectedAt: "2026-10-02T00:00:00.000Z",
     });
     getProfilePrivateMock.mockResolvedValue({
       email: "someone@example.com",
       phone: "010-0000-0001",
-      birth_date: "1993-04-21",
+      birthDate: "1993-04-21",
       gender: "male",
     });
 

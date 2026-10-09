@@ -1,7 +1,4 @@
-export type WageRate = {
-  effective_date: string;
-  amount: number;
-};
+import type { WageRate } from "@/entities/payroll/model/payroll.type";
 
 export function wageAt(
   rates: readonly WageRate[],
@@ -9,8 +6,8 @@ export function wageAt(
 ): number | null {
   const effective = rates.reduce<WageRate | null>(
     (kept, rate) =>
-      rate.effective_date <= date &&
-      (kept === null || rate.effective_date > kept.effective_date)
+      rate.effectiveDate <= date &&
+      (kept === null || rate.effectiveDate > kept.effectiveDate)
         ? rate
         : kept,
     null,

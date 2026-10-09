@@ -143,12 +143,12 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
           },
   );
 
-  const todayDay = openDays.find((day) => day.work_date === today) ?? null;
+  const todayDay = openDays.find((day) => day.workDate === today) ?? null;
 
   const status = todayStatus({
     isConfirmed: confirmed,
     assignedCount: todayDay === null ? 0 : liveAssignmentCount(todayDay),
-    checkedInCount: todayDay?.check_ins.length ?? 0,
+    checkedInCount: todayDay?.checkIns.length ?? 0,
   });
 
   const cards = useMemo(
@@ -170,7 +170,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     () =>
       miniViewLoads(
         openDays.map((day) => ({
-          workDate: day.work_date,
+          workDate: day.workDate,
           assignedCount: liveAssignmentCount(day),
         })),
       ),
@@ -197,7 +197,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     defaultsValue:
       defaults === undefined
         ? undefined
-        : `${clockLabel(defaults.default_starts)}–${clockLabel(defaults.default_ends)}`,
+        : `${clockLabel(defaults.starts)}–${clockLabel(defaults.ends)}`,
     approvalsTitle: approvalsLine(approvals?.length ?? 0),
     pendingValue:
       pending === undefined
@@ -213,8 +213,8 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
       }
 
       setSheet({
-        starts: clockLabel(defaults.default_starts),
-        ends: clockLabel(defaults.default_ends),
+        starts: clockLabel(defaults.starts),
+        ends: clockLabel(defaults.ends),
       });
     },
     closeSheet,
@@ -228,7 +228,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
       }
 
       sendDefaults({
-        slots: defaults.default_slots,
+        slots: defaults.slots,
         starts: sheet.starts,
         ends: sheet.ends,
       });

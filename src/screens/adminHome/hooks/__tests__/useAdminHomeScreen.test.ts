@@ -26,9 +26,8 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: getMonthWindowMock,
-    liveAssignmentCount: (day: {
-      assignments: { ended_at: string | null }[];
-    }) => day.assignments.filter((one) => one.ended_at === null).length,
+    liveAssignmentCount: (day: { assignments: { endedAt: string | null }[] }) =>
+      day.assignments.filter((one) => one.endedAt === null).length,
   }),
 );
 
@@ -91,40 +90,40 @@ function createWrapper() {
 }
 
 const DEFAULTS = {
-  default_slots: 4,
-  default_starts: "10:00:00",
-  default_ends: "19:00:00",
+  slots: 4,
+  starts: "10:00:00",
+  ends: "19:00:00",
 };
 
 function todayDay() {
   return {
     id: "day-today",
-    work_date: TODAY,
-    starts_at: "10:00:00",
-    ends_at: "19:00:00",
-    opened_at: `${TODAY}T00:00:00.000Z`,
+    workDate: TODAY,
+    startsAt: "10:00:00",
+    endsAt: "19:00:00",
+    openedAt: `${TODAY}T00:00:00.000Z`,
     slots: [],
     assignments: [
       {
         id: "a1",
-        slot_id: null,
+        slotId: null,
         position: "메인",
         kind: "regular",
-        profile_id: "p1",
-        ended_at: null,
-        profiles: null,
+        profileId: "p1",
+        endedAt: null,
+        name: null,
       },
       {
         id: "a2",
-        slot_id: null,
+        slotId: null,
         position: "서브",
         kind: "regular",
-        profile_id: "p2",
-        ended_at: null,
-        profiles: null,
+        profileId: "p2",
+        endedAt: null,
+        name: null,
       },
     ],
-    check_ins: [{ id: "c1", profile_id: "p1", checked_in_at: null }],
+    checkIns: [{ id: "c1", profileId: "p1", checkedAt: null }],
   };
 }
 
@@ -214,7 +213,7 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
       confirmedAt: `${TODAY}T00:00:00.000Z`,
     });
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", work_date: "2026-10-04", position: "메인" },
+      { id: "s1", workDate: "2026-10-04", position: "메인" },
     ]);
 
     const { result } = await mounted();
@@ -228,7 +227,7 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
 
   it("확정 전이면 빈 자리 카드가 없다", async () => {
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", work_date: "2026-10-04", position: "메인" },
+      { id: "s1", workDate: "2026-10-04", position: "메인" },
     ]);
 
     const { result } = await mounted();

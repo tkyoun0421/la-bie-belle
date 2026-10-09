@@ -94,14 +94,14 @@ describe("getMyRehearsals dal(plan AC-05) — 본인 행을 그 달 범위로 �
     const timeRow = rows.find((row) => row.id === timeId);
     const countRow = rows.find((row) => row.id === countId);
 
-    expect(timeRow?.work_date).toBe(timeDate);
-    expect(timeRow?.starts_at).toMatch(/^09:00/);
-    expect(timeRow?.ends_at).toMatch(/^10:30/);
+    expect(timeRow?.workDate).toBe(timeDate);
+    expect(timeRow?.startsAt).toMatch(/^09:00/);
+    expect(timeRow?.endsAt).toMatch(/^10:30/);
     expect(timeRow?.count).toBeNull();
 
-    expect(countRow?.work_date).toBe(countDate);
+    expect(countRow?.workDate).toBe(countDate);
     expect(countRow?.count).toBe(3);
-    expect(countRow?.starts_at).toBeNull();
-    expect(countRow?.ends_at).toBeNull();
+    expect(countRow?.startsAt).toBeNull();
+    expect(countRow?.endsAt).toBeNull();
   });
 });

@@ -6,7 +6,7 @@ import {
 describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중」으로 말한다", () => {
   it("살아 있는 요청에 pending 후보가 둘이면 「요청 2건 대기 중」이다", () => {
     const badge = slotRequestBadge({
-      closed_at: null,
+      closedAt: null,
       candidates: [{ status: "pending" }, { status: "pending" }],
     });
 
@@ -15,7 +15,7 @@ describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중�
 
   it("거절한 후보는 안 센다", () => {
     const badge = slotRequestBadge({
-      closed_at: null,
+      closedAt: null,
       candidates: [{ status: "pending" }, { status: "declined" }],
     });
 
@@ -24,9 +24,9 @@ describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중�
 });
 
 describe("slotRequestBadge — 닫힌 요청은 null이다", () => {
-  it("closed_at이 있으면 pending 후보가 남아 있어도 null이다", () => {
+  it("closedAt이 있으면 pending 후보가 남아 있어도 null이다", () => {
     const badge = slotRequestBadge({
-      closed_at: "2026-10-10T00:00:00Z",
+      closedAt: "2026-10-10T00:00:00Z",
       candidates: [{ status: "pending" }],
     });
 
@@ -43,14 +43,14 @@ describe("slotRequestBadge — 요청 자체가 없으면 null이다", () => {
 describe("slotRequestBadgeFor — 그 자리의 요청만 본다", () => {
   const REQUESTS = [
     {
-      slot_id: "s1",
-      closed_at: null,
-      request_candidates: [{ status: "pending" }, { status: "declined" }],
+      slotId: "s1",
+      closedAt: null,
+      candidates: [{ status: "pending" }, { status: "declined" }],
     },
     {
-      slot_id: "s2",
-      closed_at: "2026-10-10T00:00:00Z",
-      request_candidates: [{ status: "pending" }],
+      slotId: "s2",
+      closedAt: "2026-10-10T00:00:00Z",
+      candidates: [{ status: "pending" }],
     },
   ];
 
@@ -70,9 +70,9 @@ describe("slotRequestBadgeFor — 그 자리의 요청만 본다", () => {
     expect(
       slotRequestBadgeFor("s1", [
         {
-          slot_id: null,
-          closed_at: null,
-          request_candidates: [{ status: "pending" }],
+          slotId: null,
+          closedAt: null,
+          candidates: [{ status: "pending" }],
         },
       ]),
     ).toBeNull();
@@ -82,7 +82,7 @@ describe("slotRequestBadgeFor — 그 자리의 요청만 본다", () => {
     expect(
       slotRequestBadgeFor("s1", [
         ...REQUESTS,
-        { slot_id: "s1", closed_at: null, request_candidates: [] },
+        { slotId: "s1", closedAt: null, candidates: [] },
       ]),
     ).toBe("요청 0건 대기 중");
   });

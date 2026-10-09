@@ -1,4 +1,4 @@
-import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import { type MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import {
   buildWageRows,
   type WageRowMember,
@@ -12,24 +12,24 @@ const MEMBERS: WageRowMember[] = [
 
 describe("buildWageRows — 이미 이름순인 입력의 순서를 안 흩는다", () => {
   it("개별로 정한 사람이 중간에 있어도 이름순 그대로 나온다", () => {
-    const wageRates: MemberWageRateRow[] = [
+    const wageRates: MemberWageRate[] = [
       {
-        profile_id: "profile-1",
-        effective_date: "2026-01-01",
+        profileId: "profile-1",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
       {
-        profile_id: "profile-2",
-        effective_date: "2026-02-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-02-01",
         amount: 15000,
-        follows_default: false,
+        followsDefault: false,
       },
       {
-        profile_id: "profile-3",
-        effective_date: "2026-01-01",
+        profileId: "profile-3",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
     ];
 
@@ -53,19 +53,19 @@ describe("buildWageRows — 시급 이력이 빈 사람은 금액 자리가 null
 });
 
 describe("buildWageRows — 가장 최근 wage_rates 행의 금액을 쓴다", () => {
-  it("이력이 여러 줄이면 effective_date가 가장 늦은 행의 금액을 쓴다", () => {
-    const wageRates: MemberWageRateRow[] = [
+  it("이력이 여러 줄이면 effectiveDate가 가장 늦은 행의 금액을 쓴다", () => {
+    const wageRates: MemberWageRate[] = [
       {
-        profile_id: "profile-2",
-        effective_date: "2026-03-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-03-01",
         amount: 13000,
-        follows_default: false,
+        followsDefault: false,
       },
       {
-        profile_id: "profile-2",
-        effective_date: "2026-01-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
     ];
 

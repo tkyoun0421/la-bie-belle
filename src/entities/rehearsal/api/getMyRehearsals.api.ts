@@ -1,7 +1,9 @@
 import type { DB } from "@/shared/api/database";
 import { lastDateOfMonth } from "@/shared/utils/kstDate";
 import { monthStart } from "@/shared/utils/monthRange";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { RehearsalRow } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
+import { toRehearsal } from "@/entities/rehearsal/utils/rehearsal.mapper";
 
 export const REHEARSAL_COLUMNS =
   "id, profile_id, work_date, starts_at, ends_at, count";
@@ -21,11 +23,11 @@ export async function getMyRehearsals(
     .gte("work_date", from)
     .lte("work_date", to)
     .order("work_date")
-    .returns<Rehearsal[]>();
+    .returns<RehearsalRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toRehearsal);
 }

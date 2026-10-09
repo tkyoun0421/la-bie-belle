@@ -1,25 +1,21 @@
+import type { Adjustment } from "@/entities/payroll/model/payroll.type";
 import {
   rehearsalHours,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
-export type WorkDayHours = {
-  starts_at: string;
-  ends_at: string;
-};
+export type WorkDayHours = Pick<ScheduleDay, "startsAt" | "endsAt">;
 
-export type AdjustmentRow = {
-  minutes: number;
-  adjusted_at: string;
-};
+export type TimedAdjustment = Pick<Adjustment, "minutes" | "adjustedAt">;
 
 export type LiveAssignments = readonly unknown[];
 
 export type PaidMinutesInput = {
   assignments: LiveAssignments;
   day: WorkDayHours | null;
-  adjustments: readonly AdjustmentRow[];
-  rehearsals: readonly RehearsalRow[];
+  adjustments: readonly TimedAdjustment[];
+  rehearsals: readonly RehearsalClock[];
 };
 
 const MINUTES_PER_HOUR = 60;
@@ -35,22 +31,20 @@ function assignedMinutes(input: PaidMinutesInput): number {
     return 0;
   }
 
-  return (
-    minutesOfClock(input.day.ends_at) - minutesOfClock(input.day.starts_at)
-  );
+  return minutesOfClock(input.day.endsAt) - minutesOfClock(input.day.startsAt);
 }
 
-export function adjustedMinutes(rows: readonly AdjustmentRow[]): number {
-  const latest = rows.reduce<AdjustmentRow | null>(
+export function adjustedMinutes(rows: readonly TimedAdjustment[]): number {
+  const latest = rows.reduce<TimedAdjustment | null>(
     (kept, row) =>
-      kept === null || row.adjusted_at > kept.adjusted_at ? row : kept,
+      kept === null || row.adjustedAt > kept.adjustedAt ? row : kept,
     null,
   );
 
   return latest?.minutes ?? 0;
 }
 
-function rehearsedMinutes(rows: readonly RehearsalRow[]): number {
+function rehearsedMinutes(rows: readonly RehearsalClock[]): number {
   return rows.reduce((sum, row) => sum + rehearsalHours(row), 0);
 }
 

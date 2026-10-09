@@ -5,11 +5,11 @@ import {
 } from "@/screens/scheduleAdmin/model/discardSlot.policy";
 
 function live(): DiscardSlotAssignment {
-  return { ended_at: null };
+  return { endedAt: null };
 }
 
 function ended(): DiscardSlotAssignment {
-  return { ended_at: "2026-10-09T00:00:00Z" };
+  return { endedAt: "2026-10-09T00:00:00Z" };
 }
 
 describe("discardSlotJudgement — 살아 있는 정규 배정이 없으면 바로 지운다", () => {

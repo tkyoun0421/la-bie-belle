@@ -1,4 +1,4 @@
-import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 import {
   countFollowers,
@@ -8,14 +8,14 @@ import {
 
 const PROFILE_IDS = ["profile-1", "profile-2", "profile-3"];
 
-describe("countFollowers — 가장 최근 행이 follows_default=true인 사람을 센다", () => {
+describe("countFollowers — 가장 최근 행이 followsDefault=true인 사람을 센다", () => {
   it("이력이 있고 최근 행이 기본을 따르면 포함한다", () => {
-    const wageRates: MemberWageRateRow[] = [
+    const wageRates: MemberWageRate[] = [
       {
-        profile_id: "profile-1",
-        effective_date: "2026-01-01",
+        profileId: "profile-1",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
     ];
 
@@ -29,14 +29,14 @@ describe("countFollowers — wage_rates 행이 아예 없는 승인 사원도 �
   });
 });
 
-describe("countFollowers — 가장 최근 행이 follows_default=false인 사람은 뺀다", () => {
+describe("countFollowers — 가장 최근 행이 followsDefault=false인 사람은 뺀다", () => {
   it("개별로 정한 사람은 카운트에서 빠진다", () => {
-    const wageRates: MemberWageRateRow[] = [
+    const wageRates: MemberWageRate[] = [
       {
-        profile_id: "profile-2",
-        effective_date: "2026-01-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-01-01",
         amount: 15000,
-        follows_default: false,
+        followsDefault: false,
       },
     ];
 
@@ -45,31 +45,31 @@ describe("countFollowers — 가장 최근 행이 follows_default=false인 사�
 });
 
 describe("countFollowers — 이력이 여러 줄이면 가장 최근 값만 본다", () => {
-  it("배열 순서와 무관하게 effective_date가 가장 늦은 행으로 판정한다", () => {
-    const wageRates: MemberWageRateRow[] = [
+  it("배열 순서와 무관하게 effectiveDate가 가장 늦은 행으로 판정한다", () => {
+    const wageRates: MemberWageRate[] = [
       {
-        profile_id: "profile-1",
-        effective_date: "2026-03-01",
+        profileId: "profile-1",
+        effectiveDate: "2026-03-01",
         amount: 12000,
-        follows_default: true,
+        followsDefault: true,
       },
       {
-        profile_id: "profile-1",
-        effective_date: "2026-01-01",
+        profileId: "profile-1",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: false,
+        followsDefault: false,
       },
       {
-        profile_id: "profile-2",
-        effective_date: "2026-01-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-01-01",
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
       {
-        profile_id: "profile-2",
-        effective_date: "2026-03-01",
+        profileId: "profile-2",
+        effectiveDate: "2026-03-01",
         amount: 15000,
-        follows_default: false,
+        followsDefault: false,
       },
     ];
 

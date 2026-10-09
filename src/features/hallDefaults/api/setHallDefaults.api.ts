@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import type { HallSlot } from "@/entities/hall/api/hall.dto";
+import type { HallSlot } from "@/entities/hall/model/hall.type";
 
 export type HallDefaultsInput = {
   slots: HallSlot[];

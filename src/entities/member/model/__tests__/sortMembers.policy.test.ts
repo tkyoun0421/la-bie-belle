@@ -7,9 +7,9 @@ import {
 describe("sortActiveMembers — 재직자를 가나다순으로 세우고 관리자를 위로 안 올린다", () => {
   it("이름을 가나다순으로 세운다", () => {
     const rows = [
-      { id: "1", display_name: "최지호", role: "worker" },
-      { id: "2", display_name: "김민준", role: "worker" },
-      { id: "3", display_name: "박서연", role: "worker" },
+      { id: "1", displayName: "최지호", role: "worker" },
+      { id: "2", displayName: "김민준", role: "worker" },
+      { id: "3", displayName: "박서연", role: "worker" },
     ];
 
     expect(sortActiveMembers(rows).map((row) => row.id)).toEqual([
@@ -21,8 +21,8 @@ describe("sortActiveMembers — 재직자를 가나다순으로 세우고 관리
 
   it("관리자여도 이름 순서를 앞당기지 않는다", () => {
     const rows = [
-      { id: "1", display_name: "최지호", role: "admin" },
-      { id: "2", display_name: "김민준", role: "worker" },
+      { id: "1", displayName: "최지호", role: "admin" },
+      { id: "2", displayName: "김민준", role: "worker" },
     ];
 
     expect(sortActiveMembers(rows).map((row) => row.id)).toEqual(["2", "1"]);
@@ -36,8 +36,8 @@ describe("sortActiveMembers — 재직자를 가나다순으로 세우고 관리
 describe("sortLeftMembers — 퇴사자를 퇴사한 날이 늦은 순으로 세운다", () => {
   it("최근에 퇴사한 사람이 위로 온다", () => {
     const rows = [
-      { id: "오래됨", left_at: "2026-01-10T00:00:00.000Z" },
-      { id: "최근", left_at: "2026-09-20T00:00:00.000Z" },
+      { id: "오래됨", leftAt: "2026-01-10T00:00:00.000Z" },
+      { id: "최근", leftAt: "2026-09-20T00:00:00.000Z" },
     ];
 
     expect(sortLeftMembers(rows).map((row) => row.id)).toEqual([

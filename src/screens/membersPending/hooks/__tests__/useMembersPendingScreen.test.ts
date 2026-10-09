@@ -69,22 +69,22 @@ function createWrapper() {
 const PENDING = [
   {
     id: "p1",
-    display_name: "이준호",
-    photo_url: null,
-    submitted_at: "2026-10-01T05:00:00.000Z",
+    displayName: "이준호",
+    photoUrl: null,
+    submittedAt: "2026-10-01T05:00:00.000Z",
   },
   {
     id: "p2",
-    display_name: "박수진",
-    photo_url: null,
-    submitted_at: null,
+    displayName: "박수진",
+    photoUrl: null,
+    submittedAt: null,
   },
 ];
 
 const VALUES = {
   email: "someone@example.com",
   phone: "010-0000-0001",
-  birth_date: "1998-03-04",
+  birthDate: "1998-03-04",
   gender: "male",
 };
 

@@ -1,38 +1,27 @@
+import type { Notification } from "@/entities/notification/model/notification.type";
+
 const {
   groupNotificationsByDate,
   resolveNotificationsListState,
   unreadAdminNoticeIds,
 } = await import("@/screens/notifications/model/notificationRows.policy");
 
-type RawNotificationRow = {
-  id: string;
-  profile_id: string;
-  kind: string;
-  payload: Record<string, unknown>;
-  subject_id: string | null;
-  created_at: string;
-  read_at: string | null;
-  claimed_at: string | null;
-  push_attempts: number;
-  pushed_at: string | null;
-};
-
 function buildRow(
   id: string,
   createdAt: string,
-  overrides: Partial<RawNotificationRow> = {},
-): RawNotificationRow {
+  overrides: Partial<Notification> = {},
+): Notification {
   return {
     id,
-    profile_id: "profile-1",
+    profileId: "profile-1",
     kind: "signup_approved",
     payload: {},
-    subject_id: null,
-    created_at: createdAt,
-    read_at: null,
-    claimed_at: null,
-    push_attempts: 0,
-    pushed_at: null,
+    subjectId: null,
+    createdAt,
+    readAt: null,
+    claimedAt: null,
+    pushAttempts: 0,
+    pushedAt: null,
     ...overrides,
   };
 }
@@ -49,14 +38,12 @@ describe("groupNotificationsByDate — 받은 날의 한국 달력일로 줄을 
 
     expect(groups).toHaveLength(2);
     expect(groups[0].date).toBe("2025-09-13");
-    expect(groups[0].rows.map((row: RawNotificationRow) => row.id)).toEqual([
+    expect(groups[0].rows.map((row: Notification) => row.id)).toEqual([
       "a1",
       "a2",
     ]);
     expect(groups[1].date).toBe("2025-09-12");
-    expect(groups[1].rows.map((row: RawNotificationRow) => row.id)).toEqual([
-      "a3",
-    ]);
+    expect(groups[1].rows.map((row: Notification) => row.id)).toEqual(["a3"]);
   });
 
   it("빈 목록이면 그룹도 빈 배열이다", () => {
@@ -187,15 +174,15 @@ describe("unreadAdminNoticeIds — 안 읽은 관리자 공지의 id만 거른�
     const rows = [
       buildRow("notice-unread", "2025-09-13T10:00:00+09:00", {
         kind: "admin_notice",
-        read_at: null,
+        readAt: null,
       }),
       buildRow("notice-read", "2025-09-13T09:00:00+09:00", {
         kind: "admin_notice",
-        read_at: "2025-09-13T09:30:00+09:00",
+        readAt: "2025-09-13T09:30:00+09:00",
       }),
       buildRow("not-notice", "2025-09-13T08:00:00+09:00", {
         kind: "signup_approved",
-        read_at: null,
+        readAt: null,
       }),
     ];
 
@@ -210,7 +197,7 @@ describe("unreadAdminNoticeIds — 안 읽은 관리자 공지의 id만 거른�
     const rows = [
       buildRow("notice-read", "2025-09-13T09:00:00+09:00", {
         kind: "admin_notice",
-        read_at: "2025-09-13T09:30:00+09:00",
+        readAt: "2025-09-13T09:30:00+09:00",
       }),
     ];
 

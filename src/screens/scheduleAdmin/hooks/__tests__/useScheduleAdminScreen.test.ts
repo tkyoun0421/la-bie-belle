@@ -40,9 +40,8 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: getMonthWindowMock,
-    liveAssignmentCount: (day: {
-      assignments: { ended_at: string | null }[];
-    }) => day.assignments.filter((one) => one.ended_at === null).length,
+    liveAssignmentCount: (day: { assignments: { endedAt: string | null }[] }) =>
+      day.assignments.filter((one) => one.endedAt === null).length,
   }),
 );
 
@@ -164,13 +163,13 @@ const WINDOW_OPEN = {
 
 const DAY = {
   id: "d1",
-  work_date: "2026-10-10",
-  starts_at: "10:00:00",
-  ends_at: "18:00:00",
-  opened_at: "2026-09-20T00:00:00.000Z",
-  slots: [{ id: "s1", positions: ["스캔"], ended_at: null }],
+  workDate: "2026-10-10",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  openedAt: "2026-09-20T00:00:00.000Z",
+  slots: [{ id: "s1", positions: ["스캔"], endedAt: null }],
   assignments: [],
-  check_ins: [],
+  checkIns: [],
 };
 
 const ASSIGNED_DAY = {
@@ -178,12 +177,12 @@ const ASSIGNED_DAY = {
   assignments: [
     {
       id: "a1",
-      slot_id: "s1",
+      slotId: "s1",
       position: "스캔",
       kind: "regular",
-      profile_id: "p1",
-      ended_at: null,
-      profiles: { display_name: "이준호" },
+      profileId: "p1",
+      endedAt: null,
+      name: "이준호",
     },
   ],
 };
@@ -503,9 +502,9 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
   it("확정 시트는 끝난 것을 시트가 말하고 닫는 손이 따로다", async () => {
     getOpenSlotsMock.mockResolvedValue([
       {
-        slot_id: "s9",
-        day_id: "d1",
-        work_date: "2026-10-10",
+        slotId: "s9",
+        dayId: "d1",
+        workDate: "2026-10-10",
         positions: ["스캔"],
       },
     ]);
@@ -682,24 +681,20 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     getPayrollMonthMock.mockResolvedValue({
       ...EMPTY_PAYROLL,
       holidays: [
-        { holiday_date: "2026-10-10", source: "manual" },
-        { holiday_date: "2026-10-11", source: "manual" },
+        { holidayDate: "2026-10-10", source: "manual" },
+        { holidayDate: "2026-10-11", source: "manual" },
       ],
       adjustments: [
-        { day_id: "d1", profile_id: "p1", minutes: 30, reason: "연장" },
-        { day_id: "d2", profile_id: "p1", minutes: 30, reason: "연장" },
+        { dayId: "d1", profileId: "p1", minutes: 30, reason: "연장" },
+        { dayId: "d2", profileId: "p1", minutes: 30, reason: "연장" },
       ],
     });
     getAllRehearsalsMock.mockResolvedValue([
-      { work_date: "2026-10-10", profile_id: "p1", minutes: 60 },
-      { work_date: "2026-10-11", profile_id: "p1", minutes: 60 },
+      { workDate: "2026-10-10", profileId: "p1", minutes: 60 },
+      { workDate: "2026-10-11", profileId: "p1", minutes: 60 },
     ]);
     getMonthAvailabilitiesMock.mockResolvedValue([
-      {
-        work_date: "2026-10-10",
-        profile_id: "p1",
-        profiles: { display_name: "이준호" },
-      },
+      { workDate: "2026-10-10", profileId: "p1", name: "이준호" },
     ]);
 
     const { result } = await mounted({ date: "2026-10-10" });
@@ -714,17 +709,13 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
 
   it("달력 칸은 확정 전이면 신청 수를, 확정 뒤면 빈 자리 수를 낸다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue([
-      {
-        work_date: "2026-10-10",
-        profile_id: "p1",
-        profiles: { display_name: "이준호" },
-      },
+      { workDate: "2026-10-10", profileId: "p1", name: "이준호" },
     ]);
     getOpenSlotsMock.mockResolvedValue([
       {
-        slot_id: "s9",
-        day_id: "d1",
-        work_date: "2026-10-10",
+        slotId: "s9",
+        dayId: "d1",
+        workDate: "2026-10-10",
         positions: ["스캔"],
       },
     ]);

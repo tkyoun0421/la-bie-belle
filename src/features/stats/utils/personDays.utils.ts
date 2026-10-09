@@ -32,16 +32,16 @@ export function computePersonDays(
   const rows = assignments
     .filter(
       (assignment) =>
-        isLiveAssignment(assignment) && assignment.profile_id === profileId,
+        isLiveAssignment(assignment) && assignment.profileId === profileId,
     )
     .flatMap((assignment) => {
-      const day = dayById.get(assignment.day_id);
+      const day = dayById.get(assignment.dayId);
 
       return day === undefined
         ? []
         : [
             {
-              workDate: day.work_date,
+              workDate: day.workDate,
               position: assignment.position,
               label: rowLabel(assignment),
               minutes: shiftMinutes(day),

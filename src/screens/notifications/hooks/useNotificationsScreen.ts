@@ -96,8 +96,8 @@ export function useNotificationsScreen(
           id: row.id,
           kind: row.kind,
           title: spelled.title,
-          time: toNotificationReceivedTime(row.created_at, now),
-          unread: row.read_at === null,
+          time: toNotificationReceivedTime(row.createdAt, now),
+          unread: row.readAt === null,
           press:
             destination === null
               ? undefined

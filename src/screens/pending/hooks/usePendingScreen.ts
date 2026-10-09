@@ -153,12 +153,12 @@ export function usePendingScreen(): PendingScreenController {
     const contact = privateQuery.data ?? null;
     const gender = isProfileGender(contact?.gender) ? contact.gender : null;
     const answered =
-      contact !== null || (profile?.submitted_at ?? null) !== null;
+      contact !== null || (profile?.submittedAt ?? null) !== null;
 
     setValues({
-      name: profile?.display_name ?? "",
+      name: profile?.displayName ?? "",
       gender,
-      birthDate: digitsOfBirthDate(contact?.birth_date ?? null),
+      birthDate: digitsOfBirthDate(contact?.birthDate ?? null),
       phone: digitsOnly(contact?.phone ?? "", PENDING_PHONE_LENGTH),
     });
     setFrozen(answered ? [...PENDING_STEPS] : []);
@@ -258,7 +258,7 @@ export function usePendingScreen(): PendingScreenController {
   return {
     stage,
     email: me?.email ?? "",
-    photoUrl: profile?.photo_url ?? me?.googlePhotoUrl ?? null,
+    photoUrl: profile?.photoUrl ?? me?.googlePhotoUrl ?? null,
     name: values.name,
     open,
     shown: {

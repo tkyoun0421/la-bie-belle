@@ -1,18 +1,18 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type { ScheduleSlot } from "@/entities/schedule/model/schedule.type";
 import {
   groupSlotsByPosition,
   slotFillCount,
   assignmentForSlot,
   type PositionAssignment,
-  type PositionSlot,
 } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 function slot(
   id: string,
   positions: string[],
   endedAt: string | null = null,
-): PositionSlot {
-  return { id, positions, ended_at: endedAt };
+): ScheduleSlot {
+  return { id, positions, endedAt };
 }
 
 function assignment(
@@ -21,7 +21,7 @@ function assignment(
   kind: string,
   endedAt: string | null = null,
 ): PositionAssignment {
-  return { id, slot_id: slotId, kind, ended_at: endedAt };
+  return { id, slotId, kind, endedAt };
 }
 
 describe("POSITION_ORDER — README SCH-011의 아홉 순서 그대로다", () => {
@@ -98,7 +98,7 @@ describe("slotFillCount — 분자는 살아 있는 정규 배정이 있는 자�
     });
   });
 
-  it("닫힌(ended_at 있는) 배정은 그 자리를 다시 빈 자리로 센다", () => {
+  it("닫힌(endedAt 있는) 배정은 그 자리를 다시 빈 자리로 센다", () => {
     const slots = [slot("slot-1", ["스캔"])];
     const assignments = [
       assignment("a-1", "slot-1", "regular", "2026-10-09T00:00:00Z"),
@@ -117,13 +117,13 @@ describe("slotFillCount — 분자는 살아 있는 정규 배정이 있는 자�
 
 describe("slotFillCount — 겸임 합침으로 내준 쪽은 분모가 준다", () => {
   it("내준 쪽 줄에는 자리가 하나도 안 남는다", () => {
-    const donorGroup: PositionSlot[] = [];
+    const donorGroup: ScheduleSlot[] = [];
 
     expect(slotFillCount(donorGroup, [])).toEqual({ filled: 0, total: 0 });
   });
 });
 
-describe("assignmentForSlot — 배정은 slot_id로 그 카드에만 앉는다", () => {
+describe("assignmentForSlot — 배정은 slotId로 그 카드에만 앉는다", () => {
   it("같은 포지션의 다른 자리에 있는 배정은 안 온다", () => {
     const assignments = [
       assignment("a-1", "slot-1", "regular"),
@@ -142,7 +142,7 @@ describe("assignmentForSlot — 배정은 slot_id로 그 카드에만 앉는다"
     expect(assignmentForSlot("slot-1", assignments)).toBeNull();
   });
 
-  it("교육 배정은 slot_id가 없어 어느 카드에도 안 앉는다", () => {
+  it("교육 배정은 slotId가 없어 어느 카드에도 안 앉는다", () => {
     const assignments = [assignment("a-1", null, "training")];
 
     expect(assignmentForSlot("slot-1", assignments)).toBeNull();

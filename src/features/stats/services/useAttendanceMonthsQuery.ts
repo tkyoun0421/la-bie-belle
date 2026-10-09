@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import type { DB } from "@/shared/api/database";
 import type { MonthsResult } from "@/shared/api/monthsQuery";
-import type { AttendanceRows } from "@/entities/attendance/api/attendance.dto";
+import type { Attendance } from "@/entities/attendance/model/attendance.type";
 import { useMonthsAttendanceQuery } from "@/entities/attendance/services/useMonthsAttendanceQuery";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 
 export type AttendanceMonth = {
   month: string;
   days: ScheduleDay[];
-  attendance: AttendanceRows;
+  attendance: Attendance;
 };
 
 export function useAttendanceMonthsQuery(

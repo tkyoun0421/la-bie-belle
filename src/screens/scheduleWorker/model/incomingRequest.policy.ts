@@ -1,6 +1,10 @@
-export type IncomingRequest = {
-  closed_at: string | null;
-  request_candidates: readonly { profile_id: string; status: string }[];
+import type {
+  SlotRequest,
+  SlotRequestCandidate,
+} from "@/entities/workRequest/model/workRequest.type";
+
+export type IncomingRequest = Pick<SlotRequest, "closedAt"> & {
+  candidates: readonly Pick<SlotRequestCandidate, "profileId" | "status">[];
 };
 
 export function hasIncomingRequest(
@@ -13,11 +17,10 @@ export function hasIncomingRequest(
 
   return requests.some(
     (request) =>
-      request.closed_at === null &&
-      request.request_candidates.some(
+      request.closedAt === null &&
+      request.candidates.some(
         (candidate) =>
-          candidate.profile_id === myProfileId &&
-          candidate.status === "pending",
+          candidate.profileId === myProfileId && candidate.status === "pending",
       ),
   );
 }

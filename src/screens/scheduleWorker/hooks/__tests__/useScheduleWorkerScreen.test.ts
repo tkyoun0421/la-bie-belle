@@ -121,73 +121,65 @@ function createWrapper() {
 
 const MY_DAY = {
   id: "d1",
-  work_date: "2026-10-17",
-  starts_at: "10:00:00",
-  ends_at: "18:00:00",
-  opened_at: "2026-09-01T00:00:00.000Z",
+  workDate: "2026-10-17",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  openedAt: "2026-09-01T00:00:00.000Z",
   slots: [
-    { id: "s1", positions: ["안내"], ended_at: null },
-    { id: "s2", positions: ["서빙"], ended_at: null },
+    { id: "s1", positions: ["안내"], endedAt: null },
+    { id: "s2", positions: ["서빙"], endedAt: null },
   ],
   assignments: [
     {
       id: "a1",
-      slot_id: "s1",
+      slotId: "s1",
       position: "안내",
       kind: "regular",
-      profile_id: "p1",
-      ended_at: null,
-      profiles: { display_name: "이준호" },
+      profileId: "p1",
+      endedAt: null,
+      name: "이준호",
     },
   ],
-  check_ins: [],
+  checkIns: [],
 };
 
 const OTHER_DAY = {
   ...MY_DAY,
   id: "d2",
-  work_date: "2026-10-20",
+  workDate: "2026-10-20",
   assignments: [],
 };
 
 const REQUEST = {
   id: "r1",
-  slot_id: "s2",
-  closed_at: null,
-  expires_at: "2099-01-01T00:00:00.000Z",
-  request_candidates: [
+  slotId: "s2",
+  closedAt: null,
+  expiresAt: "2099-01-01T00:00:00.000Z",
+  candidates: [
     {
-      profile_id: "p1",
+      profileId: "p1",
       status: "pending",
-      expires_at: "2099-01-01T00:00:00.000Z",
+      expiresAt: "2099-01-01T00:00:00.000Z",
     },
   ],
-  slots: {
-    id: "s2",
-    positions: ["서빙"],
-    days: {
-      work_date: "2026-10-20",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-    },
-  },
+  positions: ["서빙"],
+  workDate: "2026-10-20",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
 };
 
 const MY_CANCEL_REQUEST = {
   id: "ap1",
-  assignment_id: "a1",
+  assignmentId: "a1",
   reason: "몸이 아파요",
-  created_at: "2026-10-02T00:00:00.000Z",
-  assignments: {
-    day_id: "d1",
-    position: "안내",
-    days: {
-      work_date: "2026-10-17",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-    },
-  },
-  profiles: { display_name: "이준호", photo_url: null },
+  createdAt: "2026-10-02T00:00:00.000Z",
+  dayId: "d1",
+  position: "안내",
+  workDate: "2026-10-17",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  name: "이준호",
+  photoUrl: null,
 };
 
 const CONFIRMED = {
@@ -224,20 +216,20 @@ beforeEach(() => {
   });
   getMyProfileMock.mockResolvedValue({
     id: "p1",
-    display_name: "이준호",
-    photo_url: null,
+    displayName: "이준호",
+    photoUrl: null,
     role: "member",
-    submitted_at: null,
-    approved_at: "2026-01-01T00:00:00.000Z",
-    rejected_at: null,
-    blocked_at: null,
-    left_at: null,
-    notifications_enabled: true,
+    submittedAt: null,
+    approvedAt: "2026-01-01T00:00:00.000Z",
+    rejectedAt: null,
+    blockedAt: null,
+    leftAt: null,
+    notificationsEnabled: true,
   });
   getProfilePrivateMock.mockResolvedValue({
     email: "a@b.c",
     phone: "010-0000-0001",
-    birth_date: "1998-03-04",
+    birthDate: "1998-03-04",
     gender: "male",
   });
   countUnreadMock.mockResolvedValue(0);
@@ -422,7 +414,7 @@ describe("useScheduleWorkerScreen — 날짜 하나에 문이 둘이다", () => 
 
   it("만료된 요청은 끝난 것으로 선다", async () => {
     getSlotRequestsMock.mockResolvedValue([
-      { ...REQUEST, expires_at: "2020-01-01T00:00:00.000Z" },
+      { ...REQUEST, expiresAt: "2020-01-01T00:00:00.000Z" },
     ]);
 
     const { result } = await mounted();

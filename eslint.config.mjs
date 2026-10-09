@@ -41,6 +41,7 @@ const eslintConfig = defineConfig([
     "nativewind-env.d.ts",
     "coverage/**",
     "supabase/functions/_shared/**",
+    ".claude/worktrees/**",
   ]),
 
   {
@@ -169,6 +170,8 @@ const eslintConfig = defineConfig([
       "house/consts-segment": "error",
       "house/env-in-config": "error",
       "house/native-sdk-segment": "error",
+      "house/dto-segment": "error",
+      "house/no-snake-case-field": "error",
     },
   },
 

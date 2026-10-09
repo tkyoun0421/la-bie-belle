@@ -3,7 +3,7 @@ import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
-import { type PayrollMonth } from "@/entities/payroll/api/payroll.dto";
+import { type PayrollMonth } from "@/entities/payroll/model/payroll.type";
 
 export type PayrollByMonth = {
   month: string;

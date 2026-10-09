@@ -1,6 +1,8 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
-import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequestRow } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import { toSlotRequest } from "@/entities/workRequest/utils/workRequest.mapper";
 
 const REQUEST_COLUMNS = [
   "id",
@@ -22,11 +24,11 @@ export async function getSlotRequests(
     .is("closed_at", null)
     .gte("slots.days.work_date", monthStart(month))
     .lt("slots.days.work_date", nextMonthStart(month))
-    .returns<SlotRequest[]>();
+    .returns<SlotRequestRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toSlotRequest);
 }

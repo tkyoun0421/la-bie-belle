@@ -1,11 +1,12 @@
 import {
   dayTotal,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
 import {
   adjustedMinutes,
   paidMinutes,
-  type AdjustmentRow,
+  type TimedAdjustment,
   type WorkDayHours,
 } from "@/features/payrollCompute/model/paidMinutes.policy";
 import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
@@ -14,21 +15,21 @@ const MINUTES_PER_HOUR = 60;
 
 const CLOCK_LENGTH = 5;
 
-export type AdjustSheetAssignment = {
-  profile_id: string;
+export type AdjustSheetAssignment = Pick<
+  ScheduleAssignment,
+  "profileId" | "kind" | "endedAt"
+> & {
   name: string;
-  kind: string;
-  ended_at: string | null;
 };
 
-export type AdjustSheetAdjustment = AdjustmentRow & { profile_id: string };
+export type AdjustSheetAdjustment = TimedAdjustment & { profileId: string };
 
-export type AdjustSheetRehearsal = RehearsalRow & { profile_id: string };
+export type AdjustSheetRehearsal = RehearsalClock & { profileId: string };
 
 export type AdjustmentKind = "결근" | "연장";
 
 export type AdjustSheetRow = {
-  profile_id: string;
+  profileId: string;
   name: string;
   finalMinutes: number;
   adjustmentKind: AdjustmentKind | null;
@@ -58,7 +59,7 @@ function clock(value: string): string {
 }
 
 export function adjustSheetHead(day: WorkDayHours): string {
-  return `${clock(day.starts_at)}–${clock(day.ends_at)} · ${spellHours(
+  return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellHours(
     assignedMinutes(day),
   )}`;
 }
@@ -79,11 +80,11 @@ function kindOf(minutes: number): AdjustmentKind | null {
   return minutes < 0 ? "결근" : "연장";
 }
 
-function isClockRow(row: RehearsalRow): boolean {
-  return row.count === null && row.starts_at !== null && row.ends_at !== null;
+function isClockRow(row: RehearsalClock): boolean {
+  return row.count === null && row.startsAt !== null && row.endsAt !== null;
 }
 
-function rehearsalLineOf(rows: readonly RehearsalRow[]): string | null {
+function rehearsalLineOf(rows: readonly RehearsalClock[]): string | null {
   if (rows.length === 0) {
     return null;
   }
@@ -92,8 +93,8 @@ function rehearsalLineOf(rows: readonly RehearsalRow[]): string | null {
   const only = rows.length === 1 ? rows[0] : null;
 
   if (only !== null && isClockRow(only)) {
-    return `리허설 ${clock(only.starts_at ?? "")}–${clock(
-      only.ends_at ?? "",
+    return `리허설 ${clock(only.startsAt ?? "")}–${clock(
+      only.endsAt ?? "",
     )} · ${spellHours(total.minutes)}`;
   }
 
@@ -102,17 +103,17 @@ function rehearsalLineOf(rows: readonly RehearsalRow[]): string | null {
 
 export function adjustSheetRows(input: AdjustSheetInput): AdjustSheetRow[] {
   return input.assignments
-    .filter((assignment) => assignment.ended_at === null)
+    .filter((assignment) => assignment.endedAt === null)
     .map((assignment) => {
       const adjustments = input.adjustments.filter(
-        (row) => row.profile_id === assignment.profile_id,
+        (row) => row.profileId === assignment.profileId,
       );
       const rehearsals = input.rehearsals.filter(
-        (row) => row.profile_id === assignment.profile_id,
+        (row) => row.profileId === assignment.profileId,
       );
 
       return {
-        profile_id: assignment.profile_id,
+        profileId: assignment.profileId,
         name: assignment.name,
         finalMinutes: paidMinutes({
           assignments: [assignment],

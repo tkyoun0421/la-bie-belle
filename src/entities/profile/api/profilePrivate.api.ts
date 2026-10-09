@@ -1,10 +1,12 @@
 import type { DB } from "@/shared/api/database";
 import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
+import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
+import { toProfilePrivate } from "@/entities/profile/utils/profile.mapper";
 
 export async function getProfilePrivate(
   client: DB,
   profileId: string,
-): Promise<ProfilePrivateRow | null> {
+): Promise<ProfilePrivate | null> {
   const { data, error } = await client
     .from("profile_private")
     .select("email, phone, birth_date, gender")
@@ -15,5 +17,5 @@ export async function getProfilePrivate(
     throw error;
   }
 
-  return data;
+  return data === null ? null : toProfilePrivate(data);
 }

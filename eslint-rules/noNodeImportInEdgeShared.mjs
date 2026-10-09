@@ -5,6 +5,7 @@ const COPIED_TO_DENO = [
   "src/entities/notification/model/",
   "src/entities/notification/utils/",
   "src/features/holiday/model/",
+  "src/features/holiday/utils/",
 ];
 
 const noNodeImportInEdgeShared = {

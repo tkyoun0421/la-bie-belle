@@ -39,11 +39,12 @@ const MONTH = "2026-10";
 const ROWS = [
   {
     id: "row-1",
-    profile_id: "profile-1",
-    work_date: "2026-10-10",
-    starts_at: "14:00",
-    ends_at: "16:00",
+    profileId: "profile-1",
+    workDate: "2026-10-10",
+    startsAt: "14:00",
+    endsAt: "16:00",
     count: null,
+    name: null,
   },
 ];
 

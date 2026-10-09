@@ -209,6 +209,8 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 34 | consts 밖에서 내보내는 대문자 스네이크 이름 | house | `house/consts-segment` | `eslint-rules/__tests__/constsSegment.test.ts` |
 | 35 | config 밖의 환경값 읽기 | house | `house/env-in-config` | `eslint-rules/__tests__/envInConfig.test.ts` |
 | 36 | lib·ui·hooks·config 밖의 네이티브 SDK | house | `house/native-sdk-segment` | `eslint-rules/__tests__/nativeSdkSegment.test.ts` |
+| 37 | api 밖의 `.dto.ts` import | house | `house/dto-segment` | `eslint-rules/__tests__/dtoSegment.test.ts` |
+| 38 | api 밖의 snake_case 필드 선언 | house | `house/no-snake-case-field` | `eslint-rules/__tests__/noSnakeCaseField.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
@@ -276,6 +278,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 현재 한계는 다음과 같다. 문서의 원칙과 실제 헬퍼가 제공하는 기능을 구별한다.
 
 - 사용자 정리 헬퍼가 없어 integration·e2e가 만든 사용자가 남는다([관찰 013](../observations/013-integration-users-never-cleaned.md)). 실행이 통과해도 데이터 정리까지 성공한 것으로 기록하지 않는다.
+- **쌓인 행이 거짓 초록과 거짓 빨강을 다 만든다.** 행 존재만 단언하는 테스트는 앞 회차가 남긴 행으로 통과하고, 전수를 읽는 질의는 [config.toml](../../supabase/config.toml)의 `max_rows = 1000`에 잘려 심은 행을 못 받는다 — 상한이 limit이 아니라 **전체 결과**에 걸린다. **둘 다 로컬에서만 나고 CI는 깨끗한 DB라 안 난다.** 로컬 실패가 바뀐 코드 탓인지 보려면 `supabase db reset` 뒤 그 테스트만 다시 돌린다.
 - `postgres.ts`는 이름에 `supabase_db`가 들어가는 컨테이너 중 첫 번째를 고른다. 여러 로컬 프로젝트를 띄웠으면 앱·헬퍼·마이그레이션이 같은 프로젝트를 가리키는지 먼저 확인한다.
 - [config.toml](../../supabase/config.toml)의 `sign_in_sign_ups = 30`은 IP당 5분간 로그인·가입 요청 제한이다. 사용자 삭제만으로 요청 제한이 풀리지는 않는다. 제한 오류를 확인하면 제한 시간이 지난 뒤 재실행하고 반복 검증의 요청 수를 별도로 점검한다. CI도 한 실행 안에서 제한을 넘길 수 있다.
 

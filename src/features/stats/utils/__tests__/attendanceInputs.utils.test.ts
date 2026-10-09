@@ -2,67 +2,69 @@ import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSu
 import {
   buildAttendanceInputs,
   daysOfPerson,
+  type AttendanceInputCheckIn,
+  type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
 
 const DAYS = [
   {
     id: "day-1",
-    work_date: "2026-09-10",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
+    workDate: "2026-09-10",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
     assignments: [
-      { profile_id: "p1", ended_at: null },
-      { profile_id: "p5", ended_at: null },
-      { profile_id: "p2", ended_at: null },
-      { profile_id: "p3", ended_at: "2026-09-05T00:00:00.000Z" },
+      { profileId: "p1", endedAt: null },
+      { profileId: "p5", endedAt: null },
+      { profileId: "p2", endedAt: null },
+      { profileId: "p3", endedAt: "2026-09-05T00:00:00.000Z" },
     ],
   },
   {
     id: "day-2",
-    work_date: "2026-09-11",
-    starts_at: "09:00:00",
-    ends_at: "17:00:00",
-    assignments: [{ profile_id: "p4", ended_at: null }],
+    workDate: "2026-09-11",
+    startsAt: "09:00:00",
+    endsAt: "17:00:00",
+    assignments: [{ profileId: "p4", endedAt: null }],
   },
 ];
 
-const CHECK_INS = [
+const CHECK_INS: AttendanceInputCheckIn[] = [
   {
-    day_id: "day-1",
-    profile_id: "p1",
-    checked_at: "2026-09-10T01:15:00.000Z",
-    reported_at: "2026-09-10T01:15:00.000Z",
-    received_at: "2026-09-10T01:15:00.000Z",
+    dayId: "day-1",
+    profileId: "p1",
+    checkedAt: "2026-09-10T01:15:00.000Z",
+    reportedAt: "2026-09-10T01:15:00.000Z",
+    receivedAt: "2026-09-10T01:15:00.000Z",
   },
   {
-    day_id: "day-1",
-    profile_id: "p5",
-    checked_at: "2026-09-10T01:05:00.000Z",
-    reported_at: "2026-09-10T01:05:00.000Z",
-    received_at: "2026-09-10T01:05:00.000Z",
+    dayId: "day-1",
+    profileId: "p5",
+    checkedAt: "2026-09-10T01:05:00.000Z",
+    reportedAt: "2026-09-10T01:05:00.000Z",
+    receivedAt: "2026-09-10T01:05:00.000Z",
   },
   {
-    day_id: "day-1",
-    profile_id: "p3",
-    checked_at: "2026-09-10T01:07:00.000Z",
-    reported_at: "2026-09-10T01:07:00.000Z",
-    received_at: "2026-09-10T01:07:00.000Z",
+    dayId: "day-1",
+    profileId: "p3",
+    checkedAt: "2026-09-10T01:07:00.000Z",
+    reportedAt: "2026-09-10T01:07:00.000Z",
+    receivedAt: "2026-09-10T01:07:00.000Z",
   },
   {
-    day_id: "day-2",
-    profile_id: "p1",
-    checked_at: "2026-09-11T00:05:00.000Z",
-    reported_at: "2026-09-11T00:05:00.000Z",
-    received_at: "2026-09-11T00:05:00.000Z",
+    dayId: "day-2",
+    profileId: "p1",
+    checkedAt: "2026-09-11T00:05:00.000Z",
+    reportedAt: "2026-09-11T00:05:00.000Z",
+    receivedAt: "2026-09-11T00:05:00.000Z",
   },
 ];
 
-const EXCUSE_STATUSES = [
+const EXCUSE_STATUSES: AttendanceInputExcuseStatus[] = [
   {
-    day_id: "day-2",
-    profile_id: "p4",
-    submitted_at: "2026-09-11T09:10:00.000Z",
-    decided_at: "2026-09-11T10:00:00.000Z",
+    dayId: "day-2",
+    profileId: "p4",
+    submittedAt: "2026-09-11T09:10:00.000Z",
+    decidedAt: "2026-09-11T10:00:00.000Z",
     decision: "approved",
   },
 ];
@@ -96,7 +98,7 @@ describe("buildAttendanceInputs — 그 결과를 tallyMonthlyAttendance에 먹�
   });
 });
 
-describe("buildAttendanceInputs — day_id와 profile_id가 둘 다 맞아야 그 배정에 붙는다", () => {
+describe("buildAttendanceInputs — dayId와 profileId가 둘 다 맞아야 그 배정에 붙는다", () => {
   it("p1의 day-2 체크인 시각이 day-1 입력에 안 섞인다", () => {
     const inputs = buildAttendanceInputs(DAYS, CHECK_INS, EXCUSE_STATUSES, NOW);
 
@@ -127,7 +129,7 @@ describe("daysOfPerson — 그 사람 배정만 남긴다", () => {
 
     expect(
       mine.flatMap((day) =>
-        day.assignments.map((assignment) => assignment.profile_id),
+        day.assignments.map((assignment) => assignment.profileId),
       ),
     ).toEqual(["p1"]);
   });

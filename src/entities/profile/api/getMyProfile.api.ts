@@ -1,6 +1,8 @@
 import type { DB } from "@/shared/api/database";
 import { takeProfileReadFailure } from "@/shared/utils/devDoor";
 import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
+import type { Profile } from "@/entities/profile/model/profile.type";
+import { toProfile } from "@/entities/profile/utils/profile.mapper";
 
 const COLUMNS = [
   "id",
@@ -18,7 +20,7 @@ const COLUMNS = [
 export async function getMyProfile(
   client: DB,
   userId: string,
-): Promise<MyProfileRow | null> {
+): Promise<Profile | null> {
   if (takeProfileReadFailure()) {
     throw new Error("simulated_profile_read_failure");
   }
@@ -33,5 +35,5 @@ export async function getMyProfile(
     throw error;
   }
 
-  return data;
+  return data === null ? null : toProfile(data);
 }

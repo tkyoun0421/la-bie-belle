@@ -1,9 +1,15 @@
 import type { DB } from "@/shared/api/database";
 import type {
   ActiveMemberRow,
-  MemberListRow,
   MemberRow,
+  MemberSummaryRow,
+  PushReachableRow,
 } from "@/entities/member/api/member.dto";
+import type {
+  ActiveMember,
+  Member,
+  MemberSummary,
+} from "@/entities/member/model/member.type";
 import {
   sortActiveMembers,
   sortLeftMembers,
@@ -12,6 +18,11 @@ import {
   filterBlockedMembers,
   filterPendingMembers,
 } from "@/entities/member/utils/filterMembers.utils";
+import {
+  toActiveMember,
+  toMember,
+  toMemberSummary,
+} from "@/entities/member/utils/member.mapper";
 
 const COLUMNS = [
   "id",
@@ -33,31 +44,6 @@ const MEMBER_COLUMNS = [
 
 const ACTIVE_COLUMNS = [MEMBER_COLUMNS, "notifications_enabled"].join(", ");
 
-type Contact = {
-  phone: string | null;
-  birth_date: string | null;
-  gender: string | null;
-};
-
-type EmbeddedMemberRow = Omit<MemberRow, keyof Contact> & {
-  profile_private: Contact | null;
-};
-
-type EmbeddedActiveRow = EmbeddedMemberRow & {
-  notifications_enabled: boolean;
-};
-
-function flatten<Row extends EmbeddedMemberRow>(
-  rows: readonly Row[],
-): (Omit<Row, "profile_private"> & Contact)[] {
-  return rows.map(({ profile_private: contact, ...row }) => ({
-    ...row,
-    phone: contact?.phone ?? null,
-    birth_date: contact?.birth_date ?? null,
-    gender: contact?.gender ?? null,
-  }));
-}
-
 async function readDevices(
   client: DB,
   profileIds: readonly string[],
@@ -70,7 +56,7 @@ async function readDevices(
     .from("push_reachable")
     .select("profile_id, has_device")
     .in("profile_id", [...profileIds])
-    .returns<{ profile_id: string | null; has_device: boolean | null }[]>();
+    .returns<PushReachableRow[]>();
 
   if (error) {
     throw error;
@@ -85,7 +71,7 @@ async function readDevices(
   );
 }
 
-export async function listPendingMembers(client: DB): Promise<MemberListRow[]> {
+export async function listPendingMembers(client: DB): Promise<MemberSummary[]> {
   const { data, error } = await client
     .from("profiles")
     .select(COLUMNS)
@@ -94,33 +80,31 @@ export async function listPendingMembers(client: DB): Promise<MemberListRow[]> {
     .is("rejected_at", null)
     .is("blocked_at", null)
     .order("submitted_at", { ascending: true })
-    .returns<MemberListRow[]>();
+    .returns<MemberSummaryRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return filterPendingMembers(data ?? []);
+  return filterPendingMembers((data ?? []).map(toMemberSummary));
 }
 
-export async function listBlockedMembers(client: DB): Promise<MemberListRow[]> {
+export async function listBlockedMembers(client: DB): Promise<MemberSummary[]> {
   const { data, error } = await client
     .from("profiles")
     .select(COLUMNS)
     .not("blocked_at", "is", null)
     .order("blocked_at", { ascending: false })
-    .returns<MemberListRow[]>();
+    .returns<MemberSummaryRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return filterBlockedMembers(data ?? []);
+  return filterBlockedMembers((data ?? []).map(toMemberSummary));
 }
 
-export async function listActiveMembers(
-  client: DB,
-): Promise<ActiveMemberRow[]> {
+export async function listActiveMembers(client: DB): Promise<ActiveMember[]> {
   const { data, error } = await client
     .from("profiles")
     .select(ACTIVE_COLUMNS)
@@ -129,37 +113,34 @@ export async function listActiveMembers(
     .is("left_at", null)
     .is("blocked_at", null)
     .is("rejected_at", null)
-    .returns<EmbeddedActiveRow[]>();
+    .returns<ActiveMemberRow[]>();
 
   if (error) {
     throw error;
   }
 
-  const rows = flatten(data ?? []);
+  const rows = data ?? [];
   const devices = await readDevices(
     client,
     rows.map((row) => row.id),
   );
 
   return sortActiveMembers(
-    rows.map((row) => ({
-      ...row,
-      has_device: devices.get(row.id) ?? false,
-    })),
+    rows.map((row) => toActiveMember(row, devices.get(row.id) ?? false)),
   );
 }
 
-export async function listLeftMembers(client: DB): Promise<MemberRow[]> {
+export async function listLeftMembers(client: DB): Promise<Member[]> {
   const { data, error } = await client
     .from("profiles")
     .select(MEMBER_COLUMNS)
     .not("submitted_at", "is", null)
     .not("left_at", "is", null)
-    .returns<EmbeddedMemberRow[]>();
+    .returns<MemberRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return sortLeftMembers(flatten(data ?? []));
+  return sortLeftMembers((data ?? []).map(toMember));
 }

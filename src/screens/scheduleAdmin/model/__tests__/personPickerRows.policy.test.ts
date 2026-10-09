@@ -84,10 +84,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -105,10 +105,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
         qualifiedProfileIds: [],
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -118,15 +118,15 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
     expect(row?.category).toBe("assigned");
   });
 
-  it("닫힌(ended_at 있는) 배정은 배정됨으로 안 친다", () => {
+  it("닫힌(endedAt 있는) 배정은 배정됨으로 안 친다", () => {
     const rows = classifyPickerRows(
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: "2026-10-09T00:00:00Z",
+            endedAt: "2026-10-09T00:00:00Z",
           },
         ],
       }),
@@ -141,10 +141,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "training",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -181,9 +181,9 @@ describe("classifyPickerRows — 대기 중인 근무 요청은 체크박스가 
         appliedProfileIds: ["profile-2", "profile-3"],
         requestCandidates: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             status: "pending",
-            expires_at: "2026-10-12T00:00:00Z",
+            expiresAt: "2026-10-12T00:00:00Z",
           },
         ],
         serverNowMs: SERVER_NOW_MS,
@@ -204,9 +204,9 @@ describe("classifyPickerRows — 거절한 근무 요청은 체크박스가 붙�
         appliedProfileIds: ["profile-2", "profile-3"],
         requestCandidates: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             status: "declined",
-            expires_at: "2026-10-12T00:00:00Z",
+            expiresAt: "2026-10-12T00:00:00Z",
           },
         ],
         serverNowMs: SERVER_NOW_MS,
@@ -227,9 +227,9 @@ describe("classifyPickerRows — 만료됨은 저장하지 않는다, expires_at
         appliedProfileIds: ["profile-2", "profile-3"],
         requestCandidates: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             status: "pending",
-            expires_at: "2026-10-09T00:00:00Z",
+            expiresAt: "2026-10-09T00:00:00Z",
           },
         ],
         serverNowMs: SERVER_NOW_MS,
@@ -248,9 +248,9 @@ describe("classifyPickerRows — 만료됨은 저장하지 않는다, expires_at
         appliedProfileIds: ["profile-2", "profile-3"],
         requestCandidates: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             status: "pending",
-            expires_at: "2026-10-11T00:00:00Z",
+            expiresAt: "2026-10-11T00:00:00Z",
           },
         ],
         serverNowMs: SERVER_NOW_MS,
@@ -269,18 +269,18 @@ describe("classifyPickerRows — 배정됨이 근무 요청 상태보다 우선�
         appliedProfileIds: ["profile-2", "profile-3"],
         requestCandidates: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             status: "pending",
-            expires_at: "2026-10-12T00:00:00Z",
+            expiresAt: "2026-10-12T00:00:00Z",
           },
         ],
         serverNowMs: SERVER_NOW_MS,
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),

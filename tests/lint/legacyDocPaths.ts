@@ -36,7 +36,7 @@ const SCANNED_ROOTS = [
   "tests",
 ];
 
-const EXCLUDED_PREFIXES = [`${DOCS}log/`];
+const EXCLUDED_PREFIXES = [`${DOCS}log/`, ".claude/worktrees/"];
 
 const SKIPPED_DIRECTORIES = new Set(["node_modules", "__pycache__"]);
 

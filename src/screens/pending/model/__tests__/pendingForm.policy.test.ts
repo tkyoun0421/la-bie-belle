@@ -29,8 +29,8 @@ describe("stageOfProfile — 시각 둘이 장면을 정한다", () => {
   it("거절이 가장 앞선다", () => {
     expect(
       stageOfProfile({
-        submitted_at: "2026-10-01T00:00:00.000Z",
-        rejected_at: "2026-10-02T00:00:00.000Z",
+        submittedAt: "2026-10-01T00:00:00.000Z",
+        rejectedAt: "2026-10-02T00:00:00.000Z",
       }),
     ).toBe("rejected");
   });
@@ -38,14 +38,14 @@ describe("stageOfProfile — 시각 둘이 장면을 정한다", () => {
   it("보냈으면 기다리는 중이다", () => {
     expect(
       stageOfProfile({
-        submitted_at: "2026-10-01T00:00:00.000Z",
-        rejected_at: null,
+        submittedAt: "2026-10-01T00:00:00.000Z",
+        rejectedAt: null,
       }),
     ).toBe("waiting");
   });
 
   it("안 보냈으면 적는 자리다", () => {
-    expect(stageOfProfile({ submitted_at: null, rejected_at: null })).toBe(
+    expect(stageOfProfile({ submittedAt: null, rejectedAt: null })).toBe(
       "form",
     );
   });

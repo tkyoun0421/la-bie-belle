@@ -10,48 +10,51 @@ import {
   dayAmount,
   type DayAmount,
 } from "@/entities/payroll/model/dayAmount.policy";
-import type { DayKind } from "@/entities/payroll/model/payroll.type";
-import { wageAt, type WageRate } from "@/entities/payroll/model/wageAt.policy";
+import type {
+  Adjustment,
+  DayKind,
+  ExcuseStatus,
+  WageRate,
+} from "@/entities/payroll/model/payroll.type";
+import { wageAt } from "@/entities/payroll/model/wageAt.policy";
 import {
   rehearsalHours,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type {
+  ScheduleCheckIn,
+  ScheduleDay,
+} from "@/entities/schedule/model/schedule.type";
 import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
 
-export type PayrollWorkDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
-};
+export type PayrollWorkDay = Pick<
+  ScheduleDay,
+  "id" | "workDate" | "startsAt" | "endsAt"
+>;
 
 export type PayrollAssignment = {
-  day_id: string;
+  dayId: string;
 };
 
-export type PayrollAdjustment = {
-  day_id: string;
-  minutes: number;
-  adjusted_at: string;
+export type PayrollAdjustment = Pick<
+  Adjustment,
+  "dayId" | "minutes" | "adjustedAt"
+>;
+
+export type PayrollCheckIn = Pick<
+  ScheduleCheckIn,
+  "checkedAt" | "reportedAt" | "receivedAt"
+> & {
+  dayId: string;
 };
 
-export type PayrollCheckIn = {
-  day_id: string;
-  checked_at: string;
-  reported_at: string;
-  received_at: string;
-};
+export type PayrollExcuse = Pick<
+  ExcuseStatus,
+  "dayId" | "submittedAt" | "decidedAt" | "decision"
+>;
 
-export type PayrollExcuse = {
-  day_id: string;
-  submitted_at: string;
-  decided_at: string | null;
-  decision: string | null;
-};
-
-export type PayrollRehearsal = RehearsalRow & {
-  work_date: string;
+export type PayrollRehearsal = RehearsalClock & {
+  workDate: string;
 };
 
 export type PayrollDaysInput = {
@@ -80,8 +83,8 @@ function decisionOf(decision: string | null): ExcuseDecision | null {
 
 function excuseRecord(excuse: PayrollExcuse): ExcuseStatusRecord {
   return {
-    submittedAt: excuse.submitted_at,
-    decidedAt: excuse.decided_at,
+    submittedAt: excuse.submittedAt,
+    decidedAt: excuse.decidedAt,
     decision: decisionOf(excuse.decision),
   };
 }
@@ -95,23 +98,23 @@ function isAbsent(
     return false;
   }
 
-  const checkIn = input.checkIns.find((row) => row.day_id === day.id) ?? null;
+  const checkIn = input.checkIns.find((row) => row.dayId === day.id) ?? null;
 
   return (
     getAttendanceStatus({
-      workDate: day.work_date,
-      startsAt: day.starts_at,
-      endsAt: day.ends_at,
+      workDate: day.workDate,
+      startsAt: day.startsAt,
+      endsAt: day.endsAt,
       checkIn:
         checkIn === null
           ? null
           : {
-              checkedAt: checkIn.checked_at,
-              reportedAt: checkIn.reported_at,
-              receivedAt: checkIn.received_at,
+              checkedAt: checkIn.checkedAt,
+              reportedAt: checkIn.reportedAt,
+              receivedAt: checkIn.receivedAt,
             },
       excuses: input.excuses
-        .filter((row) => row.day_id === day.id)
+        .filter((row) => row.dayId === day.id)
         .map(excuseRecord),
       now: input.now,
     }) === "absent"
@@ -125,9 +128,7 @@ function payrollDate(
 ): PayrollDay {
   const day = dayByDate.get(date) ?? null;
   const assignments =
-    day === null
-      ? []
-      : input.assignments.filter((row) => row.day_id === day.id);
+    day === null ? [] : input.assignments.filter((row) => row.dayId === day.id);
 
   if (day !== null && isAbsent(input, day, assignments)) {
     return { date, ...ABSENT };
@@ -139,8 +140,8 @@ function payrollDate(
     adjustments:
       day === null
         ? []
-        : input.adjustments.filter((row) => row.day_id === day.id),
-    rehearsals: input.rehearsals.filter((row) => row.work_date === date),
+        : input.adjustments.filter((row) => row.dayId === day.id),
+    rehearsals: input.rehearsals.filter((row) => row.workDate === date),
   });
 
   const wage = wageAt(input.rates, date);
@@ -152,19 +153,24 @@ function payrollDate(
 
 export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
   const dayById = new Map(input.days.map((day) => [day.id, day]));
-  const dayByDate = new Map(input.days.map((day) => [day.work_date, day]));
+  const dayByDate = new Map(input.days.map((day) => [day.workDate, day]));
   const dates = new Set<string>();
 
-  for (const row of [...input.assignments, ...input.adjustments]) {
-    const day = dayById.get(row.day_id);
+  const touchedDayIds = [
+    ...input.assignments.map((row) => row.dayId),
+    ...input.adjustments.map((row) => row.dayId),
+  ];
+
+  for (const dayId of touchedDayIds) {
+    const day = dayById.get(dayId);
 
     if (day !== undefined) {
-      dates.add(day.work_date);
+      dates.add(day.workDate);
     }
   }
 
   for (const rehearsal of input.rehearsals) {
-    dates.add(rehearsal.work_date);
+    dates.add(rehearsal.workDate);
   }
 
   return [...dates].sort().map((date) => payrollDate(input, dayByDate, date));
@@ -173,9 +179,9 @@ export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
 export type PayrollViewSource = {
   profileId: string;
   days: readonly ScheduleDay[];
-  rates: readonly (WageRate & { profile_id: string })[];
-  adjustments: readonly (PayrollAdjustment & { profile_id: string })[];
-  excuses: readonly (PayrollExcuse & { profile_id: string })[];
+  rates: readonly (WageRate & { profileId: string })[];
+  adjustments: readonly (PayrollAdjustment & { profileId: string })[];
+  excuses: readonly (PayrollExcuse & { profileId: string })[];
   rehearsals: readonly PayrollRehearsal[];
   now: string;
 };
@@ -196,57 +202,59 @@ function clockLabel(clock: string): string {
   return clock.slice(0, 5);
 }
 
-function mine<Row extends { profile_id: string }>(
+function mine<Row extends { profileId: string }>(
   rows: readonly Row[],
   profileId: string,
 ): Row[] {
-  return rows.filter((row) => row.profile_id === profileId);
+  return rows.filter((row) => row.profileId === profileId);
 }
 
 function myAssignment(day: ScheduleDay, profileId: string) {
   return (
     day.assignments.find(
       (assignment) =>
-        assignment.profile_id === profileId && assignment.ended_at === null,
+        assignment.profileId === profileId && assignment.endedAt === null,
     ) ?? null
   );
 }
 
 function myCheckIn(day: ScheduleDay, profileId: string): CheckInRecord | null {
-  const row = day.check_ins.find((check) => check.profile_id === profileId);
+  const row = day.checkIns.find((check) => check.profileId === profileId);
 
   return row === undefined
     ? null
     : {
-        checkedAt: row.checked_at,
-        reportedAt: row.reported_at,
-        receivedAt: row.received_at,
+        checkedAt: row.checkedAt,
+        reportedAt: row.reportedAt,
+        receivedAt: row.receivedAt,
       };
 }
 
 export function payrollViewDays(source: PayrollViewSource): PayrollViewDay[] {
   const { profileId, now } = source;
   const myExcuses = mine(source.excuses, profileId);
-  const dayByDate = new Map(source.days.map((day) => [day.work_date, day]));
+  const dayByDate = new Map(source.days.map((day) => [day.workDate, day]));
 
   const computed = payrollDays({
     days: source.days.map((day) => ({
       id: day.id,
-      work_date: day.work_date,
-      starts_at: day.starts_at,
-      ends_at: day.ends_at,
+      workDate: day.workDate,
+      startsAt: day.startsAt,
+      endsAt: day.endsAt,
     })),
     assignments: source.days.flatMap((day) =>
-      myAssignment(day, profileId) === null ? [] : [{ day_id: day.id }],
+      myAssignment(day, profileId) === null ? [] : [{ dayId: day.id }],
     ),
     adjustments: mine(source.adjustments, profileId),
     checkIns: source.days.flatMap((day) =>
-      mine(day.check_ins, profileId).map((row) => ({
-        day_id: day.id,
-        checked_at: row.checked_at,
-        reported_at: row.reported_at,
-        received_at: row.received_at,
-      })),
+      day.checkIns
+        .filter((row) => row.profileId === profileId)
+        .map((row) => ({
+          dayId: day.id,
+          checkedAt: row.checkedAt,
+          reportedAt: row.reportedAt,
+          receivedAt: row.receivedAt,
+        })),
     ),
     excuses: myExcuses,
     rehearsals: source.rehearsals,
@@ -265,26 +273,26 @@ export function payrollViewDays(source: PayrollViewSource): PayrollViewDay[] {
       startsAt:
         scheduled === null || assignment === null
           ? null
-          : clockLabel(scheduled.starts_at),
+          : clockLabel(scheduled.startsAt),
       endsAt:
         scheduled === null || assignment === null
           ? null
-          : clockLabel(scheduled.ends_at),
+          : clockLabel(scheduled.endsAt),
       isEducation: assignment !== null && assignment.kind === EDUCATION_KIND,
       overtimeMinutes: Math.max(0, day.minutes - REGULAR_MINUTES),
       rehearsalMinutes: source.rehearsals
-        .filter((row) => row.work_date === day.date)
+        .filter((row) => row.workDate === day.date)
         .reduce((sum, row) => sum + rehearsalHours(row), 0),
       attendance:
         scheduled === null || assignment === null
           ? null
           : {
-              workDate: scheduled.work_date,
-              startsAt: scheduled.starts_at,
-              endsAt: scheduled.ends_at,
+              workDate: scheduled.workDate,
+              startsAt: scheduled.startsAt,
+              endsAt: scheduled.endsAt,
               checkIn: myCheckIn(scheduled, profileId),
               excuses: myExcuses
-                .filter((row) => row.day_id === scheduled.id)
+                .filter((row) => row.dayId === scheduled.id)
                 .map(excuseRecord),
               now,
             },

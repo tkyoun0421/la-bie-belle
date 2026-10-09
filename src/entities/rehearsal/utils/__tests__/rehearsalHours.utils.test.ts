@@ -2,18 +2,18 @@ import {
   dayTotal,
   monthTotal,
   rehearsalHours,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 
-const TIME_ROW: RehearsalRow = {
-  starts_at: "14:00",
-  ends_at: "16:00",
+const TIME_ROW: RehearsalClock = {
+  startsAt: "14:00",
+  endsAt: "16:00",
   count: null,
 };
 
-const COUNT_ROW: RehearsalRow = {
-  starts_at: null,
-  ends_at: null,
+const COUNT_ROW: RehearsalClock = {
+  startsAt: null,
+  endsAt: null,
   count: 3,
 };
 

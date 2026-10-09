@@ -55,8 +55,8 @@ describe("getAllRehearsals dal(plan AC-05) — 그 달 전원 행을 이름과 �
     const rows = await getAllRehearsals(admin.client, month);
     const row = rows.find((candidate) => candidate.id === id);
 
-    expect(row?.profile_id).toBe(worker.profileId);
-    expect(row?.profiles?.display_name).not.toBeNull();
+    expect(row?.profileId).toBe(worker.profileId);
+    expect(row?.name).not.toBeNull();
   });
 
   it("관리자가 아니면 RLS가 좁혀 자기 행만 온다", async () => {

@@ -1,5 +1,5 @@
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
@@ -16,21 +16,21 @@ const ME = "p1";
 function scheduleDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
     id: "day-x",
-    work_date: "2026-09-10",
-    starts_at: "10:00:00",
-    ends_at: "19:00:00",
-    opened_at: "2026-09-01T00:00:00.000Z",
+    workDate: "2026-09-10",
+    startsAt: "10:00:00",
+    endsAt: "19:00:00",
+    openedAt: "2026-09-01T00:00:00.000Z",
     slots: [],
-    check_ins: [],
+    checkIns: [],
     assignments: [
       {
         id: "a-x",
-        slot_id: null,
+        slotId: null,
         position: "메인",
         kind: "regular",
-        profile_id: ME,
-        ended_at: null,
-        profiles: { display_name: "김지우" },
+        profileId: ME,
+        endedAt: null,
+        name: "김지우",
       },
     ],
     ...overrides,
@@ -45,12 +45,12 @@ function assignment(
 ) {
   return {
     id: `a-${position}`,
-    slot_id: null,
+    slotId: null,
     position,
     kind,
-    profile_id: profileId,
-    ended_at: null,
-    profiles: { display_name: "김지우" },
+    profileId,
+    endedAt: null,
+    name: "김지우",
     ...overrides,
   };
 }
@@ -58,76 +58,76 @@ function assignment(
 const DAYS: ScheduleDay[] = [
   scheduleDay({
     id: "day-14",
-    work_date: "2026-09-14",
+    workDate: "2026-09-14",
     assignments: [assignment("메인", "regular", ME)],
   }),
   scheduleDay({
     id: "day-10",
-    work_date: "2026-09-10",
+    workDate: "2026-09-10",
     assignments: [assignment("안내", "training", ME)],
   }),
   scheduleDay({
     id: "day-11",
-    work_date: "2026-09-11",
+    workDate: "2026-09-11",
     assignments: [assignment("메인", "regular", ME)],
   }),
   scheduleDay({
     id: "day-12",
-    work_date: "2026-09-12",
+    workDate: "2026-09-12",
     assignments: [assignment("스캔", "regular", ME)],
   }),
   scheduleDay({
     id: "day-13",
-    work_date: "2026-09-13",
+    workDate: "2026-09-13",
     assignments: [assignment("드레스실", "regular", ME)],
   }),
   scheduleDay({
     id: "day-15",
-    work_date: "2026-09-15",
+    workDate: "2026-09-15",
     assignments: [assignment("메인", "regular", ME)],
   }),
   scheduleDay({
     id: "day-16",
-    work_date: "2026-09-16",
+    workDate: "2026-09-16",
     assignments: [assignment("스캔", "regular", "p2")],
   }),
   scheduleDay({
     id: "day-18",
-    work_date: "2026-09-20",
+    workDate: "2026-09-20",
     assignments: [assignment("메인", "regular", ME)],
   }),
 ];
 
 const CHECK_INS: AttendanceInputCheckIn[] = [
   {
-    day_id: "day-10",
-    profile_id: ME,
-    checked_at: "2026-09-10T01:00:00.000Z",
-    reported_at: "2026-09-10T01:00:00.000Z",
-    received_at: "2026-09-10T01:00:00.000Z",
+    dayId: "day-10",
+    profileId: ME,
+    checkedAt: "2026-09-10T01:00:00.000Z",
+    reportedAt: "2026-09-10T01:00:00.000Z",
+    receivedAt: "2026-09-10T01:00:00.000Z",
   },
   {
-    day_id: "day-11",
-    profile_id: ME,
-    checked_at: "2026-09-11T01:20:00.000Z",
-    reported_at: "2026-09-11T01:20:00.000Z",
-    received_at: "2026-09-11T01:20:00.000Z",
+    dayId: "day-11",
+    profileId: ME,
+    checkedAt: "2026-09-11T01:20:00.000Z",
+    reportedAt: "2026-09-11T01:20:00.000Z",
+    receivedAt: "2026-09-11T01:20:00.000Z",
   },
 ];
 
 const EXCUSE_STATUSES: AttendanceInputExcuseStatus[] = [
   {
-    day_id: "day-13",
-    profile_id: ME,
-    submitted_at: "2026-09-13T10:00:00.000Z",
-    decided_at: "2026-09-13T12:00:00.000Z",
+    dayId: "day-13",
+    profileId: ME,
+    submittedAt: "2026-09-13T10:00:00.000Z",
+    decidedAt: "2026-09-13T12:00:00.000Z",
     decision: "approved",
   },
   {
-    day_id: "day-14",
-    profile_id: ME,
-    submitted_at: "2026-09-14T10:00:00.000Z",
-    decided_at: null,
+    dayId: "day-14",
+    profileId: ME,
+    submittedAt: "2026-09-14T10:00:00.000Z",
+    decidedAt: null,
     decision: null,
   },
 ];
@@ -246,7 +246,7 @@ describe("buildMyAttendanceDays — 교육 배정은 isEducation이 true, 정규
 });
 
 describe("buildMyAttendanceDays — 찍은 시각을 체크인 그대로 낸다", () => {
-  it("9월 10일의 checkedAt이 체크인 행의 checked_at과 같다", () => {
+  it("9월 10일의 checkedAt이 그날 체크인 행이 든 값과 같다", () => {
     const result = buildMyAttendanceDays(
       ME,
       DAYS,

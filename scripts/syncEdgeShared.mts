@@ -16,6 +16,7 @@ const ENTRIES = [
   "src/entities/notification/utils/pushMessage.utils.ts",
   "src/entities/notification/model/pushResult.policy.ts",
   "src/features/holiday/model/holiday.schema.ts",
+  "src/features/holiday/utils/holiday.mapper.ts",
 ];
 
 const FOLDERS = [
@@ -23,6 +24,7 @@ const FOLDERS = [
   { from: "src/entities/notification/model", to: "notification" },
   { from: "src/entities/notification/utils", to: "notification" },
   { from: "src/features/holiday/model", to: "holiday" },
+  { from: "src/features/holiday/utils", to: "holiday" },
 ];
 
 const SPECIFIER = /(\bfrom\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g;

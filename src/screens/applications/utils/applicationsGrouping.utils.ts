@@ -1,12 +1,7 @@
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
+import type { Availability } from "@/entities/availability/model/availability.type";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-export type ApplicationRow = {
-  profile_id: string;
-  work_date: string;
-  profiles: { display_name: string | null } | null;
-};
 
 export type DateGroup = {
   workDate: string;
@@ -19,20 +14,20 @@ export type PersonGroup = {
   workDates: string[];
 };
 
-function nameOf(row: ApplicationRow): string {
-  return row.profiles?.display_name ?? "";
+function nameOf(row: Availability): string {
+  return row.name ?? "";
 }
 
 export function groupApplicationsByDate(
-  rows: readonly ApplicationRow[],
+  rows: readonly Availability[],
 ): DateGroup[] {
   const byDate = new Map<string, string[]>();
 
   for (const row of rows) {
-    const names = byDate.get(row.work_date) ?? [];
+    const names = byDate.get(row.workDate) ?? [];
 
     names.push(nameOf(row));
-    byDate.set(row.work_date, names);
+    byDate.set(row.workDate, names);
   }
 
   return [...byDate.entries()]
@@ -41,19 +36,19 @@ export function groupApplicationsByDate(
 }
 
 export function groupApplicationsByPerson(
-  rows: readonly ApplicationRow[],
+  rows: readonly Availability[],
 ): PersonGroup[] {
   const byPerson = new Map<string, PersonGroup>();
 
   for (const row of rows) {
-    const group = byPerson.get(row.profile_id) ?? {
-      profileId: row.profile_id,
+    const group = byPerson.get(row.profileId) ?? {
+      profileId: row.profileId,
       displayName: nameOf(row),
       workDates: [],
     };
 
-    group.workDates.push(row.work_date);
-    byPerson.set(row.profile_id, group);
+    group.workDates.push(row.workDate);
+    byPerson.set(row.profileId, group);
   }
 
   return [...byPerson.values()].map((group) => ({

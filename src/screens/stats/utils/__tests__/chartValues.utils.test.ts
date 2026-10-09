@@ -1,7 +1,7 @@
-import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
-import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
@@ -17,12 +17,12 @@ const PROFILE_ID = "profile-1";
 function assignment(overrides: Partial<ScheduleAssignment> = {}) {
   return {
     id: "assignment-1",
-    slot_id: null,
+    slotId: null,
     position: "hall",
     kind: "regular",
-    profile_id: PROFILE_ID,
-    ended_at: null,
-    profiles: null,
+    profileId: PROFILE_ID,
+    endedAt: null,
+    name: null,
     ...overrides,
   };
 }
@@ -30,12 +30,12 @@ function assignment(overrides: Partial<ScheduleAssignment> = {}) {
 function scheduleDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
     id: "day-1",
-    work_date: "2026-08-10",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
-    opened_at: "2026-08-01T00:00:00.000Z",
+    workDate: "2026-08-10",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: "2026-08-01T00:00:00.000Z",
     slots: [],
-    check_ins: [],
+    checkIns: [],
     assignments: [],
     ...overrides,
   };
@@ -69,7 +69,7 @@ describe("myWorkValues — 근무표는 열렸지만 내가 안 나온 달은 0�
         month: "2026-08",
         days: [
           scheduleDay({
-            assignments: [assignment({ profile_id: "다른-사람" })],
+            assignments: [assignment({ profileId: "다른-사람" })],
           }),
         ],
       },
@@ -113,16 +113,16 @@ describe("myAttendanceValues — 출근율은 entities/attendance의 attendanceR
   it("출근 1 · 지각 1이면 50%다(지각도 인증이 돈 것이라 분모에 든다)", () => {
     const day = scheduleDay({
       id: "day-a",
-      work_date: "2026-08-05",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
+      workDate: "2026-08-05",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
       assignments: [assignment({ id: "a1" })],
     });
     const lateDay = scheduleDay({
       id: "day-b",
-      work_date: "2026-08-06",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
+      workDate: "2026-08-06",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
       assignments: [assignment({ id: "a2" })],
     });
 
@@ -135,20 +135,20 @@ describe("myAttendanceValues — 출근율은 entities/attendance의 attendanceR
             {
               id: "check-a",
               method: "qr",
-              day_id: "day-a",
-              profile_id: PROFILE_ID,
-              checked_at: "2026-08-05T01:00:00.000Z",
-              reported_at: "2026-08-05T01:00:00.000Z",
-              received_at: "2026-08-05T01:00:00.000Z",
+              dayId: "day-a",
+              profileId: PROFILE_ID,
+              checkedAt: "2026-08-05T01:00:00.000Z",
+              reportedAt: "2026-08-05T01:00:00.000Z",
+              receivedAt: "2026-08-05T01:00:00.000Z",
             },
             {
               id: "check-b",
               method: "qr",
-              day_id: "day-b",
-              profile_id: PROFILE_ID,
-              checked_at: "2026-08-06T01:20:00.000Z",
-              reported_at: "2026-08-06T01:20:00.000Z",
-              received_at: "2026-08-06T01:20:00.000Z",
+              dayId: "day-b",
+              profileId: PROFILE_ID,
+              checkedAt: "2026-08-06T01:20:00.000Z",
+              reportedAt: "2026-08-06T01:20:00.000Z",
+              receivedAt: "2026-08-06T01:20:00.000Z",
             },
           ],
           excuseStatuses: [],
@@ -206,17 +206,17 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
   it("8시간 근무·시급 12,000원인 날 하나면 그달 합이 96,000원이다", () => {
     const day = scheduleDay({
       id: "day-pay-1",
-      work_date: "2026-08-10",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
+      workDate: "2026-08-10",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
       assignments: [assignment({ id: "a-pay-1" })],
-      check_ins: [
+      checkIns: [
         {
           id: "check-pay-1",
-          profile_id: PROFILE_ID,
-          checked_at: "2026-08-10T01:00:00.000Z",
-          reported_at: "2026-08-10T01:00:00.000Z",
-          received_at: "2026-08-10T01:00:00.000Z",
+          profileId: PROFILE_ID,
+          checkedAt: "2026-08-10T01:00:00.000Z",
+          reportedAt: "2026-08-10T01:00:00.000Z",
+          receivedAt: "2026-08-10T01:00:00.000Z",
         },
       ],
     });
@@ -228,10 +228,10 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),
@@ -254,7 +254,7 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
         month: "2026-08",
         days: [
           scheduleDay({
-            assignments: [assignment({ profile_id: "다른-사람" })],
+            assignments: [assignment({ profileId: "다른-사람" })],
           }),
         ],
         payroll: emptyPayrollMonth(),
@@ -276,11 +276,12 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
 function rehearsal(overrides: Partial<Rehearsal> = {}): Rehearsal {
   return {
     id: "rehearsal-1",
-    profile_id: PROFILE_ID,
-    work_date: "2026-08-20",
-    starts_at: "14:00",
-    ends_at: "16:00",
+    profileId: PROFILE_ID,
+    workDate: "2026-08-20",
+    startsAt: "14:00",
+    endsAt: "16:00",
     count: null,
+    name: null,
     ...overrides,
   };
 }
@@ -317,17 +318,17 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
   it("배정이 있는 날에 리허설이 겹치면 배정 급여 위에 리허설 몫이 얹힌다", () => {
     const day = scheduleDay({
       id: "day-pay-rehearsal",
-      work_date: "2026-08-10",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
+      workDate: "2026-08-10",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
       assignments: [assignment({ id: "a-pay-rehearsal" })],
-      check_ins: [
+      checkIns: [
         {
           id: "check-pay-rehearsal",
-          profile_id: PROFILE_ID,
-          checked_at: "2026-08-10T01:00:00.000Z",
-          reported_at: "2026-08-10T01:00:00.000Z",
-          received_at: "2026-08-10T01:00:00.000Z",
+          profileId: PROFILE_ID,
+          checkedAt: "2026-08-10T01:00:00.000Z",
+          reportedAt: "2026-08-10T01:00:00.000Z",
+          receivedAt: "2026-08-10T01:00:00.000Z",
         },
       ],
     });
@@ -339,10 +340,10 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),
@@ -359,7 +360,7 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
       loaded,
       PROFILE_ID,
       "2026-08-31T00:00:00.000Z",
-      [rehearsal({ work_date: "2026-08-10" })],
+      [rehearsal({ workDate: "2026-08-10" })],
     );
 
     expect(withoutRehearsal.get("2026-08")).toBe(96000);
@@ -369,7 +370,7 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
 
 describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollMonthWithDays[]를 만든다", () => {
   it("근무표와 급여 재료가 둘 다 있는 달은 days와 payroll이 한 행으로 묶인다", () => {
-    const day = scheduleDay({ work_date: "2026-08-10" });
+    const day = scheduleDay({ workDate: "2026-08-10" });
     const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];
     const payroll: { month: string; payroll: PayrollMonth }[] = [
       { month: "2026-08", payroll: emptyPayrollMonth() },
@@ -396,7 +397,7 @@ describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 Payr
   });
 
   it("근무표는 열렸는데 급여 재료가 아직 없는 달은 결과에서 빠진다(rates가 도는 축이다)", () => {
-    const day = scheduleDay({ work_date: "2026-08-10" });
+    const day = scheduleDay({ workDate: "2026-08-10" });
     const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];
     const payroll: { month: string; payroll: PayrollMonth }[] = [];
 
@@ -415,17 +416,17 @@ describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안
   it("리허설 목록에 다음 달 날짜가 섞여 있어도 그 달 날로 걸러져 안 든다", () => {
     const day = scheduleDay({
       id: "day-aug",
-      work_date: "2026-08-10",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
+      workDate: "2026-08-10",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
       assignments: [assignment({ id: "a-aug" })],
-      check_ins: [
+      checkIns: [
         {
           id: "check-aug",
-          profile_id: PROFILE_ID,
-          checked_at: "2026-08-10T01:00:00.000Z",
-          reported_at: "2026-08-10T01:00:00.000Z",
-          received_at: "2026-08-10T01:00:00.000Z",
+          profileId: PROFILE_ID,
+          checkedAt: "2026-08-10T01:00:00.000Z",
+          reportedAt: "2026-08-10T01:00:00.000Z",
+          receivedAt: "2026-08-10T01:00:00.000Z",
         },
       ],
     });
@@ -437,10 +438,10 @@ describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),
@@ -453,8 +454,8 @@ describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안
       PROFILE_ID,
       "2026-08-31T00:00:00.000Z",
       [
-        rehearsal({ id: "r-aug", work_date: "2026-08-20" }),
-        rehearsal({ id: "r-sep", work_date: "2026-09-05" }),
+        rehearsal({ id: "r-aug", workDate: "2026-08-20" }),
+        rehearsal({ id: "r-sep", workDate: "2026-09-05" }),
       ],
     );
 
@@ -498,7 +499,7 @@ describe("myPayrollDaysOfMonth — 그 달 행이 loaded에 없으면 빈 배열
 describe("myPayrollDaysOfMonth — profileId가 아직 없으면(프로필 로딩 전) 빈 배열이다", () => {
   it("그 달 행이 있어도 profileId가 null이면 빈 배열이다", () => {
     const day = scheduleDay({
-      work_date: "2026-08-10",
+      workDate: "2026-08-10",
       assignments: [assignment()],
     });
     const loaded = [

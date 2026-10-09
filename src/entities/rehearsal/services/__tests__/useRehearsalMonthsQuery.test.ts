@@ -38,10 +38,10 @@ const FAKE_CLIENT = {} as never;
 function rowFor(month: string) {
   return {
     id: `row-${month}`,
-    profile_id: "profile-1",
-    work_date: `${month}-10`,
-    starts_at: "14:00",
-    ends_at: "16:00",
+    profileId: "profile-1",
+    workDate: `${month}-10`,
+    startsAt: "14:00",
+    endsAt: "16:00",
     count: null,
   };
 }

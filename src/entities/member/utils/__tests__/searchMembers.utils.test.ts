@@ -1,13 +1,13 @@
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 
 const ACTIVE = [
-  { id: "1", display_name: "김민준" },
-  { id: "2", display_name: "박서연" },
+  { id: "1", displayName: "김민준" },
+  { id: "2", displayName: "박서연" },
 ];
 
 const LEFT = [
-  { id: "3", display_name: "이도윤" },
-  { id: "4", display_name: "김하늘" },
+  { id: "3", displayName: "이도윤" },
+  { id: "4", displayName: "김하늘" },
 ];
 
 describe("searchMembers — 두 구획을 같은 글자로 동시에 거른다", () => {

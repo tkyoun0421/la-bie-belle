@@ -2,17 +2,18 @@ import { daySheetRows } from "@/screens/rehearsal/utils/daySheetRows.utils";
 
 const TIME_ROW = {
   id: "row-1",
-  starts_at: "14:00",
-  ends_at: "16:00",
+  startsAt: "14:00",
+  endsAt: "16:00",
   count: null,
+  name: null,
 };
 
 const COUNT_ROW = {
   id: "row-2",
-  starts_at: null,
-  ends_at: null,
+  startsAt: null,
+  endsAt: null,
   count: 2,
-  profiles: { display_name: "박서연" },
+  name: "박서연",
 };
 
 describe("daySheetRows — 빈 날은 본인용과 관리자용 문구가 갈린다", () => {

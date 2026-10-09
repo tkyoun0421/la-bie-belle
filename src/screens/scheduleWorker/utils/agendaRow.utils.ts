@@ -1,4 +1,5 @@
 import { spellDate } from "@/shared/utils/kstDate";
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
 
 export type MyAssignment = {
   kind: "regular" | "training";
@@ -11,12 +12,10 @@ export type AgendaDay = {
 };
 
 export function myAssignmentOf(
-  assignments: readonly {
-    position: string;
-    kind: string;
-    profile_id: string;
-    ended_at: string | null;
-  }[],
+  assignments: readonly Pick<
+    ScheduleAssignment,
+    "position" | "kind" | "profileId" | "endedAt"
+  >[],
   profileId: string | null,
 ): MyAssignment | null {
   if (profileId === null) {
@@ -25,7 +24,7 @@ export function myAssignmentOf(
 
   const mine = assignments.filter(
     (assignment) =>
-      assignment.profile_id === profileId && assignment.ended_at === null,
+      assignment.profileId === profileId && assignment.endedAt === null,
   );
   const chosen =
     mine.find((assignment) => assignment.kind === "regular") ?? mine[0];

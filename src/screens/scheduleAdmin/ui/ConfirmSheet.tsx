@@ -5,11 +5,11 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
+import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { formatMonthName } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 import {
   openSlotLine,
   summarizeOpenSlots,
-  type OpenSlotRow,
 } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
 const RESULT_STAY_MS = 1650;
@@ -18,7 +18,7 @@ const RESULT_ICON_SIZE = 48;
 
 export type ConfirmSheetProps = {
   month: string;
-  openSlots: readonly OpenSlotRow[];
+  openSlots: readonly OpenSlot[];
   notifiedCount: number;
   confirming: boolean;
   done: boolean;

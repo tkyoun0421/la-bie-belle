@@ -41,7 +41,7 @@ export function AdjustSheet({ head, rows, onPickPerson }: AdjustSheetProps) {
       ) : (
         <View className="mt-2">
           {rows.map((row, at) => (
-            <View key={row.profile_id}>
+            <View key={row.profileId}>
               <ListRow
                 title={row.name}
                 accessibilityLabel={adjustRowLabel(row)}
@@ -60,7 +60,7 @@ export function AdjustSheet({ head, rows, onPickPerson }: AdjustSheetProps) {
                     </Text>
                   </View>
                 }
-                onPress={() => onPickPerson(row.profile_id)}
+                onPress={() => onPickPerson(row.profileId)}
               />
               {row.rehearsalLine === null ? null : (
                 <Text size="xs" tone="muted" numeric className="pb-3">

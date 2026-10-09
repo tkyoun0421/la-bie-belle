@@ -1,19 +1,16 @@
+import type { Qualification } from "@/entities/member/model/member.type";
+
 const REHEARSAL_POSITION = "리허설";
 
-export type GrantRow = {
-  profile_id: string;
-  position: string;
-};
-
 export function hasRehearsalGrant(
-  rows: readonly GrantRow[],
+  rows: readonly Qualification[],
   myProfileId: string | null,
 ): boolean {
   return (
     myProfileId !== null &&
     rows.some(
       (row) =>
-        row.profile_id === myProfileId && row.position === REHEARSAL_POSITION,
+        row.profileId === myProfileId && row.position === REHEARSAL_POSITION,
     )
   );
 }

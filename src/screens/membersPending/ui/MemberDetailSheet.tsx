@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
+import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import {
@@ -22,7 +22,7 @@ export type MemberDetailSheetProps = {
   name: string;
   photoUrl: string | null;
   sentAt: string;
-  values: ProfilePrivateRow | null;
+  values: ProfilePrivate | null;
   today: string;
   face: SheetFace;
   sending: boolean;
@@ -119,8 +119,8 @@ export function MemberDetailSheet({
               label={SHEET_COPY.birthLabel}
               numeric
               value={
-                values?.birth_date
-                  ? formatBirthDate(values.birth_date, today)
+                values?.birthDate
+                  ? formatBirthDate(values.birthDate, today)
                   : ""
               }
             />

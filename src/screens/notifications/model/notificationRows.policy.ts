@@ -1,18 +1,19 @@
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { ADMIN_NOTICE } from "@/entities/notification/consts/notification.const";
+import type { Notification } from "@/entities/notification/model/notification.type";
 
 export type NotificationDateGroup<Row> = {
   date: string;
   rows: Row[];
 };
 
-export function groupNotificationsByDate<Row extends { created_at: string }>(
-  rows: readonly Row[],
-): NotificationDateGroup<Row>[] {
+export function groupNotificationsByDate<
+  Row extends Pick<Notification, "createdAt">,
+>(rows: readonly Row[]): NotificationDateGroup<Row>[] {
   const groups: NotificationDateGroup<Row>[] = [];
 
   for (const row of rows) {
-    const date = kstDateOf(row.created_at);
+    const date = kstDateOf(row.createdAt);
     const last = groups.at(-1);
 
     if (last !== undefined && last.date === date) {
@@ -71,9 +72,9 @@ export function resolveNotificationsListState(
 }
 
 export function unreadAdminNoticeIds<
-  Row extends { id: string; kind: string; read_at: string | null },
+  Row extends Pick<Notification, "id" | "kind" | "readAt">,
 >(rows: readonly Row[]): string[] {
   return rows
-    .filter((row) => row.kind === ADMIN_NOTICE && row.read_at === null)
+    .filter((row) => row.kind === ADMIN_NOTICE && row.readAt === null)
     .map((row) => row.id);
 }

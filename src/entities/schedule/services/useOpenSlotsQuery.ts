@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getOpenSlots } from "@/entities/schedule/api/getOpenSlots.api";
-import { type OpenSlot } from "@/entities/schedule/api/schedule.dto";
+import { type OpenSlot } from "@/entities/schedule/model/schedule.type";
 
 export type OpenSlotsResult = {
   data: OpenSlot[] | undefined;

@@ -7,14 +7,10 @@ const {
 } = await import("@/screens/scheduleWorker/utils/workerCopy.utils");
 
 const REQUEST = {
-  slots: {
-    positions: ["안내"],
-    days: {
-      work_date: "2026-10-17",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-    },
-  },
+  positions: ["안내"],
+  workDate: "2026-10-17",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
 };
 
 describe("workerCopy — 값이 들어가야 서는 문구들", () => {
@@ -42,7 +38,7 @@ describe("workerCopy — 값이 들어가야 서는 문구들", () => {
     expect(
       requestSubtitle({
         ...REQUEST,
-        slots: { ...REQUEST.slots, positions: [] },
+        positions: [],
       }),
     ).toBe("10월 17일(토) ·  · 10:00 – 18:00");
   });

@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import type { Database } from "@/shared/api/database";
 import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
 import {
-  type HolidayRow,
+  type Holiday,
   type PayrollMonth,
-} from "@/entities/payroll/api/payroll.dto";
+} from "@/entities/payroll/model/payroll.type";
 import {
   createAdminUser,
   createApprovedUser,
@@ -112,7 +112,7 @@ function seedExcuse(dayId: string, profileId: string): void {
 
 type HolidaySource = "api" | "manual";
 
-function holidaysOf(result: PayrollMonth): HolidayRow[] {
+function holidaysOf(result: PayrollMonth): Holiday[] {
   return result.holidays;
 }
 
@@ -161,16 +161,14 @@ describe("getPayrollMonth(plan AC-07) — wage_rates·adjustments·excuse_status
 
     const result = await getPayrollMonth(admin.client, month);
     const own = result.wageRates.filter(
-      (row) => row.profile_id === worker.profileId,
+      (row) => row.profileId === worker.profileId,
     );
 
-    expect(own.some((row) => row.effective_date === beforeMonthStart)).toBe(
+    expect(own.some((row) => row.effectiveDate === beforeMonthStart)).toBe(
       true,
     );
-    expect(own.some((row) => row.effective_date === monthEnd)).toBe(true);
-    expect(own.some((row) => row.effective_date === nextMonthStart)).toBe(
-      false,
-    );
+    expect(own.some((row) => row.effectiveDate === monthEnd)).toBe(true);
+    expect(own.some((row) => row.effectiveDate === nextMonthStart)).toBe(false);
   });
 
   it("근무자 세션은 자기 wage_rates만 오고, 관리자 세션은 전원이 온다", async () => {
@@ -183,18 +181,18 @@ describe("getPayrollMonth(plan AC-07) — wage_rates·adjustments·excuse_status
 
     const ownResult = await getPayrollMonth(workerA.client, month);
     expect(
-      ownResult.wageRates.some((row) => row.profile_id === workerA.profileId),
+      ownResult.wageRates.some((row) => row.profileId === workerA.profileId),
     ).toBe(true);
     expect(
-      ownResult.wageRates.some((row) => row.profile_id === workerB.profileId),
+      ownResult.wageRates.some((row) => row.profileId === workerB.profileId),
     ).toBe(false);
 
     const adminResult = await getPayrollMonth(admin.client, month);
     expect(
-      adminResult.wageRates.some((row) => row.profile_id === workerA.profileId),
+      adminResult.wageRates.some((row) => row.profileId === workerA.profileId),
     ).toBe(true);
     expect(
-      adminResult.wageRates.some((row) => row.profile_id === workerB.profileId),
+      adminResult.wageRates.some((row) => row.profileId === workerB.profileId),
     ).toBe(true);
   });
 
@@ -230,11 +228,11 @@ describe("getPayrollMonth(plan AC-07) — wage_rates·adjustments·excuse_status
 
     const result = await getPayrollMonth(admin.client, inMonth.month);
 
+    expect(result.excuseStatus.some((row) => row.dayId === inMonth.dayId)).toBe(
+      true,
+    );
     expect(
-      result.excuseStatus.some((row) => row.day_id === inMonth.dayId),
-    ).toBe(true);
-    expect(
-      result.excuseStatus.some((row) => row.day_id === outsideMonth.dayId),
+      result.excuseStatus.some((row) => row.dayId === outsideMonth.dayId),
     ).toBe(false);
   });
 });
@@ -271,12 +269,12 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
 
     expect(
       holidays.some(
-        (row) => row.holiday_date === apiDate && row.source === "api",
+        (row) => row.holidayDate === apiDate && row.source === "api",
       ),
     ).toBe(true);
     expect(
       holidays.some(
-        (row) => row.holiday_date === manualDate && row.source === "manual",
+        (row) => row.holidayDate === manualDate && row.source === "manual",
       ),
     ).toBe(true);
   });
@@ -291,11 +289,11 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
     const result = await getPayrollMonth(admin.client, month);
     const holidays = holidaysOf(result);
 
+    expect(holidays.some((row) => row.holidayDate === lastDayOfPrevMonth)).toBe(
+      false,
+    );
     expect(
-      holidays.some((row) => row.holiday_date === lastDayOfPrevMonth),
-    ).toBe(false);
-    expect(
-      holidays.some((row) => row.holiday_date === firstDayOfNextMonth),
+      holidays.some((row) => row.holidayDate === firstDayOfNextMonth),
     ).toBe(false);
   });
 
@@ -307,7 +305,7 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
 
     const result = await getPayrollMonth(admin.client, month);
     const holidays = holidaysOf(result)
-      .filter((row) => row.holiday_date === date)
+      .filter((row) => row.holidayDate === date)
       .map((row) => row.source)
       .sort();
 

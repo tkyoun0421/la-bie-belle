@@ -1,4 +1,5 @@
 import constsSegment from "./constsSegment.mjs";
+import dtoSegment from "./dtoSegment.mjs";
 import dumbUi from "./dumbUi.mjs";
 import entitiesReadOnly from "./entitiesReadOnly.mjs";
 import envInConfig from "./envInConfig.mjs";
@@ -13,6 +14,7 @@ import noEdgeFunctionSrcImport from "./noEdgeFunctionSrcImport.mjs";
 import noExplanatoryComment from "./noExplanatoryComment.mjs";
 import noNodeImportInEdgeShared from "./noNodeImportInEdgeShared.mjs";
 import noServicesImportInUi from "./noServicesImportInUi.mjs";
+import noSnakeCaseField from "./noSnakeCaseField.mjs";
 import noSupabaseInstanceInUi from "./noSupabaseInstanceInUi.mjs";
 import noVisualUtilityClass from "./noVisualUtilityClass.mjs";
 import purePolicy from "./purePolicy.mjs";
@@ -26,6 +28,7 @@ const house = {
   meta: { name: "eslint-plugin-house" },
   rules: {
     "consts-segment": constsSegment,
+    "dto-segment": dtoSegment,
     "dumb-ui": dumbUi,
     "entities-read-only": entitiesReadOnly,
     "env-in-config": envInConfig,
@@ -40,6 +43,7 @@ const house = {
     "no-explanatory-comment": noExplanatoryComment,
     "no-node-import-in-edge-shared": noNodeImportInEdgeShared,
     "no-services-import-in-ui": noServicesImportInUi,
+    "no-snake-case-field": noSnakeCaseField,
     "no-supabase-instance-in-ui": noSupabaseInstanceInUi,
     "no-visual-utility-class": noVisualUtilityClass,
     "pure-policy": purePolicy,

@@ -1,6 +1,11 @@
-type NamedRow = { display_name: string | null };
+import type {
+  Member,
+  MemberSummary,
+} from "@/entities/member/model/member.type";
 
-type LeftRow = { left_at: string | null };
+type NamedRow = Pick<MemberSummary, "displayName">;
+
+type LeftRow = Pick<Member, "leftAt">;
 
 const KOREAN = "ko";
 
@@ -12,7 +17,7 @@ export function sortActiveMembers<Row extends NamedRow>(
   rows: readonly Row[],
 ): Row[] {
   return [...rows].sort((left, right) =>
-    (left.display_name ?? "").localeCompare(right.display_name ?? "", KOREAN),
+    (left.displayName ?? "").localeCompare(right.displayName ?? "", KOREAN),
   );
 }
 
@@ -20,7 +25,7 @@ export function sortLeftMembers<Row extends LeftRow>(
   rows: readonly Row[],
 ): Row[] {
   return [...rows].sort(
-    (left, right) => instantOf(right.left_at) - instantOf(left.left_at),
+    (left, right) => instantOf(right.leftAt) - instantOf(left.leftAt),
   );
 }
 

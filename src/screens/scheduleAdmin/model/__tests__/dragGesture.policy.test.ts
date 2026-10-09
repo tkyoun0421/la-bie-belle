@@ -9,18 +9,18 @@ import {
 } from "@/screens/scheduleAdmin/utils/dragId.utils";
 
 const SLOTS = [
-  { id: "s1", positions: ["스캔"], ended_at: null },
-  { id: "s2", positions: ["스캔"], ended_at: null },
-  { id: "s3", positions: ["메인"], ended_at: null },
+  { id: "s1", positions: ["스캔"], endedAt: null },
+  { id: "s2", positions: ["스캔"], endedAt: null },
+  { id: "s3", positions: ["메인"], endedAt: null },
 ];
 
 const ASSIGNMENTS = [
   {
     id: "a1",
-    slot_id: "s1",
+    slotId: "s1",
     kind: "regular",
-    ended_at: null,
-    profile_id: "p1",
+    endedAt: null,
+    profileId: "p1",
   },
 ];
 
@@ -75,10 +75,10 @@ describe("canDropOnTarget — 줄 머리끼리는 합침 규칙을 탄다", () =
             ...ASSIGNMENTS,
             {
               id: "a2",
-              slot_id: "s3",
+              slotId: "s3",
               kind: "regular",
-              ended_at: null,
-              profile_id: "p2",
+              endedAt: null,
+              profileId: "p2",
             },
           ],
         }),
@@ -134,10 +134,10 @@ describe("dropOutcome — 놓인 뒤 무엇이 일어나나", () => {
         assignments: [
           {
             id: "a1",
-            slot_id: "s1",
+            slotId: "s1",
             kind: "regular",
-            ended_at: "2026-10-01T00:00:00Z",
-            profile_id: "p1",
+            endedAt: "2026-10-01T00:00:00Z",
+            profileId: "p1",
           },
         ],
       }),

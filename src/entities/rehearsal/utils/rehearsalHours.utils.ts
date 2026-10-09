@@ -1,13 +1,12 @@
 import { MINUTES_PER_COUNT } from "@/entities/rehearsal/consts/rehearsal.const";
-import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal.type";
+import type {
+  Rehearsal,
+  RehearsalTotal,
+} from "@/entities/rehearsal/model/rehearsal.type";
 
 const MINUTES_PER_HOUR = 60;
 
-export type RehearsalRow = {
-  starts_at: string | null;
-  ends_at: string | null;
-  count: number | null;
-};
+export type RehearsalClock = Pick<Rehearsal, "startsAt" | "endsAt" | "count">;
 
 function minutesOfClock(clock: string): number {
   const [hour, minute] = clock.split(":").map(Number);
@@ -15,19 +14,19 @@ function minutesOfClock(clock: string): number {
   return hour * MINUTES_PER_HOUR + minute;
 }
 
-export function rehearsalHours(row: RehearsalRow): number {
+export function rehearsalHours(row: RehearsalClock): number {
   if (row.count !== null) {
     return row.count * MINUTES_PER_COUNT;
   }
 
-  if (row.starts_at === null || row.ends_at === null) {
+  if (row.startsAt === null || row.endsAt === null) {
     return 0;
   }
 
-  return minutesOfClock(row.ends_at) - minutesOfClock(row.starts_at);
+  return minutesOfClock(row.endsAt) - minutesOfClock(row.startsAt);
 }
 
-function total(rows: readonly RehearsalRow[]): RehearsalTotal {
+function total(rows: readonly RehearsalClock[]): RehearsalTotal {
   return rows.reduce<RehearsalTotal>(
     (sum, row) => ({
       count: sum.count + (row.count ?? 1),

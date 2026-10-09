@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
-import { type SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 
 export type SlotRequestsResult = {
   data: SlotRequest[] | undefined;

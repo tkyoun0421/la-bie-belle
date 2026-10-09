@@ -1,9 +1,13 @@
 import type { DB } from "@/shared/api/database";
 import type {
-  AttendanceRows,
   CheckInRow,
   ExcuseStatusRow,
 } from "@/entities/attendance/api/attendance.dto";
+import type { Attendance } from "@/entities/attendance/model/attendance.type";
+import {
+  toCheckIn,
+  toExcuseStatus,
+} from "@/entities/attendance/utils/attendance.mapper";
 
 export const CHECK_IN_COLUMNS = [
   "id",
@@ -23,12 +27,12 @@ export const EXCUSE_STATUS_COLUMNS = [
   "decision",
 ].join(", ");
 
-const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
+const EMPTY: Attendance = { checkIns: [], excuseStatuses: [] };
 
 export async function getDayAttendance(
   client: DB,
   workDate: string,
-): Promise<AttendanceRows> {
+): Promise<Attendance> {
   const { data: day, error: dayError } = await client
     .from("days")
     .select("id")
@@ -63,7 +67,7 @@ export async function getDayAttendance(
   }
 
   return {
-    checkIns: checkIns.data ?? [],
-    excuseStatuses: excuseStatuses.data ?? [],
+    checkIns: (checkIns.data ?? []).map(toCheckIn),
+    excuseStatuses: (excuseStatuses.data ?? []).map(toExcuseStatus),
   };
 }

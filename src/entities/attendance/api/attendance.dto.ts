@@ -15,8 +15,3 @@ export type ExcuseStatusRow = {
   decided_at: string | null;
   decision: string | null;
 };
-
-export type AttendanceRows = {
-  checkIns: CheckInRow[];
-  excuseStatuses: ExcuseStatusRow[];
-};

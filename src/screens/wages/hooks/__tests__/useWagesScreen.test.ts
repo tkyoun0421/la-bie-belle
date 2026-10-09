@@ -71,8 +71,8 @@ function createWrapper() {
 }
 
 const MEMBERS = [
-  { id: "p1", display_name: "이준호", photo_url: null },
-  { id: "p2", display_name: "박수진", photo_url: null },
+  { id: "p1", displayName: "이준호", photoUrl: null },
+  { id: "p2", displayName: "박수진", photoUrl: null },
 ];
 
 function rate(
@@ -82,10 +82,10 @@ function rate(
   effectiveDate = "2026-09-01",
 ) {
   return {
-    profile_id: profileId,
-    effective_date: effectiveDate,
+    profileId,
+    effectiveDate,
     amount,
-    follows_default: followsDefault,
+    followsDefault,
   };
 }
 

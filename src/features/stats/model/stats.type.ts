@@ -1,19 +1,20 @@
-export type WorkAssignment = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  display_name: string;
-  position: string;
-  kind: string;
-  ended_at: string | null;
+import type {
+  ScheduleAssignment,
+  ScheduleDay,
+} from "@/entities/schedule/model/schedule.type";
+
+export type WorkAssignment = Pick<
+  ScheduleAssignment,
+  "id" | "profileId" | "position" | "kind" | "endedAt"
+> & {
+  dayId: string;
+  displayName: string;
 };
 
-export type WorkDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
-};
+export type WorkDay = Pick<
+  ScheduleDay,
+  "id" | "workDate" | "startsAt" | "endsAt"
+>;
 
 export type WorkInputs = {
   assignments: WorkAssignment[];

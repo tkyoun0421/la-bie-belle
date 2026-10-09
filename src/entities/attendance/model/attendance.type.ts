@@ -20,6 +20,23 @@ export type ExcuseStatusRecord = {
   decision: ExcuseDecision | null;
 };
 
+export type CheckIn = CheckInRecord & {
+  id: string;
+  dayId: string;
+  profileId: string;
+  method: string;
+};
+
+export type ExcuseStatus = ExcuseStatusRecord & {
+  dayId: string;
+  profileId: string;
+};
+
+export type Attendance = {
+  checkIns: CheckIn[];
+  excuseStatuses: ExcuseStatus[];
+};
+
 export type AttendanceStatusInput = {
   workDate: string;
   startsAt: string;

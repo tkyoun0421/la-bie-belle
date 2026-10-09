@@ -1,5 +1,5 @@
-export type HolidayRow = {
-  holiday_date: string;
+export type Holiday = {
+  date: string;
   name: string;
 };
 
@@ -46,14 +46,14 @@ function isEightDigitDate(value: unknown): value is number | string {
   );
 }
 
-export function parseHolidayApiResponse(body: unknown): HolidayRow[] {
+export function parseHolidayApiResponse(body: unknown): Holiday[] {
   const items = itemsOf(body);
 
   if (items === null) {
     return [];
   }
 
-  const rows: HolidayRow[] = [];
+  const holidays: Holiday[] = [];
 
   for (const entry of items) {
     const item = asRecord(entry);
@@ -70,8 +70,8 @@ export function parseHolidayApiResponse(body: unknown): HolidayRow[] {
       return [];
     }
 
-    rows.push({ holiday_date: toIsoDate(item.locdate), name: item.dateName });
+    holidays.push({ date: toIsoDate(item.locdate), name: item.dateName });
   }
 
-  return rows;
+  return holidays;
 }

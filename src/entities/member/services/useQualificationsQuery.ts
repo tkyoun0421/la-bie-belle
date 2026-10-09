@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getQualifications } from "@/entities/member/api/getQualifications.api";
-import type { Qualification } from "@/entities/member/api/member.dto";
+import type { Qualification } from "@/entities/member/model/member.type";
 
 export type QualificationsResult = {
   data: Qualification[] | undefined;

@@ -7,11 +7,11 @@ import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
-import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
@@ -252,7 +252,7 @@ export function useScheduleWorkerScreen({
     const byDate = new Map<string, ScheduleDay>();
 
     for (const day of days ?? []) {
-      byDate.set(day.work_date, day);
+      byDate.set(day.workDate, day);
     }
 
     return byDate;
@@ -262,7 +262,7 @@ export function useScheduleWorkerScreen({
     const byDate = new Map<string, SlotRequest[]>();
 
     for (const request of slotRequests ?? []) {
-      const date = request.slots.days.work_date;
+      const date = request.workDate;
 
       byDate.set(date, [...(byDate.get(date) ?? []), request]);
     }
@@ -285,9 +285,9 @@ export function useScheduleWorkerScreen({
     openDate === null || myProfileId === null
       ? null
       : ((requestsOf.get(openDate) ?? []).find((request) =>
-          request.request_candidates.some(
+          request.candidates.some(
             (candidate) =>
-              candidate.profile_id === myProfileId &&
+              candidate.profileId === myProfileId &&
               candidate.status === "pending",
           ),
         ) ?? null);
@@ -297,13 +297,13 @@ export function useScheduleWorkerScreen({
       ? null
       : (openDay.assignments.find(
           (assignment) =>
-            assignment.profile_id === myProfileId &&
+            assignment.profileId === myProfileId &&
             assignment.kind === "regular" &&
-            assignment.ended_at === null,
+            assignment.endedAt === null,
         ) ?? null);
 
   const cancelAsking = (myCancelRequests ?? []).some(
-    (request) => request.assignment_id === myShift?.id,
+    (request) => request.assignmentId === myShift?.id,
   );
 
   const agendaEntries: AgendaEntry[] = (days ?? [])
@@ -311,12 +311,12 @@ export function useScheduleWorkerScreen({
       const mine = myAssignmentOf(day.assignments, myProfileId);
 
       return {
-        workDate: day.work_date,
+        workDate: day.workDate,
         myAssignment: mine,
         rows: rosterOfDay(day),
         showActions: canShowShiftActions({
           isMyAssignment: mine !== null,
-          workDate: day.work_date,
+          workDate: day.workDate,
           today,
         }),
       };
@@ -374,8 +374,8 @@ export function useScheduleWorkerScreen({
           kind: "request",
           subtitle: requestSubtitle(openRequest),
           state: requestSheetState({
-            closedAt: openRequest.closed_at,
-            expiresAt: openRequest.expires_at,
+            closedAt: openRequest.closedAt,
+            expiresAt: openRequest.expiresAt,
             serverNowMs,
           }),
           sending: sendingAnswer,
@@ -386,7 +386,7 @@ export function useScheduleWorkerScreen({
         : cancelling && myShift !== null
           ? {
               kind: "cancel",
-              title: cancelSheetTitle(openDay.work_date, myShift.position),
+              title: cancelSheetTitle(openDay.workDate, myShift.position),
               reason,
               canSend: isValidCancelReason(reason),
               sending: sendingCancel,
@@ -394,10 +394,10 @@ export function useScheduleWorkerScreen({
             }
           : {
               kind: "roster",
-              title: spellWorkDate(openDay.work_date),
+              title: spellWorkDate(openDay.workDate),
               subtitle: daySheetSubtitle(
-                openDay.starts_at,
-                openDay.ends_at,
+                openDay.startsAt,
+                openDay.endsAt,
                 rosterHeadcount(openRoster),
               ),
               rows: openRoster,
@@ -405,12 +405,12 @@ export function useScheduleWorkerScreen({
               myBadge: cancelRequestBadge(cancelAsking) ?? undefined,
               showActions: canShowShiftActions({
                 isMyAssignment: openMine !== null,
-                workDate: openDay.work_date,
+                workDate: openDay.workDate,
                 today,
               }),
               actionsEnabled: canShowShiftActions({
                 isMyAssignment: openMine !== null,
-                workDate: openDay.work_date,
+                workDate: openDay.workDate,
                 today,
                 hasActiveCancelRequest: cancelAsking,
               }),

@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
-import { type PayrollMonth } from "@/entities/payroll/api/payroll.dto";
+import { type PayrollMonth } from "@/entities/payroll/model/payroll.type";
 
 export type PayrollMonthsResult = {
   data: PayrollMonth | undefined;

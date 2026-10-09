@@ -1,13 +1,13 @@
 import { adjustSheetRows } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
-const DAY = { starts_at: "10:00", ends_at: "19:00" };
+const DAY = { startsAt: "10:00", endsAt: "19:00" };
 
 describe("adjustSheetRows — 조정이 없으면 배정 시간이 그대로 최종 시간이다", () => {
   it("앞머리 없이 540분이 선다", () => {
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p1", name: "박서연", kind: "regular", ended_at: null },
+        { profileId: "p1", name: "박서연", kind: "regular", endedAt: null },
       ],
       adjustments: [],
       rehearsals: [],
@@ -15,7 +15,7 @@ describe("adjustSheetRows — 조정이 없으면 배정 시간이 그대로 최
 
     expect(rows).toEqual([
       {
-        profile_id: "p1",
+        profileId: "p1",
         name: "박서연",
         finalMinutes: 540,
         adjustmentKind: null,
@@ -30,13 +30,13 @@ describe("adjustSheetRows — 마지막 조정이 음수면 결근 앞머리가 
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p2", name: "김지우", kind: "regular", ended_at: null },
+        { profileId: "p2", name: "김지우", kind: "regular", endedAt: null },
       ],
       adjustments: [
         {
-          profile_id: "p2",
+          profileId: "p2",
           minutes: -540,
-          adjusted_at: "2026-10-10T09:00:00Z",
+          adjustedAt: "2026-10-10T09:00:00Z",
         },
       ],
       rehearsals: [],
@@ -52,10 +52,10 @@ describe("adjustSheetRows — 마지막 조정이 양수면 연장 앞머리가 
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p3", name: "이하늘", kind: "regular", ended_at: null },
+        { profileId: "p3", name: "이하늘", kind: "regular", endedAt: null },
       ],
       adjustments: [
-        { profile_id: "p3", minutes: 120, adjusted_at: "2026-10-10T09:00:00Z" },
+        { profileId: "p3", minutes: 120, adjustedAt: "2026-10-10T09:00:00Z" },
       ],
       rehearsals: [],
     });
@@ -70,15 +70,15 @@ describe("adjustSheetRows — 마지막 조정 행이 0분이면 앞머리가 �
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p4", name: "최유진", kind: "regular", ended_at: null },
+        { profileId: "p4", name: "최유진", kind: "regular", endedAt: null },
       ],
       adjustments: [
         {
-          profile_id: "p4",
+          profileId: "p4",
           minutes: -540,
-          adjusted_at: "2026-10-10T09:00:00Z",
+          adjustedAt: "2026-10-10T09:00:00Z",
         },
-        { profile_id: "p4", minutes: 0, adjusted_at: "2026-10-10T10:00:00Z" },
+        { profileId: "p4", minutes: 0, adjustedAt: "2026-10-10T10:00:00Z" },
       ],
       rehearsals: [],
     });
@@ -88,16 +88,16 @@ describe("adjustSheetRows — 마지막 조정 행이 0분이면 앞머리가 �
   });
 });
 
-describe("adjustSheetRows — ended_at이 찬 배정은 목록에서 빠진다", () => {
+describe("adjustSheetRows — endedAt이 찬 배정은 목록에서 빠진다", () => {
   it("취소되거나 교대로 넘어간 배정은 안 선다", () => {
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
         {
-          profile_id: "p5",
+          profileId: "p5",
           name: "박서연",
           kind: "regular",
-          ended_at: "2026-10-10T08:00:00Z",
+          endedAt: "2026-10-10T08:00:00Z",
         },
       ],
       adjustments: [],
@@ -114,10 +114,10 @@ describe("adjustSheetRows — kind가 training인 배정도 든다", () => {
       day: DAY,
       assignments: [
         {
-          profile_id: "p6",
+          profileId: "p6",
           name: "김지우",
           kind: "training",
-          ended_at: null,
+          endedAt: null,
         },
       ],
       adjustments: [],
@@ -125,7 +125,7 @@ describe("adjustSheetRows — kind가 training인 배정도 든다", () => {
     });
 
     expect(rows).toHaveLength(1);
-    expect(rows[0]?.profile_id).toBe("p6");
+    expect(rows[0]?.profileId).toBe("p6");
   });
 });
 
@@ -135,9 +135,7 @@ describe("adjustSheetRows — 리허설만 있고 배정이 없는 사람은 목
       day: DAY,
       assignments: [],
       adjustments: [],
-      rehearsals: [
-        { profile_id: "p7", starts_at: null, ends_at: null, count: 2 },
-      ],
+      rehearsals: [{ profileId: "p7", startsAt: null, endsAt: null, count: 2 }],
     });
 
     expect(rows).toEqual([]);
@@ -162,12 +160,10 @@ describe("adjustSheetRows — 리허설 줄 문구, 건수 갈래", () => {
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p8", name: "이하늘", kind: "regular", ended_at: null },
+        { profileId: "p8", name: "이하늘", kind: "regular", endedAt: null },
       ],
       adjustments: [],
-      rehearsals: [
-        { profile_id: "p8", starts_at: null, ends_at: null, count: 2 },
-      ],
+      rehearsals: [{ profileId: "p8", startsAt: null, endsAt: null, count: 2 }],
     });
 
     expect(rows[0]?.rehearsalLine).toBe("리허설 2건 · 2시간");
@@ -179,14 +175,14 @@ describe("adjustSheetRows — 리허설 줄 문구, 시각 갈래", () => {
     const rows = adjustSheetRows({
       day: DAY,
       assignments: [
-        { profile_id: "p9", name: "최유진", kind: "regular", ended_at: null },
+        { profileId: "p9", name: "최유진", kind: "regular", endedAt: null },
       ],
       adjustments: [],
       rehearsals: [
         {
-          profile_id: "p9",
-          starts_at: "14:00:00",
-          ends_at: "16:00:00",
+          profileId: "p9",
+          startsAt: "14:00:00",
+          endsAt: "16:00:00",
           count: null,
         },
       ],

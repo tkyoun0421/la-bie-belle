@@ -1,4 +1,8 @@
 import type {
+  Member,
+  Qualification,
+} from "@/entities/member/model/member.type";
+import type {
   PickerEntry,
   PickerTarget,
 } from "@/screens/scheduleAdmin/model/dayDetail.type";
@@ -8,28 +12,21 @@ import {
   type PickerRequestCandidate,
 } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
 
-export type PickerEntryMember = {
-  id: string;
-  display_name: string | null;
-  photo_url: string | null;
-  gender: string | null;
-};
-
-export type PickerQualification = {
-  profile_id: string;
-  position: string;
-};
+export type PickerEntryMember = Pick<
+  Member,
+  "id" | "displayName" | "photoUrl" | "gender"
+>;
 
 export type PickerSlotRequest = {
-  slot_id: string | null;
-  request_candidates: readonly PickerRequestCandidate[];
+  slotId: string | null;
+  candidates: readonly PickerRequestCandidate[];
 };
 
 export type PickerEntriesInput = {
   target: PickerTarget;
   members: readonly PickerEntryMember[];
   appliedProfileIds: readonly string[];
-  qualifications: readonly PickerQualification[];
+  qualifications: readonly Qualification[];
   dayAssignments: readonly PickerDayAssignment[];
   slotRequests: readonly PickerSlotRequest[];
   serverNowMs: number;
@@ -43,7 +40,7 @@ function requestFor(
     return null;
   }
 
-  return requests.filter((one) => one.slot_id === slotId).at(-1) ?? null;
+  return requests.filter((one) => one.slotId === slotId).at(-1) ?? null;
 }
 
 export function pickerEntries(input: PickerEntriesInput): PickerEntry[] {
@@ -55,14 +52,14 @@ export function pickerEntries(input: PickerEntriesInput): PickerEntry[] {
     position: target.position,
     members: input.members.map((one) => ({
       profileId: one.id,
-      displayName: one.display_name ?? "",
+      displayName: one.displayName ?? "",
     })),
     appliedProfileIds: input.appliedProfileIds,
     qualifiedProfileIds: input.qualifications
       .filter((one) => one.position === target.position)
-      .map((one) => one.profile_id),
+      .map((one) => one.profileId),
     dayAssignments: input.dayAssignments,
-    requestCandidates: request?.request_candidates ?? [],
+    requestCandidates: request?.candidates ?? [],
     serverNowMs: input.serverNowMs,
   });
 
@@ -72,7 +69,7 @@ export function pickerEntries(input: PickerEntriesInput): PickerEntry[] {
     return {
       ...row,
       checkbox: row.checkbox && requestable,
-      photoUrl: found?.photo_url ?? null,
+      photoUrl: found?.photoUrl ?? null,
       gender: found?.gender ?? null,
     };
   });

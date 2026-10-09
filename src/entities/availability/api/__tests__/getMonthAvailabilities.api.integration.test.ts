@@ -52,11 +52,11 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
 
     const rows = await getMonthAvailabilities(admin.client, month);
 
-    const rowA = rows.find((row) => row.profile_id === workerA.profileId);
-    const rowB = rows.find((row) => row.profile_id === workerB.profileId);
-    expect(rowA?.work_date).toBe(dateA);
-    expect(rowA?.profiles?.display_name).toBe("가나다");
-    expect(rowB?.work_date).toBe(dateB);
+    const rowA = rows.find((row) => row.profileId === workerA.profileId);
+    const rowB = rows.find((row) => row.profileId === workerB.profileId);
+    expect(rowA?.workDate).toBe(dateA);
+    expect(rowA?.name).toBe("가나다");
+    expect(rowB?.workDate).toBe(dateB);
   });
 
   it("근무자 세션에는 본인 행만 온다(RLS)", async () => {
@@ -69,6 +69,6 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
 
     const rows = await getMonthAvailabilities(workerA.client, month);
 
-    expect(rows.map((row) => row.profile_id)).toEqual([workerA.profileId]);
+    expect(rows.map((row) => row.profileId)).toEqual([workerA.profileId]);
   });
 });

@@ -3,22 +3,22 @@ import { pickerEntries } from "@/screens/scheduleAdmin/model/pickerEntries.polic
 const MEMBERS = [
   {
     id: "p1",
-    display_name: "이준호",
-    photo_url: "https://example.test/p1.png",
+    displayName: "이준호",
+    photoUrl: "https://example.test/p1.png",
     gender: "male",
   },
-  { id: "p2", display_name: "박수진", photo_url: null, gender: "female" },
-  { id: "p3", display_name: "최민서", photo_url: null, gender: null },
-  { id: "p4", display_name: null, photo_url: null, gender: null },
+  { id: "p2", displayName: "박수진", photoUrl: null, gender: "female" },
+  { id: "p3", displayName: "최민서", photoUrl: null, gender: null },
+  { id: "p4", displayName: null, photoUrl: null, gender: null },
 ];
 
 const DAY_ASSIGNMENTS = [
-  { profile_id: "p1", position: "스캔", kind: "regular", ended_at: null },
+  { profileId: "p1", position: "스캔", kind: "regular", endedAt: null },
 ];
 
 const QUALIFICATIONS = [
-  { profile_id: "p2", position: "스캔" },
-  { profile_id: "p3", position: "메인" },
+  { profileId: "p2", position: "스캔" },
+  { profileId: "p3", position: "메인" },
 ];
 
 const NOW_MS = Date.parse("2026-10-05T03:00:00.000Z");
@@ -119,12 +119,12 @@ describe("pickerEntries — 체크박스는 빈 자리 픽커에만 선다", () 
 
 describe("pickerEntries — 요청은 그 자리 것만 읽는다", () => {
   const REQUEST = {
-    slot_id: "s2",
-    request_candidates: [
+    slotId: "s2",
+    candidates: [
       {
-        profile_id: "p4",
+        profileId: "p4",
         status: "pending",
-        expires_at: "2026-10-06T00:00:00.000Z",
+        expiresAt: "2026-10-06T00:00:00.000Z",
       },
     ],
   };
@@ -138,7 +138,7 @@ describe("pickerEntries — 요청은 그 자리 것만 읽는다", () => {
 
   it("다른 자리의 요청은 안 읽는다", () => {
     const rows = pickerEntries(
-      input({ slotRequests: [{ ...REQUEST, slot_id: "s9" }] }),
+      input({ slotRequests: [{ ...REQUEST, slotId: "s9" }] }),
     );
 
     expect(rowOf(rows, "p4").category).toBe("not_applied");

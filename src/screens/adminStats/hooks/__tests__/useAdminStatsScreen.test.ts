@@ -68,23 +68,23 @@ const EMPTY_ATTENDANCE = { checkIns: [], excuseStatuses: [] };
 function scheduleDay(workDate: string) {
   return {
     id: `day-${workDate}`,
-    work_date: workDate,
-    starts_at: "18:00:00",
-    ends_at: "23:00:00",
-    opened_at: `${workDate}T00:00:00.000Z`,
+    workDate,
+    startsAt: "18:00:00",
+    endsAt: "23:00:00",
+    openedAt: `${workDate}T00:00:00.000Z`,
     slots: [],
     assignments: [
       {
         id: `assign-${workDate}`,
-        slot_id: null,
+        slotId: null,
         position: "메인",
         kind: "regular",
-        profile_id: "p1",
-        ended_at: null,
-        profiles: { display_name: "이준호", photo_url: null },
+        profileId: "p1",
+        endedAt: null,
+        name: "이준호",
       },
     ],
-    check_ins: [],
+    checkIns: [],
   };
 }
 
@@ -146,11 +146,11 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
       checkIns: [
         {
           id: "c1",
-          day_id: "day-2026-10-02",
-          profile_id: "p1",
-          checked_at: "2026-10-02T09:00:00.000Z",
-          reported_at: "2026-10-02T09:00:00.000Z",
-          received_at: "2026-10-02T09:00:00.000Z",
+          dayId: "day-2026-10-02",
+          profileId: "p1",
+          checkedAt: "2026-10-02T09:00:00.000Z",
+          reportedAt: "2026-10-02T09:00:00.000Z",
+          receivedAt: "2026-10-02T09:00:00.000Z",
           method: "qr",
         },
       ],

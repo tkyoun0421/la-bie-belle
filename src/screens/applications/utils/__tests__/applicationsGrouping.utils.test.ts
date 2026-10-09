@@ -4,21 +4,9 @@ import {
 } from "@/screens/applications/utils/applicationsGrouping.utils";
 
 const ROWS = [
-  {
-    profile_id: "profile-1",
-    work_date: "2026-10-11",
-    profiles: { display_name: "박서연" },
-  },
-  {
-    profile_id: "profile-2",
-    work_date: "2026-10-10",
-    profiles: { display_name: "김지우" },
-  },
-  {
-    profile_id: "profile-1",
-    work_date: "2026-10-10",
-    profiles: { display_name: "박서연" },
-  },
+  { profileId: "profile-1", workDate: "2026-10-11", name: "박서연" },
+  { profileId: "profile-2", workDate: "2026-10-10", name: "김지우" },
+  { profileId: "profile-1", workDate: "2026-10-10", name: "박서연" },
 ];
 
 describe("groupApplicationsByDate — 날짜마다 그날 신청한 사람 이름을 묶는다", () => {

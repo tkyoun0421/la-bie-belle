@@ -1,4 +1,6 @@
-type NamedRow = { display_name: string | null };
+import type { MemberSummary } from "@/entities/member/model/member.type";
+
+type NamedRow = Pick<MemberSummary, "displayName">;
 
 export type SearchedMembers<Row> = {
   active: Row[];
@@ -7,7 +9,7 @@ export type SearchedMembers<Row> = {
 };
 
 function matches(row: NamedRow, needle: string): boolean {
-  return (row.display_name ?? "").includes(needle);
+  return (row.displayName ?? "").includes(needle);
 }
 
 export function searchMembers<Row extends NamedRow>(

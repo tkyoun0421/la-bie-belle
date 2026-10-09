@@ -1,4 +1,4 @@
-import { toMonthWindow } from "@/entities/schedule/utils/monthWindow.mapper";
+import { toMonthWindow } from "@/entities/schedule/utils/schedule.mapper";
 
 describe("toMonthWindow — 근무표 행을 도메인 모양으로 옮긴다", () => {
   it("두 열이 다 찼으면 둘 다 옮긴다", () => {

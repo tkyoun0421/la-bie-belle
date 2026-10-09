@@ -145,21 +145,21 @@ const USER = {
 
 const PROFILE = {
   id: "profile-1",
-  display_name: "이준호",
-  photo_url: null,
+  displayName: "이준호",
+  photoUrl: null,
   role: "worker",
-  submitted_at: "2026-09-01T00:00:00.000Z",
-  approved_at: "2026-09-02T00:00:00.000Z",
-  rejected_at: null,
-  blocked_at: null,
-  left_at: null,
-  notifications_enabled: true,
+  submittedAt: "2026-09-01T00:00:00.000Z",
+  approvedAt: "2026-09-02T00:00:00.000Z",
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: true,
 };
 
 const PRIVATE = {
   email: "someone@example.com",
   phone: "010-0000-0001",
-  birth_date: "1993-04-21",
+  birthDate: "1993-04-21",
   gender: "male",
 };
 

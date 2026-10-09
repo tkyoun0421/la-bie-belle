@@ -1,3 +1,5 @@
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
+import type { SlotRequestCandidate } from "@/entities/workRequest/model/workRequest.type";
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 
 export type PickerCategory =
@@ -14,18 +16,12 @@ export type PickerMember = {
   displayName: string;
 };
 
-export type PickerDayAssignment = {
-  profile_id: string;
-  position: string;
-  kind: string;
-  ended_at: string | null;
-};
+export type PickerDayAssignment = Pick<
+  ScheduleAssignment,
+  "profileId" | "position" | "kind" | "endedAt"
+>;
 
-export type PickerRequestCandidate = {
-  profile_id: string;
-  status: string;
-  expires_at: string;
-};
+export type PickerRequestCandidate = SlotRequestCandidate;
 
 export type PersonPickerRowsInput = {
   position: string;
@@ -58,9 +54,9 @@ function heldPosition(
   return (
     dayAssignments.find(
       (assignment) =>
-        assignment.profile_id === profileId &&
+        assignment.profileId === profileId &&
         assignment.kind === "regular" &&
-        assignment.ended_at === null,
+        assignment.endedAt === null,
     )?.position ?? null
   );
 }
@@ -70,7 +66,7 @@ function requestCategory(
   candidates: readonly PickerRequestCandidate[],
   serverNowMs: number,
 ): PickerCategory | null {
-  const candidate = candidates.find((one) => one.profile_id === profileId);
+  const candidate = candidates.find((one) => one.profileId === profileId);
 
   if (candidate === undefined) {
     return null;
@@ -84,7 +80,7 @@ function requestCategory(
     return null;
   }
 
-  return serverNowMs >= new Date(candidate.expires_at).getTime()
+  return serverNowMs >= new Date(candidate.expiresAt).getTime()
     ? "requested_expired"
     : "requested_pending";
 }

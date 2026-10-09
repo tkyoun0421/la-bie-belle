@@ -133,8 +133,8 @@ export function usePayrollScreen(): PayrollScreenController {
     rehearsal.error !== null;
 
   const approvedDate =
-    profile?.approved_at == null ? null : kstDateOf(profile.approved_at);
-  const leftDate = profile?.left_at == null ? null : kstDateOf(profile.left_at);
+    profile?.approvedAt == null ? null : kstDateOf(profile.approvedAt);
+  const leftDate = profile?.leftAt == null ? null : kstDateOf(profile.leftAt);
   const hasLeft = leftDate !== null;
 
   const listState: PayrollListState = loading

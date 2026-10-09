@@ -1,14 +1,9 @@
-type AdminRow = {
-  id: string;
-  role: string;
-  left_at: string | null;
-  blocked_at: string | null;
-};
+import type { Member } from "@/entities/member/model/member.type";
+
+type AdminRow = Pick<Member, "id" | "role" | "leftAt" | "blockedAt">;
 
 function isActiveAdmin(row: AdminRow): boolean {
-  return (
-    row.role === "admin" && row.left_at === null && row.blocked_at === null
-  );
+  return row.role === "admin" && row.leftAt === null && row.blockedAt === null;
 }
 
 export function isLastAdmin(

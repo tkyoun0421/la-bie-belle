@@ -1,9 +1,9 @@
-import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import { type MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import { latestWageRate } from "@/screens/wages/model/wageRows.policy";
 
 export function canResetToDefault(
-  wageRates: readonly MemberWageRateRow[],
+  wageRates: readonly MemberWageRate[],
   hasDefaultWage: boolean,
 ): boolean {
-  return hasDefaultWage && latestWageRate(wageRates)?.follows_default === false;
+  return hasDefaultWage && latestWageRate(wageRates)?.followsDefault === false;
 }

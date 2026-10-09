@@ -14,49 +14,49 @@ const { useDayDetail } =
 type Input = Parameters<typeof useDayDetail>[0];
 
 const SLOTS = [
-  { id: "s1", positions: ["스캔"], ended_at: null },
-  { id: "s2", positions: ["스캔"], ended_at: null },
-  { id: "s3", positions: ["메인"], ended_at: null },
+  { id: "s1", positions: ["스캔"], endedAt: null },
+  { id: "s2", positions: ["스캔"], endedAt: null },
+  { id: "s3", positions: ["메인"], endedAt: null },
 ];
 
 const ASSIGNMENTS = [
   {
     id: "a1",
-    slot_id: "s1",
+    slotId: "s1",
     position: "스캔",
     kind: "regular",
-    profile_id: "p1",
-    ended_at: null,
-    profiles: { display_name: "이준호" },
+    profileId: "p1",
+    endedAt: null,
+    name: "이준호",
   },
 ];
 
 function member(over: Record<string, unknown>) {
   return {
     id: "p1",
-    display_name: "이준호",
-    photo_url: null,
+    displayName: "이준호",
+    photoUrl: null,
     role: "member",
-    left_at: null,
-    blocked_at: null,
-    erased_at: null,
+    leftAt: null,
+    blockedAt: null,
+    erasedAt: null,
     phone: "010-0000-0001",
-    birth_date: "1998-03-04",
+    birthDate: "1998-03-04",
     gender: "male",
-    notifications_enabled: true,
-    has_device: true,
+    notificationsEnabled: true,
+    hasDevice: true,
     ...over,
   };
 }
 
 const MEMBERS = [
-  member({ id: "p1", display_name: "이준호" }),
-  member({ id: "p2", display_name: "박수진" }),
-  member({ id: "p3", display_name: "최민서" }),
-  member({ id: "p4", display_name: "강하늘", notifications_enabled: false }),
+  member({ id: "p1", displayName: "이준호" }),
+  member({ id: "p2", displayName: "박수진" }),
+  member({ id: "p3", displayName: "최민서" }),
+  member({ id: "p4", displayName: "강하늘", notificationsEnabled: false }),
 ];
 
-const QUALIFICATIONS = [{ profile_id: "p2", position: "스캔" }];
+const QUALIFICATIONS = [{ profileId: "p2", position: "스캔" }];
 
 const HANDLER_NAMES = [
   "onPressHours",
@@ -260,7 +260,7 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
   it("알림이 안 닿는 사람은 확인 시트가 그렇게 말한다", () => {
     const { result } = mounted({
       isConfirmed: true,
-      qualifications: [{ profile_id: "p4", position: "스캔" }],
+      qualifications: [{ profileId: "p4", position: "스캔" }],
       appliedProfileIds: ["p1", "p4"],
     });
 
@@ -497,9 +497,9 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
     const { result, input } = mounted({
       adjustments: [
         {
-          profile_id: "p1",
+          profileId: "p1",
           minutes: 30,
-          adjusted_at: "2026-10-10T09:00:00.000Z",
+          adjustedAt: "2026-10-10T09:00:00.000Z",
         },
       ],
     });

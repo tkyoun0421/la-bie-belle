@@ -1,5 +1,7 @@
 import type { DB } from "@/shared/api/database";
-import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
+import type { PendingApprovalRow } from "@/entities/workRequest/api/workRequest.dto";
+import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
+import { toPendingApproval } from "@/entities/workRequest/utils/workRequest.mapper";
 
 const APPROVAL_COLUMNS = [
   "id",
@@ -18,11 +20,11 @@ export async function getPendingApprovals(
     .select(APPROVAL_COLUMNS)
     .is("decided_at", null)
     .order("created_at")
-    .returns<PendingApproval[]>();
+    .returns<PendingApprovalRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toPendingApproval);
 }
