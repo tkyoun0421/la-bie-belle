@@ -1,6 +1,6 @@
 import { spellDate } from "@/shared/utils/kstDate";
 import { spellWon } from "@/shared/utils/spellNumber";
-import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
+import type { PayrollDayKind } from "@/entities/payroll/model/payroll.type";
 import { NO_AMOUNT } from "@/screens/payroll/consts/payroll.const";
 
 const MINUTES_PER_HOUR = 60;

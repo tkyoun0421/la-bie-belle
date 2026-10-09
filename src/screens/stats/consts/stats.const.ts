@@ -1,6 +1,6 @@
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import type { TalliedStatus } from "@/entities/attendance/model/attendance.type";
-import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
+import type { PayrollDayKind } from "@/entities/payroll/model/payroll.type";
 
 export const STATUS_LABELS: Record<AttendanceStatus, string> = {
   present: "출근",

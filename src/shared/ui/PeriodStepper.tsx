@@ -1,12 +1,12 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { View } from "react-native";
-import { Button } from "@/shared/ui/Button";
-import { Icon } from "@/shared/ui/Icon";
-import { Text } from "@/shared/ui/Text";
 import {
   NEXT_PERIOD_TEST_ID,
   PREV_PERIOD_TEST_ID,
-} from "@/screens/payroll/consts/payroll.const";
+} from "@/shared/consts/periodStepper.const";
+import { Button } from "@/shared/ui/Button";
+import { Icon } from "@/shared/ui/Icon";
+import { Text } from "@/shared/ui/Text";
 
 export type PeriodStepperProps = {
   label: string;

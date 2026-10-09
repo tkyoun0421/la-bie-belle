@@ -1,6 +1,7 @@
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
+import { PeriodStepper } from "@/shared/ui/PeriodStepper";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import {
@@ -11,7 +12,6 @@ import {
 import { usePayrollScreen } from "@/screens/payroll/hooks/usePayrollScreen";
 import { PayrollList } from "@/screens/payroll/ui/PayrollList";
 import { PayrollSummary } from "@/screens/payroll/ui/PayrollSummary";
-import { PeriodStepper } from "@/screens/payroll/ui/PeriodStepper";
 
 export function PayrollScreen() {
   const screen = usePayrollScreen();
