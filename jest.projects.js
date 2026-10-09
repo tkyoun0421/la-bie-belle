@@ -62,7 +62,7 @@ const logic = {
     "<rootDir>/eslint-rules/__tests__/**/*.test.ts",
     "<rootDir>/tests/lint/**/*.test.ts",
     "!**/*.integration.test.ts",
-    "!**/src/shared/ui/__tests__/**",
+    "!**/src/**/ui/__tests__/**",
   ],
   extensionsToTreatAsEsm: [".ts", ".mts"],
   moduleFileExtensions: ["mts", "mjs", ...nodePreset.moduleFileExtensions],
@@ -73,7 +73,7 @@ const components = {
   ...withoutRunnerOnlyOptions(iosPreset),
   displayName: "components",
   rootDir: __dirname,
-  testMatch: ["<rootDir>/src/shared/ui/__tests__/**/*.test.tsx"],
+  testMatch: ["<rootDir>/src/**/ui/__tests__/**/*.test.tsx"],
   transform: transformOf(iosPreset),
   moduleNameMapper: {
     ...iosPreset.moduleNameMapper,
