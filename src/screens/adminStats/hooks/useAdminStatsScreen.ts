@@ -1,8 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
+import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import type { ListRowValueTone } from "@/shared/ui/ListRow";
 import {
   monthOf,
   shiftMonth,
@@ -67,7 +70,7 @@ export type AdminStatsPositionRow = {
   detail: string;
   value: string;
   weight: number;
-  isZero: boolean;
+  valueTone: ListRowValueTone;
 };
 
 export type AdminStatsAttendanceRow = {
@@ -97,6 +100,7 @@ export type AdminStatsScreenController = {
   points: AdminStatsTrendPoint[];
   trendValueLabel: string | undefined;
   listState: AdminStatsListState;
+  emptyTotal: string | null;
   totalLabel: string;
   countLine: string;
   peopleRows: AdminStatsPersonRow[];
@@ -106,6 +110,7 @@ export type AdminStatsScreenController = {
   attendanceRows: AdminStatsAttendanceRow[];
   sheet: AdminStatsSheet | null;
   chooseTab: (value: string) => void;
+  goBack: () => void;
   goPrev: () => void;
   goNext: () => void;
   closeSheet: () => void;
@@ -124,6 +129,7 @@ function tabOf(value: string): AdminStatsTab {
 
 export function useAdminStatsScreen(): AdminStatsScreenController {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const today = kstToday();
 
   const [tab, setTab] = useState<AdminStatsTab>(ADMIN_STATS_TABS[0]);
@@ -222,6 +228,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
           ? totalLabel
           : percentLabel(attendanceTab),
     listState,
+    emptyTotal: tab === "work" ? NO_VALUE : null,
     totalLabel,
     countLine: `${ADMIN_STATS_COPY.workCountPrefix}${totals.totalCount}${ADMIN_STATS_COPY.workCountSuffix}`,
     peopleRows: totals.byPerson.map((row) => ({
@@ -239,7 +246,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
       detail: `${row.count}${ADMIN_STATS_COPY.countSuffix}`,
       value: hoursLabel(row.minutes),
       weight: row.minutes,
-      isZero: row.minutes === 0,
+      valueTone: row.minutes === 0 ? "zero" : "answer",
     })),
     attendanceLine: adminAttendanceLine(attendanceTab.tally),
     shares: adminAttendanceShares(attendanceTab.tally),
@@ -263,6 +270,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
             total: `${ADMIN_STATS_COPY.totalPrefix}${personDays.totalCount}${ADMIN_STATS_COPY.timesSuffix} · ${hoursLabel(personDays.totalMinutes)}`,
           },
     chooseTab: (value) => setTab(tabOf(value)),
+    goBack: () => router.back(),
     goPrev: () => setMonth(shiftMonth(month, -1)),
     goNext: () => setMonth(shiftMonth(month, 1)),
     closeSheet: () => setOpenPerson(null),

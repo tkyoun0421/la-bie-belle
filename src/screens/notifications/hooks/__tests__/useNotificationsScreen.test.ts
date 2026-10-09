@@ -47,6 +47,20 @@ jest.unstable_mockModule(
 
 const FAKE_CLIENT = {} as never;
 
+const backMock = jest.fn();
+const replaceMock = jest.fn();
+const pushMock = jest.fn();
+const canGoBackMock = jest.fn<() => boolean>();
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({
+    back: backMock,
+    replace: replaceMock,
+    push: pushMock,
+    canGoBack: canGoBackMock,
+  }),
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -75,15 +89,6 @@ function createWrapper() {
   return { wrapper };
 }
 
-function fakeRouter(canGoBack = true) {
-  return {
-    canGoBack: () => canGoBack,
-    back: jest.fn(),
-    replace: jest.fn(),
-    push: jest.fn(),
-  };
-}
-
 function rowAt(id: string, createdAt: string, extra = {}) {
   return {
     id,
@@ -98,7 +103,12 @@ function rowAt(id: string, createdAt: string, extra = {}) {
 beforeEach(() => {
   getNotificationsMock.mockReset();
   markNotificationsReadMock.mockReset();
+  backMock.mockClear();
+  replaceMock.mockClear();
+  pushMock.mockClear();
+  canGoBackMock.mockReset();
 
+  canGoBackMock.mockReturnValue(true);
   getNotificationsMock.mockResolvedValue([]);
   markNotificationsReadMock.mockResolvedValue(undefined);
 });
@@ -107,7 +117,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
   it("받은 알림이 없으면 상태가 empty다", async () => {
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -124,7 +134,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -149,7 +159,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -170,7 +180,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -185,7 +195,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -198,10 +208,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockResolvedValue([
       rowAt("a", "2026-10-03T01:00:00.000Z"),
     ]);
-    const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(router), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -209,7 +218,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
 
     act(() => result.current.groups[0].rows[0].press?.());
 
-    expect(router.push).toHaveBeenCalledWith("/to/a");
+    expect(pushMock).toHaveBeenCalledWith("/to/a");
 
     await waitFor(() =>
       expect(markNotificationsReadMock).toHaveBeenCalledWith(FAKE_CLIENT, [
@@ -223,10 +232,9 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
       rowAt("a", "2026-10-03T01:00:00.000Z"),
     ]);
     markNotificationsReadMock.mockRejectedValue(new Error("끊겼다"));
-    const router = fakeRouter();
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(router), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -238,7 +246,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
       expect(markNotificationsReadMock).toHaveBeenCalledTimes(1),
     );
 
-    expect(router.push).toHaveBeenCalledWith("/to/a");
+    expect(pushMock).toHaveBeenCalledWith("/to/a");
     expect(result.current.state).toBe("end");
   });
 
@@ -248,7 +256,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    renderHook(() => useNotificationsScreen(fakeRouter()), {
+    renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -260,27 +268,10 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
   });
 
   it("뒤로가 있으면 뒤로 가고 없으면 받은 자리로 바꾼다", async () => {
-    const back = fakeRouter(true);
+    canGoBackMock.mockReturnValue(true);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(
-      () => useNotificationsScreen(back, "/admin"),
-      { wrapper },
-    );
-
-    await waitFor(() => expect(result.current.state).toBe("empty"));
-
-    act(() => result.current.goBack());
-
-    expect(back.back).toHaveBeenCalledTimes(1);
-    expect(back.replace).not.toHaveBeenCalled();
-  });
-
-  it("뒤로가 없고 받은 자리도 없으면 뿌리로 간다", async () => {
-    const fresh = fakeRouter(false);
-    const { wrapper } = createWrapper();
-
-    const { result } = renderHook(() => useNotificationsScreen(fresh), {
+    const { result } = renderHook(() => useNotificationsScreen("/admin"), {
       wrapper,
     });
 
@@ -288,7 +279,23 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
 
     act(() => result.current.goBack());
 
-    expect(fresh.replace).toHaveBeenCalledWith("/");
+    expect(backMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("뒤로가 없고 받은 자리도 없으면 뿌리로 간다", async () => {
+    canGoBackMock.mockReturnValue(false);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.state).toBe("empty"));
+
+    act(() => result.current.goBack());
+
+    expect(replaceMock).toHaveBeenCalledWith("/");
   });
 
   it("바닥에 안 닿았으면 다음 쪽을 안 부른다", async () => {
@@ -297,7 +304,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -314,7 +321,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     ]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -332,7 +339,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockResolvedValue(full);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -347,7 +354,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockRejectedValue(new Error("끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotificationsScreen(fakeRouter()), {
+    const { result } = renderHook(() => useNotificationsScreen(), {
       wrapper,
     });
 
@@ -358,5 +365,104 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     act(() => result.current.retry());
 
     await waitFor(() => expect(result.current.state).toBe("empty"));
+  });
+});
+
+describe("useNotificationsScreen — 몸통과 스크롤 판정을 controller가 든다", () => {
+  function scrollTo(offsetY: number) {
+    return {
+      nativeEvent: {
+        contentOffset: { y: offsetY },
+        contentSize: { height: 2000 },
+        layoutMeasurement: { height: 800 },
+      },
+    } as never;
+  }
+
+  it("읽는 중이면 몸통이 loading이다", () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    expect(result.current.body).toBe("loading");
+  });
+
+  it("넘어지면 몸통이 failed다", async () => {
+    getNotificationsMock.mockRejectedValue(new Error("끊겼다"));
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.body).toBe("failed"));
+  });
+
+  it("받은 것이 없으면 몸통이 empty다", async () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.body).toBe("empty"));
+  });
+
+  it("쪽이 더 남은 줄 목록은 몸통이 rows다", async () => {
+    getNotificationsMock.mockResolvedValue(
+      Array.from({ length: 50 }, (_, at) =>
+        rowAt(`row-${at}`, "2026-10-03T01:00:00.000Z"),
+      ),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.state).toBe("normal"));
+
+    expect(result.current.body).toBe("rows");
+  });
+
+  it("끝까지 읽은 줄 목록도 몸통이 rows다", async () => {
+    getNotificationsMock.mockResolvedValue([
+      rowAt("a", "2026-10-03T01:00:00.000Z"),
+    ]);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.state).toBe("end"));
+
+    expect(result.current.body).toBe("rows");
+  });
+
+  it("바닥에서 멀면 스크롤이 다음 쪽을 안 부른다", async () => {
+    getNotificationsMock.mockResolvedValue(
+      Array.from({ length: 50 }, (_, at) =>
+        rowAt(`row-${at}`, "2026-10-03T01:00:00.000Z"),
+      ),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.state).toBe("normal"));
+
+    act(() => result.current.loadNextOnScroll(scrollTo(0)));
+
+    expect(getNotificationsMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("바닥에 닿은 스크롤이 다음 쪽을 부른다", async () => {
+    getNotificationsMock.mockResolvedValue(
+      Array.from({ length: 50 }, (_, at) =>
+        rowAt(`row-${at}`, "2026-10-03T01:00:00.000Z"),
+      ),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useNotificationsScreen(), { wrapper });
+
+    await waitFor(() => expect(result.current.state).toBe("normal"));
+
+    act(() => result.current.loadNextOnScroll(scrollTo(1200)));
+
+    await waitFor(() => expect(getNotificationsMock).toHaveBeenCalledTimes(2));
   });
 });

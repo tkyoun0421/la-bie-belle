@@ -1,5 +1,7 @@
+import { usePathname, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
@@ -43,7 +45,7 @@ import {
   requestSheetState,
   type RequestSheetState,
 } from "@/screens/scheduleWorker/model/requestSheet.policy";
-import type { AgendaEntry } from "@/screens/scheduleWorker/ui/ScheduleAgenda";
+import type { AgendaEntry } from "@/screens/scheduleWorker/model/scheduleAgenda.type";
 import {
   myAssignmentOf,
   spellWorkDate,
@@ -63,6 +65,8 @@ export type ScheduleWorkerParams = {
 };
 
 export type ScheduleWorkerBodyState = "loading" | MonthState;
+
+export type ScheduleWorkerBody = "loading" | "confirmed" | "picker";
 
 export type ScheduleWorkerView = "calendar" | "position";
 
@@ -98,6 +102,7 @@ export type ScheduleWorkerScreenController = {
   monthTitle: string;
   unread: boolean;
   bodyState: ScheduleWorkerBodyState;
+  body: ScheduleWorkerBody;
   view: ScheduleWorkerView;
   showMineOnly: boolean;
   deadlineLine: string | null;
@@ -114,6 +119,7 @@ export type ScheduleWorkerScreenController = {
   sheet: ScheduleWorkerSheet | null;
   toast: string | null;
   closeTop: (() => boolean) | null;
+  goNotifications: () => void;
   goPrevMonth: () => void;
   goNextMonth: () => void;
   showView: (next: string) => void;
@@ -135,6 +141,8 @@ export function useScheduleWorkerScreen({
   month: monthParam,
   date: dateParam,
 }: ScheduleWorkerParams): ScheduleWorkerScreenController {
+  const router = useRouter();
+  const pathname = usePathname();
   const today = kstToday();
 
   const [month, setMonth] = useState(
@@ -421,6 +429,7 @@ export function useScheduleWorkerScreen({
     monthTitle: spellMonth(month),
     unread: (unreadCount.data ?? 0) > 0,
     bodyState: loading ? "loading" : state,
+    body: loading ? "loading" : state === "confirmed" ? "confirmed" : "picker",
     view,
     showMineOnly,
     deadlineLine:
@@ -477,6 +486,8 @@ export function useScheduleWorkerScreen({
     sheet,
     toast,
     closeTop,
+    goNotifications: () =>
+      router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`),
     goPrevMonth: () => goMonth(-1),
     goNextMonth: () => goMonth(1),
     showView: (next) => setView(next === "position" ? "position" : "calendar"),

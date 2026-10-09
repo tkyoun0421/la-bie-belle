@@ -1,4 +1,3 @@
-import { usePathname, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
@@ -18,14 +17,7 @@ import { useAdminHomeScreen } from "@/screens/adminHome/hooks/useAdminHomeScreen
 import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
 
 export function AdminHomeScreen() {
-  const router = useRouter();
-  const pathname = usePathname();
   const screen = useAdminHomeScreen();
-
-  const goMonth = (asked: string) =>
-    router.push(`/admin/schedule?month=${asked}`);
-
-  const goDay = (date: string) => router.push(`/admin/schedule?date=${date}`);
 
   return (
     <Screen>
@@ -37,12 +29,9 @@ export function AdminHomeScreen() {
             <BellIcon
               testID="bell-icon"
               unread={screen.unread}
-              onPress={() => router.push(`/notifications?from=${pathname}`)}
+              onPress={screen.goNotifications}
             />
-            <AdminSwitch
-              destination="worker"
-              onPress={() => router.push("/")}
-            />
+            <AdminSwitch destination="worker" onPress={screen.goWorkerHome} />
           </View>
         }
       />
@@ -54,7 +43,7 @@ export function AdminHomeScreen() {
               testID="admin-home-today-status"
               accessibilityRole="button"
               className="mt-2 py-1"
-              onPress={() => goDay(screen.today)}
+              onPress={screen.goToday}
             >
               <Text size="sm" tone="subtle">
                 {screen.todayLabel}
@@ -87,7 +76,7 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goMonth(screen.tileMonth)}
+            onPress={screen.goTileMonth}
           >
             <Card>
               <CardHeader title={ADMIN_HOME_COPY.scheduleTile} />
@@ -102,7 +91,7 @@ export function AdminHomeScreen() {
               key={card.workDate}
               accessibilityRole="button"
               className={at === 0 ? "mt-3" : "mt-2"}
-              onPress={() => goDay(card.workDate)}
+              onPress={card.press}
             >
               <NoticeBlock kind="warning">
                 <Text size="sm" weight="medium">
@@ -119,7 +108,7 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goMonth(screen.month)}
+            onPress={screen.goMonth}
           >
             <Text size="sm" tone="subtle">
               {screen.monthLabel}
@@ -141,34 +130,22 @@ export function AdminHomeScreen() {
             value={screen.defaultsValue}
             onPress={screen.openSheet}
           />
-          <ListRow
-            title={screen.approvalsTitle}
-            onPress={() => router.push("/admin/approvals")}
-          />
+          <ListRow title={screen.approvalsTitle} onPress={screen.goApprovals} />
           <ListRow
             title={ADMIN_HOME_COPY.pendingRow}
             value={screen.pendingValue}
-            onPress={() => router.push("/admin/members/pending")}
+            onPress={screen.goPending}
           />
 
           <Divider />
 
           <ListRow
             title={ADMIN_HOME_COPY.membersRow}
-            onPress={() => router.push("/admin/members")}
+            onPress={screen.goMembers}
           />
-          <ListRow
-            title={ADMIN_HOME_COPY.wagesRow}
-            onPress={() => router.push("/admin/wages")}
-          />
-          <ListRow
-            title={ADMIN_HOME_COPY.qrRow}
-            onPress={() => router.push("/admin/qr")}
-          />
-          <ListRow
-            title={ADMIN_HOME_COPY.statsRow}
-            onPress={() => router.push("/admin/stats")}
-          />
+          <ListRow title={ADMIN_HOME_COPY.wagesRow} onPress={screen.goWages} />
+          <ListRow title={ADMIN_HOME_COPY.qrRow} onPress={screen.goQr} />
+          <ListRow title={ADMIN_HOME_COPY.statsRow} onPress={screen.goStats} />
         </View>
       </ScrollView>
 

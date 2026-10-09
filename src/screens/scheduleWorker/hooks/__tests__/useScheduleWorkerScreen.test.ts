@@ -25,6 +25,15 @@ const createCancelRequestMock =
 
 const FAKE_CLIENT = {} as never;
 
+const pushMock = jest.fn();
+
+const PATHNAME = "/schedule";
+
+jest.unstable_mockModule("expo-router", () => ({
+  useRouter: () => ({ push: pushMock }),
+  usePathname: () => PATHNAME,
+}));
+
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
@@ -192,6 +201,8 @@ const COLLECTING = { applicationDeadline: "2026-10-20", confirmedAt: null };
 const AWAITING = { applicationDeadline: "2026-09-20", confirmedAt: null };
 
 beforeEach(() => {
+  pushMock.mockClear();
+
   for (const mock of [
     getCurrentUserMock,
     getMyProfileMock,
@@ -727,5 +738,51 @@ describe("useScheduleWorkerScreen — 열려 있는 것만 뒤로가 닫는다",
 
     expect(result.current.sheet?.kind).toBe("roster");
     expect(result.current.monthTitle).toBe("2026년 10월");
+  });
+});
+
+describe("useScheduleWorkerScreen — 몸통과 갈 데를 controller가 정한다", () => {
+  it("읽기 전 몸통은 loading이다", () => {
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useScheduleWorkerScreen({}), {
+      wrapper,
+    });
+
+    expect(result.current.body).toBe("loading");
+  });
+
+  it("확정된 달의 몸통은 근무표다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.body).toBe("confirmed");
+  });
+
+  it("확정 전이면 어느 상태든 몸통이 신청 화면이다", async () => {
+    getMonthWindowMock.mockResolvedValue(COLLECTING);
+
+    const collecting = await mounted();
+
+    expect(collecting.result.current.body).toBe("picker");
+
+    getMonthWindowMock.mockResolvedValue(null);
+
+    const fresh = await mounted();
+
+    expect(fresh.result.current.body).toBe("picker");
+
+    getMonthWindowMock.mockResolvedValue(AWAITING);
+
+    const awaiting = await mounted();
+
+    expect(awaiting.result.current.body).toBe("picker");
+  });
+
+  it("종은 어디서 왔는지를 달고 알림으로 간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.goNotifications());
+
+    expect(pushMock).toHaveBeenCalledWith(`/notifications?from=${PATHNAME}`);
   });
 });
