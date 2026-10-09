@@ -7,11 +7,10 @@ import { Input } from "@/shared/ui/Input";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import { MemberRows } from "@/entities/member/ui/MemberRows";
+import { MemberSheet } from "@/features/memberAdmin/ui/MemberSheet";
 import { MEMBERS_COPY } from "@/screens/members/consts/members.const";
 import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
-import { MemberDialog } from "@/screens/members/ui/MemberDialog";
-import { MemberRows } from "@/screens/members/ui/MemberRows";
-import { MemberSheet } from "@/screens/members/ui/MemberSheet";
 import { MembersEmpty } from "@/screens/members/ui/MembersEmpty";
 import { MembersLoading } from "@/screens/members/ui/MembersLoading";
 
@@ -24,51 +23,57 @@ export function MembersScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {screen.listState === "loading" ? <MembersLoading /> : null}
-          {screen.listState === "empty" ? <MembersEmpty /> : null}
-
-          {screen.listState === "rows" ? (
-            <>
+          <MemberRows
+            kind="active"
+            query={screen.query}
+            now={screen.today}
+            expanded={screen.expanded}
+            noteOf={screen.noteOf}
+            onPress={screen.openMember}
+            className="mt-4 py-0"
+            loading={<MembersLoading />}
+            empty={<MembersEmpty />}
+            before={
               <Input
                 placeholder={MEMBERS_COPY.searchPlaceholder}
                 value={screen.query}
                 onChangeText={screen.search}
                 className="mt-2"
               />
+            }
+            searchEmpty={
+              <Card className="mt-4">
+                <Text size="base" weight="medium" className="text-center">
+                  {MEMBERS_COPY.searchEmpty}
+                </Text>
+              </Card>
+            }
+          />
 
-              {screen.searchEmpty ? (
-                <Card className="mt-4">
-                  <Text size="base" weight="medium" className="text-center">
-                    {MEMBERS_COPY.searchEmpty}
-                  </Text>
-                </Card>
-              ) : null}
-
-              {screen.activeRows.length > 0 ? (
-                <MemberRows rows={screen.activeRows} className="mt-4 py-0" />
-              ) : null}
-
-              {screen.leftRows.length > 0 ? (
-                <>
-                  <Text
-                    size="xs"
-                    weight="medium"
-                    tone="subtle"
-                    className="mt-4 py-2"
-                  >
-                    {MEMBERS_COPY.leftSection}
-                  </Text>
-                  <MemberRows rows={screen.leftRows} faded className="py-0">
-                    {screen.canExpand ? (
-                      <Button variant="ghost" size="sm" onPress={screen.expand}>
-                        {MEMBERS_COPY.more}
-                      </Button>
-                    ) : null}
-                  </MemberRows>
-                </>
-              ) : null}
-            </>
-          ) : null}
+          <MemberRows
+            kind="left"
+            query={screen.query}
+            now={screen.today}
+            expanded={screen.expanded}
+            onPress={screen.openMember}
+            faded
+            className="py-0"
+            header={
+              <Text
+                size="xs"
+                weight="medium"
+                tone="subtle"
+                className="mt-4 py-2"
+              >
+                {MEMBERS_COPY.leftSection}
+              </Text>
+            }
+            more={
+              <Button variant="ghost" size="sm" onPress={screen.expand}>
+                {MEMBERS_COPY.more}
+              </Button>
+            }
+          />
         </View>
       </ScrollView>
 
@@ -79,25 +84,10 @@ export function MembersScreen() {
             today={screen.today}
             lastAdmin={screen.lastAdmin}
             reachLine={screen.reachLine}
-            face={screen.face}
-            draft={screen.draft}
-            sending={screen.sending}
-            failed={screen.failed}
-            onFace={screen.showFace}
-            onDraft={screen.writeDraft}
-            onSaveName={screen.saveName}
-            onRole={screen.askRole}
-            onMarkLeave={screen.askLeave}
-            onUndoLeave={screen.askUndo}
+            onDone={screen.finish}
           />
         </SheetLayer>
       )}
-
-      <MemberDialog
-        kind={screen.dialog}
-        onClose={screen.closeDialog}
-        onConfirm={screen.confirm}
-      />
 
       {screen.toast ? (
         <FloatingToast

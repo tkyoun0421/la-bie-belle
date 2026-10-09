@@ -1,47 +1,31 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-
-import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
-import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
+import type {
+  Rehearsal,
+  RehearsalKind,
+} from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import { spellTotal } from "@/entities/rehearsal/utils/spellTotal.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
-import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
-import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
+import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
-import {
-  CLOCK_LENGTH,
-  INITIAL_ADD_SHEET,
-} from "@/screens/rehearsal/consts/rehearsal.const";
-import {
-  addSheetActionFor,
-  addSheetReducer,
-  canSubmitForm,
-  type AddSheetState,
-  type AddSheetValues,
-} from "@/screens/rehearsal/model/addSheetState.reducer";
 import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
-import {
-  daySheetRows,
-  type DaySheetContent,
-} from "@/screens/rehearsal/utils/daySheetRows.utils";
-import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 type Row = Rehearsal;
 
-export type RehearsalFormHandle =
-  { mode: "add" } | { mode: "edit"; id: string };
+type OpenForm = { mode: "add" } | { mode: "edit"; id: string };
 
 export type RehearsalScreenController = {
   goBack: () => void;
@@ -53,11 +37,8 @@ export type RehearsalScreenController = {
   failed: boolean;
   openDate: string | null;
   openDateLabel: string;
-  dayContent: DaySheetContent;
-  canAdd: boolean;
-  form: RehearsalFormHandle | null;
-  sheet: AddSheetState;
-  saving: boolean;
+  openKind: RehearsalKind;
+  form: RehearsalFormTarget | null;
   removing: boolean;
   closeTop: (() => boolean) | null;
   cellStateOf: (date: string) => "admin-open" | "plain";
@@ -74,8 +55,6 @@ export type RehearsalScreenController = {
   openAdd: () => void;
   openEdit: ((id: string) => void) | undefined;
   closeForm: () => void;
-  change: (values: Partial<AddSheetValues>) => void;
-  submit: () => void;
   askRemove: (() => void) | undefined;
   cancelRemove: () => void;
   confirmRemove: () => void;
@@ -91,9 +70,8 @@ export function useRehearsalScreen(
   const [month, setMonth] = useState(monthOf(monthParam ?? today));
   const [openDate, setOpenDate] = useState<string | null>(null);
   const [pickerYear, setPickerYear] = useState<number | null>(null);
-  const [form, setForm] = useState<RehearsalFormHandle | null>(null);
+  const [openForm, setOpenForm] = useState<OpenForm | null>(null);
   const [removing, setRemoving] = useState(false);
-  const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_ADD_SHEET);
 
   const { data: me } = useSessionUserQuery(supabase);
   const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
@@ -108,24 +86,6 @@ export function useRehearsalScreen(
   const { data: days } = useMonthScheduleQuery(supabase, month);
 
   const {
-    mutate: add,
-    isPending: adding,
-    isSuccess: added,
-    isError: addFailed,
-    error: addError,
-    reset: resetAdd,
-  } = useAddRehearsalMutation(supabase);
-
-  const {
-    mutate: save,
-    isPending: savingEdit,
-    isSuccess: saved,
-    isError: editFailed,
-    error: editError,
-    reset: resetEdit,
-  } = useEditRehearsalMutation(supabase);
-
-  const {
     mutate: remove,
     isSuccess: deleted,
     reset: resetRemove,
@@ -138,17 +98,9 @@ export function useRehearsalScreen(
   }, [monthParam]);
 
   const closeForm = useCallback(() => {
-    setForm(null);
+    setOpenForm(null);
     setRemoving(false);
-    resetAdd();
-    resetEdit();
-  }, [resetAdd, resetEdit]);
-
-  useEffect(() => {
-    if (added || saved) {
-      closeForm();
-    }
-  }, [added, saved, closeForm]);
+  }, []);
 
   useEffect(() => {
     if (!deleted) {
@@ -158,24 +110,6 @@ export function useRehearsalScreen(
     closeForm();
     resetRemove();
   }, [deleted, closeForm, resetRemove]);
-
-  useEffect(() => {
-    if (!addFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(addError, sheet.formKind));
-    resetAdd();
-  }, [addFailed, addError, sheet.formKind, resetAdd]);
-
-  useEffect(() => {
-    if (!editFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(editError, sheet.formKind));
-    resetEdit();
-  }, [editFailed, editError, sheet.formKind, resetEdit]);
 
   const rows: Row[] = useMemo(
     () => (isAdmin ? (all.data ?? []) : (mine.data ?? [])),
@@ -216,66 +150,37 @@ export function useRehearsalScreen(
   const openKind =
     openDate === null ? "time" : kindForDate(openDate, myAssignments);
   const editing =
-    form?.mode === "edit"
-      ? (openRows.find((row) => row.id === form.id) ?? null)
+    openForm?.mode === "edit"
+      ? (openRows.find((row) => row.id === openForm.id) ?? null)
       : null;
 
-  const openAdd = useCallback(() => {
-    setForm({ mode: "add" });
-    dispatch({ type: "open", kind: openKind });
-  }, [openKind]);
+  const form: RehearsalFormTarget | null =
+    openForm === null || openDate === null
+      ? null
+      : openForm.mode === "add"
+        ? { mode: "add", workDate: openDate, formKind: openKind }
+        : editing === null
+          ? null
+          : { mode: "edit", rehearsal: editing };
 
   const openEdit = useCallback(
     (id: string) => {
-      const row = openRows.find((candidate) => candidate.id === id);
-
-      if (row === undefined) {
-        return;
+      if (openRows.some((candidate) => candidate.id === id)) {
+        setOpenForm({ mode: "edit", id });
       }
-
-      setForm({ mode: "edit", id });
-      dispatch({
-        type: "open",
-        kind: row.count === null ? "time" : "count",
-        values: {
-          startsAt: row.startsAt?.slice(0, CLOCK_LENGTH) ?? "",
-          endsAt: row.endsAt?.slice(0, CLOCK_LENGTH) ?? "",
-          count: row.count === null ? "" : String(row.count),
-        },
-      });
     },
     [openRows],
   );
 
-  const submit = useCallback(() => {
-    if (!canSubmitForm(sheet)) {
-      return;
-    }
-
-    const written =
-      sheet.formKind === "count"
-        ? { count: Number(sheet.values.count) }
-        : { startsAt: sheet.values.startsAt, endsAt: sheet.values.endsAt };
-
-    if (form?.mode === "edit") {
-      save({ id: form.id, ...written });
-      return;
-    }
-
-    if (openDate !== null) {
-      add({ workDate: openDate, ...written });
-    }
-  }, [sheet, form, openDate, add, save]);
-
   const pickMonth = useCallback((picked: string) => {
     setMonth(picked);
     setOpenDate(null);
-    setForm(null);
+    setOpenForm(null);
     setPickerYear(null);
   }, []);
 
   const closeTop = useMemo(() => {
-    if (form !== null) {
+    if (openForm !== null) {
       return () => {
         closeForm();
 
@@ -292,7 +197,7 @@ export function useRehearsalScreen(
     }
 
     return null;
-  }, [form, openDate, closeForm]);
+  }, [openForm, openDate, closeForm]);
 
   const goBack = useCallback(() => router.replace(ME_HOME_PATH), [router]);
 
@@ -306,11 +211,8 @@ export function useRehearsalScreen(
     failed: (isAdmin ? all.error : mine.error) !== null,
     openDate,
     openDateLabel: openDate === null ? "" : spellDate(openDate),
-    dayContent: daySheetRows(openRows, isAdmin),
-    canAdd: !isAdmin && canAddOn(openKind, openRows),
+    openKind,
     form,
-    sheet,
-    saving: adding || savingEdit,
     removing,
     closeTop,
     cellStateOf: (date) =>
@@ -329,11 +231,9 @@ export function useRehearsalScreen(
     openPicker: () => setPickerYear(Number(month.slice(0, 4))),
     changePickerYear: setPickerYear,
     closePicker: () => setPickerYear(null),
-    openAdd,
+    openAdd: () => setOpenForm({ mode: "add" }),
     openEdit: isAdmin ? undefined : openEdit,
     closeForm,
-    change: (values) => dispatch({ type: "change", values }),
-    submit,
     askRemove: editing === null ? undefined : () => setRemoving(true),
     cancelRemove: () => setRemoving(false),
     confirmRemove: () => {

@@ -121,7 +121,7 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
     const { result } = await mounted();
 
     expect(result.current.tab).toBe("work");
-    expect(result.current.monthLabel).toContain("10월");
+    expect(result.current.month).toBe("2026-10");
     expect(result.current.selectedMonth).toBe(10);
   });
 
@@ -139,12 +139,7 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     await waitFor(() => expect(result.current.listState).toBe("work"));
 
-    expect(result.current.totalLabel).toBeTruthy();
-    expect(result.current.countLine).toContain("1");
-    expect(result.current.peopleRows).toHaveLength(1);
-    expect(result.current.peopleRows[0].displayName).toBe("이준호");
-    expect(result.current.positionRows.length).toBeGreaterThan(0);
-    expect(result.current.trendValueLabel).toBe(result.current.totalLabel);
+    expect(result.current.trendValueLabel).toContain("시간");
   });
 
   it("근태 탭은 현황 줄과 비율 띠와 사람별 줄을 낸다", async () => {
@@ -170,28 +165,21 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     await waitFor(() => expect(result.current.listState).toBe("attendance"));
 
-    expect(result.current.attendanceLine).toBeTruthy();
-    expect(result.current.shares).toHaveLength(4);
-    expect(result.current.attendanceRows).toHaveLength(1);
     expect(result.current.trendValueLabel).toContain("%");
   });
 
-  it("사람 줄을 누르면 그 사람의 날 목록이 시트에 선다", async () => {
+  it("고른 사람이 시트를 연다", async () => {
     getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.peopleRows).toHaveLength(1));
+    act(() => result.current.pickPerson("p1"));
 
-    act(() => result.current.peopleRows[0].press());
-
-    expect(result.current.sheet?.name).toBe("이준호");
-    expect(result.current.sheet?.rows).toHaveLength(1);
-    expect(result.current.sheet?.total).toContain("1");
+    expect(result.current.openPerson).toBe("p1");
 
     act(() => result.current.closeSheet());
 
-    expect(result.current.sheet).toBeNull();
+    expect(result.current.openPerson).toBeNull();
   });
 
   it("탭을 옮겨도 보던 달이 그대로다", async () => {
@@ -199,21 +187,11 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     act(() => result.current.goPrev());
 
-    expect(result.current.monthLabel).toContain("9월");
+    expect(result.current.month).toBe("2026-09");
 
     act(() => result.current.chooseTab("attendance"));
 
-    expect(result.current.monthLabel).toContain("9월");
-  });
-
-  it("첫 근무표보다 앞으로는 못 가고 다음 달로도 못 간다", async () => {
-    getFirstScheduleMonthMock.mockResolvedValue("2026-10");
-
-    const { result } = await mounted();
-
-    await waitFor(() => expect(result.current.canGoPrev).toBe(false));
-
-    expect(result.current.canGoNext).toBe(false);
+    expect(result.current.month).toBe("2026-09");
   });
 
   it("추이 그래프가 열두 점을 낸다", async () => {

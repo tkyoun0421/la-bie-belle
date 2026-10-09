@@ -1,8 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-const getMonthAvailabilitiesMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -18,11 +16,6 @@ jest.unstable_mockModule("expo-router", () => ({
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
-
-jest.unstable_mockModule(
-  "@/entities/availability/api/getMonthAvailabilities.api",
-  () => ({ getMonthAvailabilities: getMonthAvailabilitiesMock }),
-);
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -64,21 +57,13 @@ const NOW_MS = Date.parse("2026-10-03T01:00:00.000Z");
 
 const DEADLINE = "2026-10-10";
 
-const APPLICATIONS = [
-  { profileId: "p1", workDate: "2026-10-11", name: "최민재" },
-  { profileId: "p2", workDate: "2026-10-10", name: "한지우" },
-  { profileId: "p1", workDate: "2026-10-10", name: "최민재" },
-];
-
 beforeEach(() => {
   jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
 
-  getMonthAvailabilitiesMock.mockReset();
   getMonthWindowMock.mockReset();
   setApplicationDeadlineMock.mockReset();
   backMock.mockClear();
 
-  getMonthAvailabilitiesMock.mockResolvedValue(APPLICATIONS);
   getMonthWindowMock.mockResolvedValue({
     applicationDeadline: DEADLINE,
     confirmedAt: null,
@@ -96,31 +81,17 @@ async function mounted(month?: string) {
     wrapper,
   });
 
-  await waitFor(() =>
-    expect(hook.result.current.listState).not.toBe("loading"),
-  );
+  await waitFor(() => expect(getMonthWindowMock).toHaveBeenCalled());
+  await act(async () => {});
 
   return hook;
 }
 
-describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", () => {
-  it("읽기 전에는 loading이다", () => {
-    const { wrapper } = createWrapper();
-
-    const { result } = renderHook(() => useApplicationsScreen("2026-10"), {
-      wrapper,
-    });
-
-    expect(result.current.listState).toBe("loading");
-  });
-
-  it("달을 안 받으면 서버 시계가 가리키는 달을 읽는다", async () => {
+describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () => {
+  it("달을 안 받으면 서버 시계가 가리키는 달을 조각에 내려준다", async () => {
     const { result } = await mounted();
 
-    expect(getMonthAvailabilitiesMock).toHaveBeenCalledWith(
-      FAKE_CLIENT,
-      "2026-10",
-    );
+    expect(result.current.month).toBe("2026-10");
     expect(result.current.title).toBe("10월 근무 신청");
   });
 
@@ -134,7 +105,9 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
   it("마감 줄이 며칠 남았는지를 센다", async () => {
     const { result } = await mounted("2026-10");
 
-    expect(result.current.deadlineLine).toContain("7일 남았어요");
+    await waitFor(() =>
+      expect(result.current.deadlineLine).toContain("7일 남았어요"),
+    );
   });
 
   it("마감일이 없으면 마감 줄도 없다", async () => {
@@ -149,51 +122,31 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
     expect(result.current.emptyDeadlineLine).toBeNull();
   });
 
-  it("신청이 없으면 empty고 그 자리에 마감일을 적는다", async () => {
-    getMonthAvailabilitiesMock.mockResolvedValue([]);
-
+  it("빈 자리에 적을 마감일을 든다", async () => {
     const { result } = await mounted("2026-10");
 
-    expect(result.current.listState).toBe("empty");
-    expect(result.current.emptyDeadlineLine).toBe("마감은 10월 10일이에요");
+    await waitFor(() =>
+      expect(result.current.emptyDeadlineLine).toBe("마감은 10월 10일이에요"),
+    );
     expect(APPLICATIONS_COPY.empty).toBe("아직 들어온 신청이 없어요");
   });
 
-  it("날짜순이 먼저고 날짜가 이른 쪽부터 선다", async () => {
+  it("날짜순이 먼저고 고른 탭을 조각에 내려준다", async () => {
     const { result } = await mounted("2026-10");
 
-    expect(result.current.listState).toBe("date");
-    expect(result.current.dateGroups.map((group) => group.key)).toEqual([
-      "2026-10-10",
-      "2026-10-11",
-    ]);
-    expect(result.current.dateGroups[0].heading).toContain("10월 10일");
-    expect(result.current.dateGroups[0].names.map((one) => one.name)).toEqual([
-      "한지우",
-      "최민재",
-    ]);
-  });
-
-  it("사람순으로 바꾸면 그 사람이 일할 수 있는 날이 한 줄이다", async () => {
-    const { result } = await mounted("2026-10");
+    expect(result.current.tab).toBe("date");
 
     act(() => result.current.chooseTab("person"));
 
-    expect(result.current.listState).toBe("person");
     expect(result.current.tab).toBe("person");
-    expect(result.current.personGroups[0].displayName).toBe("최민재");
-    expect(result.current.personGroups[0].dates).toContain("10월 10일");
-    expect(result.current.personGroups[0].dates).toContain("10월 11일");
   });
 
-  it("탭을 바꿔도 서버에 다시 안 묻는다", async () => {
+  it("없는 탭을 받으면 날짜순으로 돌아간다", async () => {
     const { result } = await mounted("2026-10");
 
-    const asked = getMonthAvailabilitiesMock.mock.calls.length;
+    act(() => result.current.chooseTab("없는탭"));
 
-    act(() => result.current.chooseTab("person"));
-
-    expect(getMonthAvailabilitiesMock.mock.calls.length).toBe(asked);
+    expect(result.current.tab).toBe("date");
   });
 
   it("시트를 열면 지금 마감일과 오늘을 들고 선다", async () => {

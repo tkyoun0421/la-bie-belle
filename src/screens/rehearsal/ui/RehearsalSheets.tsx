@@ -1,8 +1,8 @@
 import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { RehearsalDaySheet } from "@/entities/rehearsal/ui/RehearsalDaySheet";
+import { RehearsalFormSheet } from "@/features/rehearsalEdit/ui/RehearsalFormSheet";
 import type { RehearsalScreenController } from "@/screens/rehearsal/hooks/useRehearsalScreen";
-import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
-import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
 
 export type RehearsalSheetsProps = {
   screen: RehearsalScreenController;
@@ -14,9 +14,10 @@ export function RehearsalSheets({ screen }: RehearsalSheetsProps) {
       {screen.openDate === null ? null : (
         <SheetLayer onDismiss={screen.closeDay}>
           <RehearsalDaySheet
-            title={screen.openDateLabel}
-            content={screen.dayContent}
-            canAdd={screen.canAdd}
+            workDate={screen.openDate}
+            month={screen.month}
+            isAdmin={screen.isAdmin}
+            formKind={screen.openKind}
             onPressRow={screen.openEdit}
             onAdd={screen.openAdd}
           />
@@ -26,12 +27,9 @@ export function RehearsalSheets({ screen }: RehearsalSheetsProps) {
       {screen.form === null ? null : (
         <SheetLayer onDismiss={screen.closeForm}>
           <RehearsalFormSheet
-            mode={screen.form.mode}
+            target={screen.form}
             dateLabel={screen.openDateLabel}
-            state={screen.sheet}
-            saving={screen.saving}
-            onChange={screen.change}
-            onSubmit={screen.submit}
+            onSaved={screen.closeForm}
             onClose={screen.closeForm}
             onRemove={screen.askRemove}
           />

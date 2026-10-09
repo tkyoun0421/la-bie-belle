@@ -1,11 +1,12 @@
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
-import { Dialog } from "@/shared/ui/Dialog";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Screen } from "@/shared/ui/Screen";
+import { ApprovalsList } from "@/entities/workRequest/ui/ApprovalsList";
 import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
 import { useApprovalsScreen } from "@/screens/approvals/hooks/useApprovalsScreen";
-import { ApprovalsList } from "@/screens/approvals/ui/ApprovalsList";
+import { ApprovalsEmpty } from "@/screens/approvals/ui/ApprovalsEmpty";
+import { ApprovalsLoading } from "@/screens/approvals/ui/ApprovalsLoading";
 import { ApprovalsSheets } from "@/screens/approvals/ui/ApprovalsSheets";
 
 export function ApprovalsScreen() {
@@ -17,24 +18,16 @@ export function ApprovalsScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          <ApprovalsList screen={screen} />
+          <ApprovalsList
+            answered={screen.answered}
+            onPress={screen.openApproval}
+            loading={<ApprovalsLoading />}
+            empty={<ApprovalsEmpty />}
+          />
         </View>
       </ScrollView>
 
       <ApprovalsSheets screen={screen} />
-
-      <Dialog
-        visible={screen.confirming}
-        title={APPROVALS_COPY.confirmTitle}
-        notice={screen.confirmNotice}
-        closeLabel={APPROVALS_COPY.confirmBack}
-        confirmLabel={screen.confirmLabel}
-        destructive
-        onClose={screen.cancelApprove}
-        onConfirm={screen.approve}
-      >
-        {screen.confirmBody}
-      </Dialog>
 
       {screen.toast ? (
         <FloatingToast

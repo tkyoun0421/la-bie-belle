@@ -1,9 +1,9 @@
+import { PayrollHistoryRows } from "@/features/payrollCompute/ui/PayrollHistoryRows";
+import { PayrollMonthRows } from "@/features/payrollCompute/ui/PayrollMonthRows";
 import type { PayrollScreenController } from "@/screens/payroll/hooks/usePayrollScreen";
 import { PayrollEmpty } from "@/screens/payroll/ui/PayrollEmpty";
 import { PayrollFailed } from "@/screens/payroll/ui/PayrollFailed";
-import { PayrollHistoryRows } from "@/screens/payroll/ui/PayrollHistoryRows";
 import { PayrollLoading } from "@/screens/payroll/ui/PayrollLoading";
-import { PayrollMonthRows } from "@/screens/payroll/ui/PayrollMonthRows";
 
 export type PayrollListProps = {
   screen: PayrollScreenController;
@@ -24,12 +24,9 @@ export function PayrollList({ screen }: PayrollListProps) {
 
   if (screen.listState === "months") {
     return (
-      <PayrollMonthRows
-        rows={screen.monthRows}
-        onOpenMonth={screen.openMonth}
-      />
+      <PayrollMonthRows span={screen.span} onOpenMonth={screen.openMonth} />
     );
   }
 
-  return <PayrollHistoryRows rows={screen.historyRows} />;
+  return <PayrollHistoryRows span={screen.span} />;
 }

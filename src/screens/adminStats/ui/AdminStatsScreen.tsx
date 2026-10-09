@@ -4,14 +4,16 @@ import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { TrendChart } from "@/shared/ui/TrendChart";
+import { StatsMonthNav } from "@/features/stats/ui/StatsMonthNav";
+import { WorkDaysSheet } from "@/features/stats/ui/WorkDaysSheet";
 import {
   ADMIN_STATS_COPY,
   TAB_OPTIONS,
 } from "@/screens/adminStats/consts/adminStats.const";
 import { useAdminStatsScreen } from "@/screens/adminStats/hooks/useAdminStatsScreen";
 import { AdminStatsBody } from "@/screens/adminStats/ui/AdminStatsBody";
-import { AdminStatsMonthNav } from "@/screens/adminStats/ui/AdminStatsMonthNav";
-import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
+import { AdminStatsFailed } from "@/screens/adminStats/ui/AdminStatsFailed";
+import { AdminStatsLoading } from "@/screens/adminStats/ui/AdminStatsLoading";
 
 export function AdminStatsScreen() {
   const screen = useAdminStatsScreen();
@@ -22,10 +24,8 @@ export function AdminStatsScreen() {
 
       <ScrollView>
         <View className="px-5 pb-8">
-          <AdminStatsMonthNav
-            monthLabel={screen.monthLabel}
-            canGoPrev={screen.canGoPrev}
-            canGoNext={screen.canGoNext}
+          <StatsMonthNav
+            month={screen.month}
             onPrev={screen.goPrev}
             onNext={screen.goNext}
           />
@@ -51,12 +51,13 @@ export function AdminStatsScreen() {
         </View>
       </ScrollView>
 
-      {screen.sheet === null ? null : (
+      {screen.openPerson === null ? null : (
         <SheetLayer onDismiss={screen.closeSheet}>
           <WorkDaysSheet
-            name={screen.sheet.name}
-            rows={screen.sheet.rows}
-            total={screen.sheet.total}
+            month={screen.month}
+            profileId={screen.openPerson}
+            loading={<AdminStatsLoading />}
+            failed={<AdminStatsFailed onRetry={screen.retry} />}
           />
         </SheetLayer>
       )}

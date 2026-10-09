@@ -1,4 +1,5 @@
 import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
+import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import { weekStartOf } from "@/features/payrollCompute/utils/payrollTotal.utils";
 
 export type PeriodUnit = "week" | "month" | "year";
@@ -119,6 +120,20 @@ export function periodStartDate(period: Period): string {
       return `${period.month}-01`;
     case "year":
       return `${period.year}-01-01`;
+  }
+}
+
+export function periodSpan(period: Period): DateSpan {
+  switch (period.unit) {
+    case "week":
+      return {
+        from: period.weekStart,
+        to: weekEndOf(period.weekStart),
+      };
+    case "month":
+      return { from: `${period.month}-01`, to: `${period.month}-31` };
+    case "year":
+      return { from: `${period.year}-01-01`, to: `${period.year}-12-31` };
   }
 }
 

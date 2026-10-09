@@ -2,11 +2,11 @@ import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Screen } from "@/shared/ui/Screen";
+import { BlockedRows } from "@/entities/member/ui/BlockedRows";
 import { BLOCKED_COPY } from "@/screens/membersPending/consts/membersPending.const";
 import { useMembersBlockedScreen } from "@/screens/membersPending/hooks/useMembersBlockedScreen";
 import { BlockedEmpty } from "@/screens/membersPending/ui/BlockedEmpty";
 import { BlockedLoading } from "@/screens/membersPending/ui/BlockedLoading";
-import { BlockedRows } from "@/screens/membersPending/ui/BlockedRows";
 import { MembersBlockedSheets } from "@/screens/membersPending/ui/MembersBlockedSheets";
 
 export function MembersBlockedScreen() {
@@ -18,11 +18,12 @@ export function MembersBlockedScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {screen.listState === "loading" ? <BlockedLoading /> : null}
-          {screen.listState === "empty" ? <BlockedEmpty /> : null}
-          {screen.listState === "rows" ? (
-            <BlockedRows rows={screen.rows} />
-          ) : null}
+          <BlockedRows
+            now={screen.today}
+            onPress={screen.openMember}
+            loading={<BlockedLoading />}
+            empty={<BlockedEmpty />}
+          />
         </View>
       </ScrollView>
 

@@ -1,15 +1,15 @@
+import { AdjustChoiceSheet } from "@/features/adjustment/ui/AdjustChoiceSheet";
+import { AdjustSheet } from "@/features/adjustment/ui/AdjustSheet";
+import { QualificationSheet } from "@/features/qualificationGrant/ui/QualificationSheet";
+import { PersonPickerSheet } from "@/features/scheduleAssign/ui/PersonPickerSheet";
+import { PersonSheet } from "@/features/scheduleAssign/ui/PersonSheet";
+import { ConfirmChangeSheet } from "@/features/scheduleConfirm/ui/ConfirmChangeSheet";
+import { DiscardSlotSheet } from "@/features/scheduleSlot/ui/DiscardSlotSheet";
+import { SlotSheet } from "@/features/scheduleSlot/ui/SlotSheet";
 import type {
   DayDetailController,
   DayDetailSheetKind,
 } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import { AdjustChoiceSheet } from "@/screens/scheduleAdmin/ui/AdjustChoiceSheet";
-import { AdjustSheet } from "@/screens/scheduleAdmin/ui/AdjustSheet";
-import { ConfirmChangeSheet } from "@/screens/scheduleAdmin/ui/ConfirmChangeSheet";
-import { DiscardSlotSheet } from "@/screens/scheduleAdmin/ui/DiscardSlotSheet";
-import { PersonPickerSheet } from "@/screens/scheduleAdmin/ui/PersonPickerSheet";
-import { PersonSheet } from "@/screens/scheduleAdmin/ui/PersonSheet";
-import { QualificationSheet } from "@/screens/scheduleAdmin/ui/QualificationSheet";
-import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
 
 export type DayDetailSheetBodyProps = {
   day: DayDetailController;

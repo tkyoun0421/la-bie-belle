@@ -8,9 +8,9 @@ import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.pol
 import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
 import { workInputsOf } from "@/features/stats/model/workTotals.policy";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
+import { myAttendanceTally } from "@/features/stats/utils/attendanceTally.utils";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
-import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 
 export type PayrollMonthWithDays = {
   month: string;

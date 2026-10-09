@@ -5,6 +5,7 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Screen } from "@/shared/ui/Screen";
+import { PendingRows } from "@/entities/member/ui/PendingRows";
 import {
   MORE_HIT_SLOP,
   MORE_ICON_SIZE,
@@ -14,7 +15,6 @@ import { useMembersPendingScreen } from "@/screens/membersPending/hooks/useMembe
 import { MembersPendingSheets } from "@/screens/membersPending/ui/MembersPendingSheets";
 import { PendingEmpty } from "@/screens/membersPending/ui/PendingEmpty";
 import { PendingLoading } from "@/screens/membersPending/ui/PendingLoading";
-import { PendingRows } from "@/screens/membersPending/ui/PendingRows";
 
 export function MembersPendingScreen() {
   const screen = useMembersPendingScreen();
@@ -46,11 +46,12 @@ export function MembersPendingScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {screen.listState === "loading" ? <PendingLoading /> : null}
-          {screen.listState === "empty" ? <PendingEmpty /> : null}
-          {screen.listState === "rows" ? (
-            <PendingRows rows={screen.rows} />
-          ) : null}
+          <PendingRows
+            now={screen.today}
+            onPress={screen.openMember}
+            loading={<PendingLoading />}
+            empty={<PendingEmpty />}
+          />
         </View>
       </ScrollView>
 

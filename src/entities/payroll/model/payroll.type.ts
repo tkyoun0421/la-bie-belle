@@ -1,5 +1,7 @@
 export type DayKind = "normal" | "overtime" | "absent";
 
+export type PayrollDayKind = DayKind | "wage-pending";
+
 export type WageRate = {
   effectiveDate: string;
   amount: number;

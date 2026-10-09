@@ -1,8 +1,6 @@
-import type {
-  PendingChange,
-  PickerTarget,
-} from "@/screens/scheduleAdmin/model/dayDetail.type";
-import type { PickerCategory } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
+import type { PickerCategory } from "@/features/scheduleAssign/model/personPickerRows.policy";
+import type { PickerTarget } from "@/features/scheduleAssign/model/pickerEntry.type";
+import type { PendingChange } from "@/screens/scheduleAdmin/model/dayDetail.type";
 
 export type PickedEntry = {
   profileId: string;

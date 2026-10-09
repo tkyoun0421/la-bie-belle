@@ -7,7 +7,6 @@ import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
 import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 import { useWagesScreen } from "@/screens/wages/hooks/useWagesScreen";
-import { ResetWageDialog } from "@/screens/wages/ui/ResetWageDialog";
 import { WagesList } from "@/screens/wages/ui/WagesList";
 import { WagesSheets } from "@/screens/wages/ui/WagesSheets";
 
@@ -39,14 +38,6 @@ export function WagesScreen() {
       </ScrollView>
 
       <WagesSheets screen={screen} />
-
-      <ResetWageDialog
-        visible={screen.asking}
-        body={screen.resetBody}
-        notice={screen.resetNotice}
-        onClose={screen.cancelReset}
-        onConfirm={screen.confirmReset}
-      />
 
       {screen.toast ? (
         <FloatingToast message={screen.toast} onDone={screen.dismissToast} />

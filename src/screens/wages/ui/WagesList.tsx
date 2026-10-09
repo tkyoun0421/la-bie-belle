@@ -1,5 +1,5 @@
+import { WageRows } from "@/entities/payroll/ui/WageRows";
 import type { WagesScreenController } from "@/screens/wages/hooks/useWagesScreen";
-import { WageRows } from "@/screens/wages/ui/WageRows";
 import { WagesEmpty } from "@/screens/wages/ui/WagesEmpty";
 import { WagesLoading } from "@/screens/wages/ui/WagesLoading";
 
@@ -16,5 +16,5 @@ export function WagesList({ screen }: WagesListProps) {
     return <WagesEmpty />;
   }
 
-  return <WageRows rows={screen.rows} />;
+  return <WageRows people={screen.people} onPressPerson={screen.openPerson} />;
 }

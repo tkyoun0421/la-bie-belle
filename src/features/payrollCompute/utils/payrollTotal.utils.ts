@@ -39,6 +39,10 @@ export function weekTotals(days: readonly PayrollDay[]): WeekTotal[] {
   );
 }
 
+export function amountTotal(days: readonly { amount: number }[]): number {
+  return days.reduce((sum, day) => sum + day.amount, 0);
+}
+
 export function monthTotal(days: readonly PayrollDay[], month: string): number {
   const prefix = month.slice(0, 7);
 

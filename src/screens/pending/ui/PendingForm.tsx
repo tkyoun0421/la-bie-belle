@@ -4,9 +4,9 @@ import { BottomCTA } from "@/shared/ui/BottomCTA";
 import { Button } from "@/shared/ui/Button";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { PENDING_FORM_COPY } from "@/screens/pending/consts/pending.const";
+import { PROFILE_FORM_COPY } from "@/features/profileEdit/consts/profileEdit.const";
+import { PendingEditor } from "@/features/profileEdit/ui/PendingEditor";
 import type { PendingScreenController } from "@/screens/pending/hooks/usePendingScreen";
-import { PendingEditor } from "@/screens/pending/ui/PendingEditor";
 import { PendingSummary } from "@/screens/pending/ui/PendingSummary";
 
 export type PendingFormProps = {
@@ -21,11 +21,11 @@ export function PendingForm({ screen }: PendingFormProps) {
     >
       <Screen floor="plain">
         <AppBar
-          title={PENDING_FORM_COPY.appBarTitle}
+          title={PROFILE_FORM_COPY.appBarTitle}
           right={
             <Pressable accessibilityRole="button" onPress={screen.leave}>
               <Text size="sm" tone="subtle">
-                {PENDING_FORM_COPY.signOut}
+                {PROFILE_FORM_COPY.signOut}
               </Text>
             </Pressable>
           }
@@ -40,11 +40,28 @@ export function PendingForm({ screen }: PendingFormProps) {
 
           <View className="flex-1" />
 
-          <PendingEditor screen={screen} />
+          <PendingEditor
+            open={screen.open}
+            userId={screen.userId}
+            name={screen.values.name}
+            photoUrl={screen.photoUrl}
+            gender={screen.genderValue}
+            birthDate={screen.values.birthDate}
+            phone={screen.values.phone}
+            birthDateGuide={screen.birthDateGuide}
+            phoneGuide={screen.phoneGuide}
+            onPhotoDone={screen.freezePhoto}
+            onWriteName={screen.writeName}
+            onSubmitName={screen.submitName}
+            onChooseGender={screen.chooseGender}
+            onWriteBirthDate={screen.writeBirthDate}
+            onWritePhone={screen.writePhone}
+            onTouch={screen.touch}
+          />
 
           {screen.canSubmit ? (
             <Text size="xs" tone="subtle" className="mb-4">
-              {PENDING_FORM_COPY.lockedNote}
+              {PROFILE_FORM_COPY.lockedNote}
             </Text>
           ) : null}
         </View>
@@ -53,11 +70,11 @@ export function PendingForm({ screen }: PendingFormProps) {
           note={
             screen.submitFailed ? (
               <Text size="xs" tone="critical" className="text-center">
-                {PENDING_FORM_COPY.submitFailed}
+                {PROFILE_FORM_COPY.submitFailed}
               </Text>
             ) : screen.canSubmit ? null : (
               <Text size="xs" tone="subtle" className="text-center">
-                {PENDING_FORM_COPY.submitHint}
+                {PROFILE_FORM_COPY.submitHint}
               </Text>
             )
           }
@@ -68,7 +85,7 @@ export function PendingForm({ screen }: PendingFormProps) {
             loading={screen.submitting}
             onPress={screen.send}
           >
-            {PENDING_FORM_COPY.submit}
+            {PROFILE_FORM_COPY.submit}
           </Button>
         </BottomCTA>
       </Screen>

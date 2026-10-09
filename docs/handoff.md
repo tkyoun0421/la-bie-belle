@@ -6,24 +6,36 @@
 
 ## 다음 작업
 
-**[screens-orchestration-only](3-build/plans/screens-orchestration-only.md)이 돌고 있다 — `.tsx`가 조립만 하게 한다.** 브랜치는 `feat/screens-orchestration-only`고 `dto-to-domain-shape`는 PR [#510](https://github.com/tkyoun0421/la-bie-belle/pull/510)으로 merge됐다.
+**읽기 묶음 넷이 도는 중이다 — 받아서 cherry-pick하고 전수를 다시 세는 것이 첫 수다.** 쓰기 묶음은 PR [#514](https://github.com/tkyoun0421/la-bie-belle/pull/514)(`feat/suspense-probe`)에 있고 자동 리뷰가 통과했다. 읽기 묶음은 worktree 브랜치에 커밋만 하고 PR을 안 연다 — 총괄이 cherry-pick한다.
 
-**통신 쪽 경계는 섰다.** `ui`가 `api`·`services`·Supabase 클라이언트·`.dto.ts`를 당기는 자리가 전부 0이다. 남은 것은 **값을 만드는 일**이 화면에 있다는 것 — `ui`가 `utils`를 값으로 당기는 자리가 스물둘, `model`이 다섯이고 아무 lint 규칙도 안 문다. 통신 축 넷만 막혀 있어서 포맷과 판정을 당기는 길이 열려 있다.
+**정본이 세 번 고쳐졌다. 고친 쪽이 지금 맞다.**
 
-**그 스물일곱이 조각에 몰렸다.** `screens/*/ui` 쉰넷 중 화면 파일은 스물이고 조각이 서른넷인데, 값 import 스물다섯 중 **화면 파일은 둘**이다. `MemberSheet.tsx` 하나가 `canSaveDisplayName`·`formatBirthDate`·`spellGender`·`spellLeftAt` 넷을 불렀다.
+**하나 — 도메인 여럿을 맞추는 읽기는 `features`에 산다.** plan이 `features/stats`를 「mutation이 없으니 `entities`로」 보내려 했는데 ADR-015가 「도메인 둘 이상을 읽는 것은 읽기라도 `features`에 산다」고 적고 그 슬라이스를 이름까지 들어 예로 쓴다. `useAttendanceMonthsQuery`가 query 둘을 합치고 `queryKeys`에 `stats` 네임스페이스조차 없다 — 내리면 규칙 3이 열두 자리에서 막는다(`import type`도 막는다). ADR-016의 가름 축이 「도메인 하나를 읽으면 `entities`, 바꾸거나 도메인 여럿을 맞추면 `features`」로 섰다.
 
-**ADR-015가 controller의 정의를 넓혔다** — 파일 꼴이 `hooks/use<화면>.ts`에서 `hooks/use<조각>.ts`가 되고 「`.tsx`는 조립만 한다」 절이 섰다. controller를 화면 단위로만 두면 조각의 로직이 갈 데가 없어 `.tsx`에 남거나 화면 controller가 조각의 props까지 만드는 뭉치가 된다. 집행 표에 「`ui/`에서 `model`·`utils`를 값으로 import 금지」가 더해졌고 깨진 경계 표는 실측으로 갱신했다.
+**둘 — 못 올라가는 것과 자리를 안 만든 것은 다르다.** 관찰 065를 「`screens`가 맞는 자리」로 닫았는데 한 칸 모자랐다. `payrollViewDays`가 entity 슬라이스 넷(`attendance`·`payroll`·`rehearsal`·`schedule`)을 맞춰 `entities/payroll`로 못 내려가는데, **규칙 28 `house/features-query-composes`가 바로 그 자리를 허락한다** — `features/payrollCompute`에 `services/`가 없었을 뿐이다. ADR-016에 「먼저 물을 것은 그 슬라이스에 service가 있나다」를 넣었다. `screens`에 남을 자리는 진짜로 `features` 둘 이상을 당기는 여덟이고 그중 `ui`는 시트 고르는 자리 둘(`DayDetailSheetBody` 다섯, `ScheduleAdminSheetBody` 셋)뿐이다.
 
-**본보기가 `members`다(`d88167cc`).** 꼴이 넷이다 — `model/<조각>.type.ts`가 `<조각>Input`·`<조각>Controller`를 선언하고, `hooks/use<조각>.ts`가 포맷·판정을 불러 완성된 값을 주고, 조각 `.tsx`는 `const view = use<조각>(input)`로 받아 꽂고, 상태마다의 렌더는 조각으로 갈린다(`MembersLoading`·`MembersEmpty`·`MemberRows`). `Linking.openURL`은 `shared/lib/openPhone.lib.ts`로 갔다 — 부작용을 내는 손이 `lib`의 일이다. `useRouter`도 controller로 올라가 `screen.goBack` 하나가 됐고 경로는 `shared/consts/navigation.const.ts`의 `ADMIN_HOME_PATH`로 간다. 줄 수는 `MemberSheet` 248 → 196, `MembersScreen` 175 → 111이다.
+**셋 — 묶음 자리는 뼈다.** `AdminStatsBody`·`StatsList`·`PayrollList`·`WagesList`·`ApplicationsList`·`ApprovalsList`·`ProfileSettings`가 `screen:` controller를 통째로 받아 상태 이름으로 조각만 고르고 도메인 층을 하나도 안 당긴다. 고르는 대상이 화면 문안을 든 조각이라 목록이 올라가면 빈 상태·실패 문안까지 따라 올라간다.
 
-**나머지 열아홉 슬라이스를 implementer 다섯이 병렬로 한다.** 묶음은 `scheduleAdmin` 하나(파일 열다섯, 값 열여섯, `SheetLayer` 열셋) · `pending`+`profile` · `membersPending`+`rehearsal`+`qr` · `scheduleWorker`+`notifications`+`adminHome`+`adminStats` · 나머지 여덟(`wages`·`approvals`·`applications`·`payroll`·`stats`·`left`·`blocked`·`retry`)이다. 슬라이스가 경계라 파일이 안 겹친다. 각자 커밋만 하고 PR은 총괄이 연다.
+**읽기는 `useQuery`로 간다.** RN에서 Suspense fallback이 안 풀린다는 보고가 [TanStack/query#8819](https://github.com/TanStack/query/issues/8819)·[react-native#49129](https://github.com/react/react-native/issues/49129)에 있고, 맥과 기기가 같은 네트워크에 없고 시뮬레이터도 없어(Xcode는 Command Line Tools만) 확인을 못 했다. 조각이 자기 데이터를 부르는 것이 ADR-016의 핵심이고 경계는 그 위의 선택이라 확인 하나로 전체를 미루지 않는다 — 확인되면 조각마다 `useSuspenseQuery` 한 줄 교체다.
 
-**규칙 `house/ui-value-import`는 썼지만 안 켰다.** `eslint-rules/uiValueImport.mjs`와 짝 테스트 열셋이 디스크에 있고 등록 다섯 자리가 비어 있다 — `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts`(`RULES` 행 + `ENFORCED_RULE_COUNT`와 `DOCUMENTED_LINT_RULE_COUNT` **둘 다** 39로) · `docs/4-test/execution.md`의 표다. **두 상수가 쌍이라 하나만 올리면 「1부터 끝 번호까지 끊김 없이」가 깨진다.** `ruleCatalogue.test.ts`가 live config를 읽어 교차검증하므로 다섯이 한 커밋이어야 하고, 켜는 시점은 AC-01이 0에 닿은 뒤다.
+**기기 확인은 사용자가 나중에 한다.** 막힌 자리는 `.env`의 `EXPO_PUBLIC_SUPABASE_URL`이 `127.0.0.1`이라 폰에서 자기 자신을 가리키는 것이고, LAN 주소로 덮어 띄우면 된다(`EXPO_PUBLIC_SUPABASE_URL=http://$(ipconfig getifaddr en0):54321 pnpm dev`). 맥과 기기가 같은 Wi-Fi여야 한다 — Metro는 `--tunnel`로 피할 수 있지만(ngrok 전역 설치가 권한으로 실패한다) 로컬 Supabase는 LAN 주소밖에 길이 없다.
 
-**받아 둘 꼬리가 둘이다.**
+**본보기가 셋이다.**
 
-- `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
-- 테스트 아흔여덟이 `jest.fn<(...args: unknown[]) => Promise<unknown>>()`로 mock해 픽스처의 꼴을 아무도 안 본다(관찰 061). `useAdminHomeScreen.test.ts`의 `check_ins` 픽스처가 없는 열(`checked_in_at`)을 들고 있었고 어떤 검사도 안 잡았다. `jest.fn<typeof getMonthSchedule>()`로 바꾸면 `import type`이 런타임에 사라지니 mock을 우회하지 않는다
+- **쓰기 조각** — `features/memberAdmin/{ui/MemberSheet.tsx, hooks/useMemberSheet.ts}`. 조각 controller가 초안·보내는 중·실패를 들고 자기 mutation을 부르고 끝나면 `onDone`으로 화면에 알린다
+- **읽기 조각** — `entities/payroll/{hooks/useWageRows.ts, ui/WageRows.tsx, ui/WageRowsLoading.tsx, ui/WageRowsFailed.tsx}`. `state: "pending" | "failed" | "rows"`를 상태 이름으로 내주고 `.tsx`가 조건문으로 고른다. 누가 있는지는 `entities/member` 소관이라 `people`로 받고 시트 여는 행위는 `onPressPerson`으로 받는다
+- **경계** — `shared/ui/QueryBoundary.tsx`가 `Suspense`·ErrorBoundary·`QueryErrorResetBoundary`를 묶는다. `retry`가 쿼리의 에러 상태까지 되돌려 다시 그려도 같은 에러가 또 던져지지 않는다. `entities/notification`의 조각 넷만 `useSuspenseQuery`로 그 경계를 쓴다
+
+**옮기지 않기로 한 것 둘.**
+
+- **`useDayDetail`의 mutation 아홉.** `pick → commit → pending → run`을 지나고 확정 버튼 하나가 pending의 종류에 따라 넷 중 하나를 고른다. 조각이 mutation 하나를 삼키는 꼴이 아니라 옮기려면 653줄과 그 테스트 611줄을 다시 짜야 한다
+- **`pending`의 폼 로직.** 형제 셋이 같은 상태를 읽는다 — `PendingSummary`가 굳은 칸을, `PendingEditor`가 열린 칸을, BottomCTA가 `canSubmit`을 본다. 아무도 혼자 가질 수 없다
+
+**검사가 둘 섰다.** 규칙 39 `house/ui-value-import`(`ui/`에서 `model`·`utils`를 값으로 당기는 것을 막는다, 면제는 `shared` 층의 `utils`)와 규칙 40 `house/ui-no-router`(`ui/`에서 라우팅 훅 여섯, `Link`와 `import type { Href }`는 통과)다. 규칙 하나를 켜려면 **한 커밋에 다섯 자리**를 건드린다 — `.mjs`·`eslint-rules/index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`(행과 `DOCUMENTED_LINT_RULE_COUNT`)·`docs/4-test/execution.md`. `ruleCatalogue.test.ts`가 살아 있는 `eslint.config.mjs`를 읽어서다.
+
+**테스트 프로젝트 범위가 넓어졌다.** `components`가 `src/shared/ui/__tests__/`만 봐서 조각이 `entities`·`features`로 옮겨가면 그 `.tsx` 테스트를 아무도 돌리지 않았다. `logic`의 제외 패턴도 같은 경로만 집어 양쪽에서 빠졌다 — 둘을 `src/**/ui/__tests__/`로 넓혔다. 조각을 옮기면 짝 테스트가 iOS 환경에서 돈다.
+
+**꼬리는 `backlog.md`의 `duplicated-constants-and-copy`가 받는다** — `CLOCK_LENGTH = 5` 네 자리(집은 `entities/clock/consts`), `alreadyDecided`와 `adminBadge` 중복, `useMyProfileRowQuery` 오명(`Profile`을 돌려주며 `Row`를 든다, importer 여덟, 축은 「연락처가 붙었나」)이다. 관찰 061의 mock 아흔여덟도 열려 있다.
 
 ## 재개 맥락
 

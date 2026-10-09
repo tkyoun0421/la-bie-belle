@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 39;
+export const DOCUMENTED_LINT_RULE_COUNT = 40;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -315,6 +315,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/ui-value-import",
     enforcedBy: null,
     test: "eslint-rules/__tests__/uiValueImport.test.ts",
+  },
+  {
+    no: 40,
+    name: "ui의 라우팅 훅",
+    mechanism: "house",
+    ruleId: "house/ui-no-router",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/uiNoRouter.test.ts",
   },
 ];
 

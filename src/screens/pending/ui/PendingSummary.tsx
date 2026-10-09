@@ -1,7 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Text } from "@/shared/ui/Text";
-import { PENDING_AVATAR_SIZE } from "@/screens/pending/consts/pending.const";
+import { FORM_AVATAR_SIZE } from "@/features/profileEdit/consts/profileEdit.const";
 import type { PendingScreenController } from "@/screens/pending/hooks/usePendingScreen";
 
 export type PendingSummaryProps = {
@@ -20,7 +20,7 @@ export function PendingSummary({ screen }: PendingSummaryProps) {
           <Avatar
             name={screen.name}
             photoUrl={screen.photoUrl}
-            size={PENDING_AVATAR_SIZE}
+            size={FORM_AVATAR_SIZE}
           />
         </Pressable>
       ) : null}

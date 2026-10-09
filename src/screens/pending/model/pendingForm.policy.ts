@@ -1,12 +1,12 @@
 import type { Profile } from "@/entities/profile/model/profile.type";
-import { PENDING_STEPS } from "@/screens/pending/consts/pending.const";
-import type {
-  PendingStage,
-  Step,
-} from "@/screens/pending/model/pendingForm.type";
+import { PROFILE_FORM_STEPS } from "@/features/profileEdit/consts/profileEdit.const";
+import type { ProfileFormStep } from "@/features/profileEdit/model/profileFormStep.type";
+import type { PendingStage } from "@/screens/pending/model/pendingForm.type";
 
-export function firstOpenStep(frozen: readonly Step[]): Step | null {
-  return PENDING_STEPS.find((step) => !frozen.includes(step)) ?? null;
+export function firstOpenStep(
+  frozen: readonly ProfileFormStep[],
+): ProfileFormStep | null {
+  return PROFILE_FORM_STEPS.find((step) => !frozen.includes(step)) ?? null;
 }
 
 export type StageSource = Pick<Profile, "submittedAt" | "rejectedAt">;

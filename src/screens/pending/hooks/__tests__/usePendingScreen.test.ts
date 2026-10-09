@@ -6,12 +6,8 @@ const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const submitProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const signOutMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const requestPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const pickAndShrinkPhotoMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 const replaceMock = jest.fn();
@@ -39,20 +35,6 @@ jest.unstable_mockModule(
   }),
 );
 
-jest.unstable_mockModule(
-  "@/features/profileEdit/api/avatarsBucket.api",
-  () => ({
-    uploadAvatar: uploadAvatarMock,
-  }),
-);
-
-jest.unstable_mockModule(
-  "@/features/profileEdit/api/updateMyPhoto.api",
-  () => ({
-    updateMyPhoto: updateMyPhotoMock,
-  }),
-);
-
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
   DEVICE_CLEANUP_NOT_WIRED_YET: {
     deleteDeviceRow: async () => {},
@@ -69,20 +51,9 @@ jest.unstable_mockModule(
   }),
 );
 
-jest.unstable_mockModule("@/features/profileEdit/lib/pickPhoto.lib", () => ({
-  pickAndShrinkPhoto: pickAndShrinkPhotoMock,
-}));
-
 jest.unstable_mockModule("@/features/pushSwitch/lib/pushDeps.lib", () => ({
   PUSH_DEPS: {},
 }));
-
-jest.unstable_mockModule(
-  "@/features/profileEdit/lib/photoPickDeps.lib",
-  () => ({
-    PHOTO_PICK_DEPS: {},
-  }),
-);
 
 jest.unstable_mockModule("@/shared/lib/appState.lib", () => ({
   APP_STATE: { addEventListener: () => ({ remove: () => {} }) },
@@ -99,8 +70,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { PENDING_FORM_COPY } =
-  await import("@/screens/pending/consts/pending.const");
+const { PROFILE_FORM_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { LOGIN_PATH } = await import("@/shared/consts/navigation.const");
 const { usePendingScreen } =
   await import("@/screens/pending/hooks/usePendingScreen");
@@ -145,17 +116,10 @@ beforeEach(() => {
   getMyProfileMock.mockReset().mockResolvedValue(BLANK_PROFILE);
   getProfilePrivateMock.mockReset().mockResolvedValue(null);
   submitProfileMock.mockReset().mockResolvedValue(undefined);
-  uploadAvatarMock.mockReset().mockResolvedValue("https://example.test/up.jpg");
-  updateMyPhotoMock.mockReset().mockResolvedValue(undefined);
   signOutMock.mockReset().mockResolvedValue(undefined);
   requestPushPermissionMock
     .mockReset()
     .mockResolvedValue({ permission: "granted", token: "tok-1" });
-  pickAndShrinkPhotoMock.mockReset().mockResolvedValue({
-    uri: "file:///shrunk.jpg",
-    contentType: "image/jpeg",
-    extension: "jpg",
-  });
 });
 
 async function mounted() {
@@ -260,7 +224,7 @@ describe("usePendingScreen — 칸은 하나고 자리가 고정이다", () => {
 
     expect(result.current.open).toBe("gender");
     expect(result.current.nameLine).toBe(
-      `이준호${PENDING_FORM_COPY.greetingSuffix}`,
+      `이준호${PROFILE_FORM_COPY.greetingSuffix}`,
     );
   });
 
@@ -365,50 +329,14 @@ describe("usePendingScreen — 보내기와 사진", () => {
     expect(result.current.stage).toBe("form");
   });
 
-  it("고른 사진을 올리면 사진 칸이 굳는다", async () => {
+  it("사진 칸이 끝났다고 하면 그 칸이 굳고 다음이 열린다", async () => {
     const { result } = await mounted();
 
-    await act(async () => {
-      await result.current.pickPhoto();
-    });
-
-    await waitFor(() =>
-      expect(uploadAvatarMock).toHaveBeenCalledWith(FAKE_CLIENT, {
-        userId: "user-1",
-        uri: "file:///shrunk.jpg",
-        contentType: "image/jpeg",
-        extension: "jpg",
-      }),
-    );
-
-    await waitFor(() => expect(result.current.open).toBe("name"));
-  });
-
-  it("고르다 말면 칸이 그대로 열려 있다", async () => {
-    pickAndShrinkPhotoMock.mockResolvedValue(null);
-
-    const { result } = await mounted();
-
-    await act(async () => {
-      await result.current.pickPhoto();
-    });
-
-    expect(uploadAvatarMock).not.toHaveBeenCalled();
     expect(result.current.open).toBe("photo");
-    expect(result.current.photoFailed).toBe(false);
-  });
 
-  it("고르다 넘어지면 실패가 선다", async () => {
-    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
+    act(() => result.current.freezePhoto());
 
-    const { result } = await mounted();
-
-    await act(async () => {
-      await result.current.pickPhoto();
-    });
-
-    expect(result.current.photoFailed).toBe(true);
-    expect(result.current.open).toBe("photo");
+    expect(result.current.open).toBe("name");
   });
 });
 
@@ -456,11 +384,11 @@ describe("usePendingScreen — 화면에 꽂을 값을 완성해 준다", () => 
   it("빈 칸이 남았으면 적으라는 머리말이고 다 채우면 확인하라는 머리말이다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.headline).toBe(PENDING_FORM_COPY.writing);
+    expect(result.current.headline).toBe(PROFILE_FORM_COPY.writing);
 
     const { result: done } = await filled();
 
-    expect(done.current.headline).toBe(PENDING_FORM_COPY.reviewing);
+    expect(done.current.headline).toBe(PROFILE_FORM_COPY.reviewing);
   });
 
   it("성별을 안 골랐으면 고르는 자리에 빈 문자열이 간다", async () => {

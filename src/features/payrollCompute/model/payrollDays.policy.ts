@@ -12,8 +12,8 @@ import {
 } from "@/entities/payroll/model/dayAmount.policy";
 import type {
   Adjustment,
-  DayKind,
   ExcuseStatus,
+  PayrollDayKind,
   WageRate,
 } from "@/entities/payroll/model/payroll.type";
 import { wageAt } from "@/entities/payroll/model/wageAt.policy";
@@ -67,8 +67,6 @@ export type PayrollDaysInput = {
   rates: readonly WageRate[];
   now: string;
 };
-
-export type PayrollDayKind = DayKind | "wage-pending";
 
 export type PayrollDay = Omit<DayAmount, "kind"> & {
   date: string;

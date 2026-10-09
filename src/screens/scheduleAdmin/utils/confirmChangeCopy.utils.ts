@@ -1,5 +1,5 @@
+import type { ForceChangeCopyInput } from "@/features/scheduleConfirm/utils/forceChangeCopy.utils";
 import type { PendingChange } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
 
 export function confirmChangeCopyOf(
   change: PendingChange,

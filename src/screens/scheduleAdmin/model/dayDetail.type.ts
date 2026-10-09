@@ -7,19 +7,19 @@ import type {
   ScheduleSlot,
 } from "@/entities/schedule/model/schedule.type";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import type { AdjustSheetRow } from "@/features/adjustment/model/adjustSheetRow.type";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
+import type { PickerEntry } from "@/features/scheduleAssign/model/pickerEntry.type";
+import type { ForceChangeCopyInput } from "@/features/scheduleConfirm/utils/forceChangeCopy.utils";
 import type { DayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type {
   HolidayRow,
   HolidaySwitchState,
 } from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
-import type { PickerRow } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
 import type {
   AdjustSheetAdjustment,
   AdjustSheetRehearsal,
-  AdjustSheetRow,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
-import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
 
 export type DayDetailInput = {
   dayId: string;
@@ -62,21 +62,6 @@ export type DayDetailInput = {
   }) => void;
   onAdjustSettled: () => void;
   onReloadDay: () => void;
-};
-
-export type PickerEntry = PickerRow & {
-  photoUrl: string | null;
-  gender: string | null;
-};
-
-export type PickerTarget = {
-  position: string;
-  slotId: string | null;
-  replacing: {
-    assignmentId: string;
-    outgoingProfileId: string;
-    outgoingName: string;
-  } | null;
 };
 
 export type PendingChange =

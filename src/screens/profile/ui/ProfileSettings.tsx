@@ -1,9 +1,9 @@
 import { Card } from "@/shared/ui/Card";
 import { ListRow } from "@/shared/ui/ListRow";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
+import { ProfileNotificationRow } from "@/features/pushSwitch/ui/ProfileNotificationRow";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
 import type { ProfileScreenController } from "@/screens/profile/hooks/useProfileScreen";
-import { ProfileNotificationRow } from "@/screens/profile/ui/ProfileNotificationRow";
 
 export type ProfileSettingsProps = {
   screen: ProfileScreenController;
@@ -15,7 +15,7 @@ export function ProfileSettings({ screen }: ProfileSettingsProps) {
       {screen.loading ? (
         <SkeletonLine className="my-4 w-2/3" />
       ) : (
-        <ProfileNotificationRow screen={screen} />
+        <ProfileNotificationRow enabled={screen.notificationEnabled} />
       )}
       <ListRow
         testID="profile-theme-row"

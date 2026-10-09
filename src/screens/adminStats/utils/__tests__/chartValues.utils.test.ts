@@ -1,7 +1,7 @@
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
+import type { AttendanceTab } from "@/features/stats/model/attendanceTab.type";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
-import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 import {
   attendanceValues,
   percentLabel,

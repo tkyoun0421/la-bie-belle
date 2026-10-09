@@ -1,6 +1,6 @@
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { MemberDetailSheet } from "@/features/memberAdmin/ui/MemberDetailSheet";
 import type { MembersPendingController } from "@/screens/membersPending/hooks/useMembersPendingScreen";
-import { MemberDetailSheet } from "@/screens/membersPending/ui/MemberDetailSheet";
 
 export type MembersPendingSheetsProps = {
   screen: MembersPendingController;
@@ -14,17 +14,13 @@ export function MembersPendingSheets({ screen }: MembersPendingSheetsProps) {
   return (
     <SheetLayer onDismiss={screen.closeSheet}>
       <MemberDetailSheet
+        profileId={screen.sheet.profileId}
         name={screen.sheet.name}
         photoUrl={screen.sheet.photoUrl}
         sentAt={screen.sheet.sentAt}
         values={screen.sheet.values}
         today={screen.today}
-        face={screen.face}
-        failed={screen.failed}
-        sending={screen.sending}
-        onFace={screen.showFace}
-        onApprove={screen.approve}
-        onConfirm={screen.confirm}
+        onDone={screen.finish}
       />
     </SheetLayer>
   );

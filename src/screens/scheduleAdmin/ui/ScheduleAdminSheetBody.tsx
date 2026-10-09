@@ -1,9 +1,9 @@
 import { DeadlineSheet } from "@/features/availabilitySubmit/ui/DeadlineSheet";
+import { ConfirmSheet } from "@/features/scheduleConfirm/ui/ConfirmSheet";
+import { CloseDayWarningSheet } from "@/features/scheduleDay/ui/CloseDayWarningSheet";
+import { CreateScheduleSheet } from "@/features/scheduleDay/ui/CreateScheduleSheet";
+import { DayHoursSheet } from "@/features/scheduleDay/ui/DayHoursSheet";
 import type { ScheduleAdminScreenController } from "@/screens/scheduleAdmin/hooks/useScheduleAdminScreen";
-import { CloseDayWarningSheet } from "@/screens/scheduleAdmin/ui/CloseDayWarningSheet";
-import { ConfirmSheet } from "@/screens/scheduleAdmin/ui/ConfirmSheet";
-import { CreateScheduleSheet } from "@/screens/scheduleAdmin/ui/CreateScheduleSheet";
-import { DayHoursSheet } from "@/screens/scheduleAdmin/ui/DayHoursSheet";
 
 export type ScheduleAdminSheetBodyProps = {
   screen: ScheduleAdminScreenController;
@@ -23,13 +23,7 @@ export function ScheduleAdminSheetBody({
       <CreateScheduleSheet
         month={screen.month}
         today={screen.today}
-        deadline={sheet.deadline}
-        canSave={sheet.canSave}
-        saving={sheet.saving}
-        failed={sheet.failed}
-        onWriteDeadline={screen.writeCreateDeadline}
         onClose={screen.closeSheet}
-        onCreate={screen.createSchedule}
       />
     );
   }
@@ -55,11 +49,7 @@ export function ScheduleAdminSheetBody({
         month={screen.month}
         openSlots={sheet.openSlots}
         notifiedCount={sheet.notifiedCount}
-        confirming={sheet.confirming}
-        done={sheet.done}
-        failed={sheet.failed}
         onClose={screen.closeSheet}
-        onConfirm={screen.confirmMonth}
       />
     );
   }
@@ -67,15 +57,10 @@ export function ScheduleAdminSheetBody({
   if (sheet.kind === "hours") {
     return (
       <DayHoursSheet
-        starts={sheet.starts}
-        ends={sheet.ends}
-        canSave={sheet.canSave}
-        saving={sheet.saving}
-        failed={sheet.failed}
-        onWriteStarts={screen.writeHoursStarts}
-        onWriteEnds={screen.writeHoursEnds}
+        workDate={sheet.workDate}
+        startsAt={sheet.startsAt}
+        endsAt={sheet.endsAt}
         onClose={screen.closeSheet}
-        onSave={screen.saveHours}
       />
     );
   }
@@ -84,9 +69,8 @@ export function ScheduleAdminSheetBody({
     <CloseDayWarningSheet
       workDate={sheet.workDate}
       assignmentCount={sheet.assignmentCount}
-      closing={sheet.closing}
       onCancel={screen.closeSheet}
-      onConfirm={screen.closeDay}
+      onDone={screen.leaveDay}
     />
   );
 }

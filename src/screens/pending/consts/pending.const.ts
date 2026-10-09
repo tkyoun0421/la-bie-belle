@@ -1,18 +1,3 @@
-export const PENDING_STEPS = [
-  "photo",
-  "name",
-  "gender",
-  "birthDate",
-  "phone",
-] as const;
-
-export const EMPTY_PENDING_FORM: ProfileFormValues = {
-  name: "",
-  gender: null,
-  birthDate: "",
-  phone: "",
-};
-
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
@@ -24,6 +9,13 @@ import type {
   NotificationPromptOutcome,
   NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
+
+export const EMPTY_PENDING_FORM: ProfileFormValues = {
+  name: "",
+  gender: null,
+  birthDate: "",
+  phone: "",
+};
 
 export const PROMPT_OUTCOME_OF: Record<
   PushPermission,
@@ -59,32 +51,6 @@ export const NOTIFICATION_PROMPT_COPY: Record<
   },
 };
 
-export const PENDING_FORM_COPY = {
-  appBarTitle: "프로필",
-  signOut: "로그아웃",
-  writing: "자신의 프로필을 작성해 주세요",
-  reviewing: "아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요",
-  greetingSuffix: "님, 반가워요",
-  useDefaultPhoto: "기본 사진 쓰기",
-  photoFailed: "사진을 올리지 못했어요. 다시 골라 주세요",
-  nameLabel: "이름",
-  namePlaceholder: "근무표에 뜰 이름",
-  genderLabel: "성별",
-  birthDateLabel: "생년월일",
-  birthDatePlaceholder: "19930421",
-  phoneLabel: "연락처",
-  phonePlaceholder: "010-0000-0000",
-  lockedNote: "이름과 성별과 생년월일은 보내고 나면 못 고쳐요",
-  submitHint: "빈 칸을 다 채우면 보낼 수 있어요",
-  submitFailed: "보내지 못했어요. 다시 시도해주세요",
-  submit: "보내기",
-} as const;
-
-export const GENDER_OPTIONS = [
-  { value: "female", label: "여" },
-  { value: "male", label: "남" },
-] as const;
-
 export const PENDING_WAIT_COPY = {
   waitingBadge: "승인 기다리는 중",
   waitingTitle: "관리자가 확인 중이에요",
@@ -103,8 +69,6 @@ export const ROTATING_LINES = [
 export const ROTATE_INTERVAL_MS = 4000;
 
 export const CELEBRATION_STAY_MS = 1200;
-
-export const PENDING_AVATAR_SIZE = 64;
 
 export const EMAIL_AVATAR_SIZE = 24;
 

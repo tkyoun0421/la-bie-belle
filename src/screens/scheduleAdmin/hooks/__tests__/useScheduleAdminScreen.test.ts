@@ -16,13 +16,10 @@ const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getAllRehearsalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-const createScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const openDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const closeDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setDayHoursMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const confirmScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -92,13 +89,6 @@ jest.unstable_mockModule(
 );
 
 jest.unstable_mockModule(
-  "@/features/scheduleDay/api/createSchedule.api",
-  () => ({
-    createSchedule: createScheduleMock,
-  }),
-);
-
-jest.unstable_mockModule(
   "@/features/availabilitySubmit/api/setApplicationDeadline.api",
   () => ({ setApplicationDeadline: setApplicationDeadlineMock }),
 );
@@ -110,15 +100,6 @@ jest.unstable_mockModule("@/features/scheduleDay/api/openDay.api", () => ({
 jest.unstable_mockModule("@/features/scheduleDay/api/closeDay.api", () => ({
   closeDay: closeDayMock,
 }));
-
-jest.unstable_mockModule("@/features/scheduleDay/api/setDayHours.api", () => ({
-  setDayHours: setDayHoursMock,
-}));
-
-jest.unstable_mockModule(
-  "@/features/scheduleConfirm/api/confirmSchedule.api",
-  () => ({ confirmSchedule: confirmScheduleMock }),
-);
 
 jest.unstable_mockModule(
   "@/features/scheduleAssign/api/addAssignment.api",
@@ -217,12 +198,9 @@ beforeEach(() => {
     getSlotRequestsMock,
     getPayrollMonthMock,
     getAllRehearsalsMock,
-    createScheduleMock,
     setApplicationDeadlineMock,
     openDayMock,
     closeDayMock,
-    setDayHoursMock,
-    confirmScheduleMock,
     addAssignmentMock,
     grantPositionMock,
     setAdjustmentMock,
@@ -415,48 +393,18 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     expect(result.current.toast?.message).toContain("10월 21일");
   });
 
-  it("만들기 시트는 적은 마감일을 들고 오늘 이전은 못 보낸다", async () => {
+  it("만들기 시트는 화면이 열고 닫기만 한다", async () => {
     getMonthWindowMock.mockResolvedValue(null);
 
     const { result } = await mounted();
 
     act(() => result.current.openCreateSheet());
 
-    expect(result.current.sheet).toEqual(
-      expect.objectContaining({ kind: "create", deadline: "", canSave: false }),
-    );
+    expect(result.current.sheet).toEqual({ kind: "create" });
 
-    act(() => result.current.writeCreateDeadline("2026-10-01"));
+    act(() => result.current.closeSheet());
 
-    expect(result.current.sheet).toEqual(
-      expect.objectContaining({ deadline: "2026-10-01", canSave: false }),
-    );
-
-    act(() => result.current.writeCreateDeadline("2026-10-20"));
-
-    expect(result.current.sheet).toEqual(
-      expect.objectContaining({ canSave: true }),
-    );
-  });
-
-  it("만들기 시트는 보내고 성공하면 저절로 닫힌다", async () => {
-    getMonthWindowMock.mockResolvedValue(null);
-
-    const { result } = await mounted();
-
-    act(() => result.current.openCreateSheet());
-    act(() => result.current.writeCreateDeadline("2026-10-20"));
-    act(() => result.current.createSchedule());
-
-    await waitFor(() =>
-      expect(createScheduleMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "2026-10",
-        "2026-10-20",
-      ),
-    );
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
+    expect(result.current.sheet).toBeNull();
   });
 
   it("마감일 당기기도 같은 꼴이다", async () => {
@@ -515,7 +463,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     );
   });
 
-  it("확정 시트는 끝난 것을 시트가 말하고 닫는 손이 따로다", async () => {
+  it("확정 시트는 빈 자리와 알릴 수를 싣고 닫는 손이 따로다", async () => {
     getOpenSlotsMock.mockResolvedValue([
       {
         slotId: "s9",
@@ -533,16 +481,12 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
       expect.objectContaining({ kind: "confirm", notifiedCount: 0 }),
     );
 
-    act(() => result.current.confirmMonth());
-
     await waitFor(() =>
-      expect(confirmScheduleMock).toHaveBeenCalledWith(FAKE_CLIENT, "2026-10"),
-    );
-
-    await waitFor(() =>
-      expect(result.current.sheet).toEqual(
-        expect.objectContaining({ kind: "confirm", done: true }),
-      ),
+      expect(
+        result.current.sheet?.kind === "confirm"
+          ? result.current.sheet.openSlots
+          : [],
+      ).toHaveLength(1),
     );
 
     act(() => result.current.closeSheet());
@@ -609,39 +553,21 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     );
   });
 
-  it("근무 시간 시트는 그 날의 시각을 싣고 성공하면 닫힌다", async () => {
+  it("근무 시간 시트는 그 날의 시각을 싣는다", async () => {
     const { result } = await mounted({ date: "2026-10-10" });
 
     act(() => result.current.day?.onPressHours());
 
-    expect(result.current.sheet).toEqual(
-      expect.objectContaining({
-        kind: "hours",
-        starts: "10:00",
-        ends: "18:00",
-        canSave: true,
-      }),
-    );
+    expect(result.current.sheet).toEqual({
+      kind: "hours",
+      workDate: "2026-10-10",
+      startsAt: "10:00:00",
+      endsAt: "18:00:00",
+    });
 
-    act(() => result.current.writeHoursStarts("11:00"));
-    act(() => result.current.writeHoursEnds("19:00"));
+    act(() => result.current.closeSheet());
 
-    expect(result.current.sheet).toEqual(
-      expect.objectContaining({ starts: "11:00", ends: "19:00" }),
-    );
-
-    act(() => result.current.saveHours());
-
-    await waitFor(() =>
-      expect(setDayHoursMock).toHaveBeenCalledWith(
-        FAKE_CLIENT,
-        "2026-10-10",
-        "11:00",
-        "19:00",
-      ),
-    );
-
-    await waitFor(() => expect(result.current.sheet).toBeNull());
+    expect(result.current.sheet).toBeNull();
   });
 
   it("「자격도 주기」는 자격을 먼저 주고 배정한다", async () => {

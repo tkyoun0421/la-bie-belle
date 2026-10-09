@@ -3,10 +3,10 @@ import { AppBar } from "@/shared/ui/AppBar";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { TrendChart } from "@/shared/ui/TrendChart";
+import { StatsMonthNav } from "@/features/stats/ui/StatsMonthNav";
 import { STATS_COPY, TAB_OPTIONS } from "@/screens/stats/consts/stats.const";
 import { useStatsScreen } from "@/screens/stats/hooks/useStatsScreen";
 import { StatsList } from "@/screens/stats/ui/StatsList";
-import { StatsMonth } from "@/screens/stats/ui/StatsMonth";
 
 export function StatsScreen() {
   const screen = useStatsScreen();
@@ -17,10 +17,8 @@ export function StatsScreen() {
 
       <ScrollView>
         <View className="px-5 pb-8">
-          <StatsMonth
-            label={screen.monthLabel}
-            canGoPrev={screen.canGoPrev}
-            canGoNext={screen.canGoNext}
+          <StatsMonthNav
+            month={screen.month}
             onPrev={screen.goPrev}
             onNext={screen.goNext}
           />
