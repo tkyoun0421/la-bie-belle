@@ -1,11 +1,9 @@
+import { spellDuration } from "@/shared/utils/spellNumber";
 import type {
   AdjustSheetController,
   AdjustSheetInput,
 } from "@/features/adjustment/model/adjustSheet.type";
-import {
-  adjustRowLabel,
-  spellHours,
-} from "@/features/adjustment/utils/spellHours.utils";
+import { adjustRowLabel } from "@/features/adjustment/utils/spellHours.utils";
 
 export function useAdjustSheet({
   head,
@@ -21,7 +19,7 @@ export function useAdjustSheet({
       name: row.name,
       accessibilityLabel: adjustRowLabel(row),
       kindLabel: row.adjustmentKind,
-      hoursLabel: spellHours(row.finalMinutes),
+      hoursLabel: spellDuration(row.finalMinutes),
       rehearsalLine: row.rehearsalLine,
       divider: at > 0,
       press: () => onPickPerson(row.profileId),

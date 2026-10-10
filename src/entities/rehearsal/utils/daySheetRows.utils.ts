@@ -1,3 +1,4 @@
+import { spellDuration } from "@/shared/utils/spellNumber";
 import {
   CLOCK_LENGTH,
   MIN_ROWS_FOR_TOTAL,
@@ -7,7 +8,6 @@ import {
   dayTotal,
   rehearsalHours,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import { spellMinutes } from "@/entities/rehearsal/utils/spellTotal.utils";
 
 export type DaySheetRow = Pick<
   Rehearsal,
@@ -28,7 +28,7 @@ function clock(value: string): string {
 }
 
 function bodyOf(row: DaySheetRow): string {
-  const hours = spellMinutes(rehearsalHours(row));
+  const hours = spellDuration(rehearsalHours(row));
 
   if (row.count !== null) {
     return `리허설 ${row.count}건 · ${hours}`;
@@ -62,6 +62,6 @@ export function daySheetRows(
     totalLine:
       rows.length < MIN_ROWS_FOR_TOTAL
         ? null
-        : `합계 · ${spellMinutes(dayTotal(rows).minutes)}`,
+        : `합계 · ${spellDuration(dayTotal(rows).minutes)}`,
   };
 }

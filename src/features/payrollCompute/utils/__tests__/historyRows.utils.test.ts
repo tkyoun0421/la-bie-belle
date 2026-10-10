@@ -56,6 +56,36 @@ describe("payrollHistoryRows — 한 시간 미만 연장은 분만 적는다", 
   });
 });
 
+describe("payrollHistoryRows — 리허설 길이가 0분인 자리만 시간으로 적는다", () => {
+  it("리허설 0분은 보조 정보가 안 붙는다 — '리허설 0분'을 적지 않는다", () => {
+    const [row] = payrollHistoryRows([
+      normalDay({
+        position: null,
+        startsAt: null,
+        endsAt: null,
+        rehearsalMinutes: 0,
+      }),
+    ]);
+
+    expect(row.subtitle).toBe("");
+  });
+});
+
+describe("payrollHistoryRows — 리허설 길이가 한 시간이 안 되면 분만 적는다", () => {
+  it("리허설 30분은 '리허설 30분'이다 — '리허설 0시간 30분'으로 쓰지 않는다", () => {
+    const [row] = payrollHistoryRows([
+      normalDay({
+        position: null,
+        startsAt: null,
+        endsAt: null,
+        rehearsalMinutes: 30,
+      }),
+    ]);
+
+    expect(row.subtitle).toBe("리허설 30분");
+  });
+});
+
 describe("payrollHistoryRows — 교육 배정은 포지션 뒤에 '교육'이 붙는다", () => {
   it("'메인 교육 · 10:00–19:00'이고 연장 문구가 안 붙는다", () => {
     const [row] = payrollHistoryRows([normalDay({ isEducation: true })]);

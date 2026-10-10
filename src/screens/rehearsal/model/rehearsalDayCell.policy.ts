@@ -1,4 +1,4 @@
-import { spellMinutes } from "@/entities/rehearsal/utils/spellTotal.utils";
+import { spellDuration } from "@/shared/utils/spellNumber";
 
 export type RehearsalDayCellState = "empty" | "has";
 
@@ -12,5 +12,5 @@ export function rehearsalDayCell(minutes: number): RehearsalDayCell {
     return { state: "empty", label: "" };
   }
 
-  return { state: "has", label: spellMinutes(minutes) };
+  return { state: "has", label: spellDuration(minutes) };
 }

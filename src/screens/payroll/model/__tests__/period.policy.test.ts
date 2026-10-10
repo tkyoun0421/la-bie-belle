@@ -270,6 +270,29 @@ describe("periodSpan — 월과 연은 그 기간의 첫날과 끝날이다", ()
   });
 });
 
+describe("periodSpan — 월은 그 달의 마지막 날짜로 끝난다(31일로 고정하지 않는다)", () => {
+  it("2026-02은 2월 28일까지다", () => {
+    expect(periodSpan({ unit: "month", month: "2026-02" })).toEqual({
+      from: "2026-02-01",
+      to: "2026-02-28",
+    });
+  });
+
+  it("윤년 2028-02은 2월 29일까지다", () => {
+    expect(periodSpan({ unit: "month", month: "2028-02" })).toEqual({
+      from: "2028-02-01",
+      to: "2028-02-29",
+    });
+  });
+
+  it("30일 달 2026-04은 4월 30일까지다", () => {
+    expect(periodSpan({ unit: "month", month: "2026-04" })).toEqual({
+      from: "2026-04-01",
+      to: "2026-04-30",
+    });
+  });
+});
+
 describe("periodSpan — isInPeriod가 참인 날과 같은 날을 담는다", () => {
   it("달을 걸친 주에서 두 판정이 어긋나지 않는다", () => {
     const period = { unit: "week", weekStart: "2026-10-26" } as const;
