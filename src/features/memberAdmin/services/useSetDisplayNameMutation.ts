@@ -24,11 +24,12 @@ export function useSetDisplayNameMutation(client: DB): SetDisplayNameResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ profileId, name }: SetDisplayNameInput) =>
       setDisplayName(client, profileId, name),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.profile.all });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.member.all });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.schedule.all });
-    },
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.profile.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.member.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.schedule.all }),
+      ]),
   });
 
   const save = useCallback(

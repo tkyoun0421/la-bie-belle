@@ -34,13 +34,13 @@ function createWrapper() {
     );
   }
 
-  return { wrapper };
+  return { wrapper, queryClient };
 }
 
 function mount(onDone: () => void = jest.fn()) {
-  const { wrapper } = createWrapper();
+  const { wrapper, queryClient } = createWrapper();
 
-  return renderHook(
+  const rendered = renderHook(
     () =>
       useDayHoursSheet({
         workDate: "2026-10-10",
@@ -50,6 +50,8 @@ function mount(onDone: () => void = jest.fn()) {
       }),
     { wrapper },
   );
+
+  return { ...rendered, queryClient };
 }
 
 beforeEach(() => {
@@ -121,5 +123,58 @@ describe("useDayHoursSheet — 조각이 자기 mutation을 부른다", () => {
     act(() => result.current.save());
 
     await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+  });
+});
+
+describe("useDayHoursSheet — 시트는 무효화가 다 끝난 뒤에 닫힌다", () => {
+  function mountWithDeferredInvalidate(onDone: () => void) {
+    const { result, queryClient } = mount(onDone);
+    const resolvers: Array<() => void> = [];
+
+    jest.spyOn(queryClient, "invalidateQueries").mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolvers.push(resolve);
+        }),
+    );
+
+    act(() => result.current.save());
+
+    return { result, resolvers };
+  }
+
+  it("무효화가 하나도 끝나지 않았으면 끝났다고 알리지 않는다", async () => {
+    const onDone = jest.fn();
+    const { resolvers } = mountWithDeferredInvalidate(onDone);
+
+    await waitFor(() => expect(resolvers).toHaveLength(3));
+
+    expect(onDone).not.toHaveBeenCalled();
+  });
+
+  it("무효화 셋 가운데 하나만 끝나면 아직 끝났다고 알리지 않는다", async () => {
+    const onDone = jest.fn();
+    const { resolvers } = mountWithDeferredInvalidate(onDone);
+
+    await waitFor(() => expect(resolvers).toHaveLength(3));
+
+    await act(async () => {
+      resolvers[0]?.();
+    });
+
+    expect(onDone).not.toHaveBeenCalled();
+  });
+
+  it("무효화 셋이 모두 끝나야 끝났다고 알린다", async () => {
+    const onDone = jest.fn();
+    const { resolvers } = mountWithDeferredInvalidate(onDone);
+
+    await waitFor(() => expect(resolvers).toHaveLength(3));
+
+    await act(async () => {
+      resolvers.forEach((resolve) => resolve());
+    });
+
+    await waitFor(() => expect(onDone).toHaveBeenCalled());
   });
 });

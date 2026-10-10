@@ -21,9 +21,8 @@ export function useSetWageMutation(client: DB): SetWageResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: SetWageInput) => setWage(client, input),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all }),
   });
 
   const save = useCallback(

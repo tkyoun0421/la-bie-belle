@@ -25,11 +25,12 @@ export function useMergeSlotsMutation(client: DB): MergeSlotsResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ dayId, from, to }: MergeSlotsInput) =>
       mergeSlots(client, dayId, from, to),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

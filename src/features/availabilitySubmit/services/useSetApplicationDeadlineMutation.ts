@@ -26,11 +26,12 @@ export function useSetApplicationDeadlineMutation(
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ month, deadline }: SetApplicationDeadlineInput) =>
       setApplicationDeadline(client, month, deadline),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

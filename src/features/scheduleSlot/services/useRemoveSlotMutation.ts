@@ -22,11 +22,12 @@ export function useRemoveSlotMutation(client: DB): RemoveSlotResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ slotId }: RemoveSlotInput) => removeSlot(client, slotId),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

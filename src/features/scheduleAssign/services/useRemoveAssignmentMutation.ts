@@ -25,11 +25,12 @@ export function useRemoveAssignmentMutation(
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ assignmentId }: RemoveAssignmentInput) =>
       removeAssignment(client, assignmentId),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

@@ -21,9 +21,8 @@ export function useSetAdjustmentMutation(client: DB): SetAdjustmentResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: SetAdjustmentInput) => setAdjustment(client, input),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all }),
   });
 
   const save = useCallback(

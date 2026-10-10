@@ -21,9 +21,8 @@ export function useSetHolidayMutation(client: DB): SetHolidayResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: SetHolidayInput) => setHoliday(client, input),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all }),
   });
 
   const toggle = useCallback(

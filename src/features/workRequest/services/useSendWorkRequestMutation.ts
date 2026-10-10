@@ -24,11 +24,12 @@ export function useSendWorkRequestMutation(client: DB): SendWorkRequestResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ slotId, profileIds }: SendWorkRequestInput) =>
       sendWorkRequest(client, slotId, profileIds),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

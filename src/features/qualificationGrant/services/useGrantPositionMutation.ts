@@ -26,9 +26,8 @@ export function useGrantPositionMutation(client: DB): GrantPositionResult {
     useMutation({
       mutationFn: ({ profileId, position }: GrantPositionInput) =>
         grantPosition(client, profileId, position),
-      onSuccess: () => {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.member.all });
-      },
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: queryKeys.member.all }),
     });
 
   const send = useCallback(

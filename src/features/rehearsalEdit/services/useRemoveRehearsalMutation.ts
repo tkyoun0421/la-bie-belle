@@ -18,11 +18,12 @@ export function useRemoveRehearsalMutation(client: DB): RemoveRehearsalResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (id: string) => removeRehearsal(client, id),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.rehearsalWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.rehearsalWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

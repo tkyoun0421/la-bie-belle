@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 40;
+export const DOCUMENTED_LINT_RULE_COUNT = 41;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -323,6 +323,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/ui-no-router",
     enforcedBy: null,
     test: "eslint-rules/__tests__/uiNoRouter.test.ts",
+  },
+  {
+    no: 41,
+    name: "기다리지 않는 쓰기 뒤처리",
+    mechanism: "house",
+    ruleId: "house/mutation-settle-shape",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/mutationSettleShape.test.ts",
   },
 ];
 

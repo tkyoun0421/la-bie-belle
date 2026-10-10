@@ -20,9 +20,8 @@ export function useResetWageToDefaultMutation(
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (profileId: string) => resetWageToDefault(client, profileId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all }),
   });
 
   const send = useCallback(
