@@ -11,13 +11,13 @@ import {
 import { THEME_LABEL } from "@/shared/consts/theme.const";
 import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { useTheme } from "@/shared/stores/theme.store";
+import { hasRehearsalGrant } from "@/entities/member/model/hasRehearsalGrant.policy";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
-import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 
 export type ProfileSheetName = "contact" | "photo" | "theme" | null;
 

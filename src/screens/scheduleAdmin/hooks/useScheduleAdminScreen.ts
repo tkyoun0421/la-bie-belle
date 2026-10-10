@@ -11,6 +11,11 @@ import {
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import {
+  adminCalendarDayState,
+  confirmedVacancyCount,
+} from "@/shared/model/adminCalendarDayState.policy";
+import { isMonthFullyPast } from "@/shared/model/monthEmptyState.policy";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
@@ -22,10 +27,12 @@ import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMon
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
+import { dayConfirmGate } from "@/entities/schedule/model/confirmGate.policy";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
+import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
 import {
   confirmedLine,
   formatMonthName,
@@ -51,23 +58,15 @@ import { useSplitSlotMutation } from "@/features/scheduleSlot/services/useSplitS
 import { useSendWorkRequestMutation } from "@/features/workRequest/services/useSendWorkRequestMutation";
 import { SCHEDULE_ADMIN_COPY } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
-  adminCalendarDayState,
-  confirmedVacancyCount,
-} from "@/screens/scheduleAdmin/model/adminCalendarDayState.policy";
-import {
   confirmAffordance,
   confirmUnlockLine,
 } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
-import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type { DayDetailInput } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import { isMonthFullyPast } from "@/screens/scheduleAdmin/model/monthEmptyState.policy";
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
   openDaysFailureToast,
 } from "@/screens/scheduleAdmin/model/openModeSelection.policy";
-
-import { deadlineLine } from "@/screens/scheduleAdmin/utils/deadlineLine.utils";
 
 export type ScheduleAdminListState = "loading" | "missing" | "calendar";
 

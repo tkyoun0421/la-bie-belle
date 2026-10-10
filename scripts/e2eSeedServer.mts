@@ -1,9 +1,9 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellMonth } from "@/shared/utils/kstDate";
+import { spellDeadline } from "@/entities/schedule/model/monthState.policy";
 import { spellWorkDate } from "@/entities/schedule/utils/agendaRow.utils";
 import { formatBareDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
-import { spellDeadline } from "@/screens/scheduleWorker/model/monthState.policy";
 import {
   approveProfile,
   backdateDeadline,

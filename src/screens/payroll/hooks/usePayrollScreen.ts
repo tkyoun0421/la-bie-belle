@@ -9,12 +9,11 @@ import { kstToday } from "@/shared/lib/kstToday.lib";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
-import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
   canGoToNextPeriod,
   canGoToPreviousPeriod,
-} from "@/screens/payroll/model/boundary.policy";
+} from "@/features/payrollCompute/model/boundary.policy";
+import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import {
   periodLabel,
   periodOf,
@@ -23,7 +22,8 @@ import {
   periodUnitOf,
   shiftPeriod,
   type PeriodUnit,
-} from "@/screens/payroll/model/period.policy";
+} from "@/features/payrollCompute/model/period.policy";
+import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 
 export type PayrollListState =
   "loading" | "failed" | "empty" | "history" | "months";

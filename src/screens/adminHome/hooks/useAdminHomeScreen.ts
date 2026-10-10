@@ -13,6 +13,8 @@ import {
   WORKER_HOME_PATH,
 } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { miniViewLoads } from "@/shared/model/miniViewDensity.policy";
+import { tileMonth } from "@/shared/model/tileMonth.policy";
 import { clockOf, spellDate } from "@/shared/utils/kstDate";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
@@ -29,8 +31,6 @@ import {
   homeTileSummary,
   monthName,
 } from "@/screens/adminHome/model/homeTileSummary.policy";
-import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity.policy";
-import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
 import {
   todayBandShares,
   todayStatus,

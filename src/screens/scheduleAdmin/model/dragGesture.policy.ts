@@ -1,12 +1,12 @@
+import { mergeTargetValidity } from "@/entities/schedule/model/mergeTarget.policy";
 import type {
   ScheduleAssignment,
   ScheduleSlot,
 } from "@/entities/schedule/model/schedule.type";
+import { assignmentForSlot } from "@/entities/schedule/utils/positionRows.utils";
 import { discardSlotJudgement } from "@/features/scheduleSlot/model/discardSlot.policy";
 import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
-import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
 import { positionOf, slotOf } from "@/screens/scheduleAdmin/utils/dragId.utils";
-import { assignmentForSlot } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 export type DragGestureAssignment = Pick<
   ScheduleAssignment,

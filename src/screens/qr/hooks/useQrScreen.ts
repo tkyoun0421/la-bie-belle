@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { readAppUrl } from "@/shared/config/app.config";
 import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { buildQrSvg } from "@/shared/utils/qrSvg.utils";
 import { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
 import type { HallQrCode } from "@/entities/qr/model/qr.type";
 import { useQrCodeQuery } from "@/entities/qr/services/useQrCodeQuery";
@@ -13,7 +14,6 @@ import { useRotateQrMutation } from "@/features/qrAdmin/services/useRotateQrMuta
 import { QR_SCREEN_COPY } from "@/screens/qr/consts/qr.const";
 import { buildQrPaperHtml } from "@/screens/qr/utils/qrPaper.utils";
 import { qrStartLine } from "@/screens/qr/utils/qrStartLine.utils";
-import { buildQrSvg } from "@/screens/qr/utils/qrSvg.utils";
 
 export type QrScreenController = {
   qr: HallQrCode | null | undefined;

@@ -14,7 +14,7 @@ jest.unstable_mockModule("@/features/qrAdmin/api/rotateQr.api", () => ({
   rotateQr: rotateQrMock,
 }));
 
-jest.unstable_mockModule("@/screens/qr/utils/qrSvg.utils", () => ({
+jest.unstable_mockModule("@/shared/utils/qrSvg.utils", () => ({
   buildQrSvg: buildQrSvgMock,
 }));
 

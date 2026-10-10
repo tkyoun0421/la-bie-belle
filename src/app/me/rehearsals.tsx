@@ -1,9 +1,9 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/shared/api/supabase";
+import { resolveRehearsalGuard } from "@/shared/model/rehearsalGuard.policy";
+import { hasRehearsalGrant } from "@/entities/member/model/hasRehearsalGrant.policy";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
-import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
-import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
 import { RehearsalScreen } from "@/screens/rehearsal/ui/RehearsalScreen";
 
 type RehearsalParams = {
