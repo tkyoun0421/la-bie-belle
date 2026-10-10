@@ -1,4 +1,4 @@
-import { adjustRowLabel } from "@/features/adjustment/utils/spellHours.utils";
+import { adjustRowLabel } from "@/features/adjustment/utils/adjustRowLabel.utils";
 
 describe("adjustRowLabel — 이름과 최종 시간을 읽어주고 앞머리가 있으면 끼운다", () => {
   it("조정이 없으면 이름과 시간만 읽는다", () => {

@@ -33,6 +33,10 @@ describe("spellDuration — 한 시간이 안 되면 분만 적는다", () => {
     expect(spellDuration(30)).toBe("30분");
   });
 
+  it("45분은 '45분'이다", () => {
+    expect(spellDuration(45)).toBe("45분");
+  });
+
   it("59분은 '59분'이다", () => {
     expect(spellDuration(59)).toBe("59분");
   });
@@ -55,5 +59,9 @@ describe("spellDuration — 딱 떨어지는 시간은 시간만 적는다", () 
 describe("spellDuration — 분이 남으면 시간과 분을 이어 적는다", () => {
   it("90분은 '1시간 30분'이다", () => {
     expect(spellDuration(90)).toBe("1시간 30분");
+  });
+
+  it("585분은 '9시간 45분'이다 — 시간이 여럿이고 분이 남는 자리다", () => {
+    expect(spellDuration(585)).toBe("9시간 45분");
   });
 });

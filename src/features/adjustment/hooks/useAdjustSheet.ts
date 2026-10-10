@@ -3,7 +3,7 @@ import type {
   AdjustSheetController,
   AdjustSheetInput,
 } from "@/features/adjustment/model/adjustSheet.type";
-import { adjustRowLabel } from "@/features/adjustment/utils/spellHours.utils";
+import { adjustRowLabel } from "@/features/adjustment/utils/adjustRowLabel.utils";
 
 export function useAdjustSheet({
   head,
