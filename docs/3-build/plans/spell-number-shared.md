@@ -44,7 +44,7 @@
 | --- | --- |
 | `src/shared/utils/spellNumber.ts` | `spellDuration`이 선다. `spellWon` 옆이다 |
 | `src/shared/utils/__tests__/spellNumber.test.ts` | `spellDuration`의 단언이 선다 |
-| `src/features/adjustment/utils/spellHours.utils.ts` | 지역 `spellHours`와 `MINUTES_PER_HOUR`가 지워지고 `spellDuration`을 부른다. `spellHours`를 밖에서 당기는 자리가 있으면 그 import도 바뀐다 |
+| `src/features/adjustment/utils/spellHours.utils.ts` | 지역 `spellHours`와 `MINUTES_PER_HOUR`가 지워지고 `spellDuration`을 부른다. `spellHours`를 밖에서 당기는 자리가 있으면 그 import도 바뀐다. **그 export가 빠지면 남는 것이 `adjustRowLabel` 하나라 파일 이름이 담긴 것과 어긋난다** — `adjustRowLabel.utils.ts`로 `git mv`하고 짝 테스트도 따라간다 |
 | `src/entities/rehearsal/utils/spellTotal.utils.ts` | 같다. `spellMinutes`를 밖에서 당기는 자리가 따라 바뀐다 |
 | `src/features/payrollCompute/utils/historyRows.utils.ts` | 지역 `spellLength`가 지워진다 |
 | `src/features/payrollCompute/utils/summary.utils.ts` | 지역 `spellWorkedHours`가 지워진다 |
