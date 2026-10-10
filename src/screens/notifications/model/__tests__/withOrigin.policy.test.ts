@@ -1,9 +1,10 @@
 import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
 import { BACK_BEARING_PREFIXES } from "@/screens/notifications/consts/notifications.const";
 
-// @ts-expect-error withOrigin이 아직 이 자리에 없다
-const { withOrigin } =
-  await import("@/screens/notifications/model/withOrigin.policy");
+const { withOrigin } = await import(
+  // @ts-expect-error withOrigin이 아직 이 자리에 없다
+  "@/screens/notifications/model/withOrigin.policy"
+);
 
 const ORIGIN = `from=${ORIGIN_NOTIFICATIONS}`;
 
