@@ -3,6 +3,7 @@ import { supabase } from "@/shared/api/supabase";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { answerFailure } from "@/features/workRequest/model/answerFailure.policy";
 import {
   requestSheetState,
@@ -25,6 +26,7 @@ export type RequestSheetController = {
   state: RequestSheetState;
   sending: boolean;
   failed: boolean;
+  failedLine: string | null;
   accept: () => void;
   decline: () => void;
 };
@@ -44,6 +46,7 @@ export function useRequestSheet({
   } = useRespondRequestMutation(supabase);
 
   const failure = answerFailure(error);
+  const failed = failure === "unreachable";
 
   useEffect(() => {
     if (isSuccess) {
@@ -65,7 +68,8 @@ export function useRequestSheet({
       serverNowMs: nowWithOffset(Date.now(), clockOffset),
     }),
     sending: isPending,
-    failed: failure === "unreachable",
+    failed,
+    failedLine: failed ? WORK_REQUEST_COPY.sendFailed : null,
     accept: () => answer({ requestId: request.id, answer: "accept" }),
     decline: () => answer({ requestId: request.id, answer: "decline" }),
   };

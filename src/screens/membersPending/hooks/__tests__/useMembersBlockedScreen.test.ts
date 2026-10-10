@@ -206,7 +206,6 @@ describe("useMembersBlockedScreen — 실패 문안을 controller가 완성해 �
     act(() => result.current.unblock());
 
     await waitFor(() => {
-      // @ts-expect-error failedLine이 아직 없다
       expect(result.current.failedLine).toBe(BLOCKED_COPY.sendFailed);
     });
   });
@@ -221,7 +220,6 @@ describe("useMembersBlockedScreen — 실패 문안을 controller가 완성해 �
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

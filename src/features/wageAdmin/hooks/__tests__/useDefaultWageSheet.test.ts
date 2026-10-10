@@ -138,7 +138,6 @@ describe("useDefaultWageSheet — 실패 문안을 controller가 완성해 내�
     act(() => result.current.save());
 
     await waitFor(() => {
-      // @ts-expect-error failedLine이 아직 없다
       expect(result.current.failedLine).toBe(WAGE_SAVE_FAILED_TITLE);
     });
   });
@@ -153,7 +152,6 @@ describe("useDefaultWageSheet — 실패 문안을 controller가 완성해 내�
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

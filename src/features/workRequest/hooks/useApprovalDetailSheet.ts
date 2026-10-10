@@ -94,6 +94,7 @@ export function useApprovalDetailSheet({
     face,
     sending: isPending,
     failed: isError,
+    failedLine: isError ? APPROVAL_SHEET_COPY.sendFailed : null,
     chosen,
     written,
     canSend: isRejectReasonValid(chosen, written),
@@ -103,7 +104,6 @@ export function useApprovalDetailSheet({
     confirmLabel: isError
       ? APPROVAL_SHEET_COPY.confirmRetry
       : APPROVAL_SHEET_COPY.confirmApprove,
-    confirmNotice: isError ? APPROVAL_SHEET_COPY.sendFailed : undefined,
     showFace: setFace,
     choose: setChosen,
     write: setWritten,

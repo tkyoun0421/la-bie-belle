@@ -47,11 +47,11 @@ export function ContactSheet({
         </Text>
       )}
 
-      {fragment.failed ? (
+      {fragment.failedLine === null ? null : (
         <Text size="sm" tone="critical" className="mt-2">
-          {CONTACT_SHEET_COPY.sendFailed}
+          {fragment.failedLine}
         </Text>
-      ) : null}
+      )}
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>

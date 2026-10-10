@@ -178,7 +178,7 @@ describe("useApprovalDetailSheet — 조각이 취소 요청 판정을 든다", 
 
     expect(result.current.confirming).toBe(true);
     expect(result.current.confirmLabel).toBe(APPROVAL_SHEET_COPY.confirmRetry);
-    expect(result.current.confirmNotice).toBe(APPROVAL_SHEET_COPY.sendFailed);
+    expect(result.current.failedLine).toBe(APPROVAL_SHEET_COPY.sendFailed);
 
     act(() => result.current.cancelApprove());
 
@@ -216,7 +216,6 @@ describe("useApprovalDetailSheet — 실패 문안을 controller가 완성해 �
     act(() => result.current.approve());
 
     await waitFor(() => {
-      // @ts-expect-error failedLine이 아직 없다
       expect(result.current.failedLine).toBe(APPROVAL_SHEET_COPY.sendFailed);
     });
   });
@@ -231,7 +230,6 @@ describe("useApprovalDetailSheet — 실패 문안을 controller가 완성해 �
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

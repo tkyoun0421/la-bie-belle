@@ -3,7 +3,6 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
-import { HALL_DEFAULTS_COPY } from "@/features/hallDefaults/consts/hallDefaults.const";
 import { useHallDefaultsSheet } from "@/features/hallDefaults/hooks/useHallDefaultsSheet";
 
 export type HallDefaultsSheetProps = {
@@ -52,11 +51,11 @@ export function HallDefaultsSheet({
         날을 열면 이 시간이 깔려요. 이미 연 날은 그대로예요
       </Text>
 
-      {sheet.failed ? (
+      {sheet.failedLine === null ? null : (
         <Text size="sm" tone="critical" className="mt-2">
-          {HALL_DEFAULTS_COPY.saveFailed}
+          {sheet.failedLine}
         </Text>
-      ) : null}
+      )}
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>

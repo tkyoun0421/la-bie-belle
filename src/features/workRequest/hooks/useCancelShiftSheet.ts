@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { isValidCancelReason } from "@/features/workRequest/model/cancelReason.policy";
 import { useCreateCancelRequestMutation } from "@/features/workRequest/services/useCreateCancelRequestMutation";
 import { cancelSheetTitle } from "@/features/workRequest/utils/requestCopy.utils";
@@ -17,6 +18,7 @@ export type CancelShiftSheetController = {
   canSend: boolean;
   sending: boolean;
   failed: boolean;
+  failedLine: string | null;
   writeReason: (typed: string) => void;
   send: () => void;
 };
@@ -50,6 +52,7 @@ export function useCancelShiftSheet({
     canSend,
     sending: isPending,
     failed: isError,
+    failedLine: isError ? WORK_REQUEST_COPY.sendFailed : null,
     writeReason: setReason,
     send: () => {
       if (canSend) {

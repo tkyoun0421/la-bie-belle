@@ -172,7 +172,6 @@ describe("usePendingEditor — 실패 문안을 controller가 완성해 내려�
       await result.current.pick();
     });
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBe(PROFILE_FORM_COPY.photoFailed);
   });
 
@@ -187,7 +186,6 @@ describe("usePendingEditor — 실패 문안을 controller가 완성해 내려�
 
     expect(result.current.failed).toBe(true);
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

@@ -6,7 +6,10 @@ import {
   digitsOnly,
   hyphenatePhone,
 } from "@/entities/profile/utils/phoneDigits.utils";
-import { PHONE_LENGTH } from "@/features/profileEdit/consts/profileEdit.const";
+import {
+  CONTACT_SHEET_COPY,
+  PHONE_LENGTH,
+} from "@/features/profileEdit/consts/profileEdit.const";
 import { canSaveContact } from "@/features/profileEdit/model/canSaveContact.policy";
 import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
 
@@ -22,6 +25,7 @@ export type ContactSheetController = {
   draft: string;
   saving: boolean;
   failed: boolean;
+  failedLine: string | null;
   invalid: boolean;
   canSave: boolean;
   write: (typed: string) => void;
@@ -60,10 +64,13 @@ export function useContactSheet({
     mutate({ profileId, phone: hyphenatePhone(draft) });
   }, [mutate, profileId, draft]);
 
+  const failed = error !== null && !rejected;
+
   return {
     draft,
     saving,
-    failed: error !== null && !rejected,
+    failed,
+    failedLine: failed ? CONTACT_SHEET_COPY.sendFailed : null,
     invalid:
       (draft.length === PHONE_LENGTH && !isValidPhone(draft)) || rejected,
     canSave: canSaveContact(current, draft),

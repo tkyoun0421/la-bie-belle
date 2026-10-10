@@ -738,7 +738,6 @@ describe("useScheduleAdminScreen — 마감일 시트의 실패 문안을 contro
         throw new Error("마감일 시트가 아니다");
       }
 
-      // @ts-expect-error failedLine이 아직 없다
       expect(sheet.failedLine).toBe(DEADLINE_SHEET_COPY.saveFailed);
     });
   });
@@ -767,7 +766,6 @@ describe("useScheduleAdminScreen — 마감일 시트의 실패 문안을 contro
       throw new Error("마감일 시트가 아니다");
     }
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(sheet.failedLine).toBeTruthy();
   });
 });

@@ -26,11 +26,11 @@ export function MembersBlockedSheets({ screen }: MembersBlockedSheetsProps) {
         {BLOCKED_COPY.confirmNote}
       </Text>
 
-      {screen.failed ? (
+      {screen.failedLine === null ? null : (
         <Text size="xs" tone="critical" className="mt-3">
-          {BLOCKED_COPY.sendFailed}
+          {screen.failedLine}
         </Text>
-      ) : null}
+      )}
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={screen.close}>

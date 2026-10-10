@@ -3,7 +3,6 @@ import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
-import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { useRequestSheet } from "@/features/workRequest/hooks/useRequestSheet";
 
 export type RequestSheetProps = {
@@ -31,11 +30,11 @@ export function RequestSheet(props: RequestSheetProps) {
         {ended ? "자리가 찼거나 기간이 지났어요" : "바로 배정돼요"}
       </Text>
 
-      {fragment.failed ? (
+      {fragment.failedLine === null ? null : (
         <NoticeBlock kind="error" className="p-4">
-          {WORK_REQUEST_COPY.sendFailed}
+          {fragment.failedLine}
         </NoticeBlock>
-      ) : null}
+      )}
 
       {ended ? null : (
         <View className="flex-row gap-2">

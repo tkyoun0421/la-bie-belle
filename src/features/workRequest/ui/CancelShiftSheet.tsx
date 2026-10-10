@@ -3,10 +3,7 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import {
-  CANCEL_REASON_MAX_LENGTH,
-  WORK_REQUEST_COPY,
-} from "@/features/workRequest/consts/workRequest.const";
+import { CANCEL_REASON_MAX_LENGTH } from "@/features/workRequest/consts/workRequest.const";
 import { useCancelShiftSheet } from "@/features/workRequest/hooks/useCancelShiftSheet";
 
 export type CancelShiftSheetProps = {
@@ -38,11 +35,11 @@ export function CancelShiftSheet(props: CancelShiftSheetProps) {
         onChangeText={fragment.writeReason}
       />
 
-      {fragment.failed ? (
+      {fragment.failedLine === null ? null : (
         <NoticeBlock kind="error" className="p-4">
-          {WORK_REQUEST_COPY.sendFailed}
+          {fragment.failedLine}
         </NoticeBlock>
-      ) : null}
+      )}
 
       <Button
         variant="primary"

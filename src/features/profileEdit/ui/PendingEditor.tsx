@@ -70,11 +70,11 @@ export function PendingEditor({
         >
           {PROFILE_FORM_COPY.useDefaultPhoto}
         </Button>
-        {fragment.failed ? (
+        {fragment.failedLine === null ? null : (
           <Text size="xs" tone="critical" className="mt-1.5">
-            {PROFILE_FORM_COPY.photoFailed}
+            {fragment.failedLine}
           </Text>
-        ) : null}
+        )}
       </View>
     );
   }

@@ -147,7 +147,6 @@ describe("useCancelShiftSheet — 실패 문안을 controller가 완성해 내�
     act(() => result.current.send());
 
     await waitFor(() => {
-      // @ts-expect-error failedLine이 아직 없다
       expect(result.current.failedLine).toBe(WORK_REQUEST_COPY.sendFailed);
     });
   });
@@ -162,7 +161,6 @@ describe("useCancelShiftSheet — 실패 문안을 controller가 완성해 내�
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

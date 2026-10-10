@@ -53,11 +53,11 @@ export function PhotoSheet({
         </View>
       )}
 
-      {fragment.failed ? (
+      {fragment.failedLine === null ? null : (
         <Text size="sm" tone="critical" className="mt-2">
-          {PHOTO_SHEET_COPY.failed}
+          {fragment.failedLine}
         </Text>
-      ) : null}
+      )}
     </>
   );
 }

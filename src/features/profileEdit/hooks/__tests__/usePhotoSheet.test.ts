@@ -204,7 +204,6 @@ describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준�
     act(() => void result.current.pick());
 
     await waitFor(() => {
-      // @ts-expect-error failedLine이 아직 없다
       expect(result.current.failedLine).toBe(PHOTO_SHEET_COPY.failed);
     });
   });
@@ -218,7 +217,6 @@ describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준�
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
-    // @ts-expect-error failedLine이 아직 없다
     expect(result.current.failedLine).toBeTruthy();
   });
 });

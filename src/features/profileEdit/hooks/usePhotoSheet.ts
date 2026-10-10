@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { PHOTO_SHEET_COPY } from "@/features/profileEdit/consts/profileEdit.const";
 import { PHOTO_PICK_DEPS } from "@/features/profileEdit/lib/photoPickDeps.lib";
 import { pickAndShrinkPhoto } from "@/features/profileEdit/lib/pickPhoto.lib";
 import { shouldOfferGooglePhoto } from "@/features/profileEdit/model/shouldOfferGooglePhoto.policy";
@@ -16,6 +17,7 @@ export type PhotoSheetController = {
   offerGoogle: boolean;
   uploading: boolean;
   failed: boolean;
+  failedLine: string | null;
   pick: () => Promise<void>;
   useGoogle: () => void;
 };
@@ -65,10 +67,13 @@ export function usePhotoSheet({
     }
   }, [googlePhotoUrl, mutate]);
 
+  const failed = pickFailed || sendFailed;
+
   return {
     offerGoogle: shouldOfferGooglePhoto(photoUrl, googlePhotoUrl),
     uploading: picking || sending,
-    failed: pickFailed || sendFailed,
+    failed,
+    failedLine: failed ? PHOTO_SHEET_COPY.failed : null,
     pick,
     useGoogle,
   };
