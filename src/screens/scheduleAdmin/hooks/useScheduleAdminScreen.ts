@@ -11,8 +11,7 @@ import {
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { kstDateOf, shiftMonth } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
@@ -175,8 +174,7 @@ export function useScheduleAdminScreen({
   from,
 }: ScheduleAdminScreenParams): ScheduleAdminScreenController {
   const router = useRouter();
-  const clockOffset = serverClockStore((at) => at.offset);
-  const nowMs = nowWithOffset(Date.now(), clockOffset);
+  const nowMs = useServerNow();
   const now = new Date(nowMs).toISOString();
   const today = kstDateOf(now);
 

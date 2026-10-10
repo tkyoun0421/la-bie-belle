@@ -1,9 +1,7 @@
 import { jest } from "@jest/globals";
 
 const { renderHook, act } = await import("@testing-library/react-native");
-const { useMonthCursor } =
-  // @ts-expect-error 대상 모듈이 아직 없다
-  await import("@/shared/hooks/useMonthCursor");
+const { useMonthCursor } = await import("@/shared/hooks/useMonthCursor");
 
 describe("useMonthCursor — 첫 달을 그대로 든다", () => {
   it("받은 첫 달이 그대로 선다", () => {

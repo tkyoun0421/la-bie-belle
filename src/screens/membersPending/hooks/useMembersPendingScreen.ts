@@ -5,8 +5,7 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_MEMBERS_BLOCKED_PATH,
 } from "@/shared/consts/navigation.const";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
@@ -43,8 +42,8 @@ export function useMembersPendingScreen(): MembersPendingController {
   const [toast, setToast] = useState<PendingToast | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const clockOffset = serverClockStore((at) => at.offset);
-  const today = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const serverNowMs = useServerNow();
+  const today = new Date(serverNowMs).toISOString();
 
   const { data: values } = useProfilePrivateQuery(supabase, open?.id ?? null);
 

@@ -7,8 +7,7 @@ import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, shiftMonth } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import {
   computeWorkTotals,
@@ -75,7 +74,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   const [month, setMonth] = useState(() => monthOf(today));
   const [openPerson, setOpenPerson] = useState<string | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
   const months = useMemo(() => trendMonths(month), [month]);
 
   const work = useWorkMonthsQuery(
@@ -94,7 +93,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   }, [work.data, month]);
 
   const attendanceByMonth = useMemo(() => {
-    const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+    const now = new Date(serverNowMs).toISOString();
 
     return new Map(
       (attendance.data ?? []).map((one) => [
@@ -107,7 +106,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
         ),
       ]),
     );
-  }, [attendance.data, clockOffset]);
+  }, [attendance.data, serverNowMs]);
 
   const attendanceTab = attendanceByMonth.get(month) ?? {
     tally: EMPTY_TALLY,

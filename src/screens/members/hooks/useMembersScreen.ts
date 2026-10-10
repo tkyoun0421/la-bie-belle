@@ -1,8 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
 import { PERMISSION_OF_OTHERS } from "@/entities/notification/consts/notification.const";
 import { getReachState } from "@/entities/notification/model/reachState.policy";
@@ -68,8 +67,8 @@ export function useMembersScreen(): MembersScreenController {
   const [open, setOpen] = useState<Open | null>(null);
   const [toast, setToast] = useState<MembersToast | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const serverNowMs = useServerNow();
+  const now = new Date(serverNowMs).toISOString();
 
   const close = useCallback(() => setOpen(null), []);
 

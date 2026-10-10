@@ -29,9 +29,7 @@ jest.unstable_mockModule(
 );
 
 const { renderHook } = await import("@testing-library/react-native");
-const { useMyStanding } =
-  // @ts-expect-error 대상 모듈이 아직 없다
-  await import("@/features/auth/hooks/useMyStanding");
+const { useMyStanding } = await import("@/features/auth/hooks/useMyStanding");
 
 const FAKE_CLIENT = {} as DB;
 

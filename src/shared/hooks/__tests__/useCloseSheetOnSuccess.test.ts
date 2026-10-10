@@ -2,7 +2,6 @@ import { jest } from "@jest/globals";
 
 const { renderHook } = await import("@testing-library/react-native");
 const { useCloseSheetOnSuccess } =
-  // @ts-expect-error 대상 모듈이 아직 없다
   await import("@/shared/hooks/useCloseSheetOnSuccess");
 
 describe("useCloseSheetOnSuccess — 성공 전엔 닫는 손을 안 부른다", () => {

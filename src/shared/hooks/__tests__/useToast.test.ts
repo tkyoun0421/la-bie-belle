@@ -1,7 +1,5 @@
 const { renderHook, act } = await import("@testing-library/react-native");
-const { useToast } =
-  // @ts-expect-error 대상 모듈이 아직 없다
-  await import("@/shared/hooks/useToast");
+const { useToast } = await import("@/shared/hooks/useToast");
 
 describe("useToast — 토스트는 처음엔 비어 있다", () => {
   it("아무것도 안 띄우면 null이다", () => {

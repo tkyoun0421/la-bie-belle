@@ -7,8 +7,7 @@ import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, shiftMonth } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
@@ -89,10 +88,10 @@ export function useStatsScreen(): StatsScreenController {
     supabase,
     me?.id ?? null,
   );
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
 
   const months = useMemo(() => trendMonths(month), [month]);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const now = new Date(serverNowMs).toISOString();
   const profileId = profile?.id ?? null;
 
   const work = useWorkMonthsQuery(

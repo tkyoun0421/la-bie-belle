@@ -5,9 +5,7 @@ const { serverClockStore } =
   await import("@/entities/clock/stores/clock.store");
 const { nowWithOffset } =
   await import("@/entities/clock/model/serverClock.policy");
-const { useServerNow } =
-  // @ts-expect-error 대상 모듈이 아직 없다
-  await import("@/entities/clock/hooks/useServerNow");
+const { useServerNow } = await import("@/entities/clock/hooks/useServerNow");
 
 const DEVICE_NOW_MS = 1_760_000_000_000;
 

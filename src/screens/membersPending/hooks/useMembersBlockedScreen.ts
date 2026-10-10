@@ -4,8 +4,7 @@ import { supabase } from "@/shared/api/supabase";
 import { ADMIN_MEMBERS_PENDING_PATH } from "@/shared/consts/navigation.const";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { MEMBER_DECISION_COPY } from "@/entities/member/consts/member.const";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useUnblockMemberMutation } from "@/features/memberAdmin/services/useUnblockMemberMutation";
@@ -35,8 +34,8 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   const [open, setOpen] = useState<MemberSummary | null>(null);
   const [toast, setToast] = useState<BlockedToast | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const serverNowMs = useServerNow();
+  const now = new Date(serverNowMs).toISOString();
 
   const {
     mutate: sendUnblock,
