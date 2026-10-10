@@ -40,6 +40,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { PROFILE_FORM_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { usePendingEditor } =
   await import("@/features/profileEdit/hooks/usePendingEditor");
 
@@ -109,7 +111,7 @@ describe("usePendingEditor — 사진 칸의 쓰기를 조각이 삼킨다", () 
     });
 
     expect(uploadAvatarMock).not.toHaveBeenCalled();
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
     expect(UPLOADED).not.toHaveBeenCalled();
   });
 
@@ -122,7 +124,7 @@ describe("usePendingEditor — 사진 칸의 쓰기를 조각이 삼킨다", () 
       await result.current.pick();
     });
 
-    expect(result.current.failed).toBe(true);
+    expect(result.current.failedLine).not.toBeNull();
     expect(UPLOADED).not.toHaveBeenCalled();
   });
 
@@ -150,12 +152,40 @@ describe("usePendingEditor — 사진 칸의 쓰기를 조각이 삼킨다", () 
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.uploading).toBe(true));
+    await waitFor(() => expect(result.current.sending).toBe(true));
 
     await act(async () => {
       release();
     });
 
-    await waitFor(() => expect(result.current.uploading).toBe(false));
+    await waitFor(() => expect(result.current.sending).toBe(false));
+  });
+});
+
+describe("usePendingEditor — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("고르다 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
+
+    const { result } = mounted();
+
+    await act(async () => {
+      await result.current.pick();
+    });
+
+    expect(result.current.failedLine).toBe(PROFILE_FORM_COPY.photoFailed);
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
+
+    const { result } = mounted();
+
+    await act(async () => {
+      await result.current.pick();
+    });
+
+    expect(result.current.failedLine).not.toBeNull();
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

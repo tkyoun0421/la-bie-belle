@@ -103,7 +103,13 @@ describe("useApplicationsList — 조각이 한 질의를 두 방향으로 접�
   it("날짜순은 날짜가 이른 쪽부터 선다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.state).toBe("date");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.tab).toBe("date");
     expect(result.current.dateGroups.map((group) => group.key)).toEqual([
       "2026-10-10",
       "2026-10-11",
@@ -118,7 +124,13 @@ describe("useApplicationsList — 조각이 한 질의를 두 방향으로 접�
   it("사람순은 그 사람이 일할 수 있는 날이 한 줄이다", async () => {
     const { result } = await mounted({ tab: "person" });
 
-    expect(result.current.state).toBe("person");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.tab).toBe("person");
     expect(result.current.personGroups[0].displayName).toBe("최민재");
     expect(result.current.personGroups[0].dates).toContain("10월 10일");
     expect(result.current.personGroups[0].dates).toContain("10월 11일");

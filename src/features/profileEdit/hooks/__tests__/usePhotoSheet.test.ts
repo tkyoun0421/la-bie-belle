@@ -40,6 +40,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { PHOTO_SHEET_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { usePhotoSheet } =
   await import("@/features/profileEdit/hooks/usePhotoSheet");
 
@@ -129,7 +131,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
     });
 
     expect(uploadAvatarMock).not.toHaveBeenCalled();
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
     expect(SAVED).not.toHaveBeenCalled();
   });
 
@@ -142,7 +144,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
       await result.current.pick();
     });
 
-    expect(result.current.failed).toBe(true);
+    expect(result.current.failedLine).not.toBeNull();
   });
 
   it("올리다 넘어져도 실패가 선다", async () => {
@@ -152,7 +154,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(SAVED).not.toHaveBeenCalled();
   });
@@ -183,12 +185,38 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.uploading).toBe(true));
+    await waitFor(() => expect(result.current.sending).toBe(true));
 
     await act(async () => {
       release(null);
     });
 
-    await waitFor(() => expect(result.current.uploading).toBe(false));
+    await waitFor(() => expect(result.current.sending).toBe(false));
+  });
+});
+
+describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("올리다 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    uploadAvatarMock.mockRejectedValue(new Error("못 올렸다"));
+
+    const { result } = mounted();
+
+    act(() => void result.current.pick());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(PHOTO_SHEET_COPY.failed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    uploadAvatarMock.mockRejectedValue(new Error("못 올렸다"));
+
+    const { result } = mounted();
+
+    act(() => void result.current.pick());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

@@ -33,13 +33,13 @@ class Catch extends Component<CatchProps, CatchState> {
 }
 
 export type QueryBoundaryProps = {
-  loading: ReactNode;
+  pending: ReactNode;
   failed: (retry: () => void) => ReactNode;
   children: ReactNode;
 };
 
 export function QueryBoundary({
-  loading,
+  pending,
   failed,
   children,
 }: QueryBoundaryProps) {
@@ -47,7 +47,7 @@ export function QueryBoundary({
     <QueryErrorResetBoundary>
       {({ reset }) => (
         <Catch onReset={reset} failed={failed}>
-          <Suspense fallback={loading}>{children}</Suspense>
+          <Suspense fallback={pending}>{children}</Suspense>
         </Catch>
       )}
     </QueryErrorResetBoundary>

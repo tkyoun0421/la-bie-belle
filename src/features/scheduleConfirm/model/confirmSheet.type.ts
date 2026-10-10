@@ -22,6 +22,6 @@ export type ConfirmSheetController = {
   askTitle: string;
   askButtonLabel: string;
   vacancy: ConfirmSheetVacancy | null;
-  confirming: boolean;
+  sending: boolean;
   confirm: () => void;
 };

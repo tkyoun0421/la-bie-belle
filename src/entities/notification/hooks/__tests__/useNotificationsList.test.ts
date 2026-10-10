@@ -105,8 +105,6 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
     const { result } = mounted();
 
     await waitFor(() => expect(result.current.state).toBe("empty"));
-
-    expect(result.current.groups).toEqual([]);
   });
 
   it("같은 날은 한 묶음이고 날마다 머리글이 선다", async () => {
@@ -118,7 +116,13 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(2));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(2);
 
     expect(result.current.groups[0].rows.map((row) => row.id)).toEqual([
       "a",
@@ -140,7 +144,13 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(1));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(1);
 
     const [first, second] = result.current.groups[0].rows;
 
@@ -158,7 +168,13 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(1));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(1);
 
     expect(result.current.groups[0].rows.map((row) => row.id)).toEqual(["a"]);
   });
@@ -170,7 +186,13 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(1));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(1);
 
     expect(result.current.groups[0].rows[0].press).toBeUndefined();
   });
@@ -183,9 +205,17 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
     const onPressRow = jest.fn();
     const { result } = mounted({ onPressRow });
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(1));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.groups[0].rows[0].press?.());
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(1);
+
+    const ready = result.current;
+
+    act(() => ready.groups[0].rows[0].press?.());
 
     expect(onPressRow).toHaveBeenCalledWith({
       ids: ["a"],
@@ -215,7 +245,13 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
     const onUnreadNotices = jest.fn();
     const { result } = mounted({ onUnreadNotices });
 
-    await waitFor(() => expect(result.current.state).toBe("end"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.hasMore).toBe(false);
 
     expect(onUnreadNotices).not.toHaveBeenCalled();
   });
@@ -227,9 +263,21 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.groups).toHaveLength(1));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.loadNextWhenNear(false));
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.groups).toHaveLength(1);
+
+    const ready = result.current;
+
+    if (ready.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    act(() => ready.loadNextWhenNear(false));
 
     expect(getNotificationsMock).toHaveBeenCalledTimes(1);
   });
@@ -241,9 +289,21 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("end"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.loadNextWhenNear(true));
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.hasMore).toBe(false);
+
+    const ready = result.current;
+
+    if (ready.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    act(() => ready.loadNextWhenNear(true));
 
     expect(getNotificationsMock).toHaveBeenCalledTimes(1);
   });
@@ -253,29 +313,47 @@ describe("useNotificationsList — 조각이 쪽을 이어 붙여 날짜로 묶�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("normal"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.loadNextWhenNear(true));
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.hasMore).toBe(true);
+
+    const ready = result.current;
+
+    if (ready.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    act(() => ready.loadNextWhenNear(true));
 
     await waitFor(() => expect(getNotificationsMock).toHaveBeenCalledTimes(2));
   });
 
-  it("읽기가 넘어지면 상태가 error고 다시 시도가 다시 읽는다", async () => {
+  it("읽기가 넘어지면 상태가 failed고 다시 시도가 다시 읽는다", async () => {
     getNotificationsMock.mockRejectedValue(new Error("끊겼다"));
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("error"));
+    await waitFor(() => expect(result.current.state).toBe("failed"));
 
     getNotificationsMock.mockResolvedValue([]);
 
-    act(() => result.current.retry());
+    const failed = result.current;
+
+    if (failed.state !== "failed") {
+      throw new Error("failed가 아니다");
+    }
+
+    act(() => failed.retry());
 
     await waitFor(() => expect(result.current.state).toBe("empty"));
   });
 });
 
-describe("useNotificationsList — 몸통과 스크롤 판정을 조각이 든다", () => {
+describe("useNotificationsList — 상태와 스크롤 판정을 조각이 든다", () => {
   function scrollTo(offsetY: number) {
     return {
       nativeEvent: {
@@ -286,46 +364,58 @@ describe("useNotificationsList — 몸통과 스크롤 판정을 조각이 든�
     } as never;
   }
 
-  it("읽는 중이면 몸통이 loading이다", () => {
+  it("읽는 중이면 상태가 pending이다", () => {
     const { result } = mounted();
 
-    expect(result.current.body).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
-  it("넘어지면 몸통이 failed다", async () => {
+  it("넘어지면 상태가 failed다", async () => {
     getNotificationsMock.mockRejectedValue(new Error("끊겼다"));
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.body).toBe("failed"));
+    await waitFor(() => expect(result.current.state).toBe("failed"));
   });
 
-  it("받은 것이 없으면 몸통이 empty다", async () => {
+  it("받은 것이 없으면 상태가 empty다", async () => {
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.body).toBe("empty"));
+    await waitFor(() => expect(result.current.state).toBe("empty"));
   });
 
-  it("쪽이 더 남은 줄 목록은 몸통이 rows다", async () => {
+  it("쪽이 더 남은 줄 목록은 상태가 ready다", async () => {
     getNotificationsMock.mockResolvedValue(fullPage());
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("normal"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    expect(result.current.body).toBe("rows");
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.hasMore).toBe(true);
+
+    expect(result.current.state).toBe("ready");
   });
 
-  it("끝까지 읽은 줄 목록도 몸통이 rows다", async () => {
+  it("끝까지 읽은 줄 목록도 상태가 ready다", async () => {
     getNotificationsMock.mockResolvedValue([
       rowAt("a", "2026-10-03T01:00:00.000Z"),
     ]);
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("end"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    expect(result.current.body).toBe("rows");
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.hasMore).toBe(false);
+
+    expect(result.current.state).toBe("ready");
   });
 
   it("바닥에서 멀면 스크롤이 다음 쪽을 안 부른다", async () => {
@@ -333,9 +423,17 @@ describe("useNotificationsList — 몸통과 스크롤 판정을 조각이 든�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("normal"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.loadNextOnScroll(scrollTo(0)));
+    const ready = result.current;
+
+    if (ready.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(ready.hasMore).toBe(true);
+
+    act(() => ready.loadNextOnScroll(scrollTo(0)));
 
     expect(getNotificationsMock).toHaveBeenCalledTimes(1);
   });
@@ -345,9 +443,17 @@ describe("useNotificationsList — 몸통과 스크롤 판정을 조각이 든�
 
     const { result } = mounted();
 
-    await waitFor(() => expect(result.current.state).toBe("normal"));
+    await waitFor(() => expect(result.current.state).toBe("ready"));
 
-    act(() => result.current.loadNextOnScroll(scrollTo(1200)));
+    const ready = result.current;
+
+    if (ready.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(ready.hasMore).toBe(true);
+
+    act(() => ready.loadNextOnScroll(scrollTo(1200)));
 
     await waitFor(() => expect(getNotificationsMock).toHaveBeenCalledTimes(2));
   });

@@ -39,7 +39,7 @@ export function ApplicationsScreen({ month }: ApplicationsScreenProps) {
           <ApplicationsList
             month={screen.month}
             tab={screen.tab}
-            loading={<ApplicationsLoading />}
+            pending={<ApplicationsLoading />}
             empty={
               <ApplicationsEmpty deadlineLine={screen.emptyDeadlineLine} />
             }

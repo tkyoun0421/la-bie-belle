@@ -20,6 +20,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { WORK_REQUEST_COPY } =
+  await import("@/features/workRequest/consts/workRequest.const");
 const { useCancelShiftSheet } =
   await import("@/features/workRequest/hooks/useCancelShiftSheet");
 
@@ -128,9 +130,37 @@ describe("useCancelShiftSheet — 보내는 일을 자기가 든다", () => {
     act(() => result.current.writeReason("몸이 아파요"));
     act(() => result.current.send());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.reason).toBe("몸이 아파요");
     expect(sent).not.toHaveBeenCalled();
+  });
+});
+
+describe("useCancelShiftSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("못 보내면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    createCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.writeReason("몸이 아파요"));
+    act(() => result.current.send());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(WORK_REQUEST_COPY.sendFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    createCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.writeReason("몸이 아파요"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

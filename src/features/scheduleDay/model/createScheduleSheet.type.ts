@@ -10,7 +10,7 @@ export type CreateScheduleSheetController = {
   failedLine: string | null;
   deadline: string;
   canSave: boolean;
-  saving: boolean;
+  sending: boolean;
   writeDeadline: (typed: string) => void;
   create: () => void;
 };

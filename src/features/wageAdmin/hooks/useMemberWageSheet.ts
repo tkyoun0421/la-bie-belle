@@ -5,6 +5,7 @@ import { spellWon } from "@/shared/utils/spellNumber";
 import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import {
   WAGE_CAP_HINT,
+  WAGE_SAVE_FAILED_TITLE,
   WAGE_SHEET_COPY,
 } from "@/features/wageAdmin/consts/wageAdmin.const";
 import { canResetToDefault } from "@/features/wageAdmin/model/canResetToDefault.policy";
@@ -49,7 +50,7 @@ export type MemberWageSheetController = {
   canSave: boolean;
   canReset: boolean;
   sending: boolean;
-  failed: boolean;
+  failedLine: string | null;
   asking: boolean;
   resetBody: string | undefined;
   resetNotice: string | undefined;
@@ -138,7 +139,7 @@ export function useMemberWageSheet({
     canSave: canSaveWage(digits, current),
     canReset: canResetToDefault(rates, hasDefaultWage),
     sending: isPending,
-    failed: wageError !== null,
+    failedLine: wageError === null ? null : WAGE_SAVE_FAILED_TITLE,
     asking,
     resetBody:
       defaultWage === null

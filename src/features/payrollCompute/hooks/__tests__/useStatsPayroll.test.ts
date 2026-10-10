@@ -58,6 +58,11 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
     const { result } = renderHook(() => useStatsPayroll(SPAN));
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.amountLabel).toContain("110,000");
     expect(result.current.estimateNote).toBeTruthy();
     expect(result.current.subtitle).toBeTruthy();
@@ -68,6 +73,10 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
 
     const { result } = renderHook(() => useStatsPayroll(SPAN));
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.subtitle).toContain("2건");
     expect(result.current.subtitle).toContain("8시간");
   });
@@ -76,6 +85,10 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
     reads({ data: [] });
 
     const { result } = renderHook(() => useStatsPayroll(SPAN));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.amountLabel).toContain("0");
   });
@@ -94,6 +107,10 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
     const { result } = renderHook(() => useStatsPayroll(SPAN));
 
     expect(result.current.state).toBe("failed");
+
+    if (result.current.state !== "failed") {
+      throw new Error("failed가 아니다");
+    }
 
     result.current.retry();
 

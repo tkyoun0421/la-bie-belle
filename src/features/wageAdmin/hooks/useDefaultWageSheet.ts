@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
   WAGE_CAP_HINT,
+  WAGE_SAVE_FAILED_TITLE,
   WAGE_SHEET_COPY,
 } from "@/features/wageAdmin/consts/wageAdmin.const";
 import {
@@ -25,7 +26,7 @@ export type DefaultWageSheetController = {
   capHint: string | undefined;
   canSave: boolean;
   sending: boolean;
-  failed: boolean;
+  failedLine: string | null;
   write: (typed: string) => void;
   save: () => void;
 };
@@ -69,7 +70,7 @@ export function useDefaultWageSheet({
     capHint: atWageCap(digits) ? WAGE_CAP_HINT : undefined,
     canSave: canSaveWage(digits, defaultWage),
     sending: isPending,
-    failed: error !== null,
+    failedLine: error === null ? null : WAGE_SAVE_FAILED_TITLE,
     write,
     save,
   };

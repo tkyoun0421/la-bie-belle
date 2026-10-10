@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Text } from "@/shared/ui/Text";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
@@ -6,13 +7,19 @@ import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 
 export type PayrollAccrualProps = {
   span: DateSpan;
+  pending?: ReactNode;
+  failed?: ReactNode;
 };
 
-export function PayrollAccrual({ span }: PayrollAccrualProps) {
+export function PayrollAccrual({ span, pending, failed }: PayrollAccrualProps) {
   const fragment = usePayrollAccrual(span);
 
-  if (fragment.state !== "ready") {
-    return null;
+  if (fragment.state === "pending") {
+    return pending ?? null;
+  }
+
+  if (fragment.state === "failed") {
+    return failed ?? null;
   }
 
   return (

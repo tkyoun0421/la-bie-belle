@@ -32,6 +32,7 @@ import {
 import { countOpenSlotsByDate } from "@/entities/schedule/utils/groupOpenSlots.utils";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
 import { useSetAdjustmentMutation } from "@/features/adjustment/services/useSetAdjustmentMutation";
+import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
 import { useSetHolidayMutation } from "@/features/holiday/services/useSetHolidayMutation";
 import { useGrantPositionMutation } from "@/features/qualificationGrant/services/useGrantPositionMutation";
@@ -85,8 +86,8 @@ export type ScheduleAdminSheet =
       kind: "deadline";
       deadline: string;
       canSave: boolean;
-      saving: boolean;
-      failed: boolean;
+      sending: boolean;
+      failedLine: string | null;
     }
   | {
       kind: "confirm";
@@ -411,8 +412,10 @@ export function useScheduleAdminScreen({
         kind: "deadline",
         deadline: typed,
         canSave: typed >= today,
-        saving: changeDeadline.isPending,
-        failed: changeDeadline.isError,
+        sending: changeDeadline.isPending,
+        failedLine: changeDeadline.isError
+          ? DEADLINE_SHEET_COPY.saveFailed
+          : null,
       };
     }
 
@@ -538,7 +541,7 @@ export function useScheduleAdminScreen({
               confirmedAt: schedule?.confirmedAt ?? null,
             }),
             isConfirmed: confirmed,
-            saving:
+            sending:
               addAssignment.isPending ||
               removeAssignment.isPending ||
               forceChange.isPending ||

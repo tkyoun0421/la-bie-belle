@@ -22,7 +22,7 @@ export type MembersBlockedController = {
   today: string;
   confirming: BlockedConfirm | null;
   sending: boolean;
-  failed: boolean;
+  failedLine: string | null;
   toast: BlockedToast | null;
   openMember: (member: MemberSummary) => void;
   unblock: () => void;
@@ -71,6 +71,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   }, [unblocked, openName, finish]);
 
   const code = errorCodeOf(error);
+  const failed = error !== null && code !== "already_decided";
 
   useEffect(() => {
     if (code === "already_decided") {
@@ -95,7 +96,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
         ? null
         : { question: `${openName}${BLOCKED_COPY.confirmSuffix}` },
     sending,
-    failed: error !== null && code !== "already_decided",
+    failedLine: failed ? BLOCKED_COPY.sendFailed : null,
     toast,
     openMember: setOpen,
     unblock: () => {

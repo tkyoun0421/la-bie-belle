@@ -8,8 +8,7 @@ import { spellLeftAt } from "@/entities/member/utils/spellLeftAt.utils";
 
 export type MemberRowsKind = "active" | "left";
 
-export type MemberRowsState =
-  "pending" | "failed" | "empty" | "searchEmpty" | "none" | "rows";
+export type MemberRowsEmptyReason = "noMembers" | "noMatch" | "noRows";
 
 export type MemberRow = {
   key: string;
@@ -30,11 +29,11 @@ export type MemberRowsInput = {
   onPress: (member: Member, lastAdmin: boolean) => void;
 };
 
-export type MemberRowsController = {
-  state: MemberRowsState;
-  rows: MemberRow[];
-  canExpand: boolean;
-};
+export type MemberRowsController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty"; reason: MemberRowsEmptyReason }
+  | { state: "ready"; rows: MemberRow[]; canExpand: boolean };
 
 function detailOf(parts: readonly string[]): string {
   return parts.filter((part) => part !== "").join(" ");
@@ -92,29 +91,25 @@ export function useMemberRows({
 
   const canExpand = !searching && !expanded && folded.length > 0;
 
-  function stateOf(): MemberRowsState {
-    if (active.error !== null || left.error !== null) {
-      return "failed";
-    }
-
-    if (active.data === undefined || left.data === undefined) {
-      return "pending";
-    }
-
-    if (kind === "active" && actives.length === 0 && lefts.length === 0) {
-      return "empty";
-    }
-
-    if (
-      kind === "active" &&
-      foundActive.length === 0 &&
-      foundLeft.length === 0
-    ) {
-      return "searchEmpty";
-    }
-
-    return rows.length === 0 ? "none" : "rows";
+  if (active.error !== null || left.error !== null) {
+    return { state: "failed" };
   }
 
-  return { state: stateOf(), rows, canExpand };
+  if (active.data === undefined || left.data === undefined) {
+    return { state: "pending" };
+  }
+
+  if (kind === "active" && actives.length === 0 && lefts.length === 0) {
+    return { state: "empty", reason: "noMembers" };
+  }
+
+  if (kind === "active" && foundActive.length === 0 && foundLeft.length === 0) {
+    return { state: "empty", reason: "noMatch" };
+  }
+
+  if (rows.length === 0) {
+    return { state: "empty", reason: "noRows" };
+  }
+
+  return { state: "ready", rows, canExpand };
 }

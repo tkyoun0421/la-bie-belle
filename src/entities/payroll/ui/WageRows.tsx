@@ -1,24 +1,36 @@
+import type { ReactNode } from "react";
 import { Avatar } from "@/shared/ui/Avatar";
 import { ListRow } from "@/shared/ui/ListRow";
 import { useWageRows } from "@/entities/payroll/hooks/useWageRows";
 import type { WageRowMember } from "@/entities/payroll/model/wageRows.policy";
-import { WageRowsFailed } from "@/entities/payroll/ui/WageRowsFailed";
-import { WageRowsLoading } from "@/entities/payroll/ui/WageRowsLoading";
 
 export type WageRowsProps = {
   people: readonly WageRowMember[];
   onPressPerson: (profileId: string) => void;
+  pending?: ReactNode;
+  failed?: ReactNode;
+  empty?: ReactNode;
 };
 
-export function WageRows({ people, onPressPerson }: WageRowsProps) {
+export function WageRows({
+  people,
+  onPressPerson,
+  pending,
+  failed,
+  empty,
+}: WageRowsProps) {
   const fragment = useWageRows({ people, onPressPerson });
 
   if (fragment.state === "pending") {
-    return <WageRowsLoading />;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {
-    return <WageRowsFailed />;
+    return failed ?? null;
+  }
+
+  if (fragment.state === "empty") {
+    return empty ?? null;
   }
 
   return (

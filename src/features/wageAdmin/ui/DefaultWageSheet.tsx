@@ -5,7 +5,6 @@ import { Text } from "@/shared/ui/Text";
 import {
   WAGE_AMOUNT_INPUT_TEST_ID,
   WAGE_SAVE_FAILED_SUB,
-  WAGE_SAVE_FAILED_TITLE,
   WAGE_SHEET_COPY,
   WAGE_TODAY_NOTE,
 } from "@/features/wageAdmin/consts/wageAdmin.const";
@@ -29,7 +28,7 @@ export function DefaultWageSheet({
   return (
     <>
       <Text size="lg" weight="semibold">
-        {sheet.failed ? WAGE_SAVE_FAILED_TITLE : WAGE_SHEET_COPY.baseTitle}
+        {sheet.failedLine ?? WAGE_SHEET_COPY.baseTitle}
       </Text>
 
       <AmountInput
@@ -40,26 +39,26 @@ export function DefaultWageSheet({
         onChangeText={sheet.write}
       />
 
-      {sheet.failed ? (
+      {sheet.failedLine === null ? null : (
         <Text size="sm" tone="muted" className="mt-2">
           {WAGE_SAVE_FAILED_SUB}
         </Text>
-      ) : null}
+      )}
 
       <Text
         size="xs"
         weight="medium"
-        className={sheet.failed ? "mt-1" : "mt-2"}
+        className={sheet.failedLine === null ? "mt-2" : "mt-1"}
         numeric
       >
         {sheet.followerLine}
       </Text>
 
-      {sheet.failed ? null : (
+      {sheet.failedLine === null ? (
         <Text size="xs" tone="subtle" className="mt-1">
           {WAGE_TODAY_NOTE}
         </Text>
-      )}
+      ) : null}
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>

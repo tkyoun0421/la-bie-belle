@@ -13,7 +13,7 @@ export type ApprovalDetailSheetController = {
   detail: CancelApprovalDetail;
   face: ApprovalSheetFace;
   sending: boolean;
-  failed: boolean;
+  failedLine: string | null;
   chosen: string | null;
   written: string;
   canSend: boolean;
@@ -21,7 +21,6 @@ export type ApprovalDetailSheetController = {
   confirming: boolean;
   confirmBody: string;
   confirmLabel: string;
-  confirmNotice: string | undefined;
   showFace: (face: ApprovalSheetFace) => void;
   choose: (value: string) => void;
   write: (text: string) => void;

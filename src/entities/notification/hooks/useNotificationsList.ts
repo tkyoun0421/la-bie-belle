@@ -16,8 +16,6 @@ import {
   toNotificationReceivedTime,
 } from "@/entities/notification/utils/when.utils";
 
-export type NotificationsBody = "loading" | "failed" | "empty" | "rows";
-
 export type NotificationPick = {
   ids: string[];
   destination: string;
@@ -44,31 +42,22 @@ export type NotificationsListInput = {
   onUnreadNotices: (ids: string[]) => void;
 };
 
-export type NotificationsListController = {
-  state: NotificationsListState;
-  body: NotificationsBody;
-  groups: NotificationsListGroup[];
-  retry: () => void;
-  retryNextPage: () => void;
-  loadNextWhenNear: (near: boolean) => void;
-  loadNextOnScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-};
-
-function bodyOf(state: NotificationsListState): NotificationsBody {
-  if (state === "loading") {
-    return "loading";
-  }
-
-  if (state === "error") {
-    return "failed";
-  }
-
-  if (state === "empty") {
-    return "empty";
-  }
-
-  return "rows";
-}
+export type NotificationsListController =
+  | { state: "pending" }
+  | { state: "failed"; retry: () => void }
+  | { state: "empty" }
+  | {
+      state: "ready";
+      groups: NotificationsListGroup[];
+      hasMore: boolean;
+      loadingMore: boolean;
+      failedMore: boolean;
+      retryNextPage: () => void;
+      loadNextWhenNear: (near: boolean) => void;
+      loadNextOnScroll: (
+        event: NativeSyntheticEvent<NativeScrollEvent>,
+      ) => void;
+    };
 
 export function useNotificationsList({
   now,
@@ -79,7 +68,7 @@ export function useNotificationsList({
 
   const rows = (notifications.data?.pages ?? []).flat();
 
-  const state = resolveNotificationsListState({
+  const paging: NotificationsListState = resolveNotificationsListState({
     rows,
     isLoading: notifications.isLoading,
     isError: notifications.isError,
@@ -151,11 +140,24 @@ export function useNotificationsList({
     [loadNextWhenNear],
   );
 
+  if (paging === "loading") {
+    return { state: "pending" };
+  }
+
+  if (paging === "error") {
+    return { state: "failed", retry };
+  }
+
+  if (paging === "empty") {
+    return { state: "empty" };
+  }
+
   return {
-    state,
-    body: bodyOf(state),
+    state: "ready",
     groups,
-    retry,
+    hasMore: paging !== "end",
+    loadingMore: paging === "loadingMore",
+    failedMore: paging === "errorMore",
     retryNextPage,
     loadNextWhenNear,
     loadNextOnScroll,

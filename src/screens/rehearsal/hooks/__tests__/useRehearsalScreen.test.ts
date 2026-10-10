@@ -68,6 +68,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { ME_HOME_PATH } = await import("@/shared/consts/navigation.const");
+const { REHEARSAL_COPY } =
+  await import("@/screens/rehearsal/consts/rehearsal.const");
 const { useRehearsalScreen } =
   await import("@/screens/rehearsal/hooks/useRehearsalScreen");
 
@@ -207,13 +209,13 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     getMyRehearsalsMock.mockResolvedValue([]);
 
     act(() => result.current.retry());
 
-    await waitFor(() => expect(result.current.failed).toBe(false));
+    await waitFor(() => expect(result.current.failedLine).toBeNull());
   });
 
   it("넣기를 열면 그날과 그날의 갈래를 든 폼이 선다", async () => {
@@ -349,5 +351,27 @@ describe("useRehearsalScreen — 갈 데를 controller가 정한다", () => {
     const { result } = await mounted();
 
     expect(result.current.canPressDay("2026-10-05")).toBe(true);
+  });
+});
+
+describe("useRehearsalScreen — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("읽기가 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    getMyRehearsalsMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted();
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(REHEARSAL_COPY.readFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    getMyRehearsalsMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted();
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

@@ -7,47 +7,48 @@ import {
 } from "@/entities/profile/utils/birthDateDigits.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 
-export type ProfileCardState = "pending" | "failed" | "ready";
-
 export type ProfileCardInput = {
   userId: string | null;
 };
 
-export type ProfileCardController = {
-  state: ProfileCardState;
-  name: string;
-  photoUrl: string | null;
-  roleLabel: string;
-  gender: string;
-  birthDate: string;
-  phone: string;
-};
+export type ProfileCardController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | {
+      state: "ready";
+      name: string;
+      photoUrl: string | null;
+      roleLabel: string;
+      gender: string;
+      birthDate: string;
+      phone: string;
+    };
 
 export function useProfileCard({
   userId,
 }: ProfileCardInput): ProfileCardController {
   const { data, error } = useMyProfileQuery(supabase, userId);
 
-  function stateOf(): ProfileCardState {
-    if (error !== null) {
-      return "failed";
-    }
+  if (error !== null) {
+    return { state: "failed" };
+  }
 
-    return data === undefined ? "pending" : "ready";
+  if (data === undefined) {
+    return { state: "pending" };
   }
 
   return {
-    state: stateOf(),
-    name: data?.displayName ?? "",
-    photoUrl: data?.photoUrl ?? null,
+    state: "ready",
+    name: data.displayName ?? "",
+    photoUrl: data.photoUrl,
     roleLabel:
-      data?.role === "admin"
+      data.role === "admin"
         ? PROFILE_CARD_COPY.admin
         : PROFILE_CARD_COPY.worker,
-    gender: spellGender(data?.gender ?? null),
-    birthDate: data?.birthDate
+    gender: spellGender(data.gender),
+    birthDate: data.birthDate
       ? spellBirthDate(digitsOfBirthDate(data.birthDate))
       : "",
-    phone: data?.phone ?? "",
+    phone: data.phone ?? "",
   };
 }

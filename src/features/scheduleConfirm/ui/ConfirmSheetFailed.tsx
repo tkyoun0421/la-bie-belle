@@ -9,12 +9,12 @@ import {
 } from "@/features/scheduleConfirm/consts/scheduleConfirm.const";
 
 export type ConfirmSheetFailedProps = {
-  confirming: boolean;
+  sending: boolean;
   onConfirm: () => void;
 };
 
 export function ConfirmSheetFailed({
-  confirming,
+  sending,
   onConfirm,
 }: ConfirmSheetFailedProps) {
   return (
@@ -32,7 +32,7 @@ export function ConfirmSheetFailed({
       <Button
         variant="primary"
         testID={CONFIRM_SHEET_BUTTON_TEST_ID}
-        loading={confirming}
+        loading={sending}
         onPress={onConfirm}
       >
         다시 확정하기

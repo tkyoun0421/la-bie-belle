@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 44;
+export const DOCUMENTED_LINT_RULE_COUNT = 45;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -355,6 +355,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-route-path-literal",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noRoutePathLiteral.test.ts",
+  },
+  {
+    no: 45,
+    name: "controller 상태의 판별 union과 정본 상태 이름",
+    mechanism: "house",
+    ruleId: "house/fragment-state-contract",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/fragmentStateContract.test.ts",
   },
 ];
 

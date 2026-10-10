@@ -34,8 +34,8 @@ export function ScheduleAdminSheetBody({
         deadline={sheet.deadline}
         today={screen.today}
         canSave={sheet.canSave}
-        saving={sheet.saving}
-        failed={sheet.failed}
+        sending={sheet.sending}
+        failedLine={sheet.failedLine}
         onChange={screen.changeDeadlineDraft}
         onClose={screen.closeSheet}
         onSave={screen.saveDeadline}

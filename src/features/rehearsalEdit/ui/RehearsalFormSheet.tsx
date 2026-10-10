@@ -103,7 +103,7 @@ export function RehearsalFormSheet({
         <View className="flex-1">
           <Button
             variant="primary"
-            loading={form.saving}
+            loading={form.sending}
             disabled={!form.canSubmit}
             onPress={form.submit}
           >

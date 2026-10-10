@@ -1,7 +1,7 @@
 import { supabase } from "@/shared/api/supabase";
 import type {
   MemberWaitRow,
-  MemberWaitRowsState,
+  MemberWaitRowsController,
 } from "@/entities/member/hooks/usePendingRows";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
@@ -12,10 +12,7 @@ export type BlockedRowsInput = {
   onPress: (member: MemberSummary) => void;
 };
 
-export type BlockedRowsController = {
-  state: MemberWaitRowsState;
-  rows: MemberWaitRow[];
-};
+export type BlockedRowsController = MemberWaitRowsController;
 
 export function useBlockedRows({
   now,
@@ -31,17 +28,13 @@ export function useBlockedRows({
     press: () => onPress(row),
   }));
 
-  function stateOf(): MemberWaitRowsState {
-    if (error !== null) {
-      return "failed";
-    }
-
-    if (data === undefined) {
-      return "pending";
-    }
-
-    return rows.length === 0 ? "empty" : "rows";
+  if (error !== null) {
+    return { state: "failed" };
   }
 
-  return { state: stateOf(), rows };
+  if (data === undefined) {
+    return { state: "pending" };
+  }
+
+  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
 }

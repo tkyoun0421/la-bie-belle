@@ -3,8 +3,6 @@ import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { spellSentLine } from "@/entities/member/utils/elapsedLine.utils";
 
-export type MemberWaitRowsState = "pending" | "failed" | "empty" | "rows";
-
 export type MemberWaitRow = {
   id: string;
   name: string;
@@ -18,10 +16,13 @@ export type PendingRowsInput = {
   onPress: (member: MemberSummary) => void;
 };
 
-export type PendingRowsController = {
-  state: MemberWaitRowsState;
-  rows: MemberWaitRow[];
-};
+export type MemberWaitRowsController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; rows: MemberWaitRow[] };
+
+export type PendingRowsController = MemberWaitRowsController;
 
 export function usePendingRows({
   now,
@@ -37,17 +38,13 @@ export function usePendingRows({
     press: () => onPress(row),
   }));
 
-  function stateOf(): MemberWaitRowsState {
-    if (error !== null) {
-      return "failed";
-    }
-
-    if (data === undefined) {
-      return "pending";
-    }
-
-    return rows.length === 0 ? "empty" : "rows";
+  if (error !== null) {
+    return { state: "failed" };
   }
 
-  return { state: stateOf(), rows };
+  if (data === undefined) {
+    return { state: "pending" };
+  }
+
+  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
 }

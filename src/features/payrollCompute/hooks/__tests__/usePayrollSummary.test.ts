@@ -58,6 +58,11 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
     const { result } = renderHook(() => usePayrollSummary(SPAN));
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.amountLabel).toContain("80,000");
   });
 
@@ -65,6 +70,10 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
     reads({ data: [day(50000)] });
 
     const { result } = renderHook(() => usePayrollSummary(SPAN));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.estimateNote).toContain("예상치");
   });
@@ -75,6 +84,11 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
     const { result } = renderHook(() => usePayrollSummary(SPAN));
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.amountLabel).toBeTruthy();
   });
 
@@ -92,6 +106,10 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
     const { result } = renderHook(() => usePayrollSummary(SPAN));
 
     expect(result.current.state).toBe("failed");
+
+    if (result.current.state !== "failed") {
+      throw new Error("failed가 아니다");
+    }
 
     result.current.retry();
 

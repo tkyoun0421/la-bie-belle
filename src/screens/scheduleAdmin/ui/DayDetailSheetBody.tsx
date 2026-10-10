@@ -106,7 +106,7 @@ export function DayDetailSheetBody({ day, kind }: DayDetailSheetBodyProps) {
     return (
       <ConfirmChangeSheet
         copy={day.confirmChange.copy}
-        saving={day.confirmChange.saving}
+        sending={day.confirmChange.sending}
         onClose={day.confirmChange.close}
         onConfirm={day.confirmChange.confirm}
       />

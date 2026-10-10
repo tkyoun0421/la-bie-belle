@@ -25,7 +25,7 @@ export type StatsAttendanceRow = {
 };
 
 export type StatsAttendanceController =
-  | { state: "loading" }
+  | { state: "pending" }
   | { state: "failed" }
   | { state: "empty" }
   | {
@@ -74,7 +74,7 @@ export function useStatsAttendance(month: string): StatsAttendanceController {
   );
 
   if (profile.isLoading || attendance.isLoading) {
-    return { state: "loading" };
+    return { state: "pending" };
   }
 
   if (profile.error !== null || attendance.error !== null) {

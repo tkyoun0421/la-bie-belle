@@ -35,7 +35,7 @@ export function CloseDayWarningSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={sheet.closing}
+          loading={sheet.sending}
           onPress={sheet.close}
         >
           배정 지우고 닫기

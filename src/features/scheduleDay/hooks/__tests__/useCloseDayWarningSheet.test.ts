@@ -74,7 +74,7 @@ describe("useCloseDayWarningSheet — 조각이 자기 mutation을 부른다", (
   it("닫으면 그 날이 실려 간다", async () => {
     const { result } = mount();
 
-    expect(result.current.closing).toBe(false);
+    expect(result.current.sending).toBe(false);
 
     act(() => result.current.close());
 

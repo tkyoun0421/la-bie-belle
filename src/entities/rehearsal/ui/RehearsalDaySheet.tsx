@@ -11,14 +11,14 @@ import {
 } from "@/entities/rehearsal/hooks/useRehearsalDaySheet";
 
 export type RehearsalDaySheetProps = RehearsalDaySheetInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   onPressRow?: (id: string) => void;
   onAdd: () => void;
 };
 
 export function RehearsalDaySheet({
-  loading,
+  pending,
   failed,
   onPressRow,
   onAdd,
@@ -27,7 +27,7 @@ export function RehearsalDaySheet({
   const fragment = useRehearsalDaySheet(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {

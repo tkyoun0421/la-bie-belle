@@ -92,7 +92,7 @@ describe("useAdminStatsAttendance — 조각이 그 달의 근태를 읽는다",
   it("기다리는 중은 상태 이름으로 낸다", () => {
     const { result } = mounted();
 
-    expect(result.current.state).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
   it("근무표가 없으면 empty다", async () => {

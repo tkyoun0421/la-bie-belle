@@ -3,11 +3,9 @@ import { supabase } from "@/shared/api/supabase";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { answerFailure } from "@/features/workRequest/model/answerFailure.policy";
-import {
-  requestSheetState,
-  type RequestSheetState,
-} from "@/features/workRequest/model/requestSheet.policy";
+import { requestSheetState } from "@/features/workRequest/model/requestSheet.policy";
 import { useRespondRequestMutation } from "@/features/workRequest/services/useRespondRequestMutation";
 import {
   claimedLine,
@@ -22,9 +20,9 @@ export type RequestSheetInput = {
 
 export type RequestSheetController = {
   subtitle: string;
-  state: RequestSheetState;
+  ended: boolean;
   sending: boolean;
-  failed: boolean;
+  failedLine: string | null;
   accept: () => void;
   decline: () => void;
 };
@@ -44,6 +42,7 @@ export function useRequestSheet({
   } = useRespondRequestMutation(supabase);
 
   const failure = answerFailure(error);
+  const failed = failure === "unreachable";
 
   useEffect(() => {
     if (isSuccess) {
@@ -59,13 +58,14 @@ export function useRequestSheet({
 
   return {
     subtitle: requestSubtitle(request),
-    state: requestSheetState({
-      closedAt: request.closedAt,
-      expiresAt: request.expiresAt,
-      serverNowMs: nowWithOffset(Date.now(), clockOffset),
-    }),
+    ended:
+      requestSheetState({
+        closedAt: request.closedAt,
+        expiresAt: request.expiresAt,
+        serverNowMs: nowWithOffset(Date.now(), clockOffset),
+      }) === "ended",
     sending: isPending,
-    failed: failure === "unreachable",
+    failedLine: failed ? WORK_REQUEST_COPY.sendFailed : null,
     accept: () => answer({ requestId: request.id, answer: "accept" }),
     decline: () => answer({ requestId: request.id, answer: "decline" }),
   };

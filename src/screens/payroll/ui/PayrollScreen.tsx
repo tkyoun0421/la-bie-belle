@@ -4,7 +4,11 @@ import { BellIcon } from "@/shared/ui/BellIcon";
 import { PeriodStepper } from "@/shared/ui/PeriodStepper";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
+import { SkeletonLine } from "@/shared/ui/Skeleton";
+import { Text } from "@/shared/ui/Text";
+import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import { PayrollSummary } from "@/features/payrollCompute/ui/PayrollSummary";
+import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
 import {
   PAYROLL_COPY,
   SEGMENT_TEST_ID,
@@ -50,7 +54,19 @@ export function PayrollScreen() {
             onNext={screen.goNext}
           />
 
-          <PayrollSummary span={screen.span} />
+          <PayrollSummary
+            span={screen.span}
+            pending={
+              <>
+                <SkeletonLine className="mt-4 h-9 w-2/3" />
+
+                <Text size="sm" tone="subtle" className="mt-1">
+                  {PAYROLL_VIEW_COPY.estimateNote}
+                </Text>
+              </>
+            }
+            failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+          />
 
           <View className="mt-8">
             <PayrollList screen={screen} />

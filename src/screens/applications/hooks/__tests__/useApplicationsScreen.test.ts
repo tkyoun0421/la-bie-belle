@@ -34,6 +34,8 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { APPLICATIONS_COPY } =
   await import("@/screens/applications/consts/applications.const");
+const { DEADLINE_SHEET_COPY } =
+  await import("@/features/availabilitySubmit/consts/availabilitySubmit.const");
 const { useApplicationsScreen } =
   await import("@/screens/applications/hooks/useApplicationsScreen");
 
@@ -217,7 +219,7 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     );
 
     await waitFor(() => expect(result.current.sheet).toBeNull());
-    expect(result.current.saving).toBe(false);
+    expect(result.current.sending).toBe(false);
   });
 
   it("통신이 끊기면 시트를 연 채로 둔다", async () => {
@@ -229,7 +231,7 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     act(() => result.current.changeDeadlineDraft("2026-10-12"));
     act(() => result.current.saveDeadline());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.sheet).not.toBeNull();
   });
@@ -243,12 +245,42 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     act(() => result.current.changeDeadlineDraft("2026-10-12"));
     act(() => result.current.saveDeadline());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     act(() => result.current.closeDeadline());
 
     expect(result.current.sheet).toBeNull();
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
+  });
+});
+
+describe("useApplicationsScreen — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("통신이 끊기면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    setApplicationDeadlineMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted("2026-10");
+
+    act(() => result.current.openDeadline());
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+    act(() => result.current.saveDeadline());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(DEADLINE_SHEET_COPY.saveFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    setApplicationDeadlineMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted("2026-10");
+
+    act(() => result.current.openDeadline());
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+    act(() => result.current.saveDeadline());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });
 

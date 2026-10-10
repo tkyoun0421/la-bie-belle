@@ -9,14 +9,14 @@ import {
 } from "@/entities/notification/hooks/useNotificationsList";
 
 export type NotificationsListProps = NotificationsListInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   empty?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
   failedMore?: (retry: () => void) => ReactNode;
 };
 
 export function NotificationsList({
-  loading,
+  pending,
   empty,
   failed,
   failedMore,
@@ -24,15 +24,15 @@ export function NotificationsList({
 }: NotificationsListProps) {
   const fragment = useNotificationsList(input);
 
-  if (fragment.body === "loading") {
-    return loading ?? null;
+  if (fragment.state === "pending") {
+    return pending ?? null;
   }
 
-  if (fragment.body === "failed") {
+  if (fragment.state === "failed") {
     return failed?.(fragment.retry) ?? null;
   }
 
-  if (fragment.body === "empty") {
+  if (fragment.state === "empty") {
     return empty ?? null;
   }
 
@@ -63,21 +63,19 @@ export function NotificationsList({
           </View>
         ))}
 
-        {fragment.state === "loadingMore" ? (
+        {fragment.loadingMore ? (
           <View className="h-14 items-center justify-center">
             <ActivityIndicator />
           </View>
         ) : null}
 
-        {fragment.state === "errorMore"
-          ? failedMore?.(fragment.retryNextPage)
-          : null}
+        {fragment.failedMore ? failedMore?.(fragment.retryNextPage) : null}
 
-        {fragment.state === "end" ? (
+        {fragment.hasMore ? null : (
           <Text size="xs" tone="subtle" className="py-8 text-center">
             {NOTIFICATION_LIST_COPY.end}
           </Text>
-        ) : null}
+        )}
       </View>
     </ScrollView>
   );

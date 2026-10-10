@@ -20,6 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
+const { CONTACT_SHEET_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { useContactSheet } =
   await import("@/features/profileEdit/hooks/useContactSheet");
 
@@ -119,7 +121,7 @@ describe("useContactSheet — 조각이 자기 쓰기를 삼킨다", () => {
 
     await waitFor(() => expect(result.current.invalid).toBe(true));
 
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
     expect(SAVED).not.toHaveBeenCalled();
   });
 
@@ -131,7 +133,7 @@ describe("useContactSheet — 조각이 자기 쓰기를 삼킨다", () => {
     act(() => result.current.write("01000000002"));
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.invalid).toBe(false);
   });
@@ -151,11 +153,11 @@ describe("useContactSheet — 조각이 자기 쓰기를 삼킨다", () => {
     act(() => result.current.write("01000000002"));
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.saving).toBe(true));
+    await waitFor(() => expect(result.current.sending).toBe(true));
 
     act(() => release());
 
-    await waitFor(() => expect(result.current.saving).toBe(false));
+    await waitFor(() => expect(result.current.sending).toBe(false));
   });
 });
 
@@ -174,5 +176,33 @@ describe("useContactSheet — 연락처가 틀렸다는 판정이 하나다", ()
     act(() => result.current.write("0110000"));
 
     expect(result.current.invalid).toBe(false);
+  });
+});
+
+describe("useContactSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("통신이 끊기면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    updateMyContactMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.write("01000000002"));
+    act(() => result.current.save());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(CONTACT_SHEET_COPY.sendFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    updateMyContactMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.write("01000000002"));
+    act(() => result.current.save());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

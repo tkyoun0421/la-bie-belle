@@ -29,7 +29,7 @@ export function useCreateScheduleSheet({
     failedLine: create.isError ? SCHEDULE_DAY_COPY.saveFailed : null,
     deadline,
     canSave: deadline >= today,
-    saving: create.isPending,
+    sending: create.isPending,
     writeDeadline: setDeadline,
     create: () => create.mutate({ month, deadline }),
   };

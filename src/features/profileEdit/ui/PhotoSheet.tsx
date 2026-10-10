@@ -32,7 +32,7 @@ export function PhotoSheet({
         {PHOTO_SHEET_COPY.title}
       </Text>
 
-      {fragment.uploading ? (
+      {fragment.sending ? (
         <View className="items-center py-8">
           <ActivityIndicator />
         </View>
@@ -53,11 +53,11 @@ export function PhotoSheet({
         </View>
       )}
 
-      {fragment.failed ? (
+      {fragment.failedLine === null ? null : (
         <Text size="sm" tone="critical" className="mt-2">
-          {PHOTO_SHEET_COPY.failed}
+          {fragment.failedLine}
         </Text>
-      ) : null}
+      )}
     </>
   );
 }

@@ -21,6 +21,7 @@ import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthSche
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
+import { REHEARSAL_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
 import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 
 type Row = Rehearsal;
@@ -34,7 +35,7 @@ export type RehearsalScreenController = {
   monthLabel: string;
   totalLabel: string;
   isAdmin: boolean;
-  failed: boolean;
+  failedLine: string | null;
   openDate: string | null;
   openDateLabel: string;
   openKind: RehearsalKind;
@@ -201,6 +202,8 @@ export function useRehearsalScreen(
 
   const goBack = useCallback(() => router.replace(ME_HOME_PATH), [router]);
 
+  const failed = (isAdmin ? all.error : mine.error) !== null;
+
   return {
     goBack,
     month,
@@ -208,7 +211,7 @@ export function useRehearsalScreen(
     monthLabel: spellMonth(month),
     totalLabel: spellTotal(monthTotal(rows)),
     isAdmin,
-    failed: (isAdmin ? all.error : mine.error) !== null,
+    failedLine: failed ? REHEARSAL_COPY.readFailed : null,
     openDate,
     openDateLabel: openDate === null ? "" : spellDate(openDate),
     openKind,

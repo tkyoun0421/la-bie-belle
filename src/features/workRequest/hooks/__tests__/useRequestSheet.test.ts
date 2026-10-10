@@ -23,6 +23,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
+const { WORK_REQUEST_COPY } =
+  await import("@/features/workRequest/consts/workRequest.const");
 const { useRequestSheet } =
   await import("@/features/workRequest/hooks/useRequestSheet");
 
@@ -93,8 +95,8 @@ describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", 
     );
   });
 
-  it("살아 있는 요청은 normal이다", () => {
-    expect(mounted().result.current.state).toBe("normal");
+  it("살아 있는 요청은 끝나지 않았다", () => {
+    expect(mounted().result.current.ended).toBe(false);
   });
 
   it("만료된 요청은 끝난 것으로 선다", () => {
@@ -103,14 +105,14 @@ describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", 
       expiresAt: "2020-01-01T00:00:00.000Z",
     });
 
-    expect(result.current.state).toBe("ended");
+    expect(result.current.ended).toBe(true);
   });
 
   it("아직 아무것도 안 보냈으면 보내는 중도 실패도 아니다", () => {
     const { result } = mounted();
 
     expect(result.current.sending).toBe(false);
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
   });
 });
 
@@ -168,9 +170,35 @@ describe("useRequestSheet — 수락과 거절이 자기 mutation으로 나간�
 
     act(() => result.current.accept());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(seatTaken).not.toHaveBeenCalled();
     expect(answered).not.toHaveBeenCalled();
+  });
+});
+
+describe("useRequestSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("통신이 끊기면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    respondRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.accept());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(WORK_REQUEST_COPY.sendFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    respondRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.accept());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

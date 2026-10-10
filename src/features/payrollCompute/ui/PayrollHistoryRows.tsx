@@ -1,22 +1,33 @@
+import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/ListRow";
 import { usePayrollHistoryRows } from "@/features/payrollCompute/hooks/usePayrollHistoryRows";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
-import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 
 export type PayrollHistoryRowsProps = {
   span: DateSpan;
+  pending?: ReactNode;
+  failed?: (retry: () => void) => ReactNode;
+  empty?: ReactNode;
 };
 
-export function PayrollHistoryRows({ span }: PayrollHistoryRowsProps) {
+export function PayrollHistoryRows({
+  span,
+  pending,
+  failed,
+  empty,
+}: PayrollHistoryRowsProps) {
   const fragment = usePayrollHistoryRows(span);
 
   if (fragment.state === "pending") {
-    return <PayrollViewLoading />;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {
-    return <PayrollViewFailed onRetry={fragment.retry} />;
+    return failed?.(fragment.retry) ?? null;
+  }
+
+  if (fragment.state === "empty") {
+    return empty ?? null;
   }
 
   return (

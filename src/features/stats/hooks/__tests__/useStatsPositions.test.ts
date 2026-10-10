@@ -100,7 +100,7 @@ describe("useStatsPositions — 조각이 자기 포지션을 읽는다", () => 
   it("기다리는 중은 상태 이름으로 낸다", () => {
     const { result } = mounted();
 
-    expect(result.current.state).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
   it("내 근무가 없으면 empty다", async () => {

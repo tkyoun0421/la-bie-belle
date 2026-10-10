@@ -106,7 +106,7 @@ function inputOf(over: Partial<Input> = {}): Input {
       confirmedAt: null,
     }),
     isConfirmed: false,
-    saving: false,
+    sending: false,
     adjusting: false,
     adjusted: false,
     adjustError: null,

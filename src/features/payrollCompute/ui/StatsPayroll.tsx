@@ -1,26 +1,32 @@
+import type { ReactNode } from "react";
 import { View } from "react-native";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import { useStatsPayroll } from "@/features/payrollCompute/hooks/useStatsPayroll";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
-import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 
 export type StatsPayrollProps = {
   span: DateSpan;
   onOpenHistory: () => void;
+  pending?: ReactNode;
+  failed?: (retry: () => void) => ReactNode;
 };
 
-export function StatsPayroll({ span, onOpenHistory }: StatsPayrollProps) {
+export function StatsPayroll({
+  span,
+  onOpenHistory,
+  pending,
+  failed,
+}: StatsPayrollProps) {
   const fragment = useStatsPayroll(span);
 
   if (fragment.state === "pending") {
-    return <PayrollViewLoading />;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {
-    return <PayrollViewFailed onRetry={fragment.retry} />;
+    return failed?.(fragment.retry) ?? null;
   }
 
   return (

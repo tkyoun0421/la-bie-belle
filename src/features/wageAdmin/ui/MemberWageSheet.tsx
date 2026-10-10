@@ -7,7 +7,6 @@ import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import {
   WAGE_AMOUNT_INPUT_TEST_ID,
   WAGE_SAVE_FAILED_SUB,
-  WAGE_SAVE_FAILED_TITLE,
   WAGE_SHEET_COPY,
   WAGE_TODAY_NOTE,
 } from "@/features/wageAdmin/consts/wageAdmin.const";
@@ -47,17 +46,17 @@ export function MemberWageSheet({
 
   return (
     <>
-      {sheet.failed ? (
-        <Text size="lg" weight="semibold">
-          {WAGE_SAVE_FAILED_TITLE}
-        </Text>
-      ) : (
+      {sheet.failedLine === null ? (
         <View className="flex-row items-center gap-3">
           <Avatar name={sheet.name} photoUrl={sheet.photoUrl} />
           <Text size="lg" weight="semibold">
             {sheet.name}
           </Text>
         </View>
+      ) : (
+        <Text size="lg" weight="semibold">
+          {sheet.failedLine}
+        </Text>
       )}
 
       <AmountInput
@@ -68,13 +67,13 @@ export function MemberWageSheet({
         onChangeText={sheet.write}
       />
 
-      {sheet.failed ? (
-        <Text size="sm" tone="muted" className="mt-2">
-          {WAGE_SAVE_FAILED_SUB}
-        </Text>
-      ) : (
+      {sheet.failedLine === null ? (
         <Text size="xs" tone="subtle" className="mt-2">
           {WAGE_TODAY_NOTE}
+        </Text>
+      ) : (
+        <Text size="sm" tone="muted" className="mt-2">
+          {WAGE_SAVE_FAILED_SUB}
         </Text>
       )}
 

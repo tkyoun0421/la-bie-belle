@@ -6,13 +6,13 @@ import {
 import { ApprovalRows } from "@/entities/workRequest/ui/ApprovalRows";
 
 export type ApprovalsListProps = ApprovalRowsInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   empty?: ReactNode;
 };
 
 export function ApprovalsList({
-  loading,
+  pending,
   failed,
   empty,
   ...input
@@ -20,7 +20,7 @@ export function ApprovalsList({
   const fragment = useApprovalRows(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { PROFILE_FORM_COPY } from "@/features/profileEdit/consts/profileEdit.const";
 import { PHOTO_PICK_DEPS } from "@/features/profileEdit/lib/photoPickDeps.lib";
 import { pickAndShrinkPhoto } from "@/features/profileEdit/lib/pickPhoto.lib";
 import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
@@ -10,8 +11,8 @@ export type PendingEditorInput = {
 };
 
 export type PendingEditorController = {
-  uploading: boolean;
-  failed: boolean;
+  sending: boolean;
+  failedLine: string | null;
   pick: () => Promise<void>;
 };
 
@@ -54,9 +55,11 @@ export function usePendingEditor({
     }
   }, [userId, mutate]);
 
+  const failed = pickFailed || sendFailed;
+
   return {
-    uploading: picking || sending,
-    failed: pickFailed || sendFailed,
+    sending: picking || sending,
+    failedLine: failed ? PROFILE_FORM_COPY.photoFailed : null,
     pick,
   };
 }

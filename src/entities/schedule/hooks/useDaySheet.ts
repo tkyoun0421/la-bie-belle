@@ -10,7 +10,6 @@ import {
 import type {
   DaySheetController,
   DaySheetInput,
-  DaySheetState,
 } from "@/entities/schedule/model/daySheet.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import {
@@ -34,26 +33,24 @@ export function useDaySheet({
     monthOf(workDate),
   );
 
+  if (isLoading) {
+    return { state: "pending" };
+  }
+
   const day = (data ?? []).find((one) => one.workDate === workDate) ?? null;
 
-  const state: DaySheetState = isLoading
-    ? "loading"
-    : error !== null || day === null
-      ? "failed"
-      : "ready";
+  if (error !== null || day === null) {
+    return { state: "failed", retry: refetch };
+  }
 
-  const rows = day === null ? [] : rosterOfDay(day);
-  const isMyAssignment =
-    day !== null && myAssignmentOf(day.assignments, myProfileId) !== null;
+  const rows = rosterOfDay(day);
+  const isMyAssignment = myAssignmentOf(day.assignments, myProfileId) !== null;
   const today = kstToday();
 
   return {
-    state,
+    state: "ready",
     title: spellWorkDate(workDate),
-    subtitle:
-      day === null
-        ? ""
-        : daySheetSubtitle(day.startsAt, day.endsAt, rosterHeadcount(rows)),
+    subtitle: daySheetSubtitle(day.startsAt, day.endsAt, rosterHeadcount(rows)),
     rows,
     myProfileId,
     myBadge: cancelRequestBadge(cancelRequested) ?? undefined,
@@ -64,7 +61,6 @@ export function useDaySheet({
       today,
       hasActiveCancelRequest: cancelRequested,
     }),
-    retry: refetch,
     cancelShift: onCancelShift,
     requestSwap: onRequestSwap,
   };

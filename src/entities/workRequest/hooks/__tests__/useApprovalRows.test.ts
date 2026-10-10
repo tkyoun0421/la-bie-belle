@@ -89,7 +89,6 @@ describe("useApprovalRows — 조각이 판정할 취소 요청을 부른다", (
     const { result } = await mounted();
 
     expect(result.current.state).toBe("empty");
-    expect(result.current.rows).toEqual([]);
   });
 
   it("못 읽으면 failed다", async () => {
@@ -108,7 +107,12 @@ describe("useApprovalRows — 조각이 판정할 취소 요청을 부른다", (
 
     const { result } = await mounted();
 
-    expect(result.current.state).toBe("rows");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows.map((row) => row.id)).toEqual(["soon", "late"]);
     expect(result.current.rows[0].title).toContain("이준호");
     expect(result.current.rows[0].detail).toBe("이준호의 사정");
@@ -121,7 +125,6 @@ describe("useApprovalRows — 조각이 판정할 취소 요청을 부른다", (
 
     const { result } = await mounted({ answered: "one" });
 
-    expect(result.current.rows).toEqual([]);
     expect(result.current.state).toBe("empty");
   });
 
@@ -132,6 +135,10 @@ describe("useApprovalRows — 조각이 판정할 취소 요청을 부른다", (
 
     const onPress = jest.fn();
     const { result } = await mounted({ onPress });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.rows[0].press();
 

@@ -177,6 +177,7 @@ const eslintConfig = defineConfig([
       "house/mutation-settle-shape": "error",
       "house/no-layer-reexport": "error",
       "house/no-route-path-literal": "error",
+      "house/fragment-state-contract": "error",
     },
   },
 

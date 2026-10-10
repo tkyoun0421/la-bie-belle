@@ -21,7 +21,7 @@ import { ProfileFacts } from "@/entities/profile/ui/ProfileFacts";
 export type ProfileCardProps = ProfileCardInput & {
   onEditPhoto: () => void;
   onEditContact: () => void;
-  factsLoading?: ReactNode;
+  factsPending?: ReactNode;
   factsFailed?: ReactNode;
 };
 
@@ -29,14 +29,15 @@ export function ProfileCard({
   userId,
   onEditPhoto,
   onEditContact,
-  factsLoading,
+  factsPending,
   factsFailed,
 }: ProfileCardProps) {
   const fragment = useProfileCard({ userId });
+  const ready = fragment.state === "ready" ? fragment : null;
 
   function facts() {
     if (fragment.state === "pending") {
-      return factsLoading ?? null;
+      return factsPending ?? null;
     }
 
     if (fragment.state === "failed") {
@@ -59,8 +60,8 @@ export function ProfileCard({
         <View className="relative">
           <Avatar
             testID="profile-avatar"
-            name={fragment.name}
-            photoUrl={fragment.photoUrl}
+            name={ready?.name ?? ""}
+            photoUrl={ready?.photoUrl ?? null}
             size={CARD_AVATAR_SIZE}
           />
           <Button
@@ -77,10 +78,10 @@ export function ProfileCard({
         </View>
 
         <Text size="xl" weight="semibold" className="mt-3">
-          {fragment.name}
+          {ready?.name ?? ""}
         </Text>
         <Text size="sm" tone="muted" className="mt-1">
-          {fragment.roleLabel}
+          {ready?.roleLabel ?? ""}
         </Text>
         <Text size="xs" tone="subtle" className="mt-2">
           {PROFILE_CARD_COPY.lockedNote}

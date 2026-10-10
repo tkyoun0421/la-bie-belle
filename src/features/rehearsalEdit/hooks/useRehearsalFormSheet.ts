@@ -65,7 +65,7 @@ export function useRehearsalFormSheet({
 
   return {
     ...rehearsalFormFace({ mode: target.mode, dateLabel, state }),
-    saving: adding || savingEdit,
+    sending: adding || savingEdit,
     change: (values) => dispatch({ type: "change", values }),
     submit: () => {
       if (!canSubmitForm(state)) {

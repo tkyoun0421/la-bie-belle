@@ -55,6 +55,11 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
     const { result } = renderHook(() => usePayrollAccrual(SPAN));
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.work).toContain("2회");
     expect(result.current.work).toContain("8시간");
   });
@@ -64,6 +69,10 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
 
     const { result } = renderHook(() => usePayrollAccrual(SPAN));
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.work).toContain("1회");
   });
 
@@ -71,6 +80,10 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
     reads({ data: [day("normal", 300)] });
 
     const { result } = renderHook(() => usePayrollAccrual(SPAN));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.late).toBeNull();
   });

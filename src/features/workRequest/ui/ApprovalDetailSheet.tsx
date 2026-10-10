@@ -98,11 +98,11 @@ export function ApprovalDetailSheet({
             {APPROVAL_SHEET_COPY.reasonHint}
           </Text>
 
-          {sheet.failed ? (
+          {sheet.failedLine === null ? null : (
             <NoticeBlock kind="error" className="mt-4 p-4">
-              {APPROVAL_SHEET_COPY.sendFailed}
+              {sheet.failedLine}
             </NoticeBlock>
-          ) : null}
+          )}
 
           <View className="mt-6 flex-row gap-3">
             <Button
@@ -128,7 +128,7 @@ export function ApprovalDetailSheet({
       <Dialog
         visible={sheet.confirming}
         title={APPROVAL_SHEET_COPY.confirmTitle}
-        notice={sheet.confirmNotice}
+        notice={sheet.failedLine ?? undefined}
         closeLabel={APPROVAL_SHEET_COPY.confirmBack}
         confirmLabel={sheet.confirmLabel}
         destructive

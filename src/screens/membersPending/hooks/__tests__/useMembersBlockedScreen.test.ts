@@ -135,7 +135,7 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
     act(() => result.current.openMember(BLOCKED));
     act(() => result.current.unblock());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.confirming).not.toBeNull();
     expect(result.current.toast).toBeNull();
@@ -193,5 +193,33 @@ describe("useMembersBlockedScreen — 갈 데를 controller가 정한다", () =>
 
     expect(replaceMock).toHaveBeenCalledWith(ADMIN_MEMBERS_PENDING_PATH);
     expect(backMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("useMembersBlockedScreen — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("통신이 끊기면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    unblockMemberMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.openMember(BLOCKED));
+    act(() => result.current.unblock());
+
+    await waitFor(() => {
+      expect(result.current.failedLine).toBe(BLOCKED_COPY.sendFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    unblockMemberMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mounted();
+
+    act(() => result.current.openMember(BLOCKED));
+    act(() => result.current.unblock());
+
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
+
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

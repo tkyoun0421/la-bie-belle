@@ -39,7 +39,7 @@ export type DayDetailInput = {
   serverNowMs: number;
   gate: DayConfirmGate;
   isConfirmed: boolean;
-  saving: boolean;
+  sending: boolean;
   adjusting: boolean;
   adjusted: boolean;
   adjustError: Error | null;
@@ -169,7 +169,7 @@ export type DayDetailChoice = {
 
 export type DayDetailConfirmChange = {
   copy: ForceChangeCopyInput;
-  saving: boolean;
+  sending: boolean;
   confirm: () => void;
   close: () => void;
 };

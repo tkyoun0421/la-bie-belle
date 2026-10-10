@@ -69,16 +69,16 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
             {REHEARSAL_COPY.legend}
           </Text>
 
-          {screen.failed ? (
+          {screen.failedLine === null ? null : (
             <View className="flex-row items-center gap-2">
               <Text size="xs" tone="subtle">
-                {REHEARSAL_COPY.readFailed}
+                {screen.failedLine}
               </Text>
               <Button variant="ghost" size="compact" onPress={screen.retry}>
                 {REHEARSAL_COPY.retry}
               </Button>
             </View>
-          ) : null}
+          )}
         </View>
       </ScrollView>
 

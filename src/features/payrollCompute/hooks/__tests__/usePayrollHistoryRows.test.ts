@@ -58,6 +58,11 @@ describe("usePayrollHistoryRows — 조각이 자기 내역 줄을 짠다", () =
     const { result } = renderHook(() => usePayrollHistoryRows(SPAN));
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows).toHaveLength(2);
     expect(result.current.rows[0].date).toBe("2026-10-09");
   });
@@ -66,6 +71,10 @@ describe("usePayrollHistoryRows — 조각이 자기 내역 줄을 짠다", () =
     reads({ data: [day("2026-10-09", 60000)] });
 
     const { result } = renderHook(() => usePayrollHistoryRows(SPAN));
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.rows[0].subtitle).toContain("메인");
     expect(result.current.rows[0].amountLabel).toContain("60,000");
@@ -76,16 +85,19 @@ describe("usePayrollHistoryRows — 조각이 자기 내역 줄을 짠다", () =
 
     const { result } = renderHook(() => usePayrollHistoryRows(SPAN));
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[0].subtitle).toBe("결근");
   });
 
-  it("읽는 중에는 pending이고 줄이 없다", () => {
+  it("읽는 중에는 pending이다", () => {
     reads({ isLoading: true });
 
     const { result } = renderHook(() => usePayrollHistoryRows(SPAN));
 
     expect(result.current.state).toBe("pending");
-    expect(result.current.rows).toHaveLength(0);
   });
 
   it("읽기가 넘어지면 failed고 다시 시도할 손이 있다", () => {
@@ -94,6 +106,10 @@ describe("usePayrollHistoryRows — 조각이 자기 내역 줄을 짠다", () =
     const { result } = renderHook(() => usePayrollHistoryRows(SPAN));
 
     expect(result.current.state).toBe("failed");
+
+    if (result.current.state !== "failed") {
+      throw new Error("failed가 아니다");
+    }
 
     result.current.retry();
 

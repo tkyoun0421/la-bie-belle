@@ -31,8 +31,18 @@ export function MembersScreen() {
             noteOf={screen.noteOf}
             onPress={screen.openMember}
             className="mt-4 py-0"
-            loading={<MembersLoading />}
-            empty={<MembersEmpty />}
+            pending={<MembersLoading />}
+            empty={(reason) =>
+              reason === "noMembers" ? (
+                <MembersEmpty />
+              ) : reason === "noMatch" ? (
+                <Card className="mt-4">
+                  <Text size="base" weight="medium" className="text-center">
+                    {MEMBERS_COPY.searchEmpty}
+                  </Text>
+                </Card>
+              ) : null
+            }
             before={
               <Input
                 placeholder={MEMBERS_COPY.searchPlaceholder}
@@ -40,13 +50,6 @@ export function MembersScreen() {
                 onChangeText={screen.search}
                 className="mt-2"
               />
-            }
-            searchEmpty={
-              <Card className="mt-4">
-                <Text size="base" weight="medium" className="text-center">
-                  {MEMBERS_COPY.searchEmpty}
-                </Text>
-              </Card>
             }
           />
 

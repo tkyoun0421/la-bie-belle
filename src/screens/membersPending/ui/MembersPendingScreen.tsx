@@ -49,7 +49,7 @@ export function MembersPendingScreen() {
           <PendingRows
             now={screen.today}
             onPress={screen.openMember}
-            loading={<PendingLoading />}
+            pending={<PendingLoading />}
             empty={<PendingEmpty />}
           />
         </View>

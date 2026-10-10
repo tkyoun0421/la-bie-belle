@@ -12,6 +12,7 @@ import {
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
+import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
 
 export type ApplicationsDeadlineSheet = {
@@ -28,8 +29,8 @@ export type ApplicationsScreenController = {
   deadlineLine: string | null;
   emptyDeadlineLine: string | null;
   sheet: ApplicationsDeadlineSheet | null;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
+  failedLine: string | null;
   chooseTab: (value: string) => void;
   openDeadline: () => void;
   closeDeadline: () => void;
@@ -58,7 +59,7 @@ export function useApplicationsScreen(
 
   const {
     mutate: sendDeadline,
-    isPending: saving,
+    isPending: sending,
     isSuccess: saved,
     isError: failed,
     reset,
@@ -93,8 +94,8 @@ export function useApplicationsScreen(
     emptyDeadlineLine:
       deadline === null ? null : applicationsEmptyDeadlineLine(deadline),
     sheet: asking ? { deadline: typed, today, canSave: typed >= today } : null,
-    saving,
-    failed,
+    sending,
+    failedLine: failed ? DEADLINE_SHEET_COPY.saveFailed : null,
     chooseTab: (value) => setTab(tabOf(value)),
     openDeadline: () => setAsking(true),
     closeDeadline: close,

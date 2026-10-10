@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
+import { HALL_DEFAULTS_COPY } from "@/features/hallDefaults/consts/hallDefaults.const";
 import { useSetHallDefaultsMutation } from "@/features/hallDefaults/services/useSetHallDefaultsMutation";
 
 export type HallDefaultsSheetInput = {
@@ -13,8 +14,8 @@ export type HallDefaultsSheetInput = {
 export type HallDefaultsSheetController = {
   starts: string;
   ends: string;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
+  failedLine: string | null;
   writeStarts: (typed: string) => void;
   writeEnds: (typed: string) => void;
   save: () => void;
@@ -49,8 +50,8 @@ export function useHallDefaultsSheet({
   return {
     starts,
     ends,
-    saving: isPending,
-    failed: isError,
+    sending: isPending,
+    failedLine: isError ? HALL_DEFAULTS_COPY.saveFailed : null,
     writeStarts: setStarts,
     writeEnds: setEnds,
     save,

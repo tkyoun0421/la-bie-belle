@@ -7,6 +7,6 @@ export type CloseDayWarningSheetInput = {
 export type CloseDayWarningSheetController = {
   title: string;
   warningLine: string;
-  closing: boolean;
+  sending: boolean;
   close: () => void;
 };

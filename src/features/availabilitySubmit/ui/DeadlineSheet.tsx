@@ -2,14 +2,13 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 
 export type DeadlineSheetProps = {
   deadline: string;
   today: string;
   canSave: boolean;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
+  failedLine: string | null;
   onChange: (typed: string) => void;
   onClose: () => void;
   onSave: () => void;
@@ -19,8 +18,8 @@ export function DeadlineSheet({
   deadline,
   today,
   canSave,
-  saving,
-  failed,
+  sending,
+  failedLine,
   onChange,
   onClose,
   onSave,
@@ -48,11 +47,11 @@ export function DeadlineSheet({
         바꾸면 전원에게 알림이 가요
       </Text>
 
-      {failed ? (
+      {failedLine === null ? null : (
         <Text size="sm" tone="critical" className="mt-2">
-          {DEADLINE_SHEET_COPY.saveFailed}
+          {failedLine}
         </Text>
-      ) : null}
+      )}
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>
@@ -61,7 +60,7 @@ export function DeadlineSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={saving}
+          loading={sending}
           disabled={!canSave}
           onPress={onSave}
         >

@@ -8,13 +8,13 @@ import {
 } from "@/entities/member/hooks/usePendingRows";
 
 export type PendingRowsProps = PendingRowsInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   empty?: ReactNode;
 };
 
 export function PendingRows({
-  loading,
+  pending,
   failed,
   empty,
   ...input
@@ -22,7 +22,7 @@ export function PendingRows({
   const fragment = usePendingRows(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {

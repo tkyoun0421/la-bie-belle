@@ -10,13 +10,13 @@ import {
 } from "@/entities/member/hooks/useBlockedRows";
 
 export type BlockedRowsProps = BlockedRowsInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   empty?: ReactNode;
 };
 
 export function BlockedRows({
-  loading,
+  pending,
   failed,
   empty,
   ...input
@@ -24,7 +24,7 @@ export function BlockedRows({
   const fragment = useBlockedRows(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {
