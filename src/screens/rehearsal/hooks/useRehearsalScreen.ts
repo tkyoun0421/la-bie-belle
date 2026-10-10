@@ -4,6 +4,7 @@ import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { rehearsalDayCell } from "@/shared/model/rehearsalDayCell.policy";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
 import type {
@@ -22,7 +23,6 @@ import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import { REHEARSAL_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
-import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 
 type Row = Rehearsal;
 

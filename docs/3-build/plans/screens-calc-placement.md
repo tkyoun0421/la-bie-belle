@@ -2,6 +2,8 @@
 
 `screens`에 계산 쉰넷이 남았고 스물일곱은 갈 데가 또렷하다. 애매했던 열아홉은 기준이 벼려져 갈린다.
 
+다시 센 결과는 [전수 표](#셈의-결과--쉰넷을-파일마다-다시-셌다)가 든다 — 스물여덟이 올라가고 스물여섯이 머문다.
+
 ## 입력 명세·기준
 
 **결정은 [triage 제안](../../proposals/codebase-refactor-triage.md)의 묶음 D다.** [`reexport-launders-layers`](reexport-launders-layers.md)가 선행이다 — 재수출이 남아 있으면 「무엇을 아는가」의 셈이 거짓을 센다.
@@ -40,6 +42,89 @@
 
 `src/screens/notifications/model/pressNotification.policy.ts`는 `navigate`와 `markRead`를 인자로 받아 **차례로 부르고 실패를 삼킨다.** 자기가 통신하지 않아 규칙 「`policy`의 통신·시계·난수 금지」는 통과하지만, 하는 일이 판정이 아니라 흐름이다 — **controller(`screens/notifications/hooks/`)로 간다.** 그 안의 판정(`withOrigin`이 「돌아갈 자리를 달아야 하나」를 보는 것)만 `policy`에 남는다.
 
+## 셈의 결과 — 쉰넷을 파일마다 다시 셌다
+
+`.const.ts` 열아홉은 대상이 아니다 — 화면 문안은 그 화면이 아는 것이라 거기가 제자리다. 남은 쉰넷을 파일마다 열어 셌고 **스물여덟이 올라가고 스물여섯이 머문다.** 「또렷한 27 · 애매한 19 · 머무는 8」과 다른 까닭은 **문안 축이 셋보다 넓었기 때문이다** — 아무 도메인도 안 당기면서 그 화면의 말을 내는 파일이 열둘이고, 앞선 셈은 그것을 `shared`로 보냈다.
+
+### 올라간 스물여덟
+
+| 파일 | 아는 것 | 간 자리 |
+| --- | --- | --- |
+| `adminHome/model/miniViewDensity.policy.ts` | 없음 — `workDate` 한 자리는 투영 | `shared/model` |
+| `adminHome/model/tileMonth.policy.ts` | 없음 — 평평한 값 | `shared/model` |
+| `qr/utils/qrSvg.utils.ts` | 없음 — `qrcode` 하나 | `shared/utils` |
+| `rehearsal/model/rehearsalDayCell.policy.ts` | 없음 — 분을 받아 셀 꼴을 낸다 | `shared/model` |
+| `rehearsal/model/rehearsalGuard.policy.ts` | 없음 — 참거짓 셋 | `shared/model` |
+| `scheduleAdmin/model/adjustChoiceState.policy.ts` | 없음 — 숫자 입력 다루기 | `shared/model` |
+| `scheduleAdmin/model/adjustmentFailure.policy.ts` | 없음 — `shared`의 실패 문안 | `shared/model` |
+| `scheduleAdmin/model/adminCalendarDayState.policy.ts` | `shared/ui`의 셀 상태 | `shared/model` |
+| `scheduleAdmin/model/monthEmptyState.policy.ts` | 없음 — 달과 지금 | `shared/model` |
+| `scheduleWorker/model/calendarDayState.policy.ts` | `shared/ui`의 셀 상태 | `shared/model` |
+| `scheduleWorker/utils/submissionSelection.utils.ts` | 없음 — 글자 목록 토글 | `shared/utils` |
+| `stats/utils/moneyLabel.utils.ts` | 없음 — 값을 낸다 | `shared/utils` |
+| `profile/model/hasRehearsalGrant.policy.ts` | `entities/member` | `entities/member/model` |
+| `scheduleAdmin/model/confirmGate.policy.ts` | `entities/schedule` — `openedAt`·`confirmedAt`을 베꼈다 | `entities/schedule/model` |
+| `scheduleAdmin/model/mergeTarget.policy.ts` | `entities/schedule` | `entities/schedule/model` |
+| `scheduleAdmin/utils/deadlineLine.utils.ts` | `entities/schedule` | `entities/schedule/utils` |
+| `scheduleAdmin/utils/positionRows.utils.ts` | `entities/schedule` | `entities/schedule/utils` |
+| `scheduleWorker/model/monthState.policy.ts` | `entities/schedule` — `MonthWindow`를 그대로 베꼈다 | `entities/schedule/model` |
+| `scheduleAdmin/model/holidaySwitch.policy.ts` | `entities/payroll` | `entities/payroll/model` |
+| `scheduleAdmin/model/slotRequestBadge.policy.ts` | `entities/workRequest` — `SlotRequest` 세 자리를 베꼈다 | `entities/workRequest/model` |
+| `scheduleWorker/model/incomingRequest.policy.ts` | `entities/workRequest` | `entities/workRequest/model` |
+| `scheduleWorker/model/attendanceColumn.policy.ts` | `entities/attendance` | `entities/attendance/model` |
+| `adminStats/utils/chartValues.utils.ts` | `features/stats` + 도메인 둘 | `features/stats/utils` |
+| `payroll/model/period.policy.ts` | `features/payrollCompute` | `features/payrollCompute/model` |
+| `payroll/model/boundary.policy.ts` | `Period` 하나 | `features/payrollCompute/model` |
+| `scheduleAdmin/utils/absenceMinutes.utils.ts` | `features/payrollCompute` | `features/payrollCompute/utils` |
+| `scheduleAdmin/utils/adjustmentCount.utils.ts` | `features/payrollCompute` + `entities/payroll` | `features/payrollCompute/utils` |
+| `scheduleAdmin/model/notifyReach.policy.ts` | `entities/member` + `entities/notification` | `features/scheduleConfirm/model` |
+
+### 머문 스물여섯
+
+| 파일 | 머무는 까닭 |
+| --- | --- |
+| `adminHome/model/homeTileSummary.policy.ts` | 화면 문안 |
+| `adminHome/model/todayStatus.policy.ts` | 화면 문안 — 밴드의 띠 이름까지 |
+| `adminHome/model/vacancyCards.policy.ts` | 화면 문안 + 화면 const |
+| `adminHome/utils/approvalsLine.utils.ts` | 화면 문안 |
+| `membersPending/utils/formatSentAt.utils.ts` | 화면 문안 |
+| `notifications/hooks/pressNotification.ts` | 흐름이라 `hooks`로 내려갔다 |
+| `pending/model/notificationPrompt.policy.ts` | 짝 테스트가 화면 const를 당긴다 |
+| `pending/model/pendingForm.policy.ts` | 쪼갠 뒤 남은 `stageOfProfile`이 화면 단계를 낸다 |
+| `pending/model/pendingForm.type.ts` | 화면 단계 |
+| `pending/utils/notificationPromptCopy.utils.ts` | 화면 const |
+| `qr/model/qrFullscreen.type.ts` | controller 계약 |
+| `qr/utils/fullscreenQrSize.utils.ts` | 화면 const |
+| `qr/utils/qrPaper.utils.ts` | 화면 const + 종이 문안 |
+| `qr/utils/qrStartLine.utils.ts` | 화면 문안 |
+| `scheduleAdmin/model/confirmAffordance.policy.ts` | 화면 문안 |
+| `scheduleAdmin/model/dayDetail.type.ts` | controller 계약 + `features` 셋 |
+| `scheduleAdmin/model/dragGesture.policy.ts` | 화면 const |
+| `scheduleAdmin/model/openModeSelection.policy.ts` | 화면 문안 |
+| `scheduleAdmin/model/pickOutcome.policy.ts` | 화면 타입 |
+| `scheduleAdmin/model/positionRow.type.ts` | 화면 타입 |
+| `scheduleAdmin/utils/adjustSheetRows.utils.ts` | `features` 둘 — 규칙 3 |
+| `scheduleAdmin/utils/confirmChangeCopy.utils.ts` | 화면 타입 |
+| `scheduleAdmin/utils/dayDetailRows.utils.ts` | 화면 뷰 + 문안 |
+| `scheduleAdmin/utils/dragId.utils.ts` | 짝 테스트가 화면의 버리는 자리 식별자를 당긴다 |
+| `scheduleWorker/utils/workerCopy.utils.ts` | 화면 문안 |
+| `stats/utils/chartValues.utils.ts` | `features` 둘 + 화면 const — 규칙 3 |
+
+### 조항이 답한 자리
+
+| 조항 | 답한 수 | 어디서 |
+| --- | --- | --- |
+| 베껴 선언한 것도 아는 것이다 | 3 | `monthState`·`confirmGate`·`slotRequestBadge` |
+| 화면 문안을 내면 그 화면을 아는 것이다 | 12 | 아무 도메인도 안 당기면서 그 화면의 말을 내는 자리 |
+| 인자의 타입을 당길 때만 아는 것이다 | 10 | 평평한 값만 받아 `shared`로 간 자리 |
+| 가름은 파일이 한 책임일 때만 답한다 | 2 | `pendingForm.policy`·`pressNotification` |
+| 비동기만으로는 `lib`이 아니다 | 1 | `qrSvg` |
+| 받은 손을 순서대로 부르는 것은 controller의 일이다 | 1 | `pressNotification` |
+
+**조항 하나가 더 필요했다.** 짝 테스트가 그 화면의 `consts`를 당기는 파일은 그 화면을 안다 — `notificationPrompt.policy.ts`와 `dragId.utils.ts`가 `shared`로 올라갔다가 그 import 때문에 되돌아왔다. 셈을 소스 파일만 보고 하면 그 자리가 안 보인다.
+
+**문안 축이 「화면마다 다를 수 있나」로 갈렸다.** 도메인의 말(「공휴일」·「요청 N건 대기 중」·「스케줄 신청 마감」·근태 상태 이름)은 그 도메인과 함께 올라갔고, 그 화면의 지시와 상태 문장(「열 날을 고르세요」·「승인할 일」·「근무표가 아직 없어요」)은 머물렀다.
+
 ## 왜 고치나
 
 기준에 구멍이 있으면 파일마다 사람이 판정하고, 판정이 회차마다 달라진다. [관찰 065](../../observations/065-no-home-for-cross-feature-calculation.md)가 「집이 없다」로 닫혔다가 뒤집힌 자리가 그 꼴이다 — 실제 의존이 아니라 보이는 의존으로 판정했다.
@@ -53,10 +138,9 @@
 | 또렷한 27 | `shared` 10 · `entities` 11 · `features` 6으로 `git mv`하고 import를 고친다 |
 | 애매했던 19 | 새 조항으로 다시 세어 갈린 대로 옮긴다. **결과를 표로 남긴다** |
 | `src/screens/qr/utils/qrSvg.utils.ts` | 자리는 그대로고 `shared/utils`로 올라간다 — 도메인을 하나도 모른다 |
-| `src/screens/notifications/model/pressNotification.policy.ts` | 흐름을 `hooks`의 controller로 올리고 `withOrigin`의 판정만 `policy`에 남긴다 |
+| `src/screens/notifications/model/pressNotification.policy.ts` | 흐름이 `hooks`로 간다. `withOrigin`은 거기서 안 내보내는 손으로 남는다 — 내보내려면 짝 테스트가 먼저 서야 한다 |
 | 자리가 둘인 3 | 먼저 쪼갠다. 쪼갠 조각마다 다시 묻는다 |
-| `eslint-rules/noCopiedDomainShape.mjs` | 신설 — 도메인 타입의 필드를 import 없이 베껴 선언한 자리를 막는다. `api/` 밖 snake_case 규칙과 같은 꼴이다 |
-| `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts` · `docs/4-test/execution.md` | 규칙 하나를 켜는 다섯 자리의 나머지 넷 |
+| 검사 자리 | 안 선다 — 까닭은 [위](#베낀-도메인-꼴은-기계가-못-센다)다. 규칙 수는 45로 그대로고 `docs/4-test/execution.md`도 그대로다 |
 
 ## 완료 조건
 
@@ -65,8 +149,23 @@
 - **AC-03** 애매했던 19가 새 조항으로 갈리고 **그 결과가 표로 남는다** — 파일마다 어느 조항이 답했는지 적는다
 - **AC-04** `qrSvg`가 `shared/utils`에 서고, `pressNotification`의 흐름이 controller로 올라가 `.policy.ts`에 판정만 남는다
 - **AC-05** 자리가 둘인 세 파일이 쪼개진다
-- **AC-06** `eslint-rules/noCopiedDomainShape.mjs`가 베껴 선언한 도메인 꼴을 막고, 규칙이 다섯 자리에 한 커밋으로 선다
+- **AC-06** ~~`eslint-rules/noCopiedDomainShape.mjs`가 베껴 선언한 도메인 꼴을 막고, 규칙이 다섯 자리에 한 커밋으로 선다~~ — **뺐다.** 까닭은 [아래](#베낀-도메인-꼴은-기계가-못-센다)다
 - **AC-07** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
+
+## 베낀 도메인 꼴은 기계가 못 센다
+
+**ESLint로는 애초에 못 한다.** `eslint.config.mjs`의 `parserOptions`에 `project`가 없어 규칙이 한 파일의 AST만 본다. 「다른 파일의 도메인 타입과 필드가 같나」는 파일을 가로지르는 비교라 거기서 할 수 없다. 그 자리는 소스 전체를 한 번에 읽는 `tests/lint/`고 선례가 `fileNaming.ts`와 `databaseTypes.ts`다.
+
+**그래서 `tests/lint/`로 재 보고 껐다.** `typescript`의 AST로 `src/entities/*/model/`의 객체 타입 예순과 나머지 전부를 맞췄다.
+
+| 셈법 | 걸린 수 | 무엇이 걸렸나 |
+| --- | --- | --- |
+| 필드 집합이 똑같다 | 4 | 내보내지도 않은 제네릭 제약 `{minutes, count}`가 `RehearsalTotal`과 같다고 걸렸다 |
+| 같은 도메인 타입의 세 자리 이상을 쓴다 | 7 | 여섯이 `entities` 슬라이스끼리라 규칙 3이 import를 막은 자리다 — 베낀 것이 아니라 베낄 수밖에 없는 자리다 |
+
+`entities`끼리와 `api/`를 빼고 내보낸 타입만 남겨도 거짓 양성이 안 사라진다. `useGrantPositionMutation`의 `GrantPositionInput {profileId, position}`이 `Qualification`과 글자까지 같은데, 그것은 **mutation이 호출부와 맺는 계약**이고 ADR-016이 「조각이 호출부와 맺는 props 타입은 베낀 것이 아니다」로 이미 빼놓은 꼴이다. 거기까지 거르면 남는 셈이 아무것도 안 잡는다 — 이 작업이 찾은 유일한 참 양성(`MonthWindow`를 베낀 `monthState`)은 자리를 옮겨 이미 없다.
+
+**켜지 않는 쪽이 싸다.** 거짓 양성이 남는 검사는 다음 사람이 덮고, 덮인 검사는 아무것도 지키지 못한다. DB 말투를 베낀 축은 규칙 38(`api` 밖의 snake_case 필드 선언)이 이미 물고 있어, 안 물린 자리는 **도메인 타입을 import할 수 있는데 그 필드를 자기 이름으로 다시 적은 자리** 하나다. 그 자리는 사람이 본다.
 
 ## 작업 순서
 

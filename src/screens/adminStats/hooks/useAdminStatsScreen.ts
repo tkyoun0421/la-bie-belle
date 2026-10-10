@@ -17,16 +17,16 @@ import {
 } from "@/features/stats/model/workTotals.policy";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { buildAttendanceTab } from "@/features/stats/utils/attendanceRows.utils";
+import {
+  attendanceValues,
+  percentLabel,
+  workValues,
+} from "@/features/stats/utils/chartValues.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import {
   ADMIN_STATS_TABS,
   MONTH_LENGTH,
 } from "@/screens/adminStats/consts/adminStats.const";
-import {
-  attendanceValues,
-  percentLabel,
-  workValues,
-} from "@/screens/adminStats/utils/chartValues.utils";
 
 export type AdminStatsTab = (typeof ADMIN_STATS_TABS)[number];
 

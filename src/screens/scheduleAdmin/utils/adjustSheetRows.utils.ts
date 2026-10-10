@@ -15,7 +15,7 @@ import {
   type TimedAdjustment,
   type WorkDayHours,
 } from "@/features/payrollCompute/model/paidMinutes.policy";
-import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
+import { assignedMinutes } from "@/features/payrollCompute/utils/absenceMinutes.utils";
 
 export type AdjustSheetAssignment = Pick<
   ScheduleAssignment,

@@ -4,6 +4,11 @@ import type {
   Qualification,
 } from "@/entities/member/model/member.type";
 import type {
+  HolidayRow,
+  HolidaySwitchState,
+} from "@/entities/payroll/model/holidaySwitch.policy";
+import type { DayConfirmGate } from "@/entities/schedule/model/confirmGate.policy";
+import type {
   ScheduleAssignment,
   ScheduleSlot,
 } from "@/entities/schedule/model/schedule.type";
@@ -12,11 +17,6 @@ import type { AdjustSheetRow } from "@/features/adjustment/model/adjustSheetRow.
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import type { PickerEntry } from "@/features/scheduleAssign/model/pickerEntry.type";
 import type { ForceChangeCopyInput } from "@/features/scheduleConfirm/utils/forceChangeCopy.utils";
-import type { DayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
-import type {
-  HolidayRow,
-  HolidaySwitchState,
-} from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
 import type {
   AdjustSheetAdjustment,
   AdjustSheetRehearsal,

@@ -7,6 +7,7 @@ import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf } from "@/shared/utils/kstDate";
+import { tenThousandWonLabel } from "@/shared/utils/moneyLabel.utils";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
@@ -34,7 +35,6 @@ import {
   myPayrollValues,
   myWorkValues,
 } from "@/screens/stats/utils/chartValues.utils";
-import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
 
 export type StatsTab = (typeof STATS_TABS)[number];
 

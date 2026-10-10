@@ -2,7 +2,7 @@ import { jest } from "@jest/globals";
 
 const { renderHook, act } = await import("@testing-library/react-native");
 const { dayConfirmGate } =
-  await import("@/screens/scheduleAdmin/model/confirmGate.policy");
+  await import("@/entities/schedule/model/confirmGate.policy");
 const { DomainError } = await import("@/shared/model/error.type");
 const { DISCARD_DROP_ID } =
   await import("@/screens/scheduleAdmin/consts/scheduleAdmin.const");

@@ -1,3 +1,7 @@
+import {
+  assignmentForSlot,
+  slotFillCount,
+} from "@/entities/schedule/utils/positionRows.utils";
 import { SCHEDULE_ADMIN_COPY } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import type {
   PositionRowBadge,
@@ -9,10 +13,6 @@ import {
   positionDragId,
   slotDragId,
 } from "@/screens/scheduleAdmin/utils/dragId.utils";
-import {
-  assignmentForSlot,
-  slotFillCount,
-} from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 const EDUCATION_TEST_ID_PREFIX = "schedule-education-button-";
 

@@ -26,6 +26,7 @@ import {
   PROFILE_FORM_COPY,
   PROFILE_FORM_STEPS,
 } from "@/features/profileEdit/consts/profileEdit.const";
+import { firstOpenStep } from "@/features/profileEdit/model/profileFormStep.policy";
 import type { ProfileFormStep } from "@/features/profileEdit/model/profileFormStep.type";
 import { useSubmitProfileMutation } from "@/features/profileEdit/services/useSubmitProfileMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
@@ -46,10 +47,7 @@ import {
   type NotificationPromptCopy,
   type NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
-import {
-  firstOpenStep,
-  stageOfProfile,
-} from "@/screens/pending/model/pendingForm.policy";
+import { stageOfProfile } from "@/screens/pending/model/pendingForm.policy";
 import type {
   PendingFormValues,
   PendingStage,

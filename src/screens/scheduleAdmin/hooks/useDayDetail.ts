@@ -1,26 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/shared/hooks/useToast";
+import {
+  extraMinutes,
+  nextMinuteDigits,
+  showRevertOption,
+  type AdjustChoiceRow,
+} from "@/shared/model/adjustChoiceState.policy";
+import { adjustmentFailureAction } from "@/shared/model/adjustmentFailure.policy";
+import { holidaySwitchState } from "@/entities/payroll/model/holidaySwitch.policy";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import { allowsStructureChange } from "@/entities/schedule/model/confirmGate.policy";
 import { formatScheduleDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
+import {
+  assignmentForSlot,
+  groupSlotsByPosition,
+  slotFillCount,
+} from "@/entities/schedule/utils/positionRows.utils";
+import { slotRequestBadgeFor } from "@/entities/workRequest/model/slotRequestBadge.policy";
+import {
+  absenceMinutes,
+  assignedMinutes,
+} from "@/features/payrollCompute/utils/absenceMinutes.utils";
+import { adjustmentCountLine } from "@/features/payrollCompute/utils/adjustmentCount.utils";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import { pickerEntries } from "@/features/scheduleAssign/model/pickerEntries.policy";
 import type {
   PickerEntry,
   PickerTarget,
 } from "@/features/scheduleAssign/model/pickerEntry.type";
+import { canNotifyMember } from "@/features/scheduleConfirm/model/notifyReach.policy";
 import { dayHoursLine } from "@/features/scheduleDay/model/dayHoursForm.policy";
 import {
   ADJUSTMENT_REASON,
   SCHEDULE_ADMIN_COPY,
 } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
-import {
-  extraMinutes,
-  nextMinuteDigits,
-  showRevertOption,
-  type AdjustChoiceRow,
-} from "@/screens/scheduleAdmin/model/adjustChoiceState.policy";
-import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
-import { allowsStructureChange } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type {
   DayDetailAdjust,
   DayDetailChoice,
@@ -40,29 +53,16 @@ import {
   canDropOnTarget,
   dropOutcome,
 } from "@/screens/scheduleAdmin/model/dragGesture.policy";
-import { holidaySwitchState } from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
-import { canNotifyMember } from "@/screens/scheduleAdmin/model/notifyReach.policy";
 import { pickOutcome } from "@/screens/scheduleAdmin/model/pickOutcome.policy";
-import { slotRequestBadgeFor } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
-import {
-  absenceMinutes,
-  assignedMinutes,
-} from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
 import {
   adjustSheetHead,
   adjustSheetRows,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
-import { adjustmentCountLine } from "@/screens/scheduleAdmin/utils/adjustmentCount.utils";
 import { confirmChangeCopyOf } from "@/screens/scheduleAdmin/utils/confirmChangeCopy.utils";
 import {
   dayApplicationsLine,
   dayDetailRows,
 } from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
-import {
-  assignmentForSlot,
-  groupSlotsByPosition,
-  slotFillCount,
-} from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 const REVERT_MINUTES = 0;
 
