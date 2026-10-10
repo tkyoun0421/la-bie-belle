@@ -8,9 +8,11 @@
 
 **리팩터링 묶음 여덟의 순서가 정해졌다** — [triage 제안](proposals/codebase-refactor-triage.md)이 `accepted`고 결정 다섯을 든다. `src/` 781 파일을 네 축으로 전수 조사한 결과가 거기 있다. **층 규칙은 지켜지고 고칠 것은 경계 안에 쌓인 중복과 한 자리에 모인 무게다.**
 
-순서는 A(값이 틀리는 축) → B(mutation 뒤처리) → C(재수출 걷기) → E·F(중복·경로) → D·G·H다. backlog 행 여섯이 그 묶음을 든다 — `mutation-settle-shape`·`reexport-launders-layers`·`route-paths-one-home`·`screens-calc-placement`(선행이 걸려 `blocked`)·`controller-common-hooks`·`fragment-state-contract`.
+순서는 A(값이 틀리는 축) → B(mutation 뒤처리) → C(재수출 걷기) → E·F(중복·경로) → D·G·H다. **plan 다섯이 `ready`로 서 있다** — [mutation-settle-shape](3-build/plans/mutation-settle-shape.md)(B)·[reexport-launders-layers](3-build/plans/reexport-launders-layers.md)(C)·[mapper-tests-and-type-names](3-build/plans/mapper-tests-and-type-names.md)(A 뒤쪽)·[duplicated-constants-and-copy](3-build/plans/duplicated-constants-and-copy.md)(E)·[route-paths-one-home](3-build/plans/route-paths-one-home.md)(F)다. 남은 D·G·H는 plan이 아직 없고 `screens-calc-placement`는 C가 선행이라 `blocked`다.
 
-**A가 돌고 있다** — `spell-number-shared`가 `active`고 [plan](3-build/plans/spell-number-shared.md)이 AC 다섯을 든다. 브랜치 `feat/spell-number-shared`에 실패 테스트 일곱 벌이 섰고 구현이 그것을 받았다. 시간 길이를 말로 옮기는 손이 다섯인데 정본과 맞는 것이 `features/adjustment`의 `spellHours` 하나고, 그 본문이 `shared/utils/spellNumber.ts`의 `spellDuration`으로 올라간다. `periodSpan`의 `2026-02-31`이 같이 간다. **A의 뒤쪽 절반이 아직 안 섰다** — 매퍼 여섯의 짝 테스트와 `PushReachableRow` 세 사본, `Holiday` 이름 가르기다.
+**A 앞쪽은 [PR #516](https://github.com/tkyoun0421/la-bie-belle/pull/516)으로 merge됐다** — `spellDuration`이 `shared/utils/spellNumber.ts`에 서고 지역 함수 다섯과 `MINUTES_PER_HOUR` 선언 다섯이 사라졌다. `periodSpan`의 `2026-02-31`도 고쳤다. **다음 첫 수는 B다** — [plan](3-build/plans/mutation-settle-shape.md)이 `test-planner`의 판정까지 담고 있어 writer를 바로 띄울 수 있다.
+
+**B의 판정 넷이 plan에 박혔다.** 하나 — **지연을 넣어야 지킨다.** 기존 테스트가 `invalidateQueries`에 `jest.spyOn`만 걸고 `waitFor`로 최종 상태만 봐서 `void`를 `Promise.all`로 바꿔도 아무 단언이 안 깨진다. `mockImplementation`으로 resolve 시점을 테스트가 쥐어야 하고, 조각 테스트의 `createWrapper`가 `queryClient`를 내주도록 넓혀야 한다. 둘 — **AC-02의 「순서 없음」과 AC-03의 「`async` 안 쓴다」는 테스트로 못 지켜 lint 규칙을 셋으로 넓혔다.** `return p`와 `await p`는 결과가 같고, 호출 순서를 보는 단언은 strategy.md:44가 막는다. 셋 — **루프 축의 영향권이 11 파일이다**(조각 여덟 + 화면 controller 셋). 「조각 열여섯」은 키 하나까지 센 수고, 「화면 controller 일곱」은 루프 축이 아니었다. 넷 — **`reset()` 순서 리스크는 실제로 없다.** 네 자리를 읽어 확인했고 본보기는 `useDayHoursSheet`다.
 
 **`fragments-own-their-data`가 여전히 `active`고 읽기 묶음이 남긴 자리 넷이 D·G·H와 엮인다** — [plan](3-build/plans/fragments-own-their-data.md), [backlog 행](backlog.md). 쓰기 묶음은 [PR #514](https://github.com/tkyoun0421/la-bie-belle/pull/514)로 merge됐다.
 
@@ -34,7 +36,7 @@
 
 **테스트 프로젝트가 `src/**/ui/__tests__/`를 본다.** `components`와 `logic`의 제외 패턴이 `src/shared/ui/__tests__/`만 집어서 조각이 `entities`·`features`로 가면 그 `.tsx` 테스트가 양쪽에서 빠졌다 — 넓혔으니 조각을 옮기면 짝 테스트가 iOS 환경에서 돈다.
 
-**꼬리는 `backlog.md`의 `duplicated-constants-and-copy`가 받는다** — `CLOCK_LENGTH = 5` 네 자리(집은 `entities/clock/consts`)와 `useMyProfileRowQuery` 오명(`Profile`을 돌려주며 `Row`를 든다, importer 여덟)이다. `features/stats`에 같은 일을 하는 utils 쌍 둘이 나란히 있다 — `monthAttendanceLine` ↔ `adminAttendanceLine`과 `attendanceRatioShares` ↔ `adminAttendanceShares`(뒤 쌍은 읽는 상수만 달랐고 그 상수마저 값이 같았다). 합치면 테스트를 지워야 해서 안 합쳤다. `agendaRow.utils`의 `filterAgendaDays`는 짝 테스트 말고 부르는 데가 없다. 관찰 061의 mock 아흔여덟도 열려 있다.
+**꼬리는 `backlog.md`의 `duplicated-constants-and-copy`가 받는다** — [plan](3-build/plans/duplicated-constants-and-copy.md)이 그 가운데 숫자 상수 넷과 실패 문안 하나를 든다. `CLOCK_LENGTH = 5` 네 자리의 집으로 `entities/clock/consts`가 적혀 있었지만 **규칙 3이 `entities/rehearsal`이 그것을 당기는 것을 막아** `shared/consts`가 그 자리다. 그리고 `useMyProfileRowQuery` 오명(`Profile`을 돌려주며 `Row`를 든다, importer 여덟)이다. `features/stats`에 같은 일을 하는 utils 쌍 둘이 나란히 있다 — `monthAttendanceLine` ↔ `adminAttendanceLine`과 `attendanceRatioShares` ↔ `adminAttendanceShares`(뒤 쌍은 읽는 상수만 달랐고 그 상수마저 값이 같았다). 합치면 테스트를 지워야 해서 안 합쳤다. `agendaRow.utils`의 `filterAgendaDays`는 짝 테스트 말고 부르는 데가 없다. 관찰 061의 mock 아흔여덟도 열려 있다.
 
 **spec 게이트가 열려 있고 화면 task 전부 `approved`다.** `feat/<슬러그>` 브랜치의 `src/` 쓰기를 spec `status: approved`가 통과시킨다. spec 파일이 없는 데이터 task는 plan의 `## 완료 조건` 절로도 통과한다 — `attendance-checkin`의 병목은 spec이 아니라 NCP 자격(대표 계정·지도 키·`customStyleId`)이다.
 
