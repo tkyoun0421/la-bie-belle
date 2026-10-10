@@ -1,3 +1,4 @@
+import { clockOf } from "@/shared/utils/kstDate";
 import { spellDuration } from "@/shared/utils/spellNumber";
 import {
   dayTotal,
@@ -15,8 +16,6 @@ import {
   type WorkDayHours,
 } from "@/features/payrollCompute/model/paidMinutes.policy";
 import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
-
-const CLOCK_LENGTH = 5;
 
 export type AdjustSheetAssignment = Pick<
   ScheduleAssignment,
@@ -36,12 +35,8 @@ export type AdjustSheetRowsInput = {
   rehearsals: readonly AdjustSheetRehearsal[];
 };
 
-function clock(value: string): string {
-  return value.slice(0, CLOCK_LENGTH);
-}
-
 export function adjustSheetHead(day: WorkDayHours): string {
-  return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellDuration(
+  return `${clockOf(day.startsAt)}–${clockOf(day.endsAt)} · ${spellDuration(
     assignedMinutes(day),
   )}`;
 }
@@ -67,7 +62,7 @@ function rehearsalLineOf(rows: readonly RehearsalClock[]): string | null {
   const only = rows.length === 1 ? rows[0] : null;
 
   if (only !== null && isClockRow(only)) {
-    return `리허설 ${clock(only.startsAt ?? "")}–${clock(
+    return `리허설 ${clockOf(only.startsAt ?? "")}–${clockOf(
       only.endsAt ?? "",
     )} · ${spellDuration(total.minutes)}`;
   }

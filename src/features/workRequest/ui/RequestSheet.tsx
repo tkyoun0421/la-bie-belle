@@ -3,6 +3,7 @@ import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { useRequestSheet } from "@/features/workRequest/hooks/useRequestSheet";
 
 export type RequestSheetProps = {
@@ -32,7 +33,7 @@ export function RequestSheet(props: RequestSheetProps) {
 
       {fragment.failed ? (
         <NoticeBlock kind="error" className="p-4">
-          보내지 못했어요. 다시 시도해주세요
+          {WORK_REQUEST_COPY.sendFailed}
         </NoticeBlock>
       ) : null}
 

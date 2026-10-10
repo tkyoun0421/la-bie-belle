@@ -1,7 +1,6 @@
+import { DAY_MS } from "@/shared/consts/time.const";
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { Availability } from "@/entities/availability/model/availability.type";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type DateGroup = {
   workDate: string;

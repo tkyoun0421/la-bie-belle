@@ -1,15 +1,13 @@
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SCREEN_BOTTOM_PADDING } from "@/shared/consts/layout.const";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import {
-  RETRY_COPY,
-  SCREEN_BOTTOM_PADDING,
-} from "@/screens/retry/consts/retry.const";
+import { RETRY_COPY } from "@/screens/retry/consts/retry.const";
 import { useRetryScreen } from "@/screens/retry/hooks/useRetryScreen";
 
 export function RetryScreen() {

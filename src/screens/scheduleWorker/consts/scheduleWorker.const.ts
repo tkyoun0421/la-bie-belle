@@ -1,3 +1,5 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
 export const SKELETON_ROWS = [0, 1, 2];
 
 export const SCHEDULE_WORKER_COPY = {
@@ -9,5 +11,5 @@ export const SCHEDULE_WORKER_COPY = {
   calendarNoteWithRequest: "점이 내 근무, 도는 점선이 근무 요청이에요",
   awaitingConfirmation: "근무표를 만들고 있어요. 확정되면 여기에 보여요",
   seatTaken: "자리가 찼어요",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
 } as const;

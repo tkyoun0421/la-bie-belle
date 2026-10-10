@@ -1,4 +1,5 @@
 import {
+  clockOf,
   kstClockOf,
   kstDateOf,
   lastDateOfMonth,
@@ -19,6 +20,16 @@ describe("kstDateOf — KST 자정 경계로 날짜를 가른다", () => {
 
   it("Date 인스턴스를 받아도 같은 경계로 읽는다", () => {
     expect(kstDateOf(new Date("2026-10-02T15:00:00Z"))).toBe("2026-10-03");
+  });
+});
+
+describe("clockOf — 칸에 들어가는 시각은 초를 떼고 분까지다", () => {
+  it("초가 붙은 시각에서 초를 뗀다", () => {
+    expect(clockOf("10:00:00")).toBe("10:00");
+  });
+
+  it("이미 분까지인 시각은 그대로 둔다", () => {
+    expect(clockOf("18:30")).toBe("18:30");
   });
 });
 

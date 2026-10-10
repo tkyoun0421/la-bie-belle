@@ -1,6 +1,6 @@
-const THOUSANDS = /\B(?=(\d{3})+(?!\d))/g;
+import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 
-const MINUTES_PER_HOUR = 60;
+const THOUSANDS = /\B(?=(\d{3})+(?!\d))/g;
 
 export function spellWon(amount: number): string {
   return `${String(amount).replace(THOUSANDS, ",")}원`;

@@ -6,5 +6,3 @@ export const RETRY_COPY = {
   retry: "다시 시도",
   signOut: "로그아웃",
 };
-
-export const SCREEN_BOTTOM_PADDING = 24;

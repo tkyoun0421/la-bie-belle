@@ -4,8 +4,6 @@ export const MAX_COUNT = 9;
 
 export const COUNT_MAX_LENGTH = String(MAX_COUNT).length;
 
-export const CLOCK_LENGTH = 5;
-
 export const FORM_COPY = {
   addTitle: "리허설 넣기",
   editTitle: "리허설 고치기",

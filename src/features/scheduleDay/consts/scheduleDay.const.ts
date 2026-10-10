@@ -1,5 +1,7 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
 export const SCHEDULE_DAY_COPY = {
-  saveFailed: "보내지 못했어요. 다시 시도해주세요",
+  saveFailed: TRANSPORT_ERROR_COPY,
   closeDayTitleSuffix: "을 닫을까요?",
   createTitleSuffix: " 근무표 만들기",
   createNoticePrefix: "만드는 순간 ",

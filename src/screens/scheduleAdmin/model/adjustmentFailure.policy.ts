@@ -1,8 +1,7 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
 import { DomainError } from "@/shared/model/error.type";
 
 const NOT_ALLOWED = "not_allowed";
-
-const SEND_FAILED = "보내지 못했어요. 다시 시도해주세요";
 
 export type AdjustmentFailureAction = {
   refetch: boolean;
@@ -16,5 +15,5 @@ export function adjustmentFailureAction(
     return { refetch: true, message: null };
   }
 
-  return { refetch: false, message: SEND_FAILED };
+  return { refetch: false, message: TRANSPORT_ERROR_COPY };
 }

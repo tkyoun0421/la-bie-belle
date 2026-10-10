@@ -1,3 +1,5 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
 export const AVATARS_BUCKET = "avatars";
 
 export const PHOTO_EDGE = 512;
@@ -31,7 +33,7 @@ export const CONTACT_SHEET_COPY = {
   placeholder: "01012345678",
   guide: "숫자만 적으면 돼요",
   invalid: "010으로 시작하는 11자리를 적어 주세요",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
   close: "닫기",
   save: "저장",
 } as const;
@@ -61,6 +63,6 @@ export const PROFILE_FORM_COPY = {
   phonePlaceholder: "010-0000-0000",
   lockedNote: "이름과 성별과 생년월일은 보내고 나면 못 고쳐요",
   submitHint: "빈 칸을 다 채우면 보낼 수 있어요",
-  submitFailed: "보내지 못했어요. 다시 시도해주세요",
+  submitFailed: TRANSPORT_ERROR_COPY,
   submit: "보내기",
 } as const;

@@ -13,7 +13,7 @@ import {
   WORKER_HOME_PATH,
 } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
-import { spellDate } from "@/shared/utils/kstDate";
+import { clockOf, spellDate } from "@/shared/utils/kstDate";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
@@ -92,10 +92,6 @@ export type AdminHomeScreenController = {
 };
 
 const NO_SLOTS: HallSlot[] = [];
-
-function clockLabel(clock: string): string {
-  return clock.slice(0, 5);
-}
 
 export function useAdminHomeScreen(): AdminHomeScreenController {
   const router = useRouter();
@@ -213,7 +209,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     defaultsValue:
       defaults === undefined
         ? undefined
-        : `${clockLabel(defaults.starts)}–${clockLabel(defaults.ends)}`,
+        : `${clockOf(defaults.starts)}–${clockOf(defaults.ends)}`,
     approvalsTitle: approvalsLine(approvals?.length ?? 0),
     pendingValue:
       pending === undefined
@@ -228,8 +224,8 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
       }
 
       setSheet({
-        starts: clockLabel(defaults.starts),
-        ends: clockLabel(defaults.ends),
+        starts: clockOf(defaults.starts),
+        ends: clockOf(defaults.ends),
       });
     },
     closeSheet,

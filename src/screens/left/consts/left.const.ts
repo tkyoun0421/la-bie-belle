@@ -4,5 +4,3 @@ export const LEFT_COPY = {
   payroll: "급여 보기",
   signOut: "로그아웃",
 };
-
-export const SCREEN_BOTTOM_PADDING = 24;

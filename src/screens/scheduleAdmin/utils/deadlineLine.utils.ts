@@ -1,10 +1,9 @@
+import { DAY_MS } from "@/shared/consts/time.const";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import {
   formatBareDate,
   formatScheduleDate,
 } from "@/entities/schedule/utils/formatScheduleDate.utils";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type DeadlineLineInput = {
   applicationDeadline: string;

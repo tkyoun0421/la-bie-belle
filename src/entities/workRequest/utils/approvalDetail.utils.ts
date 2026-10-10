@@ -1,4 +1,9 @@
-import { kstClockOf, kstDateOf, spellDate } from "@/shared/utils/kstDate";
+import {
+  clockOf,
+  kstClockOf,
+  kstDateOf,
+  spellDate,
+} from "@/shared/utils/kstDate";
 
 export type CancelApprovalInput = {
   displayName: string;
@@ -46,7 +51,7 @@ export function cancelApprovalDetail(
 
   return {
     title: `${input.displayName} · ${spellDate(input.workDate)} ${input.position}`,
-    subtitle: `${input.startsAt.slice(0, 5)}–${input.endsAt.slice(0, 5)}`,
+    subtitle: `${clockOf(input.startsAt)}–${clockOf(input.endsAt)}`,
     sentAtLine: `${bareDate(kstDateOf(sent))} ${kstClockOf(sent)}에 보냈어요`,
     reason: input.reason,
   };

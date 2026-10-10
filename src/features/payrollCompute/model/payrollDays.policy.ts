@@ -1,3 +1,4 @@
+import { clockOf } from "@/shared/utils/kstDate";
 import type {
   AttendanceStatusInput,
   CheckInRecord,
@@ -196,10 +197,6 @@ export type PayrollViewDay = PayrollDay & {
 
 const EDUCATION_KIND = "training";
 
-function clockLabel(clock: string): string {
-  return clock.slice(0, 5);
-}
-
 function mine<Row extends { profileId: string }>(
   rows: readonly Row[],
   profileId: string,
@@ -271,11 +268,11 @@ export function payrollViewDays(source: PayrollViewSource): PayrollViewDay[] {
       startsAt:
         scheduled === null || assignment === null
           ? null
-          : clockLabel(scheduled.startsAt),
+          : clockOf(scheduled.startsAt),
       endsAt:
         scheduled === null || assignment === null
           ? null
-          : clockLabel(scheduled.endsAt),
+          : clockOf(scheduled.endsAt),
       isEducation: assignment !== null && assignment.kind === EDUCATION_KIND,
       overtimeMinutes: Math.max(0, day.minutes - REGULAR_MINUTES),
       rehearsalMinutes: source.rehearsals

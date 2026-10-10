@@ -1,13 +1,9 @@
-const CLOCK_LENGTH = 5;
+import { clockOf } from "@/shared/utils/kstDate";
 
 export type DayHoursFormInput = {
   starts: string;
   ends: string;
 };
-
-export function clockLabel(clock: string): string {
-  return clock.slice(0, CLOCK_LENGTH);
-}
 
 export function isDayHoursSaveEnabled({
   starts,
@@ -17,5 +13,5 @@ export function isDayHoursSaveEnabled({
 }
 
 export function dayHoursLine(startsAt: string, endsAt: string): string {
-  return `근무 시간 · ${clockLabel(startsAt)}–${clockLabel(endsAt)}`;
+  return `근무 시간 · ${clockOf(startsAt)}–${clockOf(endsAt)}`;
 }

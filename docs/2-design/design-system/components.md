@@ -20,7 +20,7 @@
 | [토스트](#토스트) | 직접 그린다 |
 | [Skeleton](#skeleton) | 직접 그린다. shimmer는 Reanimated다 |
 | [Map](#map) | 네이버 지도 SDK — 타일, 마커, 원. 그 위 버튼과 시트는 우리 조각이다 |
-| 화면 아래 여백 | `react-native-safe-area-context`의 `useSafeAreaInsets` |
+| 화면 아래 여백 | [눈금 6](tokens.md#4-스페이싱)에 `react-native-safe-area-context`의 `useSafeAreaInsets`를 더한다 |
 
 팝오버와 토스트를 직접 그리는 것은 둘 다 이 문서가 모양과 자리를 이미 정해뒀기 때문이다. OS 메뉴를 부르면 그 조항들이 갈 곳이 없고, 라이브러리를 쓰면 그 라이브러리의 모양을 우리 것으로 되돌리는 일이 남는다. 둘 다 뜨고 지는 짧은 면이라 만들 것이 적다.
 

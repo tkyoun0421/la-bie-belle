@@ -1,3 +1,4 @@
+import { DAY_MS } from "@/shared/consts/time.const";
 import type { PayrollDay } from "@/features/payrollCompute/model/payrollDays.policy";
 
 export type WeekTotal = {
@@ -5,8 +6,6 @@ export type WeekTotal = {
   minutes: number;
   amount: number;
 };
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 const MONDAY_OFFSET = 6;
 

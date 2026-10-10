@@ -2,6 +2,8 @@
    아니라 팔레트 `neutral-300`의 라이트 값을 박은 것이고, 근거는
    docs/2-design/modules/attendance/screens/qr.md 의 「내보내기」표다. */
 
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
 export const QR_PAPER = {
   pageWidthMm: 210,
   pageHeightMm: 297,
@@ -33,7 +35,7 @@ export const QR_SCREEN_COPY = {
   rotateBody: "지금 QR이 바로 끝나요. 홀에 붙여둔 종이도 갈아야 해요",
   rotateDone: "QR을 새로 뽑았어요",
   paperFailed: "종이를 못 만들었어요. 다시 눌러주세요",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
   close: "닫기",
 };
 

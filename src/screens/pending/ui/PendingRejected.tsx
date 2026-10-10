@@ -1,13 +1,11 @@
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SCREEN_BOTTOM_PADDING } from "@/shared/consts/layout.const";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import {
-  PENDING_WAIT_COPY,
-  SCREEN_BOTTOM_PADDING,
-} from "@/screens/pending/consts/pending.const";
+import { PENDING_WAIT_COPY } from "@/screens/pending/consts/pending.const";
 import type { PendingScreenController } from "@/screens/pending/hooks/usePendingScreen";
 import { PendingFooter } from "@/screens/pending/ui/PendingFooter";
 

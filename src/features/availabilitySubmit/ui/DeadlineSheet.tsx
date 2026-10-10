@@ -2,8 +2,7 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-
-const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
+import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 
 export type DeadlineSheetProps = {
   deadline: string;
@@ -51,7 +50,7 @@ export function DeadlineSheet({
 
       {failed ? (
         <Text size="sm" tone="critical" className="mt-2">
-          {SAVE_FAILED}
+          {DEADLINE_SHEET_COPY.saveFailed}
         </Text>
       ) : null}
 

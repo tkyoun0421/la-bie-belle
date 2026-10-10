@@ -1,10 +1,9 @@
+import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 import { MINUTES_PER_COUNT } from "@/entities/rehearsal/consts/rehearsal.const";
 import type {
   Rehearsal,
   RehearsalTotal,
 } from "@/entities/rehearsal/model/rehearsal.type";
-
-const MINUTES_PER_HOUR = 60;
 
 export type RehearsalClock = Pick<Rehearsal, "startsAt" | "endsAt" | "count">;
 

@@ -182,6 +182,12 @@ const eslintConfig = defineConfig([
   {
     files: ["src/**/*.{ts,tsx}"],
     ignores: ["src/**/__tests__/**"],
+    rules: { "house/no-duplicate-failure-copy": "error" },
+  },
+
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/**/__tests__/**"],
     rules: {
       "house/no-arbitrary-class-values": "error",
       "house/no-color-literals": "error",

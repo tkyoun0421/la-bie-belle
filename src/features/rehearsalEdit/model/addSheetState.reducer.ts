@@ -1,7 +1,7 @@
+import { CLOCK_LENGTH } from "@/shared/consts/time.const";
 import { DomainError } from "@/shared/model/error.type";
 import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
 import {
-  CLOCK_LENGTH,
   EMPTY_ADD_SHEET_VALUES,
   MAX_COUNT,
   MIN_COUNT,
