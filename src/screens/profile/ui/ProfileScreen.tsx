@@ -54,7 +54,11 @@ export function ProfileScreen() {
       <ProfileSheets screen={screen} />
 
       {screen.toast ? (
-        <FloatingToast message={screen.toast} onDone={screen.dismissToast} />
+        <FloatingToast
+          kind={screen.toast.kind}
+          message={screen.toast.message}
+          onDone={screen.dismissToast}
+        />
       ) : null}
     </Screen>
   );

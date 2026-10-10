@@ -96,8 +96,8 @@ export function ScheduleWorkerScreen({
 
       {screen.toast === null ? null : (
         <FloatingToast
-          kind="success"
-          message={screen.toast}
+          kind={screen.toast.kind}
+          message={screen.toast.message}
           onDone={screen.dismissToast}
         />
       )}

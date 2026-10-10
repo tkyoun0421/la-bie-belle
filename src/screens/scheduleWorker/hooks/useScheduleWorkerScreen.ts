@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { spellMonth } from "@/shared/utils/kstDate";
@@ -79,7 +80,7 @@ export type ScheduleWorkerScreenController = {
   myProfileId: string | null;
   sending: boolean;
   sheet: ScheduleWorkerSheet | null;
-  toast: string | null;
+  toast: ToastState | null;
   closeTop: (() => boolean) | null;
   goNotifications: () => void;
   goPrevMonth: () => void;
@@ -109,9 +110,10 @@ export function useScheduleWorkerScreen({
   const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [toast, setToast] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [claimed, setClaimed] = useState<string | null>(null);
+
+  const { toast, showToast, dismissToast } = useToast();
 
   const leaveMonth = useCallback(() => {
     setOpenDate(null);
@@ -162,18 +164,18 @@ export function useScheduleWorkerScreen({
       return;
     }
 
-    setToast(spellSubmitted(month));
+    showToast("info", spellSubmitted(month));
     resetSend();
-  }, [sent, month, resetSend]);
+  }, [sent, month, resetSend, showToast]);
 
   useEffect(() => {
     if (!sendFailed) {
       return;
     }
 
-    setToast(SCHEDULE_WORKER_COPY.sendFailed);
+    showToast("info", SCHEDULE_WORKER_COPY.sendFailed);
     resetSend();
-  }, [sendFailed, resetSend]);
+  }, [sendFailed, resetSend, showToast]);
 
   const dayOf = useMemo(() => {
     const byDate = new Map<string, ScheduleDay>();
@@ -242,10 +244,10 @@ export function useScheduleWorkerScreen({
   const seatTaken = useCallback(
     (line: string) => {
       setClaimed(line);
-      setToast(SCHEDULE_WORKER_COPY.seatTaken);
+      showToast("info", SCHEDULE_WORKER_COPY.seatTaken);
       closeSheet();
     },
-    [closeSheet],
+    [closeSheet, showToast],
   );
 
   const closeTop = useMemo(() => {
@@ -359,6 +361,6 @@ export function useScheduleWorkerScreen({
     submit: () => send({ month, dates: selected }),
     seatTaken,
     closeSheet,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }

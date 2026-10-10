@@ -9,6 +9,7 @@ import {
   STATS_PATH,
 } from "@/shared/consts/navigation.const";
 import { THEME_LABEL } from "@/shared/consts/theme.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { useTheme } from "@/shared/stores/theme.store";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
@@ -33,7 +34,7 @@ export type ProfileScreenController = {
   themeLabel: string;
   notificationEnabled: boolean | null;
   sheet: ProfileSheetName;
-  toast: string | null;
+  toast: ToastState | null;
   signingOut: boolean;
   openContact: () => void;
   openPhoto: () => void;
@@ -54,8 +55,8 @@ export function useProfileScreen(): ProfileScreenController {
   const router = useRouter();
   const pathname = usePathname();
   const [sheet, setSheet] = useState<ProfileSheetName>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
+  const { toast, showToast, dismissToast } = useToast();
   const theme = useTheme((at) => at.theme);
 
   const { user, profile, isAdmin, isLoading } = useMyStanding(supabase);
@@ -68,10 +69,13 @@ export function useProfileScreen(): ProfileScreenController {
 
   const closeSheet = useCallback(() => setSheet(null), []);
 
-  const finish = useCallback((message: string) => {
-    setToast(message);
-    setSheet(null);
-  }, []);
+  const finish = useCallback(
+    (message: string) => {
+      showToast("info", message);
+      setSheet(null);
+    },
+    [showToast],
+  );
 
   const savedContact = useCallback(
     () => finish(PROFILE_COPY.contactSaved),
@@ -129,7 +133,7 @@ export function useProfileScreen(): ProfileScreenController {
     savedContact,
     savedPhoto,
     leave,
-    dismissToast: () => setToast(null),
+    dismissToast,
     goNotifications,
     goStats,
     goRehearsals,

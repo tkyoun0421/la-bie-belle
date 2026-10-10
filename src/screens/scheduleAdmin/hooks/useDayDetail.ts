@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useToast } from "@/shared/hooks/useToast";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import { formatScheduleDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
@@ -114,7 +115,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     slotId: string;
     name: string;
   } | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const { toast, showToast, dismissToast } = useToast();
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [chosen, setChosen] = useState<string | null>(null);
 
@@ -319,7 +320,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       }
 
       if (outcome.kind === "merge_instead") {
-        setToast(SCHEDULE_ADMIN_COPY.mergeInstead);
+        showToast("info", SCHEDULE_ADMIN_COPY.mergeInstead);
         return;
       }
 
@@ -650,6 +651,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     discard: discardSheet,
     sheets: openSheets,
     toast,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }

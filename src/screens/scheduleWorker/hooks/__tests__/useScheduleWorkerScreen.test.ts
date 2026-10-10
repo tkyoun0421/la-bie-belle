@@ -338,7 +338,7 @@ describe("useScheduleWorkerScreen — 고른 날은 아직 안 보낸 로컬 상
     );
 
     await waitFor(() =>
-      expect(result.current.toast).toBe("10월 근무 신청을 보냈어요"),
+      expect(result.current.toast?.message).toBe("10월 근무 신청을 보냈어요"),
     );
 
     act(() => result.current.dismissToast());
@@ -355,7 +355,9 @@ describe("useScheduleWorkerScreen — 고른 날은 아직 안 보낸 로컬 상
     act(() => result.current.submit());
 
     await waitFor(() =>
-      expect(result.current.toast).toBe(SCHEDULE_WORKER_COPY.sendFailed),
+      expect(result.current.toast?.message).toBe(
+        SCHEDULE_WORKER_COPY.sendFailed,
+      ),
     );
   });
 });
@@ -422,7 +424,9 @@ describe("useScheduleWorkerScreen — 늦은 수락은 조각이 올려 보낸�
     );
 
     await waitFor(() =>
-      expect(result.current.toast).toBe(SCHEDULE_WORKER_COPY.seatTaken),
+      expect(result.current.toast?.message).toBe(
+        SCHEDULE_WORKER_COPY.seatTaken,
+      ),
     );
 
     expect(result.current.sheet).toBeNull();
