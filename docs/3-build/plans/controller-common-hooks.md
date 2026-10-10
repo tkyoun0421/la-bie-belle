@@ -48,7 +48,7 @@
 | `src/entities/clock/hooks/useServerNow.ts` | 신설 — 시계 저장소와 `nowWithOffset`을 묶어 지금 시각을 낸다. **`shared`가 아니라 `entities/clock`이다** — 도메인 하나를 읽는 훅이다 |
 | `src/shared/hooks/useMonthCursor.ts` | 신설 — 달을 들고 옮기며, 옮길 때 할 일을 콜백으로 받는다 |
 | `src/entities/profile/hooks/useMyStanding.ts` | 신설 — 세션에서 프로필 두 겹을 받고 `role`·`isAdmin`까지 낸다 |
-| `src/shared/hooks/useCloseOnSuccess.ts` | `useScheduleAdminScreen.ts:161`의 지역 함수를 올린다 |
+| `src/shared/hooks/useCloseSheetOnSuccess.ts` | `useScheduleAdminScreen.ts:161`의 지역 함수를 올린다 |
 | 날짜별 Map 넷 | 이미 `utils`로 내려간 하나로 모은다 |
 | 토스트 12 · 시계 13 · 달 5 · 프로필 5 · 성공 닫기 4 | 지역 상태와 조립을 지우고 그 훅을 부른다 |
 
