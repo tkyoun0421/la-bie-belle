@@ -17,16 +17,23 @@
 
 `src/` 비(非)테스트 파일에서 `export ... from`과 「import한 이름을 다시 `export {}`」를 전수로 세어 이 넷이 전부다.
 
-**죽은 재수출이 아니다 — 소비처가 여섯이다.**
+**죽은 재수출이 아니다 — 소비처가 아홉이다.**
 
 | 소비처 | 당기는 이름 | 어느 경유지에서 |
 | --- | --- | --- |
-| `src/screens/adminHome/hooks/useAdminHomeScreen.ts:35` | `spellDate` | `todayStatus.policy` |
-| `src/screens/adminHome/model/vacancyCards.policy.ts:3-6` | `kstDateOf` · `spellDate` | `todayStatus.policy` |
-| `src/screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:22-28` | `shiftMonth` · `spellMonth` | `monthState.policy` |
-| `src/screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts:60-63` | `shiftMonth` | `monthEmptyState.policy` |
-| `src/screens/scheduleAdmin/model/confirmAffordance.policy.ts:1` | `kstDateOf` | `formatScheduleDate.utils` |
-| `src/screens/scheduleAdmin/model/monthEmptyState.policy.ts:2` | `kstDateOf` | `formatScheduleDate.utils` |
+| `src/screens/adminHome/hooks/useAdminHomeScreen.ts` | `spellDate` | `todayStatus.policy` |
+| `src/screens/adminHome/model/vacancyCards.policy.ts` | `kstDateOf` · `spellDate` | `todayStatus.policy` |
+| `src/screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts` | `shiftMonth` · `spellMonth` | `monthState.policy` |
+| `src/screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts` | `shiftMonth` · `kstDateOf` | `monthEmptyState.policy` · `formatScheduleDate.utils` |
+| `src/screens/scheduleAdmin/model/confirmAffordance.policy.ts` | `kstDateOf` | `formatScheduleDate.utils` |
+| `src/screens/scheduleAdmin/model/monthEmptyState.policy.ts` | `kstDateOf` | `formatScheduleDate.utils` |
+| `src/screens/scheduleAdmin/model/openModeSelection.policy.ts` | `kstDateOf` | `formatScheduleDate.utils` |
+| `src/screens/scheduleAdmin/utils/deadlineLine.utils.ts` | `kstDateOf` | `formatScheduleDate.utils` |
+| `scripts/e2eSeedServer.mts` | `spellMonth` | `monthState.policy` |
+
+**하나는 `src/` 밖이다.** e2e 씨드 스크립트가 `screens`의 정책 파일을 당긴다. 경유지를 걷으면 그 줄도 따라 바뀐다.
+
+**셈을 한 번 틀렸고 까닭이 셈법에 있었다.** 처음 표는 여섯이었다. `grep`이 맞는 줄 하나만 출력해서 **여러 줄로 쓴 import 블록 안의 이름이 안 보였다** — `useScheduleAdminScreen.ts`가 `shiftMonth` 말고 `kstDateOf`도 받는 것, `openModeSelection.policy.ts`와 `deadlineLine.utils.ts`가 아예 빠진 것이 그래서다. **경유지 파일 이름으로 당기는 파일을 먼저 찾고(`grep -rl`) 그 파일을 열어 이름을 세야 맞는다.**
 
 **무엇이 거짓이 되나.** `confirmAffordance.policy.ts`와 `monthEmptyState.policy.ts`는 `entities/schedule`을 당기는 것처럼 보이는데 실제로 받는 것은 `shared/utils`의 함수다. 그 둘의 「당기는 도메인 슬라이스 수」가 겉으로 1, 실제로는 0이다. `vacancyCards.policy.ts`도 `screens/adminHome`의 형제를 당기는 것처럼 보이지만 받는 것은 `shared`다.
 
@@ -43,7 +50,7 @@
 | 자리 | 바꿀 책임 |
 | --- | --- |
 | 위 재수출 넷 | 그 줄을 지운다. `monthEmptyState.policy.ts`와 `formatScheduleDate.utils.ts`는 자기가 쓰는 import는 남기고 `export {}`만 지운다 |
-| 소비처 여섯 | import 출처를 `@/shared/utils/kstDate`로 돌린다 |
+| 소비처 아홉 | import 출처를 `@/shared/utils/kstDate`로 돌린다. 하나는 `scripts/`에 산다 |
 | `eslint-rules/noLayerReexport.mjs` | 신설 — `shared` 밖의 파일이 다른 모듈의 이름을 다시 내보내는 것을 막는다 |
 | `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts` · `docs/4-test/execution.md` | 규칙 하나를 켜는 다섯 자리의 나머지 넷 |
 
@@ -52,13 +59,13 @@
 ## 완료 조건
 
 - **AC-01** `src/` 비(非)테스트 파일에서 `shared` 밖의 재수출이 0이다 — `export ... from`과 「import한 이름을 다시 `export {}`」 둘 다
-- **AC-02** 소비처 여섯이 `@/shared/utils/kstDate`에서 직접 당긴다
+- **AC-02** 소비처 아홉이 `@/shared/utils/kstDate`에서 직접 당긴다
 - **AC-03** `eslint-rules/noLayerReexport.mjs`가 `shared` 밖의 재수출을 막고, 그 규칙이 다섯 자리에 한 커밋으로 선다
 - **AC-04** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
-1. 소비처 여섯의 import를 `@/shared/utils/kstDate`로 돌린다
+1. 소비처 아홉의 import를 `@/shared/utils/kstDate`로 돌린다
 2. 재수출 넷 줄을 지운다
 3. `pnpm exec eslint --fix`로 중복 import를 합친다
 4. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**

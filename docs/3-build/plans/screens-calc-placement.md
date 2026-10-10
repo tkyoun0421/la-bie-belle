@@ -90,6 +90,8 @@
 
 **`dayDetail.type.ts` 224줄은 이 계획에서 안 건드린다.** controller 계약이면서 `features` 셋을 당기는데, 그것을 푸는 일은 [`fragments-own-their-data`](fragments-own-their-data.md)의 AC-04(controller 무게 덜기)와 한 덩이다. 여기서 쪼개면 그 작업과 충돌한다.
 
+**`grep` 한 줄로 센 수는 틀린다.** [`reexport-launders-layers`](reexport-launders-layers.md)가 소비처를 여섯으로 셌다가 아홉이 나왔다 — `grep`이 맞는 줄 하나만 출력해서 **여러 줄로 쓴 import 블록 안의 이름이 안 보였다.** 1번 걸음의 쉰넷도 같은 셈법으로 섰다. **파일을 `grep -rl`로 먼저 찾고 그 파일을 열어 세야 맞는다** — 표를 내기 전에 그 방법으로 다시 센다.
+
 **새 조항이 또 다른 애매함을 만들 수 있다.** 「화면 문안을 내면 그 화면을 안다」가 넓다 — 글자를 조금이라도 만들면 전부 `screens`로 가면 `shared`의 꼴 바꾸는 도구(`spellWon`·`spellDuration`)가 흔들린다. **가름은 「그 글자가 화면마다 다를 수 있나」다** — `spellDuration`의 `1시간 30분`은 어느 화면에서도 같고, 「이 날 넣은 리허설이 없어요」는 그 화면의 말이다. 1번 걸음에서 그 축으로 갈리지 않는 자리가 나오면 보고한다.
 
 ## 검증
