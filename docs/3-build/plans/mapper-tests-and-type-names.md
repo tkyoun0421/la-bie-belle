@@ -10,30 +10,52 @@
 
 `entities/*/api`와 `entities/*/utils`의 같은 경계다. 그리고 **매퍼 짝 테스트를 쓰면 이름 결정이 먼저 와야 한다** — 짝 테스트가 없는 여섯 가운데 `notification.mapper.ts`가 바로 `PushReachable` 이름이 어긋난 자리다. 그 매퍼의 입구가 무엇인지 안 정하고는 단언을 쓸 수 없다.
 
-### `PushReachable` — 선언 셋인데 성격이 둘이다
+### `PushReachable` — 선언 셋이고 꼴은 하나여야 한다
 
-제안서가 「`PushReachableRow` 셋」이라 적었지만 사본 셋이 아니다. **둘은 같은 사실에 다른 이름이고, 하나는 다른 사실에 같은 이름이다.**
+제안서가 「`PushReachableRow` 셋」이라 적었다. 셋 맞지만 **갈라야 할 두 사실이 아니라 하나로 모을 한 사실이다.**
 
-| 자리 | 꼴 | 무엇인가 |
-| --- | --- | --- |
-| `entities/member/api/member.dto.ts:38` `PushReachableRow` | `profile_id: string \| null` · `has_device: boolean \| null` | 뷰 `push_reachable`의 row |
-| `entities/notification/api/getPushReachable.api.ts:6` `ViewRow` (지역) | 같다 | 같다 |
-| `entities/notification/api/notification.dto.ts:19` `PushReachableRow` | `profile_id: string` · `has_device: boolean` | 뷰 row가 아니라 **좁힌 뒤 `toPushReachable`에 넣는 입구** |
+| 자리 | 꼴 |
+| --- | --- |
+| `entities/member/api/member.dto.ts:38` `PushReachableRow` | `profile_id: string \| null` · `has_device: boolean \| null` |
+| `entities/notification/api/getPushReachable.api.ts:6` `ViewRow` (지역) | 같다 |
+| `entities/notification/api/notification.dto.ts:19` `PushReachableRow` | `profile_id: string` · `has_device: boolean` |
 
-**DB 정본이 nullable이다.** `src/shared/api/databaseTypes.ts`의 `push_reachable` 뷰가 두 열을 `string | null`·`boolean | null`로 낸다. 앞의 둘이 정본과 맞고, 셋째는 애초에 DTO가 아니다 — `getPushReachable.api.ts:31`이 `row.profile_id !== null && row.has_device !== null`로 좁힌 뒤 그 꼴을 만들어 넘긴다.
+**DB 정본은 nullable이 아니다.** 뷰를 세운 마이그레이션이 이렇다.
 
-**선례가 그 자리를 이미 정해 뒀다.** `entities/member/api/member.dto.ts`가 `QualificationRow`(nullable 뷰 row)와 `FilledQualificationRow`(좁힌 꼴)를 **같은 `.dto.ts`에 나란히** 들고, `getQualifications.api.ts:9`가 `function isFilled(row: QualificationRow): row is FilledQualificationRow`로 좁혀 `.filter(isFilled).map(toQualification)`을 한다. 매퍼는 좁힌 꼴만 받는다.
+```sql
+create view public.push_reachable as
+select
+  profiles.id as profile_id,
+  exists (
+    select 1 from public.push_tokens
+    where push_tokens.profile_id = profiles.id
+  ) as has_device
+from public.profiles
+where public.is_admin();
+```
 
-그래서 **틀린 것은 자리가 아니라 이름이다.** 좁힌 꼴이 `.dto.ts`에 사는 것은 선례대로고, 그것이 뷰 row와 **같은 이름**인 것이 틀렸다. 좁히는 일이 `api/` 안에서 일어나므로 그 꼴도 `api/`의 말이다.
+`profile_id`는 `profiles.id`고 그것이 기본 키라 **절대 null이 아니다.** `has_device`는 `exists(...)`고 SQL의 `EXISTS`는 참이나 거짓만 내 **null이 될 수 없다.** 두 열 다 값이 보장된다.
 
-**null을 두 자리가 다르게 다룬다.** 같은 뷰의 같은 열인데 갈린다.
+**`databaseTypes.ts`가 nullable로 적는 것은 생성기의 한계다.** 뷰는 열의 NOT NULL 정보를 안 들고 있어 생성기가 모든 뷰 열을 보수적으로 nullable로 적는다. **정본은 마이그레이션이고 생성 파일은 손실이 있는 투영이다.** `tests/lint/databaseTypes.ts`도 그 일치를 요구하지 않는다 — 「마이그레이션의 객체가 생성 타입에 있나」와 「맨 client를 쓰나」 둘만 본다.
 
-| 자리 | `has_device`가 null이면 | `profile_id`가 null이면 |
-| --- | --- | --- |
-| `entities/member/api/listMembers.api.ts:66` | `?? false`로 살린다 | 그 행을 버린다 |
-| `entities/notification/api/getPushReachable.api.ts:31` | 그 행을 버린다 | 그 행을 버린다 |
+**저장소가 이미 실제 보장을 적는다.** `member.dto.ts`의 `MemberSummaryRow`가 `id: string`(기본 키라 non-null)과 `display_name: string | null`을 나란히 든다 — 생성기가 테이블 열에는 NOT NULL을 옮기므로 그 파일이 실제 보장과 맞는다. **`.dto.ts`의 꼴은 DB가 보장하는 것이고, 뷰에서는 생성 파일이 그것을 못 전한다.**
 
-**이 갈림의 판정은 이 계획 밖이다.** 뷰가 어떤 경우에 null을 내는지가 업무 규칙이고, 그 답에 따라 둘 중 하나가 틀린다. 이 계획은 **지금 동작을 바꾸지 않고** 짝 테스트로 그 차이를 드러내 기록만 한다 — 고치려면 뷰의 정의를 읽고 업무 규칙을 정해야 하므로 따로 간다.
+그래서 **틀린 것은 non-nullable로 적은 셋째가 아니라 nullable로 적은 앞의 둘이다.** 셋을 하나로 모으되 꼴은 non-nullable 쪽이다.
+
+### null을 다르게 다루는 두 자리는 닿을 수 없는 가지다
+
+| 자리 | 지금 하는 일 |
+| --- | --- |
+| `entities/member/api/listMembers.api.ts:66` | `profile_id === null`이면 행을 버리고 `has_device ?? false`로 살린다 |
+| `entities/notification/api/getPushReachable.api.ts:31` | 둘 중 하나라도 null이면 행을 버린다 |
+
+**둘 다 올 수 없는 값을 막는다.** 뷰가 null을 못 내므로 어느 쪽도 돌지 않는 가지고, 「어느 쪽이 맞나」는 물을 것이 없다. [`spell-number-shared`](spell-number-shared.md)의 `0분`이 마이그레이션의 제약으로 닿을 수 없다고 밝혀진 것과 같은 꼴이다.
+
+**지금 있는 integration 테스트가 그것을 이미 단언한다.** `src/entities/notification/api/__tests__/getPushReachable.api.integration.test.ts:30`이 기기 없는 사람의 `hasDevice`를 `false`로 단언한다 — 그 행이 **버려지지 않고 거짓으로 온다.** null이면 버려졌을 자리다.
+
+**그래서 두 가지를 걷는다.** 동작은 안 바뀐다 — 닿을 수 없는 가지라서다.
+
+**`getPushReachable`을 부르는 프로덕션 코드가 없다.** 저장소 전체에서 그 함수를 쓰는 것은 자기 integration 테스트뿐이다. 지우지 않는다 — 푸시를 보내는 자리가 아직 안 섰을 뿐이고 뷰와 매퍼와 테스트가 다 서 있다. 이 계획은 그 사실만 적는다.
 
 ### `Holiday` — 다른 사실에 같은 이름
 
@@ -65,7 +87,7 @@
 
 매퍼는 DB가 준 꼴을 도메인 타입으로 옮기는 자리다. 필드를 잘못 맞추면 아무 데서도 안 터지고 **조용히 틀린 값이 화면에 간다.** [관찰 061](../../observations/061-untyped-mocks-let-typecheck-pass.md)과 겹치면 DTO가 바뀌어도 깨지는 테스트가 없다.
 
-이름이 겹친 자리는 다음 사람이 「이미 있으니 쓰자」로 틀린 쪽을 당긴다. `notification.dto.ts`의 `PushReachableRow`를 뷰 row로 믿고 쓰면 null이 온 날 터진다.
+이름이 겹친 자리는 다음 사람이 「이미 있으니 쓰자」로 한쪽을 당긴다. 같은 이름이 꼴 둘을 들면 nullable 쪽을 당긴 코드가 올 수 없는 null을 막는 가지를 또 쓴다.
 
 ## 변경 파일
 
@@ -73,9 +95,12 @@
 | --- | --- |
 | 매퍼 여섯의 `__tests__/<이름>.mapper.test.ts` | 신설. export 13개가 각자 불린다 |
 | `tests/lint/` 새 검사 | 저장소 실물에서 짝 테스트 없는 `.ts`를 세어 매퍼가 0임을 못 박는다. 검사 15의 훅이 못 보는 자리다 |
-| `entities/notification/api/notification.dto.ts` | 좁힌 꼴의 이름이 `FilledPushReachableRow`가 되고, 뷰 row `PushReachableRow`가 그 옆에 선다 |
-| `entities/notification/api/getPushReachable.api.ts` | 지역 `ViewRow`를 지운다. `getQualifications.api.ts`의 꼴을 따라 `isFilled` type guard로 좁히고 `.filter(isFilled).map(toPushReachable)`을 한다 |
-| `entities/notification/utils/notification.mapper.ts` | `toPushReachable`의 입구가 `FilledPushReachableRow`다 |
+| `entities/notification/api/notification.dto.ts` | `PushReachableRow`가 그대로 남는다 — 그 꼴이 뷰의 보장과 맞는다 |
+| `entities/notification/api/getPushReachable.api.ts` | 지역 `ViewRow`와 null을 막는 가지를 지운다. 자기 `.dto.ts`의 `PushReachableRow`로 받아 바로 `map(toPushReachable)`을 한다 |
+| `entities/member/api/member.dto.ts` | `PushReachableRow`의 두 열이 non-nullable이 된다 — 뷰의 보장과 맞춘다 |
+| `entities/member/api/listMembers.api.ts` | `profile_id === null` 가지와 `?? false`를 지운다. `flatMap`이 `map`으로 돌아간다 |
+| `entities/notification/utils/notification.mapper.ts` | 안 바뀐다 — 입구가 이미 `PushReachableRow`다 |
+| `entities/notification/utils/__tests__/notification.mapper.test.ts` | `FilledPushReachableRow`를 당기던 줄이 `PushReachableRow`로 돌아가고 `@ts-expect-error`와 `eslint-disable`이 사라진다 |
 | `features/holiday/model/holiday.schema.ts` | `Holiday`를 외부 응답임이 드러나는 이름으로 바꾼다 |
 | `entities/payroll/model/payroll.type.ts` | `Holiday`는 그대로 둔다 — DB 행이 그 이름의 임자다 |
 
@@ -85,16 +110,16 @@
 
 - **AC-01** 매퍼 여섯에 짝 테스트가 서고 export 13개가 각자 불린다. 필드를 하나라도 잘못 옮기면 깨진다
 - **AC-02** `tests/lint/`의 새 검사가 저장소 실물에서 `.mapper.ts` 전부에 짝 테스트가 있음을 센다. 그 검사가 `DOCUMENTED_LINT_RULE_COUNT`와 `docs/4-test/execution.md`에 선다
-- **AC-03** `PushReachableRow`라는 이름이 뷰 row 하나만 가리킨다. 좁힌 꼴은 `FilledPushReachableRow`고 같은 `.dto.ts`에 선다 — `FilledQualificationRow`의 선례대로다. `getPushReachable.api.ts`의 지역 `ViewRow`가 사라지고 `isFilled` type guard가 그 일을 한다
+- **AC-03** `PushReachableRow`라는 이름이 꼴 하나만 가리킨다. 두 슬라이스가 각자 `.dto.ts`에 선언하고 두 열이 **non-nullable**이다 — 뷰가 그것을 보장한다. `getPushReachable.api.ts`의 지역 `ViewRow`가 사라진다
 - **AC-04** `Holiday`라는 이름이 DB 행만 가리킨다. 외부 응답 쪽은 다른 이름이고 꼴은 안 바뀐다
-- **AC-05** null을 다르게 다루는 두 자리가 짝 테스트로 드러난다 — `listMembers`는 `has_device: null`을 `false`로 살리고 `getPushReachable`은 그 행을 버린다는 것이 단언으로 선다. **동작은 안 바꾼다**
+- **AC-05** null을 막는 가지가 두 자리에서 사라진다 — `listMembers`의 `?? false`와 `profile_id === null`, `getPushReachable`의 `!== null` 둘이다. **동작은 안 바뀐다** — 뷰가 null을 못 내므로 닿을 수 없는 가지고, `getPushReachable.api.integration.test.ts:30`이 기기 없는 사람도 `hasDevice: false`로 온다고 이미 단언한다
 - **AC-06** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
-1. **이름이 이미 정해졌다** — 뷰 row는 `PushReachableRow`로 슬라이스마다, 좁힌 꼴은 `FilledPushReachableRow`로 같은 `.dto.ts`에, 외부 응답 쪽 `Holiday`는 AC-04가 든다. 보고할 판정이 남지 않았다
+1. **이름과 꼴이 이미 정해졌다** — `PushReachableRow` 하나고 두 열이 non-nullable이며 슬라이스마다 자기 `.dto.ts`에 선다. 외부 응답 쪽 `Holiday`는 AC-04가 든다. 보고할 판정이 남지 않았다
 2. 매퍼 여섯의 짝 테스트를 쓴다. `notification.mapper.ts`는 1번이 끝난 뒤다
-3. 이름을 가른다. `notification.dto.ts`의 `PushReachableRow`를 지우고 좁힌 꼴을 매퍼 옆으로 옮긴다
+3. 꼴을 모은다. `member.dto.ts`의 두 열을 non-nullable로 하고 지역 `ViewRow`를 지우고 null을 막는 가지 셋을 걷는다
 4. `Holiday`를 바꾼다 — `features/holiday` 쪽만이다
 5. 실물을 세는 검사를 세운다. **매퍼 여섯이 다 찬 뒤여야 초록이 난다**
 6. 검증하고 PR을 연다
@@ -107,7 +132,9 @@
 
 **이름을 바꾸면 당기는 자리가 따라 바뀐다.** `Holiday`는 `features/holiday` 안에서만 쓰여 좁지만, 뷰 row 타입은 두 슬라이스가 읽어 1번의 판정에 매달린다.
 
-**AC-05가 「고치지 않고 드러낸다」다.** 짝 테스트가 지금 동작을 그대로 단언하므로, 뒤에 업무 규칙을 정해 한쪽을 고치면 그 단언이 깨진다. **그것이 의도다** — 깨지는 테스트가 그 자리를 다시 보게 만든다. 단언 이름에 「지금은 이렇다」를 담지 않고 무엇을 하는지만 적는다.
+**AC-05가 거는 것은 마이그레이션 한 장이다.** 뷰가 `exists(...)`와 기본 키로 값을 보장하므로 가지를 걷는 것이 안전하다. 뒤에 그 뷰를 `left join`으로 고치면 null이 올 수 있고 **그때는 아무 검사도 못 막는다** — `tests/lint/databaseTypes.ts`가 꼴의 일치를 안 본다. 그 뷰를 고치는 사람이 `.dto.ts`를 같이 봐야 한다.
+
+**`@ts-expect-error`로 미리 쓴 단언은 극성이 뒤집힌다.** 아직 없는 타입 이름을 당길 때 그 지시자를 쓰면 **지금 초록이고, 이름이 생기는 순간 「쓸모없는 지시자」로 `TS2578`이 난다.** 「지금 빨강 → 구현 뒤 초록」이 아니다. 구현이 그 지시자를 떼는 것이 마지막 걸음이고, 그 빨강이 떼라고 알리는 신호다. 메모리의 「대상 없는 테스트가 typecheck를 죽인다」가 그 꼴을 정했다.
 
 ## 검증
 
