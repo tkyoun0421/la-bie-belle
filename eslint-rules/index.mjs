@@ -4,6 +4,7 @@ import dumbUi from "./dumbUi.mjs";
 import entitiesReadOnly from "./entitiesReadOnly.mjs";
 import envInConfig from "./envInConfig.mjs";
 import featuresQueryComposes from "./featuresQueryComposes.mjs";
+import fragmentStateContract from "./fragmentStateContract.mjs";
 import mutationSettleShape from "./mutationSettleShape.mjs";
 import nativeSdkSegment from "./nativeSdkSegment.mjs";
 import noApiImportInUi from "./noApiImportInUi.mjs";
@@ -39,6 +40,7 @@ const house = {
     "entities-read-only": entitiesReadOnly,
     "env-in-config": envInConfig,
     "features-query-composes": featuresQueryComposes,
+    "fragment-state-contract": fragmentStateContract,
     "mutation-settle-shape": mutationSettleShape,
     "native-sdk-segment": nativeSdkSegment,
     "no-api-import-in-ui": noApiImportInUi,

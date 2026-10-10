@@ -95,8 +95,8 @@ describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", 
     );
   });
 
-  it("살아 있는 요청은 normal이다", () => {
-    expect(mounted().result.current.state).toBe("normal");
+  it("살아 있는 요청은 끝나지 않았다", () => {
+    expect(mounted().result.current.ended).toBe(false);
   });
 
   it("만료된 요청은 끝난 것으로 선다", () => {
@@ -105,7 +105,7 @@ describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", 
       expiresAt: "2020-01-01T00:00:00.000Z",
     });
 
-    expect(result.current.state).toBe("ended");
+    expect(result.current.ended).toBe(true);
   });
 
   it("아직 아무것도 안 보냈으면 보내는 중도 실패도 아니다", () => {

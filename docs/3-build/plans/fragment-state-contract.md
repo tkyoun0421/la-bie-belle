@@ -43,7 +43,7 @@ export type WageRowsController = { state: WageRowsState; rows: WageRowLine[] };
 | 실패 | `failed: boolean` **13** 對 `failedLine: string \| null` **4** |
 | 상태별 그림을 누가 드나 | 받는다 13 對 자기가 그린다 8 |
 
-**그림 축은 슬라이스 단위로만 갈린다.** `features/stats` 다섯과 `entities`의 목록 조각 일곱은 전부 받고, `features/payrollCompute` 다섯과 `entities/schedule` 둘은 전부 자기가 그린다. 조각의 성격이 아니라 그 슬라이스를 쓴 회차가 갈랐다. [ADR-016](../../2-design/adr/ADR-016-fragments-own-their-data.md)이 「조각이 `ReactNode`로 받는다」고 못박았으니 여덟이 어긋난 자리다.
+**그림 축은 슬라이스 단위로만 갈린다.** `features/stats` 다섯과 `entities`의 목록 조각 일곱은 전부 받고, `features/payrollCompute` 다섯과 `entities/schedule` 둘과 `entities/payroll/ui/WageRows.tsx`는 전부 자기가 그린다. 조각의 성격이 아니라 그 슬라이스를 쓴 회차가 갈랐다. [ADR-016](../../2-design/adr/ADR-016-fragments-own-their-data.md)이 「조각이 `ReactNode`로 받는다」고 못박았으니 여덟이 어긋난 자리다.
 
 ## 판정 — 수가 아니라 정본과 맞는 쪽이 이긴다
 

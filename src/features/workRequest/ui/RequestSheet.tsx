@@ -13,13 +13,12 @@ export type RequestSheetProps = {
 
 export function RequestSheet(props: RequestSheetProps) {
   const fragment = useRequestSheet(props);
-  const ended = fragment.state === "ended";
 
   return (
     <View className="gap-3">
       <View className="gap-1">
         <Text size="base" weight="semibold">
-          {ended ? "근무 요청이 끝났어요" : "근무 요청이 왔어요"}
+          {fragment.ended ? "근무 요청이 끝났어요" : "근무 요청이 왔어요"}
         </Text>
         <Text size="xs" tone="subtle" numeric>
           {fragment.subtitle}
@@ -27,7 +26,7 @@ export function RequestSheet(props: RequestSheetProps) {
       </View>
 
       <Text size="sm" tone="muted">
-        {ended ? "자리가 찼거나 기간이 지났어요" : "바로 배정돼요"}
+        {fragment.ended ? "자리가 찼거나 기간이 지났어요" : "바로 배정돼요"}
       </Text>
 
       {fragment.failedLine === null ? null : (
@@ -36,7 +35,7 @@ export function RequestSheet(props: RequestSheetProps) {
         </NoticeBlock>
       )}
 
-      {ended ? null : (
+      {fragment.ended ? null : (
         <View className="flex-row gap-2">
           <Button
             variant="secondary"
