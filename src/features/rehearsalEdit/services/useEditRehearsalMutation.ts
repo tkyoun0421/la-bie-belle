@@ -21,11 +21,12 @@ export function useEditRehearsalMutation(client: DB): EditRehearsalResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: EditRehearsalInput) => editRehearsal(client, input),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.rehearsalWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.rehearsalWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

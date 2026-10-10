@@ -26,11 +26,12 @@ export function useCreateCancelRequestMutation(
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ assignmentId, reason }: CreateCancelRequestInput) =>
       createCancelRequest(client, assignmentId, reason),
-    onSuccess: () => {
-      for (const queryKey of staleTogether.scheduleWrite) {
-        void queryClient.invalidateQueries({ queryKey });
-      }
-    },
+    onSuccess: () =>
+      Promise.all(
+        staleTogether.scheduleWrite.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      ),
   });
 
   const send = useCallback(

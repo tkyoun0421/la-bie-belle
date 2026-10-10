@@ -24,11 +24,12 @@ export function useOpenDayMutation(client: DB): OpenDayResult {
   const { mutate, mutateAsync, isPending, isSuccess, isError, error, reset } =
     useMutation({
       mutationFn: ({ workDate }: OpenDayInput) => openDay(client, workDate),
-      onSuccess: () => {
-        for (const queryKey of staleTogether.scheduleWrite) {
-          void queryClient.invalidateQueries({ queryKey });
-        }
-      },
+      onSuccess: () =>
+        Promise.all(
+          staleTogether.scheduleWrite.map((queryKey) =>
+            queryClient.invalidateQueries({ queryKey }),
+          ),
+        ),
     });
 
   const send = useCallback(
