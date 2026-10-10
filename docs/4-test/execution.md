@@ -316,6 +316,6 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 
 **결근은 저장하는 배치가 없다.** 「인증 창이 닫혔고 그 뒤로 48시간이 지났다」를 그때그때 계산하는 값이라 **진짜로 지나간 달력 날짜**라야 결근한 날이 선다 — 미래 날짜로는 못 심는다.
 
-**매 분 도는 cron이 씨를 뿌리는 중간을 본다.** `expire_requests()`는 「안 지난 pending 후보가 하나도 없다」로만 요청을 닫는데, 요청 행이 선 뒤 후보가 들어가기까지 그 요청에는 후보가 없다 — 사용자를 만드는 `await` 하나가 그 창을 초 단위로 벌리고 그 사이 cron이 닫는다([관찰 055](../observations/055-cron-closes-the-row-the-test-is-seeding.md)). 헬퍼가 후보를 넣은 자리에서 그 요청을 되돌려 부르는 쪽이 순서를 신경 쓰지 않게 한다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는 것이 맞는 모습이다. 한 줄씩 나눠 `execSql`하면 같은 틈이 다시 생긴다([관찰 024](../observations/024-cron-races-two-step-seed.md)).
+**매 분 도는 cron이 씨를 뿌리는 중간을 본다.** `expire_requests()`는 「안 지난 pending 후보가 하나도 없다」로만 요청을 닫는데, 요청 행이 선 뒤 후보가 들어가기까지 그 요청에는 후보가 없다 — 사용자를 만드는 `await` 하나가 그 창을 초 단위로 벌리고 그 사이 cron이 닫는다([관찰 055](../observations/archive/055-cron-closes-the-row-the-test-is-seeding.md)). 헬퍼가 후보를 넣은 자리에서 그 요청을 되돌려 부르는 쪽이 순서를 신경 쓰지 않게 한다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는 것이 맞는 모습이다. 한 줄씩 나눠 `execSql`하면 같은 틈이 다시 생긴다([관찰 024](../observations/024-cron-races-two-step-seed.md)).
 
 자기 실행이 만든 데이터 정리·DB 대상 명시·반복 실행의 요청 수 관리는 [backlog](../backlog.md)의 `test-data-isolation` 후보로 연결한다. 완료된 계정 전환의 후속 과제이며 이번 문서 변경으로 해결된 것은 아니다.
