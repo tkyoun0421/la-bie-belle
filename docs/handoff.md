@@ -6,7 +6,13 @@
 
 ## 다음 작업
 
-**`fragments-own-their-data`가 `active`고 읽기 묶음이 남긴 자리 넷이 다음 수다** — [plan](3-build/plans/fragments-own-their-data.md), [backlog 행](backlog.md). 쓰기 묶음은 [PR #514](https://github.com/tkyoun0421/la-bie-belle/pull/514)로 merge됐다.
+**리팩터링 묶음 여덟의 순서가 정해졌다** — [triage 제안](proposals/codebase-refactor-triage.md)이 `accepted`고 결정 다섯을 든다. `src/` 781 파일을 네 축으로 전수 조사한 결과가 거기 있다. **층 규칙은 지켜지고 고칠 것은 경계 안에 쌓인 중복과 한 자리에 모인 무게다.**
+
+순서는 A(값이 틀리는 축) → B(mutation 뒤처리) → C(재수출 걷기) → E·F(중복·경로) → D·G·H다. backlog 행 여섯이 그 묶음을 든다 — `mutation-settle-shape`·`reexport-launders-layers`·`route-paths-one-home`·`screens-calc-placement`(선행이 걸려 `blocked`)·`controller-common-hooks`·`fragment-state-contract`.
+
+**A가 돌고 있다** — `spell-number-shared`가 `active`고 [plan](3-build/plans/spell-number-shared.md)이 AC 다섯을 든다. 브랜치 `feat/spell-number-shared`에 실패 테스트 일곱 벌이 섰고 구현이 그것을 받았다. 시간 길이를 말로 옮기는 손이 다섯인데 정본과 맞는 것이 `features/adjustment`의 `spellHours` 하나고, 그 본문이 `shared/utils/spellNumber.ts`의 `spellDuration`으로 올라간다. `periodSpan`의 `2026-02-31`이 같이 간다. **A의 뒤쪽 절반이 아직 안 섰다** — 매퍼 여섯의 짝 테스트와 `PushReachableRow` 세 사본, `Holiday` 이름 가르기다.
+
+**`fragments-own-their-data`가 여전히 `active`고 읽기 묶음이 남긴 자리 넷이 D·G·H와 엮인다** — [plan](3-build/plans/fragments-own-their-data.md), [backlog 행](backlog.md). 쓰기 묶음은 [PR #514](https://github.com/tkyoun0421/la-bie-belle/pull/514)로 merge됐다.
 
 **하나 — `scheduleAdmin`의 조각 열둘.** `DayDetailPositionRow` 타입이 `screens/scheduleAdmin/model/dayDetail.type.ts`에 살고 그 타입이 features 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당긴다. `entities`는 `screens`를 모르고 `features`끼리 못 당긴다. 계산 자체(`positionRows.utils`·`dragId.utils`)는 깨끗하다 — 막는 것은 입력 타입 하나다. `useScheduleAdminScreen`이 594줄로 가장 크고 `useDayDetail`이 655줄이다.
 
@@ -31,6 +37,10 @@
 **꼬리는 `backlog.md`의 `duplicated-constants-and-copy`가 받는다** — `CLOCK_LENGTH = 5` 네 자리(집은 `entities/clock/consts`)와 `useMyProfileRowQuery` 오명(`Profile`을 돌려주며 `Row`를 든다, importer 여덟)이다. `features/stats`에 같은 일을 하는 utils 쌍 둘이 나란히 있다 — `monthAttendanceLine` ↔ `adminAttendanceLine`과 `attendanceRatioShares` ↔ `adminAttendanceShares`(뒤 쌍은 읽는 상수만 달랐고 그 상수마저 값이 같았다). 합치면 테스트를 지워야 해서 안 합쳤다. `agendaRow.utils`의 `filterAgendaDays`는 짝 테스트 말고 부르는 데가 없다. 관찰 061의 mock 아흔여덟도 열려 있다.
 
 **spec 게이트가 열려 있고 화면 task 전부 `approved`다.** `feat/<슬러그>` 브랜치의 `src/` 쓰기를 spec `status: approved`가 통과시킨다. spec 파일이 없는 데이터 task는 plan의 `## 완료 조건` 절로도 통과한다 — `attendance-checkin`의 병목은 spec이 아니라 NCP 자격(대표 계정·지도 키·`customStyleId`)이다.
+
+**backlog 행이 「미작성 — 행이 완료 조건이다」인 task는 `src/`가 통째로 막힌다**(관찰 067, 열림). `spec-gate.py`의 `plan_holds_spec()`이 `plans/<슬러그>.md` 안의 `## 완료 조건`만 찾고 `backlog.md` 행은 읽지 않는다. `test-data-isolation`·`chart-math-out-of-tsx` 등 그 문구를 쓴 행이 여럿이라 각각 들어갈 때 plan을 먼저 써야 한다. 훅을 넓히는 길은 택하지 않았다 — 그 훅이 막는 것이 「끝이 어디인지 안 정한 구현」이고 backlog 행의 산문은 AC로 쪼개지지 않는다.
+
+**`backlog.md` 행 본문에 `|`를 쓰지 않는다.** `tests/lint/backlogIds.ts`의 `cells`가 `.split("|")`로 쪼개고 escape를 모른다 — `string \| null`을 적으면 열이 밀려 「상태」 칸이 본문 조각으로 읽히고 `unknown-status`·`missing-prerequisite`가 난다. 타입을 말로 적는다.
 
 **Edge Function을 타입 검사하는 자리가 아직 없다.** `supabase/functions/`가 Deno 런타임이라 `tsconfig.json`이 `exclude`에 두고 CI에 Deno가 없다. `erase-account`와 `import-holidays`가 섰고 `send-push`가 셋째다.
 
