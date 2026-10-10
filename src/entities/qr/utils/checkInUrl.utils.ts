@@ -1,4 +1,4 @@
-import { CHECK_IN_PATH } from "@/entities/qr/consts/qr.const";
+import { CHECK_IN_PATH } from "@/shared/consts/navigation.const";
 
 export function buildCheckInUrl(appUrl: string, code: string): string {
   const origin = appUrl.replace(/\/+$/, "");

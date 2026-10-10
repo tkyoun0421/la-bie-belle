@@ -1,4 +1,12 @@
-export const BACK_BEARING_PREFIXES = ["/admin/schedule", "/admin/approvals"];
+import {
+  ADMIN_APPROVALS_PATH,
+  ADMIN_SCHEDULE_PATH,
+} from "@/shared/consts/navigation.const";
+
+export const BACK_BEARING_PREFIXES = [
+  ADMIN_SCHEDULE_PATH,
+  ADMIN_APPROVALS_PATH,
+];
 
 export const SKELETON_ROWS = [0, 1, 2, 3, 4];
 

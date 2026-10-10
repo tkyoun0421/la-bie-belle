@@ -1,6 +1,9 @@
 import path from "node:path";
 
+const TESTS_FOLDER = "__tests__";
+
 const COPIED_TO_DENO = [
+  "src/shared/consts/",
   "src/entities/notification/consts/",
   "src/entities/notification/model/",
   "src/entities/notification/utils/",
@@ -27,7 +30,10 @@ const noNodeImportInEdgeShared = {
       .split(path.sep)
       .join("/");
 
-    if (!COPIED_TO_DENO.some((folder) => relative.startsWith(folder))) {
+    if (
+      relative.split("/").includes(TESTS_FOLDER) ||
+      !COPIED_TO_DENO.some((folder) => relative.startsWith(folder))
+    ) {
       return {};
     }
 

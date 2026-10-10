@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import type { DB } from "@/shared/api/database";
+import { RETRY_PATH } from "@/shared/consts/navigation.const";
 import { getCurrentUser as readSessionUser } from "@/entities/session/api/getCurrentUser.api";
 import type { AuthDestination } from "@/entities/session/model/session.type";
 import { resolveEntryDestination as resolveDestinationFromProfile } from "@/features/auth/lib/resolveEntryDestination.lib";
@@ -24,6 +25,6 @@ export async function decideEntry({
 
     return await resolveEntryDestination(user?.id ?? null, { client });
   } catch {
-    return "/retry";
+    return RETRY_PATH;
   }
 }

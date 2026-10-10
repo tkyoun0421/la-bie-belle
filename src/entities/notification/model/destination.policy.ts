@@ -1,3 +1,10 @@
+import {
+  ADMIN_APPROVALS_PATH,
+  ADMIN_SCHEDULE_PATH,
+  CHECK_IN_PATH,
+  WORKER_HOME_PATH,
+  WORKER_SCHEDULE_PATH,
+} from "@/shared/consts/navigation.const";
 import type {
   NotificationKind,
   NotificationPayload,
@@ -12,19 +19,19 @@ function text(payload: NotificationPayload, key: string): string {
 }
 
 function workerDay(payload: NotificationPayload): string {
-  return `/schedule?date=${text(payload, "work_date")}`;
+  return `${WORKER_SCHEDULE_PATH}?date=${text(payload, "work_date")}`;
 }
 
 function workerMonth(payload: NotificationPayload): string {
-  return `/schedule?month=${text(payload, "month")}`;
+  return `${WORKER_SCHEDULE_PATH}?month=${text(payload, "month")}`;
 }
 
 function adminDay(payload: NotificationPayload): string {
-  return `/admin/schedule?date=${text(payload, "work_date")}`;
+  return `${ADMIN_SCHEDULE_PATH}?date=${text(payload, "work_date")}`;
 }
 
 const POINT_OF: Record<NotificationKind, Point | null> = {
-  signup_approved: () => "/",
+  signup_approved: () => WORKER_HOME_PATH,
   requests_open: workerMonth,
   deadline_changed: workerMonth,
   schedule_confirmed: workerMonth,
@@ -32,11 +39,11 @@ const POINT_OF: Record<NotificationKind, Point | null> = {
   assignment_removed: workerMonth,
   shift_reminder: workerDay,
   weekend_reminder: workerDay,
-  before_shift: () => "/check-in",
+  before_shift: () => CHECK_IN_PATH,
   work_requested: workerDay,
   work_request_accepted: adminDay,
   work_request_exhausted: adminDay,
-  cancel_requested: () => "/admin/approvals",
+  cancel_requested: () => ADMIN_APPROVALS_PATH,
   cancel_approved: workerMonth,
   cancel_rejected: workerDay,
   excuse_approved: workerDay,

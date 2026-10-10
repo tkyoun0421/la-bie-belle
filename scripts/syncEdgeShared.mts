@@ -20,6 +20,7 @@ const ENTRIES = [
 ];
 
 const FOLDERS = [
+  { from: "src/shared/consts", to: "shared" },
   { from: "src/entities/notification/consts", to: "notification" },
   { from: "src/entities/notification/model", to: "notification" },
   { from: "src/entities/notification/utils", to: "notification" },

@@ -4,13 +4,23 @@ export const ORIGIN_APPROVALS = "approvals";
 
 export const WORKER_HOME_PATH = "/" as const;
 
+export const WORKER_SCHEDULE_PATH = "/schedule" as const;
+
 export const ME_HOME_PATH = "/me" as const;
 
 export const LOGIN_PATH = "/login" as const;
 
+export const PENDING_PATH = "/pending" as const;
+
+export const BLOCKED_PATH = "/blocked" as const;
+
 export const LEFT_PATH = "/left" as const;
 
+export const RETRY_PATH = "/retry" as const;
+
 export const NOTIFICATIONS_PATH = "/notifications" as const;
+
+export const CHECK_IN_PATH = "/check-in" as const;
 
 export const PAYROLL_PATH = "/payroll" as const;
 

@@ -1,12 +1,11 @@
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { LOGIN_PATH } from "@/shared/consts/navigation.const";
+import { LOGIN_PATH, RETRY_PATH } from "@/shared/consts/navigation.const";
 import type { SessionUser } from "@/entities/session/model/session.type";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useRetryEntryMutation } from "@/features/auth/services/useRetryEntryMutation";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
-import { RETRY_PATH } from "@/screens/retry/consts/retry.const";
 
 export type RetryScreenController = {
   me: SessionUser | null | undefined;

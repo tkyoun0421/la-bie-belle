@@ -16,6 +16,7 @@ import noEdgeFunctionSrcImport from "./noEdgeFunctionSrcImport.mjs";
 import noExplanatoryComment from "./noExplanatoryComment.mjs";
 import noLayerReexport from "./noLayerReexport.mjs";
 import noNodeImportInEdgeShared from "./noNodeImportInEdgeShared.mjs";
+import noRoutePathLiteral from "./noRoutePathLiteral.mjs";
 import noServicesImportInUi from "./noServicesImportInUi.mjs";
 import noSnakeCaseField from "./noSnakeCaseField.mjs";
 import noSupabaseInstanceInUi from "./noSupabaseInstanceInUi.mjs";
@@ -50,6 +51,7 @@ const house = {
     "no-explanatory-comment": noExplanatoryComment,
     "no-layer-reexport": noLayerReexport,
     "no-node-import-in-edge-shared": noNodeImportInEdgeShared,
+    "no-route-path-literal": noRoutePathLiteral,
     "no-services-import-in-ui": noServicesImportInUi,
     "no-snake-case-field": noSnakeCaseField,
     "no-supabase-instance-in-ui": noSupabaseInstanceInUi,
