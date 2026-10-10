@@ -12,8 +12,7 @@ import { THEME_LABEL } from "@/shared/consts/theme.const";
 import { useTheme } from "@/shared/stores/theme.store";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
@@ -58,8 +57,7 @@ export function useProfileScreen(): ProfileScreenController {
 
   const theme = useTheme((at) => at.theme);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data, isLoading } = useMyProfileQuery(supabase, me?.id ?? null);
+  const { user, profile, isAdmin, isLoading } = useMyStanding(supabase);
   const { data: grants } = useQualificationsQuery(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
 
@@ -81,8 +79,6 @@ export function useProfileScreen(): ProfileScreenController {
     () => finish(PROFILE_COPY.photoSaved),
     [finish],
   );
-
-  const admin = data?.role === "admin";
 
   const goNotifications = useCallback(() => {
     router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`);
@@ -111,15 +107,15 @@ export function useProfileScreen(): ProfileScreenController {
   return {
     loading: isLoading,
     unread: (unreadCount.data ?? 0) > 0,
-    userId: me?.id ?? null,
-    profileId: data?.id ?? null,
-    photoUrl: data?.photoUrl ?? null,
-    googlePhotoUrl: me?.googlePhotoUrl ?? null,
-    admin,
-    rehearsal: admin || hasRehearsalGrant(grants ?? [], data?.id ?? null),
-    phone: data?.phone ?? "",
+    userId: user?.id ?? null,
+    profileId: profile?.id ?? null,
+    photoUrl: profile?.photoUrl ?? null,
+    googlePhotoUrl: user?.googlePhotoUrl ?? null,
+    admin: isAdmin,
+    rehearsal: isAdmin || hasRehearsalGrant(grants ?? [], profile?.id ?? null),
+    phone: profile?.phone ?? "",
     themeLabel: THEME_LABEL[theme],
-    notificationEnabled: data ? data.notificationsEnabled : null,
+    notificationEnabled: profile ? profile.notificationsEnabled : null,
     sheet,
     toast,
     signingOut,

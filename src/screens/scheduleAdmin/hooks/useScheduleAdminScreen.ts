@@ -10,6 +10,7 @@ import {
 } from "@/shared/consts/navigation.const";
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
@@ -69,8 +70,6 @@ import {
 import { deadlineLine } from "@/screens/scheduleAdmin/utils/deadlineLine.utils";
 
 export type ScheduleAdminListState = "loading" | "missing" | "calendar";
-
-export type ScheduleAdminToast = { kind: "info" | "success"; message: string };
 
 export type ScheduleAdminCalendar = {
   isToday: (date: string) => boolean;
@@ -141,7 +140,7 @@ export type ScheduleAdminScreenController = {
   closeSheet: () => void;
   changeDeadlineDraft: (typed: string) => void;
   saveDeadline: () => void;
-  toast: ScheduleAdminToast | null;
+  toast: ToastState | null;
   dismissToast: () => void;
   day: DayDetailInput | null;
   leaveDay: () => void;
@@ -163,6 +162,8 @@ export function useScheduleAdminScreen({
   from,
 }: ScheduleAdminScreenParams): ScheduleAdminScreenController {
   const router = useRouter();
+  const { toast, showToast, dismissToast } = useToast();
+
   const nowMs = useServerNow();
   const now = new Date(nowMs).toISOString();
   const today = kstDateOf(now);
@@ -171,7 +172,6 @@ export function useScheduleAdminScreen({
   const [picking, setPicking] = useState(false);
   const [picked, setPicked] = useState<readonly string[]>([]);
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
-  const [toast, setToast] = useState<ScheduleAdminToast | null>(null);
 
   const leaveMonth = useCallback(() => {
     setOpenDate(null);
@@ -241,12 +241,9 @@ export function useScheduleAdminScreen({
 
   useEffect(() => {
     if (from === ORIGIN_APPROVALS) {
-      setToast({
-        kind: "success",
-        message: SCHEDULE_ADMIN_COPY.arrivedFromApprovals,
-      });
+      showToast("success", SCHEDULE_ADMIN_COPY.arrivedFromApprovals);
     }
-  }, [from]);
+  }, [from, showToast]);
 
   useEffect(() => {
     const asked = monthParam ?? dateParam?.slice(0, 7);
@@ -332,11 +329,15 @@ export function useScheduleAdminScreen({
     const message = openDaysFailureToast(failed);
 
     setPicked(failed);
-    setToast(message === null ? null : { kind: "info", message });
 
     if (message === null) {
+      dismissToast();
       setPicking(false);
+
+      return;
     }
+
+    showToast("info", message);
   };
 
   const grantAndAssign = async (
@@ -496,7 +497,7 @@ export function useScheduleAdminScreen({
       }
     },
     toast,
-    dismissToast: () => setToast(null),
+    dismissToast,
     day:
       day === null
         ? null

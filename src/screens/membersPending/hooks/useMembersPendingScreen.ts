@@ -5,14 +5,13 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_MEMBERS_BLOCKED_PATH,
 } from "@/shared/consts/navigation.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import type { MemberAdminDone } from "@/features/memberAdmin/model/memberAdmin.type";
 import { formatSentAt } from "@/screens/membersPending/utils/formatSentAt.utils";
-
-export type PendingToast = MemberAdminDone;
 
 export type PendingSheet = {
   profileId: string;
@@ -27,7 +26,7 @@ export type MembersPendingController = {
   openBlocked: () => void;
   today: string;
   sheet: PendingSheet | null;
-  toast: PendingToast | null;
+  toast: ToastState | null;
   openMember: (member: MemberSummary) => void;
   finish: (done: MemberAdminDone) => void;
   closeSheet: () => void;
@@ -39,8 +38,9 @@ export type MembersPendingController = {
 export function useMembersPendingScreen(): MembersPendingController {
   const router = useRouter();
   const [open, setOpen] = useState<MemberSummary | null>(null);
-  const [toast, setToast] = useState<PendingToast | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { toast, showToast, dismissToast } = useToast();
 
   const serverNowMs = useServerNow();
   const today = new Date(serverNowMs).toISOString();
@@ -54,10 +54,13 @@ export function useMembersPendingScreen(): MembersPendingController {
     setOpen(member);
   }, []);
 
-  const finish = useCallback((done: MemberAdminDone) => {
-    setToast(done);
-    setOpen(null);
-  }, []);
+  const finish = useCallback(
+    (done: MemberAdminDone) => {
+      showToast(done.kind, done.message);
+      setOpen(null);
+    },
+    [showToast],
+  );
 
   const goBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -92,7 +95,7 @@ export function useMembersPendingScreen(): MembersPendingController {
     openMember,
     finish,
     closeSheet,
-    dismissToast: () => setToast(null),
+    dismissToast,
     menuOpen,
     toggleMenu: () => setMenuOpen((opened) => !opened),
   };

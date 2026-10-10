@@ -2,15 +2,13 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ADMIN_MEMBERS_PENDING_PATH } from "@/shared/consts/navigation.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
-import type { ToastKind } from "@/shared/ui/Toast";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { MEMBER_DECISION_COPY } from "@/entities/member/consts/member.const";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useUnblockMemberMutation } from "@/features/memberAdmin/services/useUnblockMemberMutation";
 import { BLOCKED_COPY } from "@/screens/membersPending/consts/membersPending.const";
-
-export type BlockedToast = { kind: ToastKind; message: string };
 
 export type BlockedConfirm = {
   question: string;
@@ -22,7 +20,7 @@ export type MembersBlockedController = {
   confirming: BlockedConfirm | null;
   sending: boolean;
   failedLine: string | null;
-  toast: BlockedToast | null;
+  toast: ToastState | null;
   openMember: (member: MemberSummary) => void;
   unblock: () => void;
   close: () => void;
@@ -32,7 +30,8 @@ export type MembersBlockedController = {
 export function useMembersBlockedScreen(): MembersBlockedController {
   const router = useRouter();
   const [open, setOpen] = useState<MemberSummary | null>(null);
-  const [toast, setToast] = useState<BlockedToast | null>(null);
+
+  const { toast, showToast, dismissToast } = useToast();
 
   const serverNowMs = useServerNow();
   const now = new Date(serverNowMs).toISOString();
@@ -51,11 +50,11 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   }, [reset]);
 
   const finish = useCallback(
-    (toasted: BlockedToast) => {
-      setToast(toasted);
+    (toasted: ToastState) => {
+      showToast(toasted.kind, toasted.message);
       close();
     },
-    [close],
+    [showToast, close],
   );
 
   const openName = open?.displayName ?? "";
@@ -104,6 +103,6 @@ export function useMembersBlockedScreen(): MembersBlockedController {
       }
     },
     close,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }
