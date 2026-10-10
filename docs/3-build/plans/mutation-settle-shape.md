@@ -30,7 +30,9 @@ mutation service 45개 가운데 43개가 `onSuccess`에서 `queryClient.invalid
 
 근무·리허설 쓰기만 급여와 요청으로 번지고, 한 도메인에 갇힌 쓰기(회원·프로필·시급·QR·공휴일·조정)는 키 하나로 끝난다. **그 갈림은 까닭이 있어 남긴다** — 고치는 것은 번지는 쓰기를 「안 기다린다」는 쪽이다.
 
-**`isSuccess`가 늦게 서면 무엇이 달라지나.** 조각 controller 열여섯이 그 값을 읽어 시트를 닫는다 — `features/*/hooks/`의 `useHallDefaultsSheet`·`useMemberDetailSheet`·`useMemberSheet`·`useContactSheet`·`usePhotoSheet`·`usePendingEditor`·`useRehearsalFormSheet`·`useConfirmSheet`·`useCloseDayWarningSheet`·`useCreateScheduleSheet`·`useDayHoursSheet`·`useDefaultWageSheet`·`useMemberWageSheet`·`useApprovalDetailSheet`·`useCancelShiftSheet`·`useRequestSheet`다. 꼴은 `useEffect(() => { if (isSuccess) onDone() })`나 `onSaved()`고, 화면 controller 일곱이 또 그 `onDone`을 받아 시트 상태를 지운다.
+**`isSuccess`가 늦게 서면 무엇이 달라지나.** 조각 controller 열여섯이 그 값을 읽어 시트를 닫는다 — `features/*/hooks/`의 `useHallDefaultsSheet`·`useMemberDetailSheet`·`useMemberSheet`·`useContactSheet`·`usePhotoSheet`·`usePendingEditor`·`useRehearsalFormSheet`·`useConfirmSheet`·`useCloseDayWarningSheet`·`useCreateScheduleSheet`·`useDayHoursSheet`·`useDefaultWageSheet`·`useMemberWageSheet`·`useApprovalDetailSheet`·`useCancelShiftSheet`·`useRequestSheet`다. 꼴은 `useEffect(() => { if (isSuccess) onDone() })`나 `onSaved()`고, 화면 controller가 또 그 `onDone`을 받아 시트 상태를 지운다.
+
+**루프 축의 영향권은 그 열여섯이 아니라 11 파일이다.** 루프를 도는 service 20개를 당기면서 `isSuccess`를 읽는 자리를 전수로 세면 조각 여덟(`useDayHoursSheet`·`useCreateScheduleSheet`·`useCloseDayWarningSheet`·`useRehearsalFormSheet`·`useConfirmSheet`·`useApprovalDetailSheet`·`useCancelShiftSheet`·`useRequestSheet`)과 화면 controller 셋(`useScheduleAdminScreen`·`useApplicationsScreen`·`useRehearsalScreen`)이다. 나머지 조각 여덟은 키가 하나라 이미 기다리므로 이 변경이 안 닿는다. `useScheduleAdminScreen`의 자리 여섯(`addSlot`·`removeSlot`·`mergeSlots`·`splitSlot`·`addAssignment`·`removeAssignment`)은 루프 mutation을 쓰면서도 `isSuccess`를 안 읽고 `isPending`만 보므로 이 셈 밖이다.
 
 `setQueryData`는 저장소에 한 자리도 없다. `refetch`는 전부 사용자가 누르는 「다시」고 성공 뒤처리가 아니다. 그 둘은 이 계획이 건드리지 않는다.
 
@@ -54,26 +56,47 @@ mutation service 45개 가운데 43개가 `onSuccess`에서 `queryClient.invalid
 ## 완료 조건
 
 - **AC-01** `void queryClient.invalidateQueries`가 `src/` 비(非)테스트 파일에 0이다. query service의 `refetch`(`features/payrollCompute/services/useMyPayrollViewDaysQuery.ts`)는 `onSuccess`가 아니라 사용자가 누르는 「다시」라 이 셈 밖이다 — 그 자리를 남길지는 구현이 보고하고 판정은 총괄이 한다
-- **AC-02** 루프를 도는 20자리가 `Promise.all`로 목록을 함께 기다리고 `onSuccess`가 그 프로미스를 돌려준다. 하나씩 순서대로 기다리지 않는다 — 세 키를 무르는 일에 순서가 없다
-- **AC-03** 키 하나인 22자리가 `return queryClient.invalidateQueries({ queryKey })` 한 꼴이다. `async`/`await`를 쓰지 않는다 — 기다릴 것이 하나면 돌려주는 것으로 끝난다
-- **AC-04** 조각 16개의 기존 테스트가 깨지지 않는다. 그중 하나(루프를 도는 mutation을 쓰는 자리)에 **시트가 새 데이터 뒤에 닫히는 것**을 단언하는 테스트가 본보기로 선다
-- **AC-05** `eslint-rules/mutationSettleShape.mjs`가 `onSuccess` 안의 `void queryClient.invalidateQueries`를 막고, 그 규칙이 다섯 자리에 한 커밋으로 선다
+- **AC-02** 루프를 도는 20자리가 `Promise.all`로 목록을 함께 기다리고 `onSuccess`가 그 프로미스를 돌려준다. 하나씩 순서대로 기다리지 않는다 — 세 키를 무르는 일에 순서가 없다. **이 축은 lint가 본다**(AC-05)
+- **AC-03** 키 하나인 22자리가 `return queryClient.invalidateQueries({ queryKey })` 한 꼴이다. `async`/`await`를 쓰지 않는다 — 기다릴 것이 하나면 돌려주는 것으로 끝난다. **이 축도 lint가 본다**(AC-05)
+- **AC-04** 루프 축의 영향권 **11 파일**의 기존 테스트가 깨지지 않는다 — 조각 여덟(`useDayHoursSheet`·`useCreateScheduleSheet`·`useCloseDayWarningSheet`·`useRehearsalFormSheet`·`useConfirmSheet`·`useApprovalDetailSheet`·`useCancelShiftSheet`·`useRequestSheet`)과 화면 controller 셋(`useScheduleAdminScreen`·`useApplicationsScreen`·`useRehearsalScreen`)이다. 그중 `useDayHoursSheet` 하나에 **시트가 새 데이터 뒤에 닫히는 것**을 단언하는 테스트가 본보기로 선다
+- **AC-05** `eslint-rules/mutationSettleShape.mjs`가 셋을 막는다 — `onSuccess` 안의 `void queryClient.invalidateQueries`, `onSuccess`의 `async` 표시, 그리고 목록을 루프로 돌며 하나씩 기다리는 꼴이다. 그 규칙이 다섯 자리에 한 커밋으로 선다
 - **AC-06** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
-1. 실패 테스트를 쓴다 — AC-04의 본보기 하나다. **mock이 `invalidateQueries`를 어떻게 흉내 내는지가 갈림이다** — 즉시 resolve하는 `jest.fn()`이면 `await`로 바꿔도 단언이 안 깨지고, 그러면 그 테스트가 지키는 것이 없다. 지연을 넣어 순서를 재는 꼴이 필요한지 `test-planner`가 판정한다
+1. 실패 테스트를 쓴다 — AC-04의 본보기 하나고 자리는 `src/features/scheduleDay/hooks/__tests__/useDayHoursSheet.test.ts`다. **지연을 넣어야 지킨다** — 아래 「mock의 꼴」이 그 까닭과 꼴을 든다
 2. 루프 20자리를 `Promise.all`로 바꾼다
 3. 키 하나 22자리를 `return` 한 꼴로 모은다
-4. 조각 16개의 테스트를 돌려 깨지는 자리를 본다. 깨지면 그것이 `isSuccess` 시점에 매달린 자리고, **단언을 고치기 전에 보고한다** — 그 자리가 늦은 성공을 못 받는 까닭이 있으면 설계 결정이다
+4. AC-04의 11 파일 테스트를 돌려 깨지는 자리를 본다. **거의 안 깨질 것이다** — 기존 단언이 `waitFor`로 최종 상태만 봐서 둔감하다. 그래도 깨지면 그것이 `isSuccess` 시점에 매달린 자리고, **단언을 고치기 전에 보고한다** — 그 자리가 늦은 성공을 못 받는 까닭이 있으면 설계 결정이다
 5. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**
 6. 검증하고 PR을 연다
 
 ## 리스크
 
-**`isSuccess`가 늦게 서면 `reset()`과의 순서가 바뀔 수 있다.** 조각 셋(`useMemberSheet`·`useRehearsalFormSheet`·`usePendingEditor`)이 `reset`을 받아 쓴다. 성공을 보고 `onDone`을 부른 뒤 `reset`을 부르는 꼴이면 영향이 없지만, 그 사이에 다른 상태를 읽는 자리가 있으면 순서가 보인다. 2번 걸음 전에 그 셋을 읽는다.
+**`reset()`과의 순서 리스크는 실제로 없다.** 네 자리를 읽어 확인했다 — `useRehearsalFormSheet`와 `useApprovalDetailSheet`는 실패·취소 갈래에서만 `reset`을 부르고, `useMemberSheet`와 `usePendingEditor`가 쓰는 mutation은 키가 하나라 이미 기다린다. 성공-닫힘 effect와 `reset`이 전부 떨어져 있다.
 
 **낙관적 갱신이 없어 되돌릴 것이 없다.** `onMutate`를 쓰는 mutation이 저장소에 0이고 `setQueryData`도 0이라, 기다리는 동안 화면이 낡은 값을 그대로 든다. 그 사이에 사용자가 같은 버튼을 또 누르는 자리는 `sending` 플래그가 막는다 — 조각 17개가 그 플래그를 낸다.
+
+## mock의 꼴 — 지연을 넣어야 지킨다
+
+**지금 꼴로는 이 변경을 지키는 단언이 서지 않는다.** 저장소의 서비스·조각 테스트가 둘을 같이 쓴다.
+
+1. DAL을 `jest.fn().mockResolvedValue(undefined)`로 즉시 resolve한다
+2. `queryClient.invalidateQueries`에 **`jest.spyOn`만 걸고 `mockImplementation`을 안 준다** — 원 구현이 그대로 돈다
+
+관찰자(`mount`된 `useQuery`)가 없으면 실제 `invalidateQueries`는 다시 받을 것이 없어 거의 즉시 resolve한다. 그래서 `void`와 `Promise.all`+`return` 사이의 시간차가 마이크로태스크 몇 틱이고, 기존 단언은 전부 `waitFor`로 「결국 그렇게 됐다」만 보므로 그 틱이 안 보인다. 둔감한 자리를 넷 확인했다 — `useSetDayHoursMutation.test.ts:64`·`useDayHoursSheet.test.ts:107`·`useScheduleAdminScreen.test.ts:410`·`useApplicationsScreen.test.ts:209`.
+
+**필요한 꼴.** `invalidateQueries`를 `mockImplementation`으로 통째로 바꿔 **resolve 시점을 테스트가 쥔다**. 그 뒤 양쪽을 다 단언한다 — resolve 전에는 `onDone`이 안 불리고, resolve 뒤에만 불린다. 루프는 호출마다 따로 쥐어 **하나만 풀린 상태에선 아직 안 닫힌다**까지 본다. 그것이 `Promise.all`의 「다 끝나야 끝난다」를 드러내는 자리다.
+
+**치르는 것.** 실제 캐시 무효화는 안 돈다. 이 테스트가 보려는 것이 시점이라 상관없다. 그리고 **조각 테스트의 `createWrapper`가 `queryClient`를 내줘야 한다** — 서비스 테스트(`useSetDayHoursMutation.test.ts`)는 이미 `{ wrapper, queryClient }`를 돌려주는데 조각 테스트는 `{ wrapper }`만 돌려준다. 그 하나를 넓힌다.
+
+## 왜 lint가 둘을 더 본다
+
+AC-02의 「순서대로 기다리지 않는다」와 AC-03의 「`async`를 안 쓴다」는 **테스트로 지킬 수 없다.**
+
+`return p`와 `async () => { await p }`는 결과가 같다 — resolve 시점 차이가 마이크로태스크 한두 틱이라 관찰할 수 없다. 그리고 「`Promise.all`이냐 순차 `await`냐」를 가리는 단언은 내부 호출 순서를 보는 것이고, [strategy.md:44](../../4-test/strategy.md)가 「내부 함수의 호출 순서나 private 상태보다 입력과 관찰 가능한 결과를 단언한다」로 그것을 막는다.
+
+둘 다 **문법 축**이라 lint가 볼 자리다. 「기계가 대신할 수 있나」에 그렇다고 답하므로 리뷰에 맡기지 않고 규칙을 넓힌다 — `void` 하나만 막던 것을 셋으로 늘린다.
 
 ## 검증
 
