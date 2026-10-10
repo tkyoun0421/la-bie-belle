@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 43;
+export const DOCUMENTED_LINT_RULE_COUNT = 44;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -347,6 +347,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-duplicate-failure-copy",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noDuplicateFailureCopy.test.ts",
+  },
+  {
+    no: 44,
+    name: "src/app/ 밖의 경로꼴 리터럴",
+    mechanism: "house",
+    ruleId: "house/no-route-path-literal",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noRoutePathLiteral.test.ts",
   },
 ];
 

@@ -1,3 +1,10 @@
+import {
+  BLOCKED_PATH,
+  LEFT_PATH,
+  LOGIN_PATH,
+  PENDING_PATH,
+  WORKER_HOME_PATH,
+} from "@/shared/consts/navigation.const";
 import type { AuthDestination } from "@/entities/session/model/session.type";
 
 export type ProfileStanding = {
@@ -12,10 +19,10 @@ export type AuthStanding = {
 };
 
 const GATE_PATHS: readonly string[] = [
-  "/login",
-  "/pending",
-  "/blocked",
-  "/left",
+  LOGIN_PATH,
+  PENDING_PATH,
+  BLOCKED_PATH,
+  LEFT_PATH,
 ];
 
 export function resolveAuthDestination({
@@ -23,22 +30,22 @@ export function resolveAuthDestination({
   profile,
 }: AuthStanding): AuthDestination {
   if (!hasSession) {
-    return "/login";
+    return LOGIN_PATH;
   }
 
   if (!profile) {
-    return "/pending";
+    return PENDING_PATH;
   }
 
   if (profile.blockedAt) {
-    return "/blocked";
+    return BLOCKED_PATH;
   }
 
   if (profile.leftAt) {
-    return "/left";
+    return LEFT_PATH;
   }
 
-  return profile.approvedAt ? "/" : "/pending";
+  return profile.approvedAt ? WORKER_HOME_PATH : PENDING_PATH;
 }
 
 export function resolveGateMove(
@@ -49,5 +56,5 @@ export function resolveGateMove(
     return destination === pathname ? null : destination;
   }
 
-  return destination === "/" ? null : destination;
+  return destination === WORKER_HOME_PATH ? null : destination;
 }

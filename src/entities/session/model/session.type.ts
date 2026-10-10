@@ -1,5 +1,17 @@
+import type {
+  BLOCKED_PATH,
+  LEFT_PATH,
+  LOGIN_PATH,
+  PENDING_PATH,
+  WORKER_HOME_PATH,
+} from "@/shared/consts/navigation.const";
+
 export type AuthDestination =
-  "/login" | "/pending" | "/blocked" | "/left" | "/";
+  | typeof LOGIN_PATH
+  | typeof PENDING_PATH
+  | typeof BLOCKED_PATH
+  | typeof LEFT_PATH
+  | typeof WORKER_HOME_PATH;
 
 export type SessionUser = {
   id: string;
