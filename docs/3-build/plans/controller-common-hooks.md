@@ -71,7 +71,13 @@
 **다섯째(`useRehearsalScreen`)는 빠진다.** 이전·다음으로 옮기는 손이 없고 연월 피커로 고르기만 해서 `goPrev`·`goNext`가 그 화면에서 죽는다.
 
 **`jumpTo(month)`가 반환에 더 선다.** `useScheduleAdminScreen:248`과 `useScheduleWorkerScreen:151`이 라우터 파라미터가 지목한 달로 건너뛰는 effect를 들어 달을 심을 손이 필요하다. 받은 달을 그대로 넘기니 호출부가 `1`·`-1`을 아는 것이 아니라 「달 셈을 흘리지 않는다」를 깨지 않는다. `onMove`는 부르지 않는다.
-- **AC-04** 세션에서 프로필 두 겹을 짜는 **열두** 자리가 `useMyStanding`을 부른다. `role`·`isAdmin`을 더 짜던 자리도 거기서 받는다
+- **AC-04** 세션에서 프로필 두 겹을 짜는 **아홉** 자리가 `useMyStanding`을 부른다. 남는 셋은 규칙 3에 막혀 따로 간다. `role`·`isAdmin`을 더 짜던 자리도 거기서 받는다
+
+**닿는 수는 아홉이다.** `features` 셋이 **규칙 3에 막힌다** — `features/stats/hooks/useStatsAttendance.ts`·`useStatsPositions.ts`와 `features/payrollCompute/services/useMyPayrollViewDaysQuery.ts`다. `features/auth`를 고른 근거가 그 규칙인데(`entities`에서 `profile`과 `session`이 서로를 못 당긴다) **같은 규칙이 `features` 안에서도 돈다.**
+
+갈 길이 없다. `shared/hooks`로 내리면 `shared`가 `entities`를 당겨 층 순서를 깨고, `entities`로 내리면 처음 문제로 돌아간다.
+
+**판정: 신분은 아래로 흐른다.** 그 셋은 `profileId`를 인자로 받고 부르는 쪽이 심어 준다 — 「내가 누구인가」는 화면이 드는 맥락이고 조각이 스스로 캐는 것이 아니다. ADR-016의 「갈 데는 올라가지 않는다」와 같은 축이다. **세 훅의 시그니처와 호출부를 바꾸는 일이라 따로 task로 선다.**
 
 **열둘에 `src/app/` 셋이 든다** — `(tabs)/_layout.tsx`·`admin/_layout.tsx`·`me/rehearsals.tsx`고 뒤의 둘은 `role === "admin"`을 손으로 짠다. 그 판정이 훅으로 들어가는 것이 이 AC가 겨누는 자리다.
 
