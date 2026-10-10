@@ -1,6 +1,4 @@
-import { DAY_MS } from "@/shared/consts/time.const";
-
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+import { DAY_MS, KST_OFFSET_MS } from "@/shared/consts/time.const";
 
 function kstDayIndex(instant: string): number {
   return Math.floor((Date.parse(instant) + KST_OFFSET_MS) / DAY_MS);

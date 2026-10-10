@@ -10,7 +10,7 @@
 
 | 축 | 집단 | 자리 | 이 계획 |
 | --- | --- | --- | --- |
-| 상수 | 32 | 116 | **넷을 닫는다** |
+| 상수 | 32 | 116 | **다섯을 닫는다** |
 | 문안 | 19 | 114 | **가장 넓은 하나를 닫는다** |
 | 함수 본문 | 21 | 60 | 밖이다 |
 | 두 경로로 사는 계산 | 10 | 26 | 밖이다 |
@@ -25,6 +25,7 @@
 | 상수 | 값 | 선언 자리 | 성격 |
 | --- | --- | --- | --- |
 | `DAY_MS` | `24 * 60 * 60 * 1000` | **7** | 하루의 밀리초. 글자까지 같다 |
+| `KST_OFFSET_MS` | `9 * 60 * 60 * 1000` | **2** | 한국 시간의 오프셋. 글자까지 같다 |
 | `MINUTES_PER_HOUR` | `60` | **5** (정본 하나 포함) | 한 시간의 분 |
 | `CLOCK_LENGTH` | `5` | **4** | `"HH:mm"`의 길이. **상수가 아니라 함수로 모은다** — 아래 「시각 자르기」 |
 | `SCREEN_BOTTOM_PADDING` | `24` | **4** (쓰는 자리 5) | 화면 바닥 여백. `paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom` |
@@ -41,6 +42,8 @@
 
 **다만 그 24가 어디서 왔는지는 디자인 문서가 들어야 한다.** [components.md](../../2-design/design-system/components.md)가 「화면 아래 여백」의 수단으로 `useSafeAreaInsets`만 적고 값을 안 든다. 그래서 24가 코드에만 네 번 산다. **그 줄에 눈금을 박는다** — 상수는 그 결정의 코드 쪽 반영이다.
 
+**`KST_OFFSET_MS`가 다섯째다.** `entities/member/utils/formatElapsedDays.utils.ts:3`과 `entities/profile/utils/formatBirthDate.utils.ts:1`에 글자까지 같은 선언이 둘 있고 `DAY_MS`와 같은 축이다. `entities/attendance/model/attendanceStatus.policy.ts:15`의 `KST_OFFSET = "+09:00"`은 **같은 사실의 다른 꼴이라 안 합친다** — 그것은 `Date.parse`에 넘기는 날짜 글자의 조각이고 산술에 안 쓰인다. 한 자리뿐이라 모을 것도 없다.
+
 ### 실패 문안 하나 — 14자리
 
 **정본이 있다.** [data-access.md:142](../../2-design/system/data-access.md)가 「`TransportError`면 시트를 열어둔 채 「보내지 못했어요. 다시 시도해주세요」다」로 정했고 spec 다섯이 그것을 인용한다.
@@ -56,7 +59,7 @@
 | **JSX 생문안** | 2 | `features/workRequest/ui/RequestSheet.tsx:35` · `features/workRequest/ui/CancelShiftSheet.tsx:40` |
 | `.ts` 지역 상수 | 1 | `screens/scheduleAdmin/model/adjustmentFailure.policy.ts:5` |
 
-생문안 둘은 같은 슬라이스의 `workRequest.const.ts:24`에 `sendFailed`가 **이미 있는데도** `.tsx`가 그것을 안 쓰고 직접 적었다.
+생문안 둘은 같은 슬라이스의 `workRequest.const.ts`에 `sendFailed`가 있는데도 `.tsx`가 직접 적었다. **다만 그 `sendFailed`를 쓰는 것이 답은 아니다** — `APPROVAL_SHEET_COPY`의 것이라 관리자 승인 시트의 말이고, 근무자용 시트가 읽으면 이름이 가리키는 사실이 둘이 된다.
 
 ## 왜 고치나
 
@@ -68,7 +71,7 @@
 
 | 자리 | 바꿀 책임 |
 | --- | --- |
-| `src/shared/consts/time.const.ts` | 신설 — `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`가 선다 |
+| `src/shared/consts/time.const.ts` | 신설 — `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`·`KST_OFFSET_MS`가 선다 |
 | `src/shared/consts/layout.const.ts` | 신설 — `SCREEN_BOTTOM_PADDING`이 선다. 시간 축과 다른 자리다 |
 | `docs/2-design/design-system/components.md` | 「화면 아래 여백」 줄이 눈금 6(24px)에 safe-area inset을 더한다고 든다 |
 | `src/shared/utils/kstDate.ts` | 시각을 `HH:mm`으로 자르는 손 하나가 선다. 열 자리가 그것을 부른다 |
@@ -77,7 +80,7 @@
 | `SCREEN_BOTTOM_PADDING` 선언 넷 | 지우고 `shared/consts/layout.const.ts`에서 당긴다. 쓰는 `.tsx` 다섯의 import가 따라 바뀐다 |
 | COPY 객체 9 | `sendFailed`가 글자 대신 공용 상수를 가리킨다 |
 | `.tsx` 지역 상수 2 · 지역 상수 1 | 지우고 자기 슬라이스의 COPY 객체를 쓴다 |
-| JSX 생문안 2 | 같은 슬라이스의 `workRequest.const.ts`의 `sendFailed`를 쓴다 |
+| JSX 생문안 2 | 같은 슬라이스의 `workRequest.const.ts`에 **슬라이스 이름의 COPY 객체를 세우고** 그것을 쓴다. 그 파일에 이미 있는 `sendFailed`는 `APPROVAL_SHEET_COPY`의 것이고 **관리자 승인 시트의 말**이라, 근무자용 `RequestSheet`·`CancelShiftSheet`가 읽으면 이름이 사실과 어긋난다 |
 | `eslint-rules/noDuplicateFailureCopy.mjs` | 신설 — 그 글자가 `shared/consts/error.const.ts` 밖에 나타나는 것을 막는다 |
 | `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts` · `docs/4-test/execution.md` | 규칙 하나를 켜는 다섯 자리의 나머지 넷 |
 
@@ -95,7 +98,7 @@
 | `entities/schedule/model/daySheet.policy.ts:113` (두 번) | `entities/rehearsal/utils/daySheetRows.utils.ts:27` |
 | `entities/workRequest/utils/approvalDetail.utils.ts:49` (두 번) | |
 
-다섯 자리는 그것만 하는 지역 함수로 싸여 있다 — `requestCopy.utils.ts:10`·`dayHoursForm.policy.ts:9`·`adjustSheetRows.utils.ts:40`·`daySheetRows.utils.ts:27`·`useAdminHomeScreen.ts:97`이 전부 「받아서 자른다」 한 줄이다.
+여섯 자리는 그것만 하는 지역 함수로 싸여 있다 — `requestCopy.utils.ts:10`·`dayHoursForm.policy.ts:9`·`adjustSheetRows.utils.ts:40`·`daySheetRows.utils.ts:27`·`useAdminHomeScreen.ts:97`·`payrollDays.policy.ts:199`가 전부 「받아서 자른다」 한 줄이다.
 
 **[triage 제안](../../proposals/codebase-refactor-triage.md)은 이 축을 묶음 H(반복되는 일 아홉)에 뒀는데 그러면 같은 열 자리를 두 번 고친다** — E가 상수를 `shared/consts`로 옮겨 열 자리의 import를 바꾸고, H가 다시 와 그 열 자리를 함수 호출로 바꾼다. **그래서 E가 함수까지 가져간다.**
 
@@ -103,12 +106,12 @@
 
 ## 완료 조건
 
-- **AC-01** `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`의 선언이 각자 한 자리다. `src/shared/consts/time.const.ts`가 그 집이고 `src/shared/utils/spellNumber.ts:3`의 지역 선언도 거기서 받는다
+- **AC-01** `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`·`KST_OFFSET_MS`의 선언이 각자 한 자리다. `src/shared/consts/time.const.ts`가 그 집이고 `src/shared/utils/spellNumber.ts:3`의 지역 선언도 거기서 받는다
 - **AC-02** `"보내지 못했어요. 다시 시도해주세요"`라는 글자가 `src/shared/consts/error.const.ts` 한 자리에만 있다. 나머지 13자리가 그것을 가리킨다
 - **AC-03** `.tsx`에 그 문안의 생문안이 0이다. 둘 다 자기 슬라이스의 COPY 객체를 읽는다
 - **AC-04** `eslint-rules/noDuplicateFailureCopy.mjs`가 그것을 막고 규칙이 다섯 자리에 한 커밋으로 선다
 - **AC-05** `SCREEN_BOTTOM_PADDING`의 선언이 `src/shared/consts/layout.const.ts` 한 자리다. 쓰는 `.tsx` 다섯이 거기서 받고 `screens/*/consts/`의 넷이 사라진다. `components.md`의 「화면 아래 여백」 줄이 눈금 6을 든다
-- **AC-06** 시각을 `HH:mm`으로 자르는 손이 `src/shared/utils/kstDate.ts` 하나다. 호출 열둘이 그것을 부르고 지역 함수 다섯이 사라진다. `src/` 비(非)테스트 파일에서 `slice(0, 5)`와 `slice(0, CLOCK_LENGTH)`가 그 손 안의 한 자리 말고 0이다
+- **AC-06** 시각을 `HH:mm`으로 자르는 손이 `src/shared/utils/kstDate.ts` 하나다. 호출 열둘이 그것을 부르고 지역 함수 여섯이 사라진다. `src/` 비(非)테스트 파일에서 `slice(0, 5)`와 `slice(0, CLOCK_LENGTH)`가 그 손 안의 한 자리 말고 0이다
 - **AC-07** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
@@ -118,7 +121,7 @@
 3. `shared/consts/error.const.ts`에 문안 상수를 세우고 COPY 객체 9를 그것으로 돌린다
 4. `.tsx`의 생문안 둘과 지역 상수 셋을 COPY 객체로 돌린다
 5. `SCREEN_BOTTOM_PADDING`을 `shared/consts/layout.const.ts`로 옮기고 `components.md`의 그 줄에 눈금을 박는다
-6. 시각 자르는 손을 `shared/utils/kstDate.ts`에 세우고 열 자리를 그것으로 돌린다. 지역 함수 다섯을 지운다
+6. 시각 자르는 손을 `shared/utils/kstDate.ts`에 세우고 호출 열둘을 그것으로 돌린다. 지역 함수 여섯을 지운다
 7. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**
 8. 검증하고 PR을 연다
 

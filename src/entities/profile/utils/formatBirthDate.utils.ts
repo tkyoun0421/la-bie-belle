@@ -1,4 +1,4 @@
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+import { KST_OFFSET_MS } from "@/shared/consts/time.const";
 
 type CalendarDay = { year: number; month: number; day: number };
 
