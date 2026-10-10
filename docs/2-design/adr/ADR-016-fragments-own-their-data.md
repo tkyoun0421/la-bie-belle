@@ -63,6 +63,12 @@ ADR-015는 「`features/*/ui`만 service를 부를 수 있다」고 적었다. �
 
 **가름은 파일이 한 책임일 때만 답한다.** 한 파일에 자리가 둘이면 축이 둘을 한꺼번에 재서 답이 없다. **먼저 쪼개고 조각마다 묻는다.** 쪼갠 뒤에도 같은 자리면 그것이 그 파일의 자리다.
 
+**인자가 평평해도 그 값이 한 자리에서만 오면 거기를 아는 것이다.** 평평한 타입(`string`·`boolean`·수)을 받으면 import가 0으로 나 아무것도 모르는 듯 보인다. 그때 **짝 테스트가 무엇을 넣는지가 그 함수의 실제 입력을 드러낸다** — 넣을 수 있는 값이 한 화면의 `consts`에서만 오면 그 함수는 그 화면의 판정이다.
+
+`screens/pending/model/notificationPrompt.policy.ts`와 `screens/scheduleAdmin/utils/dragId.utils.ts`가 그 꼴이었다. 소스만 보면 import가 0인데 짝 테스트가 각각 `INITIAL_NOTIFICATION_PROMPT_VIEW`와 `DISCARD_DROP_ID`를 당긴다. `shared`로 올리면 그 테스트가 층을 거슬러 `screens`를 당겨 lint가 잡는다.
+
+**셈을 소스만 보고 하면 이 자리가 안 보인다.** 짝 테스트까지 같이 읽는다.
+
 ## 라우팅은 올라가지 않는다
 
 조각이 query를 부르되 **갈 데는 받는다.** `onPress`를 props로 받고 자기가 `useRouter`를 들지 않는다.
