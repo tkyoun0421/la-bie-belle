@@ -140,12 +140,24 @@ pnpm exec jest --config jest.integration.config.js src/entities/profile/api/__te
 
 ## CI와 결과 위치
 
-현재 [ci.yml](../../.github/workflows/ci.yml)의 동작이다. 로컬에서 파일별 검증을 마친 뒤 최종 검증 범위는 이 검사와 작업별 검증 표를 함께 따른다.
+현재 [ci.yml](../../.github/workflows/ci.yml)과 [impact.yml](../../.github/workflows/impact.yml)의 동작이다. 로컬에서 파일별 검증을 마친 뒤 최종 검증 범위는 이 검사와 작업별 검증 표를 함께 따른다.
 
-- `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 셋(supabase 기동·integration·생성 타입 대조)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
-- 나머지 PR과 main push는 Supabase 기동 → integration → 생성 타입 대조까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
+**job 넷이 병렬로 돌고 `ci`가 결과를 모은다.** 브랜치 보호가 요구하는 이름이 `ci` 하나라 그 자리가 모으는 일만 한다.
+
+| job | 하는 일 | 건너뛰는 조건 |
+| --- | --- | --- |
+| `checks` | lint · format · typecheck · 단위 테스트 | 없다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다 |
+| `bundle` | `pnpm bundle` | `docs/`·`.claude/`·루트 마크다운만 바뀐 PR |
+| `db` | supabase 기동 · integration · 생성 타입 대조 | integration의 판정을 바꿀 수 없는 파일만 바뀐 PR |
+| `secrets` | gitleaks | 없다 |
+
+**`db`의 건너뛰기는 허용 목록으로 가른다** — `docs/`·`.claude/`·`eslint-rules/`·`tests/lint/`·`tests/e2e/`·`src/app/`·`src/<층>/<슬라이스>/(ui|hooks)/`·루트 마크다운이다. 목록 밖이 하나라도 있으면 돈다. 막는 목록이 아니라 허용 목록인 것은 **새 폴더가 생겨도 안전한 쪽으로 틀리기** 때문이다. `ui`와 `hooks`와 `src/app/`은 `api/`가 당기지 않는 하류라 integration의 판정을 못 바꾼다.
+
+**「영향 확인」은 `impact.yml`에 따로 산다.** 그 게이트가 PR 본문을 읽으니 본문만 고쳐도 다시 돌아야 하는데, `ci`에 두면 본문 한 줄에 DB를 띄우고 integration을 돌려 십 분이 간다. 떼어 두면 그 경우 이십 초다. 그래서 `ci`의 트리거에 `edited`가 없고 `impact`에만 있다.
+
+- 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
 - 앱을 빌드하는 단계와 e2e가 CI에 없다. 러너는 Maestro로 정해졌지만([ADR-013](../2-design/adr/ADR-013-e2e-runner-maestro.md)) 돌릴 앱 파일이 없다 — 빌드 단계가 EAS 설정과 같이 서고 e2e가 그 뒤에 붙는다.
-- PR은 추적 중인 spec·plan의 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
+- PR은 추적 중인 spec·plan의 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있고, 그 job은 `impact.yml`이다.
 
 | 근거 | 현재 위치와 한계 |
 | --- | --- |

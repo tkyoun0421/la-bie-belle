@@ -1,0 +1,28 @@
+name: impact
+
+# `ci`에서 떼어낸 것은 트리거가 다르기 때문이다. 이 게이트는 PR 본문을 읽으니 본문만
+# 고쳐도 다시 돌아야 하는데, 그것을 `ci`에 두면 본문 한 줄을 고칠 때마다 DB를 띄우고
+# integration을 돌려 십 분이 간다. 여기 혼자 두면 그 경우 이십 초다.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  impact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: 추적 중인 spec·plan의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" \
+            | node --experimental-strip-types scripts/checkSourcesImpact.mts
