@@ -99,6 +99,18 @@ export type WageRowsController =
 
 **「와 보니 없다」는 `ready`의 빈 배열이 아니라 `empty` 가지다.** 그래야 `.tsx`가 빈 상태 그림을 고를 때 배열 길이를 안 본다.
 
+**가지를 늘리고 싶은 것은 대개 상태가 아니라 그 가지의 데이터다.** 상태 이름이 넷을 넘으려 하면 먼저 그것을 묻는다.
+
+| 늘리려던 것 | 실제 | 가는 자리 |
+| --- | --- | --- |
+| 다음 쪽이 있나 (`normal`·`end`) | `ready`인데 더 받을 수 있나 | `{ state: "ready"; …; hasMore: boolean }` |
+| 어느 탭을 보나 (`date`·`person`) | 상태가 아니라 고른 탭 | `{ state: "ready"; tab: …; … }` |
+| 왜 비었나 (`empty`·`searchEmpty`·`none`) | `empty`인데 까닭이 다르다 | `{ state: "empty"; reason: … }` |
+
+**까닭마다 그림이 다르면 그림을 함수로 받는다.** `empty: (reason) => ReactNode` 꼴이고 `QueryBoundary`의 `failed: (retry) => ReactNode`가 그 선례다. 상태 이름을 늘려 그림을 고르는 것보다 **상태 축을 넷으로 두고 까닭을 데이터로 내리는 쪽**이 맞다 — 가름의 질문이 「끝났나」와 「왜 그런가」로 갈려 섞이지 않는다.
+
+**상태 필드가 둘이면 하나는 상태가 아니다.** `state`와 `body`를 같이 든 controller가 있었다 — `body`가 넷을 가리는 진짜 상태 기계고 `state`는 쪽 넘김이었다. 둘이 보이면 어느 쪽이 「끝났나」를 가리는지 먼저 정하고 나머지를 그 가지의 필드로 내린다.
+
 **쓰는 중은 `sending` 하나다.** 저장·올리기·확정이 전부 「보낸다」의 갈래고, 무엇을 보내는지는 그 조각의 이름이 이미 든다.
 
 **실패는 `failedLine: string`을 든다.** 참거짓이면 문안을 `.tsx`가 들어야 하고 ADR-001과 「`.tsx`는 더미 UI」가 그것을 막는다. 문안은 그 슬라이스의 `consts`에서 와 controller가 줄을 완성해 내려준다.
