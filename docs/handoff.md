@@ -6,12 +6,16 @@
 
 ## 다음 작업
 
-**[triage 제안](proposals/codebase-refactor-triage.md)의 묶음 여덟이 전부 닫혔다** — A~H가 `done`이다. `src/` 781 파일을 전수로 훑은 결과가 코드에 반영됐다.
+**[선언형 제안](proposals/declarative-refactor-triage.md)이 채택됐고 묶음 다섯이 backlog에 섰다.** `src`·`scripts`·`supabase/functions`의 818 파일을 TypeScript AST로 전수 훑어 명령형 꼴 여덟을 셌다. **첫 수는 `fragment-triple-one-hand`다** — 가장 크고(42자리) 다른 묶음의 대상과 같은 파일에 산다.
 
-**backlog에 새로 선 task 다섯이 다음 차례다.**
+- [`fragment-triple-one-hand`](backlog.md) — controller 21개가 `error !== null`·`data === undefined`·`length === 0` 셋을 각자 쓰고 짝 `.tsx` 21개가 `state === "pending"`·`"failed"`·`"empty"` 셋을 각자 쓴다. 다른 것은 마지막 가지뿐이다. 가지에 붙는 값이 셋으로 갈린다 — 13은 맨 가지, 7은 `failed`에 `retry`, 1은 `empty`에 `reason`. 공용 손은 `shared`에 서야 두 층이 같이 당긴다
+- [`declarative-accumulation`](backlog.md) — 빈 그릇에 쌓는 루프 35자리. `personDays.utils.ts:32`가 `new Map(days.map(…))`로 같은 일을 한 줄에 해 선언형 이웃이 이미 있다
+- [`nested-ternary-to-table`](backlog.md) · [`effect-derived-values`](backlog.md) — 둘 다 `hooks`에 몰려 있어 `fragment-triple-one-hand`가 그 파일을 정리한 뒤가 싸다
+- [`as-assertions-to-guards`](backlog.md) — `src`의 `as` 단언 **서른넷**이다(열셋으로 센 것은 `grep` 한 줄 출력에 걸린 셈이었다). 가장 나쁜 자리는 `shared/utils/theme.utils.ts:5`(한 줄에 둘)와 `shared/ui/Illustration.tsx`의 `as unknown as` 이중 단언이다. 집단마다 「무엇으로 좁히나」를 먼저 물어야 한다 — 글자 union을 `includes`로 좁히면 가드 안에서 `as`가 다시 필요해져 수가 안 줄고 자리만 늘어난다
+
+**[triage 제안](proposals/codebase-refactor-triage.md)의 묶음 여덟은 전부 닫혔다** — A~H가 `done`이다.
 
 - [`identity-threading-into-features`](backlog.md) — `features/stats`의 둘과 `features/payrollCompute`의 하나가 `useMyStanding`을 못 쓴다. `house/no-cross-slice-import`가 `features/stats` → `features/auth`를 막아서다. 부르는 쪽이 `profileId`를 인자로 심어 준다
-- [`as-assertions-to-guards`](backlog.md) — `src`의 `as` 단언 열셋을 타입 가드로 바꾼다. 가장 나쁜 자리는 `shared/utils/theme.utils.ts:5`(한 줄에 둘)와 `shared/ui/Illustration.tsx`의 `as unknown as` 이중 단언이다. 집단마다 「무엇으로 좁히나」를 먼저 물어야 한다 — `route-paths-one-home`이 가드를 세우면 오히려 `as`가 늘어나는 자리도 있었다
 - [`schedule-deadline-line-duplicate`](backlog.md) · [`vacancy-days-of-duplicate`](backlog.md) · [`attendance-column-dead-code`](backlog.md) — `screens-calc-placement`가 찾고 안 건드린 중복·죽은 코드 셋
 
 `session-error-is-swallowed`는 이미 `ready`로 서 있다 — `useSessionUserQuery`가 `useQuery`의 `error`를 버려 세션 실패가 로그아웃과 구별이 안 된다.
@@ -25,6 +29,10 @@
 
 ## 재개 맥락
 
+**정본에서 떨어진 조각 자리가 하나 남아 있다.** `screens/payroll/hooks/usePayrollScreen.ts:74`가 조각 스물한 자리와 같은 질문 넷을 묻는데 **4겹 삼항**이고, 타입이 판별 union이 아니라 **납작한 글자 union**이며, 이름이 `pending`이 아니라 **`loading`**이다. ADR-016이 그 이름을 고치고 그 꼴을 버린 뒤에 남았다. `house/fragment-state-contract`(45)가 못 잡은 자리다.
+
+**빠짐을 막는 검사가 저장소에 0건이다.** 생성된 DB 타입 밖에 `never`로 막은 자리가 없다. 나란한 `if`로 union을 가르면 가지가 늘 때 마지막 `return`이 조용히 받는다 — 지금은 `ready`가 데이터를 들어 타입이 대개 잡지만, 데이터 없는 가지를 더하면 안 잡는다.
+
 **가름의 축이 「무엇을 아는가」다.** 베껴 선언한 타입도 아는 것이고, 인자는 그 타입을 당길 때만 셈이고, 화면 문안을 내면 그 화면을 아는 것이고, 조각이 호출부와 맺는 props 타입(투영)은 베낀 것이 아니고, 인자가 평평해도 그 값이 한 자리에서만 오면 거기를 아는 것이다. 조항 전부가 [ADR-016](2-design/adr/ADR-016-fragments-own-their-data.md)에 섰다. [ADR-015](2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)의 세그먼트 열에는 비동기만으로는 `lib`이 아니라는 것과, 받은 손을 순서대로 부르는 것은 controller의 일이라는 것이 더해졌다.
 
 **조각 controller의 상태는 판별 union 하나, 이름은 넷(`pending`·`failed`·`empty`·`ready`)과 쓰는 중 하나(`sending`)다.** 실패는 `failedLine: string | null`이다. 본보기는 `features/stats/hooks/useStatsAttendance.ts`, 규칙은 `house/fragment-state-contract`(45)가 지킨다.
@@ -37,7 +45,7 @@
 
 **검사가 마흔다섯이고 하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
 
-**CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조가 `database-types.ts`(없는 경로)를 보던 죽은 게이트였던 것을 고쳐 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사에 `impact`를 넣는 결정이 아직 안 섰다** — 지금 필수는 `ci` 하나뿐이라 영향 확인 절이 없는 PR도 merge될 수 있다.
+**CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조가 `database-types.ts`(없는 경로)를 보던 죽은 게이트였던 것을 고쳐 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사는 `ci`와 `impact` 둘이다** — 영향 확인 절이 없는 PR은 merge되지 않는다.
 
 **`grep` 한 줄로 셀 때 여러 줄 import·여러 줄 타입 선언 안의 이름이 안 보인다.** 이번 회차에 다섯 번 틀렸다. 경유지·이름으로 파일을 먼저 찾고(`grep -rl`) 그 파일을 열어 세는 쪽이 맞다.
 
