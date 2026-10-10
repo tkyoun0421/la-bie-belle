@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 41;
+export const DOCUMENTED_LINT_RULE_COUNT = 42;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -331,6 +331,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/mutation-settle-shape",
     enforcedBy: null,
     test: "eslint-rules/__tests__/mutationSettleShape.test.ts",
+  },
+  {
+    no: 42,
+    name: "shared 밖의 재수출",
+    mechanism: "house",
+    ruleId: "house/no-layer-reexport",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noLayerReexport.test.ts",
   },
 ];
 

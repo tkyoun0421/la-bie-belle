@@ -32,8 +32,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-export { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
-
 export function spellDeadline(deadline: string, today: string): string {
   const [, month, day] = deadline.split("-").map(Number);
   const remaining = Math.round(

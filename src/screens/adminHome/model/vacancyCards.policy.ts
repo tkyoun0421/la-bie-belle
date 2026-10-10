@@ -1,9 +1,6 @@
+import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { WITHIN_DAYS } from "@/screens/adminHome/consts/adminHome.const";
-import {
-  kstDateOf,
-  spellDate,
-} from "@/screens/adminHome/model/todayStatus.policy";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

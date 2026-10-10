@@ -13,6 +13,7 @@ import noCrossSliceImport from "./noCrossSliceImport.mjs";
 import noDefaultPaletteClass from "./noDefaultPaletteClass.mjs";
 import noEdgeFunctionSrcImport from "./noEdgeFunctionSrcImport.mjs";
 import noExplanatoryComment from "./noExplanatoryComment.mjs";
+import noLayerReexport from "./noLayerReexport.mjs";
 import noNodeImportInEdgeShared from "./noNodeImportInEdgeShared.mjs";
 import noServicesImportInUi from "./noServicesImportInUi.mjs";
 import noSnakeCaseField from "./noSnakeCaseField.mjs";
@@ -45,6 +46,7 @@ const house = {
     "no-default-palette-class": noDefaultPaletteClass,
     "no-edge-function-src-import": noEdgeFunctionSrcImport,
     "no-explanatory-comment": noExplanatoryComment,
+    "no-layer-reexport": noLayerReexport,
     "no-node-import-in-edge-shared": noNodeImportInEdgeShared,
     "no-services-import-in-ui": noServicesImportInUi,
     "no-snake-case-field": noSnakeCaseField,
