@@ -164,7 +164,7 @@ export function useScheduleWorkerScreen({
       return;
     }
 
-    showToast("info", spellSubmitted(month));
+    showToast("success", spellSubmitted(month));
     resetSend();
   }, [sent, month, resetSend, showToast]);
 

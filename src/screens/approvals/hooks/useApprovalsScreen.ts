@@ -38,7 +38,7 @@ export function useApprovalsScreen(): ApprovalsScreenController {
 
     setAnswered(open.id);
     setOpen(null);
-    showToast("info", APPROVALS_COPY.rejected);
+    showToast("success", APPROVALS_COPY.rejected);
   }, [open, showToast]);
 
   const finishApprove = useCallback(() => {

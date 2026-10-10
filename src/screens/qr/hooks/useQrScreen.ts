@@ -84,7 +84,7 @@ export function useQrScreen(): QrScreenController {
   useEffect(() => {
     if (rotated) {
       setAsking(false);
-      showToast("info", QR_SCREEN_COPY.rotateDone);
+      showToast("success", QR_SCREEN_COPY.rotateDone);
       resetRotate();
     }
   }, [rotated, resetRotate, showToast]);

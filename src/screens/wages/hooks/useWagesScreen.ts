@@ -60,7 +60,7 @@ export function useWagesScreen(): WagesScreenController {
 
   const finish = useCallback(
     (message: string) => {
-      showToast("info", message);
+      showToast("success", message);
       setTarget(null);
     },
     [showToast],

@@ -71,7 +71,7 @@ export function useProfileScreen(): ProfileScreenController {
 
   const finish = useCallback(
     (message: string) => {
-      showToast("info", message);
+      showToast("success", message);
       setSheet(null);
     },
     [showToast],
