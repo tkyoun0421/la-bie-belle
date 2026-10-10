@@ -1,11 +1,9 @@
+import { clockOf } from "@/shared/utils/kstDate";
 import type {
   Rehearsal,
   RehearsalKind,
 } from "@/entities/rehearsal/model/rehearsal.type";
-import {
-  CLOCK_LENGTH,
-  EMPTY_ADD_SHEET_VALUES,
-} from "@/features/rehearsalEdit/consts/rehearsalEdit.const";
+import { EMPTY_ADD_SHEET_VALUES } from "@/features/rehearsalEdit/consts/rehearsalEdit.const";
 import type { AddSheetState } from "@/features/rehearsalEdit/model/addSheetState.reducer";
 
 export type RehearsalFormTarget =
@@ -26,8 +24,8 @@ export function openedAddSheet(target: RehearsalFormTarget): AddSheetState {
   return {
     formKind: count === null ? "time" : "count",
     values: {
-      startsAt: startsAt?.slice(0, CLOCK_LENGTH) ?? "",
-      endsAt: endsAt?.slice(0, CLOCK_LENGTH) ?? "",
+      startsAt: clockOf(startsAt ?? ""),
+      endsAt: clockOf(endsAt ?? ""),
       count: count === null ? "" : String(count),
     },
     notice: null,

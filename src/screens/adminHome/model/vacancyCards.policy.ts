@@ -1,8 +1,7 @@
+import { DAY_MS } from "@/shared/consts/time.const";
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { WITHIN_DAYS } from "@/screens/adminHome/consts/adminHome.const";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type VacancyDay = {
   workDate: string;

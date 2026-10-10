@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { clockOf } from "@/shared/utils/kstDate";
 import { SCHEDULE_DAY_COPY } from "@/features/scheduleDay/consts/scheduleDay.const";
-import {
-  clockLabel,
-  isDayHoursSaveEnabled,
-} from "@/features/scheduleDay/model/dayHoursForm.policy";
+import { isDayHoursSaveEnabled } from "@/features/scheduleDay/model/dayHoursForm.policy";
 import type {
   DayHoursSheetController,
   DayHoursSheetInput,
@@ -17,8 +15,8 @@ export function useDayHoursSheet({
   endsAt,
   onDone,
 }: DayHoursSheetInput): DayHoursSheetController {
-  const [starts, setStarts] = useState(() => clockLabel(startsAt));
-  const [ends, setEnds] = useState(() => clockLabel(endsAt));
+  const [starts, setStarts] = useState(() => clockOf(startsAt));
+  const [ends, setEnds] = useState(() => clockOf(endsAt));
   const setHours = useSetDayHoursMutation(supabase);
 
   useEffect(() => {

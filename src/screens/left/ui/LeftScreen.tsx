@@ -1,15 +1,13 @@
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SCREEN_BOTTOM_PADDING } from "@/shared/consts/layout.const";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import {
-  LEFT_COPY,
-  SCREEN_BOTTOM_PADDING,
-} from "@/screens/left/consts/left.const";
+import { LEFT_COPY } from "@/screens/left/consts/left.const";
 import { useLeftScreen } from "@/screens/left/hooks/useLeftScreen";
 
 export function LeftScreen() {

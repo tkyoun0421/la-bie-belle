@@ -1,3 +1,5 @@
+import { CLOCK_LENGTH } from "@/shared/consts/time.const";
+
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const KST_DATE = new Intl.DateTimeFormat("en-CA", {
@@ -22,6 +24,10 @@ export function kstClockOf(instant: string | Date): string {
   return KST_CLOCK.format(
     instant instanceof Date ? instant : new Date(instant),
   );
+}
+
+export function clockOf(clock: string): string {
+  return clock.slice(0, CLOCK_LENGTH);
 }
 
 export function monthOf(date: string): string {

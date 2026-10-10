@@ -72,8 +72,6 @@ export const CELEBRATION_STAY_MS = 1200;
 
 export const EMAIL_AVATAR_SIZE = 24;
 
-export const SCREEN_BOTTOM_PADDING = 24;
-
 export const BIRTH_DATE_LENGTH = 8;
 
 export const PENDING_PHONE_LENGTH = 11;

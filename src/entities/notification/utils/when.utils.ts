@@ -1,9 +1,8 @@
+import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
 const MINUTE_MS = 60_000;
-
-const MINUTES_PER_HOUR = 60;
 
 function dayBefore(date: string): string {
   const moved = new Date(`${date}T00:00:00Z`);

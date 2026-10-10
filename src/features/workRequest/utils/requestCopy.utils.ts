@@ -1,4 +1,4 @@
-import { spellDate } from "@/shared/utils/kstDate";
+import { clockOf, spellDate } from "@/shared/utils/kstDate";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 
 export type RequestLine = Pick<
@@ -6,17 +6,13 @@ export type RequestLine = Pick<
   "positions" | "workDate" | "startsAt" | "endsAt"
 >;
 
-function clockLabel(clock: string): string {
-  return clock.slice(0, 5);
-}
-
 export function requestSubtitle({
   positions,
   workDate,
   startsAt,
   endsAt,
 }: RequestLine): string {
-  return `${spellDate(workDate)} · ${positions[0] ?? ""} · ${clockLabel(startsAt)} – ${clockLabel(endsAt)}`;
+  return `${spellDate(workDate)} · ${positions[0] ?? ""} · ${clockOf(startsAt)} – ${clockOf(endsAt)}`;
 }
 
 export function claimedLine({ positions, workDate }: RequestLine): string {

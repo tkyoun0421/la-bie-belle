@@ -1,3 +1,4 @@
+import { DAY_MS } from "@/shared/consts/time.const";
 import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import {
   type DateSpan,
@@ -11,8 +12,6 @@ export type Period =
   | { unit: "week"; weekStart: string }
   | { unit: "month"; month: string }
   | { unit: "year"; year: string };
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 const LAST_DAY_OF_WEEK = 6;
 

@@ -1,3 +1,4 @@
+import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type {
@@ -8,8 +9,6 @@ import type {
   WorkInputs,
   WorkTotals,
 } from "@/features/stats/model/stats.type";
-
-const MINUTES_PER_HOUR = 60;
 
 const KOREAN = "ko";
 

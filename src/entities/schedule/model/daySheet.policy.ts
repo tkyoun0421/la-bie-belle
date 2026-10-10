@@ -1,3 +1,4 @@
+import { clockOf } from "@/shared/utils/kstDate";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
@@ -110,5 +111,5 @@ export function daySheetSubtitle(
   endsAt: string,
   headcount: number,
 ): string {
-  return `${startsAt.slice(0, 5)} – ${endsAt.slice(0, 5)} · ${headcount}명`;
+  return `${clockOf(startsAt)} – ${clockOf(endsAt)} · ${headcount}명`;
 }

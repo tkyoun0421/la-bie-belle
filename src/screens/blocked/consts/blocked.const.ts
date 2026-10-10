@@ -3,5 +3,3 @@ export const BLOCKED_COPY = {
   body: "궁금한 점은 관리자에게 물어보세요",
   signOut: "로그아웃",
 };
-
-export const SCREEN_BOTTOM_PADDING = 24;

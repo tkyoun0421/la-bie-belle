@@ -1,3 +1,5 @@
+import { DAY_MS } from "@/shared/consts/time.const";
+
 export type MonthState =
   "not_created" | "collecting" | "closed_awaiting_confirmation" | "confirmed";
 
@@ -27,8 +29,6 @@ export function monthState({ schedule, today }: MonthStateInput): MonthState {
 
   return "closed_awaiting_confirmation";
 }
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 

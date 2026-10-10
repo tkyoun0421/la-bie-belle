@@ -1,0 +1,1 @@
+export const SCREEN_BOTTOM_PADDING = 24;

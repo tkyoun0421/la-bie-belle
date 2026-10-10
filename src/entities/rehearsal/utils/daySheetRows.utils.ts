@@ -1,8 +1,6 @@
+import { clockOf } from "@/shared/utils/kstDate";
 import { spellDuration } from "@/shared/utils/spellNumber";
-import {
-  CLOCK_LENGTH,
-  MIN_ROWS_FOR_TOTAL,
-} from "@/entities/rehearsal/consts/rehearsal.const";
+import { MIN_ROWS_FOR_TOTAL } from "@/entities/rehearsal/consts/rehearsal.const";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import {
   dayTotal,
@@ -23,10 +21,6 @@ export type DaySheetContent =
   | { kind: "empty"; message: string }
   | { kind: "rows"; lines: DaySheetLine[]; totalLine: string | null };
 
-function clock(value: string): string {
-  return value.slice(0, CLOCK_LENGTH);
-}
-
 function bodyOf(row: DaySheetRow): string {
   const hours = spellDuration(rehearsalHours(row));
 
@@ -34,7 +28,7 @@ function bodyOf(row: DaySheetRow): string {
     return `리허설 ${row.count}건 · ${hours}`;
   }
 
-  return `${clock(row.startsAt ?? "")}–${clock(row.endsAt ?? "")} · ${hours}`;
+  return `${clockOf(row.startsAt ?? "")}–${clockOf(row.endsAt ?? "")} · ${hours}`;
 }
 
 function textOf(row: DaySheetRow, isAdmin: boolean): string {
