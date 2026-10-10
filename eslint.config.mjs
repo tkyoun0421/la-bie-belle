@@ -175,6 +175,7 @@ const eslintConfig = defineConfig([
       "house/ui-no-router": "error",
       "house/ui-value-import": "error",
       "house/mutation-settle-shape": "error",
+      "house/no-layer-reexport": "error",
     },
   },
 

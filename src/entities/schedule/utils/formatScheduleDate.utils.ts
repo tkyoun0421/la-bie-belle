@@ -1,7 +1,5 @@
 import { kstDateOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 
-export { kstDateOf };
-
 export function formatScheduleDate(workDate: string): string {
   return spellDate(workDate);
 }

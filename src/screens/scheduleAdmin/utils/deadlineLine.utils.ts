@@ -1,7 +1,7 @@
+import { kstDateOf } from "@/shared/utils/kstDate";
 import {
   formatBareDate,
   formatScheduleDate,
-  kstDateOf,
 } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 const DAY_MS = 24 * 60 * 60 * 1000;

@@ -9,6 +9,7 @@ import {
   ORIGIN_NOTIFICATIONS,
 } from "@/shared/consts/navigation.const";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
+import { kstDateOf, shiftMonth } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -27,7 +28,6 @@ import {
   confirmedLine,
   formatMonthName,
   formatMonthTitle,
-  kstDateOf,
 } from "@/entities/schedule/utils/formatScheduleDate.utils";
 import { countOpenSlotsByDate } from "@/entities/schedule/utils/groupOpenSlots.utils";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
@@ -57,10 +57,7 @@ import {
 } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
 import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type { DayDetailInput } from "@/screens/scheduleAdmin/model/dayDetail.type";
-import {
-  isMonthFullyPast,
-  shiftMonth,
-} from "@/screens/scheduleAdmin/model/monthEmptyState.policy";
+import { isMonthFullyPast } from "@/screens/scheduleAdmin/model/monthEmptyState.policy";
 import {
   isSelectableForOpening,
   openDaysButtonLabel,

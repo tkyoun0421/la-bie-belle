@@ -4,6 +4,7 @@ import { supabase } from "@/shared/api/supabase";
 import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
+import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -21,9 +22,7 @@ import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayStat
 import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest.policy";
 import {
   monthState,
-  shiftMonth,
   spellDeadline,
-  spellMonth,
   type MonthState,
 } from "@/screens/scheduleWorker/model/monthState.policy";
 import { toggleSelectedDate } from "@/screens/scheduleWorker/utils/submissionSelection.utils";

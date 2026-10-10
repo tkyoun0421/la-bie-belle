@@ -1,4 +1,4 @@
-import { kstDateOf } from "@/entities/schedule/utils/formatScheduleDate.utils";
+import { kstDateOf } from "@/shared/utils/kstDate";
 
 export type ConfirmAffordance = "locked" | "open" | "ended";
 

@@ -13,6 +13,7 @@ import {
   WORKER_HOME_PATH,
 } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { spellDate } from "@/shared/utils/kstDate";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
@@ -32,7 +33,6 @@ import {
 import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity.policy";
 import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
 import {
-  spellDate,
   todayBandShares,
   todayStatus,
   type TodayBandShare,
