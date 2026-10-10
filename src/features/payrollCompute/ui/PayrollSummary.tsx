@@ -1,31 +1,24 @@
-import { SkeletonLine } from "@/shared/ui/Skeleton";
+import type { ReactNode } from "react";
 import { Text } from "@/shared/ui/Text";
 import { usePayrollSummary } from "@/features/payrollCompute/hooks/usePayrollSummary";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import { PayrollAccrual } from "@/features/payrollCompute/ui/PayrollAccrual";
-import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
 
 export type PayrollSummaryProps = {
   span: DateSpan;
+  pending?: ReactNode;
+  failed?: (retry: () => void) => ReactNode;
 };
 
-export function PayrollSummary({ span }: PayrollSummaryProps) {
+export function PayrollSummary({ span, pending, failed }: PayrollSummaryProps) {
   const fragment = usePayrollSummary(span);
 
   if (fragment.state === "failed") {
-    return <PayrollViewFailed onRetry={fragment.retry} />;
+    return failed?.(fragment.retry) ?? null;
   }
 
   if (fragment.state === "pending") {
-    return (
-      <>
-        <SkeletonLine className="mt-4 h-9 w-2/3" />
-
-        <Text size="sm" tone="subtle" className="mt-1">
-          {fragment.estimateNote}
-        </Text>
-      </>
-    );
+    return pending ?? null;
   }
 
   return (

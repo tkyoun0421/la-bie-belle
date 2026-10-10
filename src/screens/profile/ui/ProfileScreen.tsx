@@ -34,7 +34,7 @@ export function ProfileScreen() {
             userId={screen.userId}
             onEditPhoto={screen.openPhoto}
             onEditContact={screen.openContact}
-            factsLoading={<ProfileFactsLoading />}
+            factsPending={<ProfileFactsLoading />}
           />
 
           <ProfileSettings screen={screen} />

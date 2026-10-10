@@ -10,7 +10,7 @@ import {
 } from "@/entities/member/hooks/useMemberRows";
 
 export type MemberRowsProps = MemberRowsInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   empty?: ReactNode;
   searchEmpty?: ReactNode;
@@ -22,7 +22,7 @@ export type MemberRowsProps = MemberRowsInput & {
 };
 
 export function MemberRows({
-  loading,
+  pending,
   failed,
   empty,
   searchEmpty,
@@ -36,7 +36,7 @@ export function MemberRows({
   const fragment = useMemberRows(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {

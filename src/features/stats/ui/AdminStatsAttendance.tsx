@@ -9,21 +9,21 @@ import { useAdminStatsAttendance } from "@/features/stats/hooks/useAdminStatsAtt
 
 export type AdminStatsAttendanceProps = {
   month: string;
-  loading: ReactNode;
+  pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
 };
 
 export function AdminStatsAttendance({
   month,
-  loading,
+  pending,
   failed,
   empty,
 }: AdminStatsAttendanceProps) {
   const fragment = useAdminStatsAttendance(month);
 
   if (fragment.state === "loading") {
-    return loading;
+    return pending;
   }
 
   if (fragment.state === "failed") {

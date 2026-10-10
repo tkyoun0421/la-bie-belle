@@ -21,7 +21,7 @@ import { ProfileFacts } from "@/entities/profile/ui/ProfileFacts";
 export type ProfileCardProps = ProfileCardInput & {
   onEditPhoto: () => void;
   onEditContact: () => void;
-  factsLoading?: ReactNode;
+  factsPending?: ReactNode;
   factsFailed?: ReactNode;
 };
 
@@ -29,14 +29,14 @@ export function ProfileCard({
   userId,
   onEditPhoto,
   onEditContact,
-  factsLoading,
+  factsPending,
   factsFailed,
 }: ProfileCardProps) {
   const fragment = useProfileCard({ userId });
 
   function facts() {
     if (fragment.state === "pending") {
-      return factsLoading ?? null;
+      return factsPending ?? null;
     }
 
     if (fragment.state === "failed") {

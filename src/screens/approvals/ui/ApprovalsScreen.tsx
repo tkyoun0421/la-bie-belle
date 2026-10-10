@@ -21,7 +21,7 @@ export function ApprovalsScreen() {
           <ApprovalsList
             answered={screen.answered}
             onPress={screen.openApproval}
-            loading={<ApprovalsLoading />}
+            pending={<ApprovalsLoading />}
             empty={<ApprovalsEmpty />}
           />
         </View>

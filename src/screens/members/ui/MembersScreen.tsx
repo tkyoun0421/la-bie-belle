@@ -31,7 +31,7 @@ export function MembersScreen() {
             noteOf={screen.noteOf}
             onPress={screen.openMember}
             className="mt-4 py-0"
-            loading={<MembersLoading />}
+            pending={<MembersLoading />}
             empty={<MembersEmpty />}
             before={
               <Input

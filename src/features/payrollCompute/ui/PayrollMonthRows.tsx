@@ -1,23 +1,29 @@
+import type { ReactNode } from "react";
 import { ListRow } from "@/shared/ui/ListRow";
 import { usePayrollMonthRows } from "@/features/payrollCompute/hooks/usePayrollMonthRows";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
-import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 
 export type PayrollMonthRowsProps = {
   span: DateSpan;
   onOpenMonth: (month: string) => void;
+  pending?: ReactNode;
+  failed?: (retry: () => void) => ReactNode;
 };
 
-export function PayrollMonthRows({ span, onOpenMonth }: PayrollMonthRowsProps) {
+export function PayrollMonthRows({
+  span,
+  onOpenMonth,
+  pending,
+  failed,
+}: PayrollMonthRowsProps) {
   const fragment = usePayrollMonthRows({ span, onOpenMonth });
 
   if (fragment.state === "pending") {
-    return <PayrollViewLoading />;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {
-    return <PayrollViewFailed onRetry={fragment.retry} />;
+    return failed?.(fragment.retry) ?? null;
   }
 
   return (

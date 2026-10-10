@@ -7,21 +7,21 @@ import { useStatsAttendance } from "@/features/stats/hooks/useStatsAttendance";
 
 export type StatsAttendanceProps = {
   month: string;
-  loading: ReactNode;
+  pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
 };
 
 export function StatsAttendance({
   month,
-  loading,
+  pending,
   failed,
   empty,
 }: StatsAttendanceProps) {
   const fragment = useStatsAttendance(month);
 
   if (fragment.state === "loading") {
-    return loading;
+    return pending;
   }
 
   if (fragment.state === "failed") {

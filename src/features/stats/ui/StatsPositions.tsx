@@ -7,21 +7,21 @@ import { useStatsPositions } from "@/features/stats/hooks/useStatsPositions";
 
 export type StatsPositionsProps = {
   month: string;
-  loading: ReactNode;
+  pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
 };
 
 export function StatsPositions({
   month,
-  loading,
+  pending,
   failed,
   empty,
 }: StatsPositionsProps) {
   const fragment = useStatsPositions(month);
 
   if (fragment.state === "loading") {
-    return loading;
+    return pending;
   }
 
   if (fragment.state === "failed") {

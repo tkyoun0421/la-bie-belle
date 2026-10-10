@@ -56,7 +56,7 @@ export function AdminStatsScreen() {
           <WorkDaysSheet
             month={screen.month}
             profileId={screen.openPerson}
-            loading={<AdminStatsLoading />}
+            pending={<AdminStatsLoading />}
             failed={<AdminStatsFailed onRetry={screen.retry} />}
           />
         </SheetLayer>

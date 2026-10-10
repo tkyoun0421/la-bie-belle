@@ -7,20 +7,20 @@ import { useWorkDaysSheet } from "@/features/stats/hooks/useWorkDaysSheet";
 export type WorkDaysSheetProps = {
   month: string;
   profileId: string;
-  loading: ReactNode;
+  pending: ReactNode;
   failed: ReactNode;
 };
 
 export function WorkDaysSheet({
   month,
   profileId,
-  loading,
+  pending,
   failed,
 }: WorkDaysSheetProps) {
   const fragment = useWorkDaysSheet(month, profileId);
 
   if (fragment.state === "loading") {
-    return loading;
+    return pending;
   }
 
   if (fragment.state === "failed") {

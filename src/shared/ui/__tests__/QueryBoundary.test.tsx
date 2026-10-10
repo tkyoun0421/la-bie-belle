@@ -22,7 +22,7 @@ describe("QueryBoundary — 기다리는 일과 실패를 경계가 든다", () 
   it("다 받은 아이는 그대로 그린다", () => {
     const { getByText } = wrap(
       <QueryBoundary
-        loading={<RNText>세는 중</RNText>}
+        pending={<RNText>세는 중</RNText>}
         failed={() => <RNText>못 셌어요</RNText>}
       >
         <RNText>셋</RNText>
@@ -35,7 +35,7 @@ describe("QueryBoundary — 기다리는 일과 실패를 경계가 든다", () 
   it("아이가 던지면 실패 자리를 그린다", () => {
     const { getByText, queryByText } = wrap(
       <QueryBoundary
-        loading={<RNText>세는 중</RNText>}
+        pending={<RNText>세는 중</RNText>}
         failed={() => <RNText>못 셌어요</RNText>}
       >
         <Throws />
@@ -49,7 +49,7 @@ describe("QueryBoundary — 기다리는 일과 실패를 경계가 든다", () 
   it("실패 자리에 되돌리는 손을 넘긴다", () => {
     const { getByText } = wrap(
       <QueryBoundary
-        loading={<RNText>세는 중</RNText>}
+        pending={<RNText>세는 중</RNText>}
         failed={(retry) => (
           <RNText onPress={retry}>
             {typeof retry === "function" ? "다시 세기" : "손이 없다"}
@@ -76,7 +76,7 @@ describe("QueryBoundary — 기다리는 일과 실패를 경계가 든다", () 
 
     const { getByText } = wrap(
       <QueryBoundary
-        loading={<RNText>세는 중</RNText>}
+        pending={<RNText>세는 중</RNText>}
         failed={(retry) => <RNText onPress={retry}>다시 세기</RNText>}
       >
         <Sometimes />

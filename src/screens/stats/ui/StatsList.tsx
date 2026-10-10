@@ -1,3 +1,5 @@
+import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
+import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 import { StatsPayroll } from "@/features/payrollCompute/ui/StatsPayroll";
 import { StatsAttendance } from "@/features/stats/ui/StatsAttendance";
 import { StatsPositions } from "@/features/stats/ui/StatsPositions";
@@ -15,7 +17,7 @@ export function StatsList({ screen }: StatsListProps) {
     return (
       <StatsAttendance
         month={screen.month}
-        loading={<StatsLoading />}
+        pending={<StatsLoading />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
       />
@@ -26,7 +28,7 @@ export function StatsList({ screen }: StatsListProps) {
     return (
       <StatsPositions
         month={screen.month}
-        loading={<StatsLoading />}
+        pending={<StatsLoading />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
       />
@@ -49,6 +51,8 @@ export function StatsList({ screen }: StatsListProps) {
     <StatsPayroll
       span={screen.payrollSpan}
       onOpenHistory={screen.openPayrollHistory}
+      pending={<PayrollViewLoading />}
+      failed={(retry) => <PayrollViewFailed onRetry={retry} />}
     />
   );
 }

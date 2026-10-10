@@ -21,7 +21,7 @@ export function MembersBlockedScreen() {
           <BlockedRows
             now={screen.today}
             onPress={screen.openMember}
-            loading={<BlockedLoading />}
+            pending={<BlockedLoading />}
             empty={<BlockedEmpty />}
           />
         </View>

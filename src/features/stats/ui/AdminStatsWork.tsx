@@ -11,7 +11,7 @@ import { useAdminStatsWork } from "@/features/stats/hooks/useAdminStatsWork";
 export type AdminStatsWorkProps = {
   month: string;
   onPickPerson: (profileId: string) => void;
-  loading: ReactNode;
+  pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
 };
@@ -32,14 +32,14 @@ function SectionHeader({ label }: { label: string }) {
 export function AdminStatsWork({
   month,
   onPickPerson,
-  loading,
+  pending,
   failed,
   empty,
 }: AdminStatsWorkProps) {
   const fragment = useAdminStatsWork(month);
 
   if (fragment.state === "loading") {
-    return loading;
+    return pending;
   }
 
   if (fragment.state === "failed") {

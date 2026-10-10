@@ -7,13 +7,13 @@ import { ApplicationsDateGroups } from "@/entities/availability/ui/ApplicationsD
 import { ApplicationsPersonGroups } from "@/entities/availability/ui/ApplicationsPersonGroups";
 
 export type ApplicationsListProps = ApplicationsListInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   failed?: ReactNode;
   empty?: ReactNode;
 };
 
 export function ApplicationsList({
-  loading,
+  pending,
   failed,
   empty,
   ...input
@@ -21,7 +21,7 @@ export function ApplicationsList({
   const fragment = useApplicationsList(input);
 
   if (fragment.state === "pending") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.state === "failed") {

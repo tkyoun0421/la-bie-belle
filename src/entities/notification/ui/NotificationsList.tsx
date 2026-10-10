@@ -9,14 +9,14 @@ import {
 } from "@/entities/notification/hooks/useNotificationsList";
 
 export type NotificationsListProps = NotificationsListInput & {
-  loading?: ReactNode;
+  pending?: ReactNode;
   empty?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
   failedMore?: (retry: () => void) => ReactNode;
 };
 
 export function NotificationsList({
-  loading,
+  pending,
   empty,
   failed,
   failedMore,
@@ -25,7 +25,7 @@ export function NotificationsList({
   const fragment = useNotificationsList(input);
 
   if (fragment.body === "loading") {
-    return loading ?? null;
+    return pending ?? null;
   }
 
   if (fragment.body === "failed") {

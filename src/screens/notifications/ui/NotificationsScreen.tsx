@@ -24,7 +24,7 @@ export function NotificationsScreen({ from }: NotificationsScreenProps) {
       <AppBar title={NOTIFICATIONS_COPY.appBarTitle} onBack={screen.goBack} />
 
       <QueryBoundary
-        loading={<UnreadCountLoading />}
+        pending={<UnreadCountLoading />}
         failed={(retry) => <UnreadCountFailed onRetry={retry} />}
       >
         <UnreadCountLine />
@@ -34,7 +34,7 @@ export function NotificationsScreen({ from }: NotificationsScreenProps) {
         now={screen.now}
         onPressRow={screen.pressRow}
         onUnreadNotices={screen.markNotices}
-        loading={<NotificationsLoading />}
+        pending={<NotificationsLoading />}
         empty={<NotificationsEmpty />}
         failed={(retry) => (
           <View className="px-6">

@@ -15,7 +15,7 @@ export function AdminStatsBody({ screen }: AdminStatsBodyProps) {
       <AdminStatsWork
         month={screen.month}
         onPickPerson={screen.pickPerson}
-        loading={<AdminStatsLoading />}
+        pending={<AdminStatsLoading />}
         failed={<AdminStatsFailed onRetry={screen.retry} />}
         empty={<AdminStatsEmpty total={screen.emptyTotal} />}
       />
@@ -25,7 +25,7 @@ export function AdminStatsBody({ screen }: AdminStatsBodyProps) {
   return (
     <AdminStatsAttendance
       month={screen.month}
-      loading={<AdminStatsLoading />}
+      pending={<AdminStatsLoading />}
       failed={<AdminStatsFailed onRetry={screen.retry} />}
       empty={<AdminStatsEmpty total={screen.emptyTotal} />}
     />
