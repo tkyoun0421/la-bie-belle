@@ -25,7 +25,7 @@ export function useCloseDayWarningSheet({
   return {
     title: `${formatBareDate(workDate)}${SCHEDULE_DAY_COPY.closeDayTitleSuffix}`,
     warningLine: closeDayWarningLine(assignmentCount),
-    closing: close.isPending,
+    sending: close.isPending,
     close: () => close.mutate({ workDate }),
   };
 }

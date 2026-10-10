@@ -174,7 +174,7 @@ describe("useApprovalDetailSheet — 조각이 취소 요청 판정을 든다", 
     act(() => result.current.askApprove());
     act(() => result.current.approve());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.confirming).toBe(true);
     expect(result.current.confirmLabel).toBe(APPROVAL_SHEET_COPY.confirmRetry);
@@ -183,7 +183,7 @@ describe("useApprovalDetailSheet — 조각이 취소 요청 판정을 든다", 
     act(() => result.current.cancelApprove());
 
     expect(result.current.confirming).toBe(false);
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
   });
 
   it("거절이 실패하면 쓴 글이 남고 다시 보내기를 든다", async () => {
@@ -197,7 +197,7 @@ describe("useApprovalDetailSheet — 조각이 취소 요청 판정을 든다", 
     act(() => result.current.write("그날은 어려워요"));
     act(() => result.current.reject());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.face).toBe("reject");
     expect(result.current.written).toBe("그날은 어려워요");
@@ -228,7 +228,7 @@ describe("useApprovalDetailSheet — 실패 문안을 controller가 완성해 �
     act(() => result.current.askApprove());
     act(() => result.current.approve());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

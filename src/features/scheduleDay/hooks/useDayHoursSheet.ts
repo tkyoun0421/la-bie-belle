@@ -29,7 +29,7 @@ export function useDayHoursSheet({
     starts,
     ends,
     canSave: isDayHoursSaveEnabled({ starts, ends }),
-    saving: setHours.isPending,
+    sending: setHours.isPending,
     failedLine: setHours.isError ? SCHEDULE_DAY_COPY.saveFailed : null,
     writeStarts: setStarts,
     writeEnds: setEnds,

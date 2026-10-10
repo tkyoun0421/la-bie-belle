@@ -32,7 +32,7 @@ export function PhotoSheet({
         {PHOTO_SHEET_COPY.title}
       </Text>
 
-      {fragment.uploading ? (
+      {fragment.sending ? (
         <View className="items-center py-8">
           <ActivityIndicator />
         </View>

@@ -103,7 +103,7 @@ describe("useRehearsalFormSheet — 폼의 첫 모습이 무엇을 고치는지�
       count: "",
     });
     expect(result.current.canSubmit).toBe(false);
-    expect(result.current.saving).toBe(false);
+    expect(result.current.sending).toBe(false);
   });
 
   it("줄을 눌러 고치면 그 줄의 값이 폼에 실려 온다", () => {

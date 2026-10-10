@@ -209,13 +209,13 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     getMyRehearsalsMock.mockResolvedValue([]);
 
     act(() => result.current.retry());
 
-    await waitFor(() => expect(result.current.failed).toBe(false));
+    await waitFor(() => expect(result.current.failedLine).toBeNull());
   });
 
   it("넣기를 열면 그날과 그날의 갈래를 든 폼이 선다", async () => {
@@ -370,7 +370,7 @@ describe("useRehearsalScreen — 실패 문안을 controller가 완성해 내려
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

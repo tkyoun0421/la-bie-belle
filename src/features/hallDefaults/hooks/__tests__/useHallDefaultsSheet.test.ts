@@ -107,7 +107,7 @@ describe("useHallDefaultsSheet — 조각이 기본값 쓰기를 든다", () => 
     act(() => result.current.writeStarts("11:00"));
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.starts).toBe("11:00");
     expect(onSaved).not.toHaveBeenCalled();
@@ -134,7 +134,7 @@ describe("useHallDefaultsSheet — 실패 문안을 controller가 완성해 내�
 
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

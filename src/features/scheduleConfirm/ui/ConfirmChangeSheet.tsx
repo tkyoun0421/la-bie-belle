@@ -5,13 +5,13 @@ import { useConfirmChangeSheet } from "@/features/scheduleConfirm/hooks/useConfi
 import type { ConfirmChangeSheetInput } from "@/features/scheduleConfirm/model/confirmChangeSheet.type";
 
 export type ConfirmChangeSheetProps = ConfirmChangeSheetInput & {
-  saving: boolean;
+  sending: boolean;
   onClose: () => void;
   onConfirm: () => void;
 };
 
 export function ConfirmChangeSheet({
-  saving,
+  sending,
   onClose,
   onConfirm,
   ...input
@@ -35,7 +35,7 @@ export function ConfirmChangeSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={saving}
+          loading={sending}
           onPress={onConfirm}
         >
           {sheet.confirmLabel}

@@ -29,8 +29,7 @@ export type ApplicationsScreenController = {
   deadlineLine: string | null;
   emptyDeadlineLine: string | null;
   sheet: ApplicationsDeadlineSheet | null;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
   failedLine: string | null;
   chooseTab: (value: string) => void;
   openDeadline: () => void;
@@ -60,7 +59,7 @@ export function useApplicationsScreen(
 
   const {
     mutate: sendDeadline,
-    isPending: saving,
+    isPending: sending,
     isSuccess: saved,
     isError: failed,
     reset,
@@ -95,8 +94,7 @@ export function useApplicationsScreen(
     emptyDeadlineLine:
       deadline === null ? null : applicationsEmptyDeadlineLine(deadline),
     sheet: asking ? { deadline: typed, today, canSave: typed >= today } : null,
-    saving,
-    failed,
+    sending,
     failedLine: failed ? DEADLINE_SHEET_COPY.saveFailed : null,
     chooseTab: (value) => setTab(tabOf(value)),
     openDeadline: () => setAsking(true),

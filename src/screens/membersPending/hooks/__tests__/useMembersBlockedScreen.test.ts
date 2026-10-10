@@ -135,7 +135,7 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
     act(() => result.current.openMember(BLOCKED));
     act(() => result.current.unblock());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.confirming).not.toBeNull();
     expect(result.current.toast).toBeNull();
@@ -218,7 +218,7 @@ describe("useMembersBlockedScreen — 실패 문안을 controller가 완성해 �
     act(() => result.current.openMember(BLOCKED));
     act(() => result.current.unblock());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

@@ -22,7 +22,6 @@ export type MembersBlockedController = {
   today: string;
   confirming: BlockedConfirm | null;
   sending: boolean;
-  failed: boolean;
   failedLine: string | null;
   toast: BlockedToast | null;
   openMember: (member: MemberSummary) => void;
@@ -97,7 +96,6 @@ export function useMembersBlockedScreen(): MembersBlockedController {
         ? null
         : { question: `${openName}${BLOCKED_COPY.confirmSuffix}` },
     sending,
-    failed,
     failedLine: failed ? BLOCKED_COPY.sendFailed : null,
     toast,
     openMember: setOpen,

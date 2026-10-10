@@ -35,7 +35,6 @@ export type RehearsalScreenController = {
   monthLabel: string;
   totalLabel: string;
   isAdmin: boolean;
-  failed: boolean;
   failedLine: string | null;
   openDate: string | null;
   openDateLabel: string;
@@ -212,7 +211,6 @@ export function useRehearsalScreen(
     monthLabel: spellMonth(month),
     totalLabel: spellTotal(monthTotal(rows)),
     isAdmin,
-    failed,
     failedLine: failed ? REHEARSAL_COPY.readFailed : null,
     openDate,
     openDateLabel: openDate === null ? "" : spellDate(openDate),

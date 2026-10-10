@@ -219,7 +219,7 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     );
 
     await waitFor(() => expect(result.current.sheet).toBeNull());
-    expect(result.current.saving).toBe(false);
+    expect(result.current.sending).toBe(false);
   });
 
   it("통신이 끊기면 시트를 연 채로 둔다", async () => {
@@ -231,7 +231,7 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     act(() => result.current.changeDeadlineDraft("2026-10-12"));
     act(() => result.current.saveDeadline());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.sheet).not.toBeNull();
   });
@@ -245,12 +245,12 @@ describe("useApplicationsScreen — 마감일과 탭과 갈 데를 든다", () =
     act(() => result.current.changeDeadlineDraft("2026-10-12"));
     act(() => result.current.saveDeadline());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     act(() => result.current.closeDeadline());
 
     expect(result.current.sheet).toBeNull();
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
   });
 });
 
@@ -278,7 +278,7 @@ describe("useApplicationsScreen — 실패 문안을 controller가 완성해 내
     act(() => result.current.changeDeadlineDraft("2026-10-12"));
     act(() => result.current.saveDeadline());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

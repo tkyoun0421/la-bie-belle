@@ -84,7 +84,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     serverNowMs,
     gate,
     isConfirmed,
-    saving,
+    sending,
     adjusting,
     adjusted,
     adjustError,
@@ -467,7 +467,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
             expanded ||
             entries.every((entry) => entry.category !== "assignable"),
           picked,
-          sending: saving,
+          sending: sending,
           expand: () => setExpanded(true),
           pick,
           inspect: setInspecting,
@@ -578,7 +578,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       ? null
       : {
           copy: confirmChangeCopyOf(pending, canNotify),
-          saving,
+          sending,
           confirm: () => {
             run(pending);
             setPending(null);
@@ -591,7 +591,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       ? null
       : {
           name: discarding.name,
-          removing: saving,
+          removing: sending,
           confirm: () => {
             onRemoveSlot(discarding.slotId);
             setDiscarding(null);

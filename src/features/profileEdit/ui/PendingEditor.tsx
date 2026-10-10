@@ -56,7 +56,7 @@ export function PendingEditor({
       <View className="mb-4 items-center">
         <Pressable
           accessibilityRole="button"
-          disabled={fragment.uploading}
+          disabled={fragment.sending}
           onPress={() => void fragment.pick()}
         >
           <Avatar name={name} photoUrl={photoUrl} size={FORM_AVATAR_SIZE} />
@@ -65,7 +65,7 @@ export function PendingEditor({
           variant="outline"
           size="md"
           className="mt-4"
-          loading={fragment.uploading}
+          loading={fragment.sending}
           onPress={onPhotoDone}
         >
           {PROFILE_FORM_COPY.useDefaultPhoto}

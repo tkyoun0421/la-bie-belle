@@ -86,8 +86,7 @@ export type ScheduleAdminSheet =
       kind: "deadline";
       deadline: string;
       canSave: boolean;
-      saving: boolean;
-      failed: boolean;
+      sending: boolean;
       failedLine: string | null;
     }
   | {
@@ -413,8 +412,7 @@ export function useScheduleAdminScreen({
         kind: "deadline",
         deadline: typed,
         canSave: typed >= today,
-        saving: changeDeadline.isPending,
-        failed: changeDeadline.isError,
+        sending: changeDeadline.isPending,
         failedLine: changeDeadline.isError
           ? DEADLINE_SHEET_COPY.saveFailed
           : null,
@@ -543,7 +541,7 @@ export function useScheduleAdminScreen({
               confirmedAt: schedule?.confirmedAt ?? null,
             }),
             isConfirmed: confirmed,
-            saving:
+            sending:
               addAssignment.isPending ||
               removeAssignment.isPending ||
               forceChange.isPending ||

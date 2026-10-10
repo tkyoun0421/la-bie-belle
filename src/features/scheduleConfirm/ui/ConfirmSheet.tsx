@@ -30,10 +30,7 @@ export function ConfirmSheet({
 
   if (sheet.face === "failed") {
     return (
-      <ConfirmSheetFailed
-        confirming={sheet.confirming}
-        onConfirm={sheet.confirm}
-      />
+      <ConfirmSheetFailed sending={sheet.sending} onConfirm={sheet.confirm} />
     );
   }
 
@@ -42,7 +39,7 @@ export function ConfirmSheet({
       title={sheet.askTitle}
       buttonLabel={sheet.askButtonLabel}
       vacancy={sheet.vacancy}
-      confirming={sheet.confirming}
+      sending={sheet.sending}
       onClose={onClose}
       onConfirm={sheet.confirm}
     />

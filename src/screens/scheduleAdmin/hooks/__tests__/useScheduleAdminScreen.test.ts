@@ -757,7 +757,7 @@ describe("useScheduleAdminScreen — 마감일 시트의 실패 문안을 contro
         throw new Error("마감일 시트가 아니다");
       }
 
-      expect(sheet.failed).toBe(true);
+      expect(sheet.failedLine).not.toBeNull();
     });
 
     const sheet = result.current.sheet;

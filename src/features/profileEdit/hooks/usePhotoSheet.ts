@@ -15,8 +15,7 @@ export type PhotoSheetInput = {
 
 export type PhotoSheetController = {
   offerGoogle: boolean;
-  uploading: boolean;
-  failed: boolean;
+  sending: boolean;
   failedLine: string | null;
   pick: () => Promise<void>;
   useGoogle: () => void;
@@ -71,8 +70,7 @@ export function usePhotoSheet({
 
   return {
     offerGoogle: shouldOfferGooglePhoto(photoUrl, googlePhotoUrl),
-    uploading: picking || sending,
-    failed,
+    sending: picking || sending,
     failedLine: failed ? PHOTO_SHEET_COPY.failed : null,
     pick,
     useGoogle,

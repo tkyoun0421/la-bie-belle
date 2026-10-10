@@ -131,7 +131,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
     });
 
     expect(uploadAvatarMock).not.toHaveBeenCalled();
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
     expect(SAVED).not.toHaveBeenCalled();
   });
 
@@ -144,7 +144,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
       await result.current.pick();
     });
 
-    expect(result.current.failed).toBe(true);
+    expect(result.current.failedLine).not.toBeNull();
   });
 
   it("올리다 넘어져도 실패가 선다", async () => {
@@ -154,7 +154,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(SAVED).not.toHaveBeenCalled();
   });
@@ -185,13 +185,13 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.uploading).toBe(true));
+    await waitFor(() => expect(result.current.sending).toBe(true));
 
     await act(async () => {
       release(null);
     });
 
-    await waitFor(() => expect(result.current.uploading).toBe(false));
+    await waitFor(() => expect(result.current.sending).toBe(false));
   });
 });
 
@@ -215,7 +215,7 @@ describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준�
 
     act(() => void result.current.pick());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

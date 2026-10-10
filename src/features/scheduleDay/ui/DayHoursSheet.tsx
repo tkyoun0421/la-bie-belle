@@ -66,7 +66,7 @@ export function DayHoursSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={sheet.saving}
+          loading={sheet.sending}
           disabled={!sheet.canSave}
           onPress={sheet.save}
         >

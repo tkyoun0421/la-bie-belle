@@ -93,7 +93,6 @@ export function useApprovalDetailSheet({
     }),
     face,
     sending: isPending,
-    failed: isError,
     failedLine: isError ? APPROVAL_SHEET_COPY.sendFailed : null,
     chosen,
     written,

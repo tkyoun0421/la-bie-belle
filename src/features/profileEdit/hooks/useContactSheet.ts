@@ -23,8 +23,7 @@ export type ContactSheetInput = {
 
 export type ContactSheetController = {
   draft: string;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
   failedLine: string | null;
   invalid: boolean;
   canSave: boolean;
@@ -42,7 +41,7 @@ export function useContactSheet({
 
   const {
     mutate,
-    isPending: saving,
+    isPending: sending,
     isSuccess: saved,
     error,
   } = useUpdateContactMutation(supabase);
@@ -68,8 +67,7 @@ export function useContactSheet({
 
   return {
     draft,
-    saving,
-    failed,
+    sending,
     failedLine: failed ? CONTACT_SHEET_COPY.sendFailed : null,
     invalid:
       (draft.length === PHONE_LENGTH && !isValidPhone(draft)) || rejected,

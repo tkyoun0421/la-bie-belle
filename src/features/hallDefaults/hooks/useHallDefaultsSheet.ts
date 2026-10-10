@@ -14,8 +14,7 @@ export type HallDefaultsSheetInput = {
 export type HallDefaultsSheetController = {
   starts: string;
   ends: string;
-  saving: boolean;
-  failed: boolean;
+  sending: boolean;
   failedLine: string | null;
   writeStarts: (typed: string) => void;
   writeEnds: (typed: string) => void;
@@ -51,8 +50,7 @@ export function useHallDefaultsSheet({
   return {
     starts,
     ends,
-    saving: isPending,
-    failed: isError,
+    sending: isPending,
     failedLine: isError ? HALL_DEFAULTS_COPY.saveFailed : null,
     writeStarts: setStarts,
     writeEnds: setEnds,

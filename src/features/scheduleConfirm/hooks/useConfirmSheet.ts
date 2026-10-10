@@ -63,7 +63,7 @@ export function useConfirmSheet({
     askTitle: `${monthName}${SCHEDULE_CONFIRM_COPY.confirmAskTitleSuffix}`,
     askButtonLabel: `${monthName}${SCHEDULE_CONFIRM_COPY.confirmAskButtonSuffix}`,
     vacancy,
-    confirming: confirm.isPending,
+    sending: confirm.isPending,
     confirm: () => confirm.mutate({ month }),
   };
 }

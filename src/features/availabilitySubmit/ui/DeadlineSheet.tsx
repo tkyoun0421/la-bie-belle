@@ -7,7 +7,7 @@ export type DeadlineSheetProps = {
   deadline: string;
   today: string;
   canSave: boolean;
-  saving: boolean;
+  sending: boolean;
   failedLine: string | null;
   onChange: (typed: string) => void;
   onClose: () => void;
@@ -18,7 +18,7 @@ export function DeadlineSheet({
   deadline,
   today,
   canSave,
-  saving,
+  sending,
   failedLine,
   onChange,
   onClose,
@@ -60,7 +60,7 @@ export function DeadlineSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={saving}
+          loading={sending}
           disabled={!canSave}
           onPress={onSave}
         >

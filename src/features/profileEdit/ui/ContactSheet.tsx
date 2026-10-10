@@ -60,7 +60,7 @@ export function ContactSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={fragment.saving}
+          loading={fragment.sending}
           disabled={!fragment.canSave}
           onPress={fragment.save}
         >

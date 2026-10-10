@@ -25,7 +25,6 @@ export type RequestSheetController = {
   subtitle: string;
   state: RequestSheetState;
   sending: boolean;
-  failed: boolean;
   failedLine: string | null;
   accept: () => void;
   decline: () => void;
@@ -68,7 +67,6 @@ export function useRequestSheet({
       serverNowMs: nowWithOffset(Date.now(), clockOffset),
     }),
     sending: isPending,
-    failed,
     failedLine: failed ? WORK_REQUEST_COPY.sendFailed : null,
     accept: () => answer({ requestId: request.id, answer: "accept" }),
     decline: () => answer({ requestId: request.id, answer: "decline" }),

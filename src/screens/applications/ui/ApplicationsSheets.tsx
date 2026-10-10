@@ -17,7 +17,7 @@ export function ApplicationsSheets({ screen }: ApplicationsSheetsProps) {
         deadline={screen.sheet.deadline}
         today={screen.sheet.today}
         canSave={screen.sheet.canSave}
-        saving={screen.saving}
+        sending={screen.sending}
         failedLine={screen.failedLine}
         onChange={screen.changeDeadlineDraft}
         onClose={screen.closeDeadline}

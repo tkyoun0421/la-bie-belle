@@ -130,7 +130,7 @@ describe("useCancelShiftSheet — 보내는 일을 자기가 든다", () => {
     act(() => result.current.writeReason("몸이 아파요"));
     act(() => result.current.send());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.reason).toBe("몸이 아파요");
     expect(sent).not.toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe("useCancelShiftSheet — 실패 문안을 controller가 완성해 내�
     act(() => result.current.writeReason("몸이 아파요"));
     act(() => result.current.send());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

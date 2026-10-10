@@ -64,7 +64,7 @@ export function HallDefaultsSheet({
         <Button
           variant="primary"
           className="flex-1"
-          loading={sheet.saving}
+          loading={sheet.sending}
           onPress={sheet.save}
         >
           바꾸기

@@ -225,7 +225,7 @@ describe("useMemberWageSheet — 조각이 사람 시급 쓰기를 든다", () =
     act(() => result.current.write("16000"));
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.amountText).toBe("16,000");
     expect(onDone).not.toHaveBeenCalled();
@@ -254,7 +254,7 @@ describe("useMemberWageSheet — 실패 문안을 controller가 완성해 내려
     act(() => result.current.write("16000"));
     act(() => result.current.save());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

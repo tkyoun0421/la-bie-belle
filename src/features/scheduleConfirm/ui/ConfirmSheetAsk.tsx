@@ -9,7 +9,7 @@ export type ConfirmSheetAskProps = {
   title: string;
   buttonLabel: string;
   vacancy: ConfirmSheetVacancy | null;
-  confirming: boolean;
+  sending: boolean;
   onClose: () => void;
   onConfirm: () => void;
 };
@@ -18,7 +18,7 @@ export function ConfirmSheetAsk({
   title,
   buttonLabel,
   vacancy,
-  confirming,
+  sending,
   onClose,
   onConfirm,
 }: ConfirmSheetAskProps) {
@@ -57,7 +57,7 @@ export function ConfirmSheetAsk({
         <Button
           variant="secondary"
           className="flex-1"
-          disabled={confirming}
+          disabled={sending}
           onPress={onClose}
         >
           닫기
@@ -66,7 +66,7 @@ export function ConfirmSheetAsk({
           variant="primary"
           className="flex-1"
           testID={CONFIRM_SHEET_BUTTON_TEST_ID}
-          loading={confirming}
+          loading={sending}
           onPress={onConfirm}
         >
           {buttonLabel}

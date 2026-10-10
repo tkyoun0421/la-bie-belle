@@ -13,7 +13,6 @@ export type ApprovalDetailSheetController = {
   detail: CancelApprovalDetail;
   face: ApprovalSheetFace;
   sending: boolean;
-  failed: boolean;
   failedLine: string | null;
   chosen: string | null;
   written: string;

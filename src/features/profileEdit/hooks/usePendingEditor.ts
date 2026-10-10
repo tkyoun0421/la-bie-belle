@@ -11,8 +11,7 @@ export type PendingEditorInput = {
 };
 
 export type PendingEditorController = {
-  uploading: boolean;
-  failed: boolean;
+  sending: boolean;
   failedLine: string | null;
   pick: () => Promise<void>;
 };
@@ -59,8 +58,7 @@ export function usePendingEditor({
   const failed = pickFailed || sendFailed;
 
   return {
-    uploading: picking || sending,
-    failed,
+    sending: picking || sending,
     failedLine: failed ? PROFILE_FORM_COPY.photoFailed : null,
     pick,
   };

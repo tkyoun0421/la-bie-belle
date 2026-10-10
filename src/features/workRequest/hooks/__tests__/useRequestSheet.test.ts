@@ -112,7 +112,7 @@ describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", 
     const { result } = mounted();
 
     expect(result.current.sending).toBe(false);
-    expect(result.current.failed).toBe(false);
+    expect(result.current.failedLine).toBeNull();
   });
 });
 
@@ -170,7 +170,7 @@ describe("useRequestSheet — 수락과 거절이 자기 mutation으로 나간�
 
     act(() => result.current.accept());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(seatTaken).not.toHaveBeenCalled();
     expect(answered).not.toHaveBeenCalled();
@@ -197,7 +197,7 @@ describe("useRequestSheet — 실패 문안을 controller가 완성해 내려준
 
     act(() => result.current.accept());
 
-    await waitFor(() => expect(result.current.failed).toBe(true));
+    await waitFor(() => expect(result.current.failedLine).not.toBeNull());
 
     expect(result.current.failedLine).toBeTruthy();
   });

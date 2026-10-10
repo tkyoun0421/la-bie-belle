@@ -50,7 +50,6 @@ export type MemberWageSheetController = {
   canSave: boolean;
   canReset: boolean;
   sending: boolean;
-  failed: boolean;
   failedLine: string | null;
   asking: boolean;
   resetBody: string | undefined;
@@ -140,7 +139,6 @@ export function useMemberWageSheet({
     canSave: canSaveWage(digits, current),
     canReset: canResetToDefault(rates, hasDefaultWage),
     sending: isPending,
-    failed: wageError !== null,
     failedLine: wageError === null ? null : WAGE_SAVE_FAILED_TITLE,
     asking,
     resetBody:

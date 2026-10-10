@@ -17,7 +17,6 @@ export type CancelShiftSheetController = {
   reason: string;
   canSend: boolean;
   sending: boolean;
-  failed: boolean;
   failedLine: string | null;
   writeReason: (typed: string) => void;
   send: () => void;
@@ -51,7 +50,6 @@ export function useCancelShiftSheet({
     reason,
     canSend,
     sending: isPending,
-    failed: isError,
     failedLine: isError ? WORK_REQUEST_COPY.sendFailed : null,
     writeReason: setReason,
     send: () => {

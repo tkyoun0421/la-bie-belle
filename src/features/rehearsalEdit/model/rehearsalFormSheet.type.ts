@@ -32,7 +32,7 @@ export type RehearsalFormSheetInput = {
 };
 
 export type RehearsalFormSheetController = RehearsalFormFace & {
-  saving: boolean;
+  sending: boolean;
   change: (values: Partial<AddSheetValues>) => void;
   submit: () => void;
 };
