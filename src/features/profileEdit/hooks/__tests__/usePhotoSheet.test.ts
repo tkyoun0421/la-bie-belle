@@ -40,6 +40,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { PHOTO_SHEET_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { usePhotoSheet } =
   await import("@/features/profileEdit/hooks/usePhotoSheet");
 
@@ -190,5 +192,33 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
     });
 
     await waitFor(() => expect(result.current.uploading).toBe(false));
+  });
+});
+
+describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("올리다 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    uploadAvatarMock.mockRejectedValue(new Error("못 올렸다"));
+
+    const { result } = mounted();
+
+    act(() => void result.current.pick());
+
+    await waitFor(() => {
+      // @ts-expect-error failedLine이 아직 없다
+      expect(result.current.failedLine).toBe(PHOTO_SHEET_COPY.failed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    uploadAvatarMock.mockRejectedValue(new Error("못 올렸다"));
+
+    const { result } = mounted();
+
+    act(() => void result.current.pick());
+
+    await waitFor(() => expect(result.current.failed).toBe(true));
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

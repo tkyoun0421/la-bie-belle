@@ -205,3 +205,33 @@ describe("useApprovalDetailSheet — 조각이 취소 요청 판정을 든다", 
     expect(onRejected).not.toHaveBeenCalled();
   });
 });
+
+describe("useApprovalDetailSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("승인이 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    decideCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor({});
+
+    act(() => result.current.askApprove());
+    act(() => result.current.approve());
+
+    await waitFor(() => {
+      // @ts-expect-error failedLine이 아직 없다
+      expect(result.current.failedLine).toBe(APPROVAL_SHEET_COPY.sendFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    decideCancelRequestMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor({});
+
+    act(() => result.current.askApprove());
+    act(() => result.current.approve());
+
+    await waitFor(() => expect(result.current.failed).toBe(true));
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBeTruthy();
+  });
+});

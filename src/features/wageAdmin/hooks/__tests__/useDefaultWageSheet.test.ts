@@ -18,7 +18,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { WAGE_SHEET_COPY } =
+const { WAGE_SHEET_COPY, WAGE_SAVE_FAILED_TITLE } =
   await import("@/features/wageAdmin/consts/wageAdmin.const");
 const { useDefaultWageSheet } =
   await import("@/features/wageAdmin/hooks/useDefaultWageSheet");
@@ -125,5 +125,35 @@ describe("useDefaultWageSheet — 조각이 기본 시급 쓰기를 든다", () 
 
     expect(result.current.amountText).toBe("12,000");
     expect(onDone).not.toHaveBeenCalled();
+  });
+});
+
+describe("useDefaultWageSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("저장이 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    setDefaultWageMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor();
+
+    act(() => result.current.write("12000"));
+    act(() => result.current.save());
+
+    await waitFor(() => {
+      // @ts-expect-error failedLine이 아직 없다
+      expect(result.current.failedLine).toBe(WAGE_SAVE_FAILED_TITLE);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    setDefaultWageMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor();
+
+    act(() => result.current.write("12000"));
+    act(() => result.current.save());
+
+    await waitFor(() => expect(result.current.failed).toBe(true));
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

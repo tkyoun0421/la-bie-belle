@@ -40,6 +40,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { PROFILE_FORM_COPY } =
+  await import("@/features/profileEdit/consts/profileEdit.const");
 const { usePendingEditor } =
   await import("@/features/profileEdit/hooks/usePendingEditor");
 
@@ -157,5 +159,35 @@ describe("usePendingEditor — 사진 칸의 쓰기를 조각이 삼킨다", () 
     });
 
     await waitFor(() => expect(result.current.uploading).toBe(false));
+  });
+});
+
+describe("usePendingEditor — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("고르다 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
+
+    const { result } = mounted();
+
+    await act(async () => {
+      await result.current.pick();
+    });
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBe(PROFILE_FORM_COPY.photoFailed);
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    pickAndShrinkPhotoMock.mockRejectedValue(new Error("못 줄였다"));
+
+    const { result } = mounted();
+
+    await act(async () => {
+      await result.current.pick();
+    });
+
+    expect(result.current.failed).toBe(true);
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBeTruthy();
   });
 });

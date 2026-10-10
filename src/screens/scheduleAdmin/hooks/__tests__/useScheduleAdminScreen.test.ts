@@ -129,6 +129,8 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { SCHEDULE_ADMIN_COPY } =
   await import("@/screens/scheduleAdmin/consts/scheduleAdmin.const");
+const { DEADLINE_SHEET_COPY } =
+  await import("@/features/availabilitySubmit/consts/availabilitySubmit.const");
 const { useScheduleAdminScreen } =
   await import("@/screens/scheduleAdmin/hooks/useScheduleAdminScreen");
 
@@ -717,5 +719,55 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     act(() => result.current.openApplications());
 
     expect(pushMock).toHaveBeenCalledWith("/admin/applications?month=2026-10");
+  });
+});
+
+describe("useScheduleAdminScreen — 마감일 시트의 실패 문안을 controller가 완성해 내려준다", () => {
+  it("저장이 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    setApplicationDeadlineMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted();
+
+    act(() => result.current.openDeadlineSheet());
+    act(() => result.current.saveDeadline());
+
+    await waitFor(() => {
+      const sheet = result.current.sheet;
+
+      if (sheet?.kind !== "deadline") {
+        throw new Error("마감일 시트가 아니다");
+      }
+
+      // @ts-expect-error failedLine이 아직 없다
+      expect(sheet.failedLine).toBe(DEADLINE_SHEET_COPY.saveFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    setApplicationDeadlineMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = await mounted();
+
+    act(() => result.current.openDeadlineSheet());
+    act(() => result.current.saveDeadline());
+
+    await waitFor(() => {
+      const sheet = result.current.sheet;
+
+      if (sheet?.kind !== "deadline") {
+        throw new Error("마감일 시트가 아니다");
+      }
+
+      expect(sheet.failed).toBe(true);
+    });
+
+    const sheet = result.current.sheet;
+
+    if (sheet?.kind !== "deadline") {
+      throw new Error("마감일 시트가 아니다");
+    }
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(sheet.failedLine).toBeTruthy();
   });
 });

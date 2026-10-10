@@ -19,6 +19,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
+const { HALL_DEFAULTS_COPY } =
+  await import("@/features/hallDefaults/consts/hallDefaults.const");
 const { useHallDefaultsSheet } =
   await import("@/features/hallDefaults/hooks/useHallDefaultsSheet");
 
@@ -109,5 +111,33 @@ describe("useHallDefaultsSheet — 조각이 기본값 쓰기를 든다", () => 
 
     expect(result.current.starts).toBe("11:00");
     expect(onSaved).not.toHaveBeenCalled();
+  });
+});
+
+describe("useHallDefaultsSheet — 실패 문안을 controller가 완성해 내려준다", () => {
+  it("보내기가 넘어지면 failedLine이 그 슬라이스의 문안과 같다", async () => {
+    setHallDefaultsMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor();
+
+    act(() => result.current.save());
+
+    await waitFor(() => {
+      // @ts-expect-error failedLine이 아직 없다
+      expect(result.current.failedLine).toBe(HALL_DEFAULTS_COPY.saveFailed);
+    });
+  });
+
+  it("failedLine이 빈 글자가 아니다", async () => {
+    setHallDefaultsMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = sheetFor();
+
+    act(() => result.current.save());
+
+    await waitFor(() => expect(result.current.failed).toBe(true));
+
+    // @ts-expect-error failedLine이 아직 없다
+    expect(result.current.failedLine).toBeTruthy();
   });
 });
