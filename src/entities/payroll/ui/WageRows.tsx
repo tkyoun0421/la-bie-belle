@@ -9,6 +9,7 @@ export type WageRowsProps = {
   onPressPerson: (profileId: string) => void;
   pending?: ReactNode;
   failed?: ReactNode;
+  empty?: ReactNode;
 };
 
 export function WageRows({
@@ -16,6 +17,7 @@ export function WageRows({
   onPressPerson,
   pending,
   failed,
+  empty,
 }: WageRowsProps) {
   const fragment = useWageRows({ people, onPressPerson });
 
@@ -25,6 +27,10 @@ export function WageRows({
 
   if (fragment.state === "failed") {
     return failed ?? null;
+  }
+
+  if (fragment.state === "empty") {
+    return empty ?? null;
   }
 
   return (

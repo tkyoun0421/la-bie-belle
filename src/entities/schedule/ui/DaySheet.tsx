@@ -18,7 +18,7 @@ export type DaySheetProps = DaySheetInput & {
 export function DaySheet({ pending, failed, ...input }: DaySheetProps) {
   const sheet = useDaySheet(input);
 
-  if (sheet.state === "loading") {
+  if (sheet.state === "pending") {
     return pending ?? null;
   }
 

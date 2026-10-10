@@ -99,7 +99,7 @@ async function mounted(expanded: string[] = [], showMineOnly = false) {
   const input = inputOf(expanded, showMineOnly);
   const hook = renderHook(() => useScheduleAgenda(input), { wrapper });
 
-  await waitFor(() => expect(hook.result.current.state).not.toBe("loading"));
+  await waitFor(() => expect(hook.result.current.state).not.toBe("pending"));
 
   return { ...hook, input };
 }
@@ -113,14 +113,17 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
   it("열린 날이 없으면 비었다고 말한다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.empty).toBe(true);
-    expect(result.current.days).toEqual([]);
+    expect(result.current.state).toBe("empty");
   });
 
   it("날짜가 사람이 읽는 글월로 선다", async () => {
     getMonthScheduleMock.mockResolvedValue([dayAt("2026-10-03")]);
 
     const { result } = await mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.days[0].title).toBe("10월 3일(토)");
   });
@@ -129,6 +132,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
     getMonthScheduleMock.mockResolvedValue([dayAt("2026-10-03")]);
 
     const { result } = await mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.days[0].statusLabel).toBe("근무 없음");
     expect(result.current.days[0].statusTone).toBe("subtle");
@@ -141,6 +148,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
 
     const { result } = await mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.days[0].statusLabel).toBe("메인");
     expect(result.current.days[0].statusTone).toBe("brand");
   });
@@ -152,6 +163,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
 
     const { result } = await mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.days[0].statusLabel).toBe("교육 · 메인");
   });
 
@@ -162,6 +177,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
     ]);
 
     const { result } = await mounted(["2026-10-04"]);
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.days[0].expanded).toBe(false);
     expect(result.current.days[1].expanded).toBe(true);
@@ -175,6 +194,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
 
     const { result } = await mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.days[0].divider).toBe(false);
     expect(result.current.days[1].divider).toBe(true);
   });
@@ -183,6 +206,10 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
     getMonthScheduleMock.mockResolvedValue([dayAt("2026-10-03")]);
 
     const { result, input } = await mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.days[0].toggle();
     result.current.days[0].cancelShift();
@@ -204,14 +231,14 @@ describe("useScheduleAgenda — 조각이 자기 달을 부른다", () => {
     );
   });
 
-  it("기다리는 동안은 상태 이름이 loading이다", () => {
+  it("기다리는 동안은 상태 이름이 pending이다", () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useScheduleAgenda(inputOf()), {
       wrapper,
     });
 
-    expect(result.current.state).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
   it("못 불러오면 상태 이름이 failed다", async () => {
@@ -229,11 +256,17 @@ describe("useScheduleAgenda — 조각이 자기 달을 부른다", () => {
     ]);
 
     const all = await mounted();
-
-    expect(all.result.current.days).toHaveLength(2);
-
     const mine = await mounted([], true);
 
+    if (all.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    if (mine.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(all.result.current.days).toHaveLength(2);
     expect(mine.result.current.days).toHaveLength(1);
     expect(mine.result.current.days[0].workDate).toBe("2026-10-17");
   });

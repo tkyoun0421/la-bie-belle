@@ -20,7 +20,7 @@ export function StatsAttendance({
 }: StatsAttendanceProps) {
   const fragment = useStatsAttendance(month);
 
-  if (fragment.state === "loading") {
+  if (fragment.state === "pending") {
     return pending;
   }
 

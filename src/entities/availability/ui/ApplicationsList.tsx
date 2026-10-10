@@ -32,7 +32,7 @@ export function ApplicationsList({
     return empty ?? null;
   }
 
-  if (fragment.state === "date") {
+  if (fragment.tab === "date") {
     return <ApplicationsDateGroups groups={fragment.dateGroups} />;
   }
 

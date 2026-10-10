@@ -9,9 +9,6 @@ import {
 
 export type ApplicationsTab = (typeof APPLICATIONS_TABS)[number];
 
-export type ApplicationsListState =
-  "pending" | "failed" | "empty" | ApplicationsTab;
-
 export type ApplicationsName = {
   key: string;
   name: string;
@@ -34,11 +31,16 @@ export type ApplicationsListInput = {
   tab: ApplicationsTab;
 };
 
-export type ApplicationsListController = {
-  state: ApplicationsListState;
-  dateGroups: ApplicationsDateGroup[];
-  personGroups: ApplicationsPersonGroup[];
-};
+export type ApplicationsListController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | {
+      state: "ready";
+      tab: ApplicationsTab;
+      dateGroups: ApplicationsDateGroup[];
+      personGroups: ApplicationsPersonGroup[];
+    };
 
 export function useApplicationsList({
   month,
@@ -48,20 +50,21 @@ export function useApplicationsList({
 
   const applications = data ?? [];
 
-  function stateOf(): ApplicationsListState {
-    if (error !== null) {
-      return "failed";
-    }
+  if (error !== null) {
+    return { state: "failed" };
+  }
 
-    if (data === undefined) {
-      return "pending";
-    }
+  if (data === undefined) {
+    return { state: "pending" };
+  }
 
-    return applications.length === 0 ? "empty" : tab;
+  if (applications.length === 0) {
+    return { state: "empty" };
   }
 
   return {
-    state: stateOf(),
+    state: "ready",
+    tab,
     dateGroups: groupApplicationsByDate(applications).map((group) => ({
       key: group.workDate,
       heading: spellApplicationDate(group.workDate),

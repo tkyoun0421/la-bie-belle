@@ -93,6 +93,11 @@ describe("useProfileCard — 조각이 자기 프로필을 부른다", () => {
     const { result } = await mounted();
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.name).toBe("이준호");
     expect(result.current.roleLabel).toBe(PROFILE_CARD_COPY.worker);
     expect(result.current.gender).toBe("남성");
@@ -104,6 +109,10 @@ describe("useProfileCard — 조각이 자기 프로필을 부른다", () => {
     getMyProfileMock.mockResolvedValue({ ...PROFILE, role: "admin" });
 
     const { result } = await mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.roleLabel).toBe(PROFILE_CARD_COPY.admin);
   });

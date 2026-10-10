@@ -24,6 +24,7 @@ export function WagesList({ screen }: WagesListProps) {
       onPressPerson={screen.openPerson}
       pending={<WageRowsLoading />}
       failed={<WageRowsFailed />}
+      empty={<WagesEmpty />}
     />
   );
 }

@@ -29,7 +29,7 @@ export type AdminStatsPositionRow = {
 };
 
 export type AdminStatsWorkController =
-  | { state: "loading" }
+  | { state: "pending" }
   | { state: "failed" }
   | { state: "empty" }
   | {
@@ -52,7 +52,7 @@ export function useAdminStatsWork(month: string): AdminStatsWorkController {
   }, [work.data, month]);
 
   if (work.isLoading) {
-    return { state: "loading" };
+    return { state: "pending" };
   }
 
   if (work.error !== null) {

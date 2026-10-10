@@ -21,7 +21,7 @@ export type AdminStatsAttendanceRow = {
 };
 
 export type AdminStatsAttendanceController =
-  | { state: "loading" }
+  | { state: "pending" }
   | { state: "failed" }
   | { state: "empty" }
   | {
@@ -53,7 +53,7 @@ export function useAdminStatsAttendance(
   }, [shown, clockOffset]);
 
   if (attendance.isLoading) {
-    return { state: "loading" };
+    return { state: "pending" };
   }
 
   if (attendance.error !== null) {

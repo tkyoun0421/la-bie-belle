@@ -64,6 +64,11 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
     const { result } = mounted();
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows).toHaveLength(3);
     expect(result.current.rows[2].amountLabel).toContain("110,000");
   });
@@ -73,6 +78,10 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
 
     const { result } = mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[0].title).toBe("10월");
     expect(result.current.rows[0].amountLabel).toContain("110,000");
   });
@@ -81,6 +90,10 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
     reads({ data: [day("2026-10-09", 60000)] });
 
     const { result } = mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.rows[0].press?.();
 
@@ -92,16 +105,19 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
 
     const { result } = mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[1].press).toBeUndefined();
   });
 
-  it("읽는 중에는 pending이고 줄이 없다", () => {
+  it("읽는 중에는 pending이다", () => {
     reads({ isLoading: true });
 
     const { result } = mounted();
 
     expect(result.current.state).toBe("pending");
-    expect(result.current.rows).toHaveLength(0);
   });
 
   it("읽기가 넘어지면 failed고 다시 시도할 손이 있다", () => {
@@ -110,6 +126,10 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
     const { result } = mounted();
 
     expect(result.current.state).toBe("failed");
+
+    if (result.current.state !== "failed") {
+      throw new Error("failed가 아니다");
+    }
 
     result.current.retry();
 

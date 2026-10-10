@@ -83,7 +83,7 @@ async function mounted(extra: Record<string, unknown> = {}) {
   const input = inputOf(extra);
   const hook = renderHook(() => useDaySheet(input), { wrapper });
 
-  await waitFor(() => expect(hook.result.current.state).not.toBe("loading"));
+  await waitFor(() => expect(hook.result.current.state).not.toBe("pending"));
 
   return { ...hook, input };
 }
@@ -103,18 +103,23 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
     );
   });
 
-  it("기다리는 동안은 상태 이름이 loading이다", () => {
+  it("기다리는 동안은 상태 이름이 pending이다", () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useDaySheet(inputOf()), { wrapper });
 
-    expect(result.current.state).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
   it("그 날의 명단을 글월로 완성해 낸다", async () => {
     const { result } = await mounted();
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.title).toBe("10월 17일(토)");
     expect(result.current.subtitle).toBe("10:00 – 18:00 · 1명");
     expect(result.current.rows).toHaveLength(2);
@@ -125,6 +130,10 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
   it("이미 요청을 걸어둔 근무는 배지가 서고 버튼이 잠긴다", async () => {
     const { result } = await mounted({ cancelRequested: true });
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.myBadge).toBe("취소 요청 중");
     expect(result.current.showActions).toBe(true);
     expect(result.current.actionsEnabled).toBe(false);
@@ -132,6 +141,10 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
 
   it("남의 근무면 버튼을 보이지 않는다", async () => {
     const { result } = await mounted({ myProfileId: "p9" });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.showActions).toBe(false);
   });
@@ -146,6 +159,10 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
 
   it("쓰기로 들어가는 문은 받아서 그대로 넘긴다", async () => {
     const { result, input } = await mounted();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.cancelShift();
     result.current.requestSwap();

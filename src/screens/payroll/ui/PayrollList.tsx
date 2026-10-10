@@ -31,6 +31,7 @@ export function PayrollList({ screen }: PayrollListProps) {
         onOpenMonth={screen.openMonth}
         pending={<PayrollViewLoading />}
         failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+        empty={<PayrollEmpty />}
       />
     );
   }
@@ -40,6 +41,7 @@ export function PayrollList({ screen }: PayrollListProps) {
       span={screen.span}
       pending={<PayrollViewLoading />}
       failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+      empty={<PayrollEmpty />}
     />
   );
 }

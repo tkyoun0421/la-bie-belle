@@ -104,7 +104,12 @@ describe("usePendingRows — 조각이 기다리는 사람을 부른다", () => 
   it("줄이 언제 보냈는지를 말하고 안 보낸 사람은 빈 줄이다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.state).toBe("rows");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows).toHaveLength(2);
     expect(result.current.rows[0].detail).toContain("보냈어요");
     expect(result.current.rows[1].detail).toBe("");
@@ -113,6 +118,10 @@ describe("usePendingRows — 조각이 기다리는 사람을 부른다", () => 
   it("누르면 그 사람을 건넨다", async () => {
     const onPress = jest.fn();
     const { result } = await mounted(onPress);
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.rows[0].press();
 

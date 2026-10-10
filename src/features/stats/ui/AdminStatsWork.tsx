@@ -38,7 +38,7 @@ export function AdminStatsWork({
 }: AdminStatsWorkProps) {
   const fragment = useAdminStatsWork(month);
 
-  if (fragment.state === "loading") {
+  if (fragment.state === "pending") {
     return pending;
   }
 

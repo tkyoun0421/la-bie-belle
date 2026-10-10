@@ -1,8 +1,6 @@
 import type { TextTone } from "@/shared/ui/Text";
 import type { RosterRow } from "@/entities/schedule/model/daySheet.policy";
 
-export type ScheduleAgendaState = "loading" | "failed" | "ready";
-
 export type ScheduleAgendaInput = {
   month: string;
   myProfileId: string | null;
@@ -27,10 +25,12 @@ export type ScheduleAgendaDay = {
   requestSwap: () => void;
 };
 
-export type ScheduleAgendaController = {
-  state: ScheduleAgendaState;
-  empty: boolean;
-  days: ScheduleAgendaDay[];
-  myProfileId: string | null;
-  retry: () => void;
-};
+export type ScheduleAgendaController =
+  | { state: "pending" }
+  | { state: "failed"; retry: () => void }
+  | { state: "empty" }
+  | {
+      state: "ready";
+      days: ScheduleAgendaDay[];
+      myProfileId: string | null;
+    };

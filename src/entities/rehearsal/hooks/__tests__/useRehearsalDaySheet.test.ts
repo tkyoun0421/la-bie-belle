@@ -120,6 +120,11 @@ describe("useRehearsalDaySheet — 조각이 그 날 리허설을 부른다", ()
     const { result } = await mounted();
 
     expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.title).toContain("10월 5일");
     expect(result.current.content.kind).toBe("rows");
 
@@ -135,6 +140,10 @@ describe("useRehearsalDaySheet — 조각이 그 날 리허설을 부른다", ()
 
     const { result } = await mounted();
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.content.kind).toBe("empty");
   });
 
@@ -143,22 +152,39 @@ describe("useRehearsalDaySheet — 조각이 그 날 리허설을 부른다", ()
 
     expect(getAllRehearsalsMock).toHaveBeenCalledWith(FAKE_CLIENT, "2026-10");
     expect(getMyRehearsalsMock).not.toHaveBeenCalled();
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.canAdd).toBe(false);
   });
 
   it("근무하는 날은 한 건만 넣는다", async () => {
     const already = await mounted({ formKind: "count" });
 
+    if (already.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(already.result.current.canAdd).toBe(false);
 
     getMyRehearsalsMock.mockResolvedValue([]);
     const none = await mounted({ formKind: "count" });
+
+    if (none.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(none.result.current.canAdd).toBe(true);
   });
 
   it("근무하지 않는 날은 여러 번 넣는다", async () => {
     const { result } = await mounted({ formKind: "time" });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(result.current.canAdd).toBe(true);
   });

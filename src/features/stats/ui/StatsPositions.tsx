@@ -20,7 +20,7 @@ export function StatsPositions({
 }: StatsPositionsProps) {
   const fragment = useStatsPositions(month);
 
-  if (fragment.state === "loading") {
+  if (fragment.state === "pending") {
     return pending;
   }
 

@@ -22,7 +22,7 @@ export function AdminStatsAttendance({
 }: AdminStatsAttendanceProps) {
   const fragment = useAdminStatsAttendance(month);
 
-  if (fragment.state === "loading") {
+  if (fragment.state === "pending") {
     return pending;
   }
 

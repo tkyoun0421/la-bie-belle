@@ -20,7 +20,7 @@ export type StatsPositionRow = {
 };
 
 export type StatsPositionsController =
-  | { state: "loading" }
+  | { state: "pending" }
   | { state: "failed" }
   | { state: "empty" }
   | { state: "ready"; totalLabel: string; rows: StatsPositionRow[] };
@@ -46,7 +46,7 @@ export function useStatsPositions(month: string): StatsPositionsController {
   }, [shown, profileId]);
 
   if (profile.isLoading || work.isLoading) {
-    return { state: "loading" };
+    return { state: "pending" };
   }
 
   if (profile.error !== null || work.error !== null) {

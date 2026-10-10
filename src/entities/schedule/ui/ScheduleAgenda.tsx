@@ -22,7 +22,7 @@ export function ScheduleAgenda({
 }: ScheduleAgendaProps) {
   const agenda = useScheduleAgenda(input);
 
-  if (agenda.state === "loading") {
+  if (agenda.state === "pending") {
     return pending ?? null;
   }
 
@@ -30,7 +30,7 @@ export function ScheduleAgenda({
     return failed?.(agenda.retry) ?? null;
   }
 
-  if (agenda.empty) {
+  if (agenda.state === "empty") {
     return empty ?? null;
   }
 

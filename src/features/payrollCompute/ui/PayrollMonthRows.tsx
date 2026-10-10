@@ -8,6 +8,7 @@ export type PayrollMonthRowsProps = {
   onOpenMonth: (month: string) => void;
   pending?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
+  empty?: ReactNode;
 };
 
 export function PayrollMonthRows({
@@ -15,6 +16,7 @@ export function PayrollMonthRows({
   onOpenMonth,
   pending,
   failed,
+  empty,
 }: PayrollMonthRowsProps) {
   const fragment = usePayrollMonthRows({ span, onOpenMonth });
 
@@ -24,6 +26,10 @@ export function PayrollMonthRows({
 
   if (fragment.state === "failed") {
     return failed?.(fragment.retry) ?? null;
+  }
+
+  if (fragment.state === "empty") {
+    return empty ?? null;
   }
 
   return (

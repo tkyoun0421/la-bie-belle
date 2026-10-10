@@ -126,13 +126,19 @@ describe("useMemberRows — 조각이 자기 사람 목록을 부른다", () => 
     expect(result.current.state).toBe("pending");
   });
 
-  it("아무도 없으면 empty다", async () => {
+  it("아무도 없으면 empty고 까닭이 noMembers다", async () => {
     listActiveMembersMock.mockResolvedValue([]);
     listLeftMembersMock.mockResolvedValue([]);
 
     const { result } = await mounted();
 
     expect(result.current.state).toBe("empty");
+
+    if (result.current.state !== "empty") {
+      throw new Error("empty가 아니다");
+    }
+
+    expect(result.current.reason).toBe("noMembers");
   });
 
   it("못 읽으면 failed다", async () => {
@@ -146,7 +152,12 @@ describe("useMemberRows — 조각이 자기 사람 목록을 부른다", () => 
   it("재직 줄에 연락처와 관리자 표시가 선다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.state).toBe("rows");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows).toHaveLength(2);
     expect(result.current.rows[0].detail).toContain("010-0000-0001");
     expect(result.current.rows[1].isAdmin).toBe(true);
@@ -155,17 +166,27 @@ describe("useMemberRows — 조각이 자기 사람 목록을 부른다", () => 
   it("받은 꼬리말을 연락처 뒤에 붙인다", async () => {
     const { result } = await mounted({ noteOf: () => "· 알림 꺼둠" });
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[0].detail).toBe("010-0000-0001 · 알림 꺼둠");
   });
 
   it("1년이 지난 퇴사자는 접히고 펴면 드러난다", async () => {
     const folded = await mounted({ kind: "left" });
+    const opened = await mounted({ kind: "left", expanded: true });
+
+    if (folded.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    if (opened.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     expect(folded.result.current.rows).toHaveLength(1);
     expect(folded.result.current.canExpand).toBe(true);
-
-    const opened = await mounted({ kind: "left", expanded: true });
-
     expect(opened.result.current.rows).toHaveLength(2);
     expect(opened.result.current.canExpand).toBe(false);
   });
@@ -173,30 +194,52 @@ describe("useMemberRows — 조각이 자기 사람 목록을 부른다", () => 
   it("퇴사 줄이 퇴사한 날을 값으로 낸다", async () => {
     const { result } = await mounted({ kind: "left" });
 
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[0].value).toContain("2026년");
   });
 
   it("찾으면 두 구획을 같이 거르고 접힌 것도 드러난다", async () => {
-    const active = await mounted({ query: "강하늘" });
     const left = await mounted({ kind: "left", query: "강하늘" });
 
-    expect(active.result.current.rows).toEqual([]);
+    if (left.result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(left.result.current.rows).toHaveLength(1);
 
     const missed = await mounted({ query: "없는이름" });
 
-    expect(missed.result.current.state).toBe("searchEmpty");
+    expect(missed.result.current.state).toBe("empty");
+
+    if (missed.result.current.state !== "empty") {
+      throw new Error("empty가 아니다");
+    }
+
+    expect(missed.result.current.reason).toBe("noMatch");
   });
 
   it("맞는 이름이 없다는 말은 재직 쪽만 한다", async () => {
     const { result } = await mounted({ kind: "left", query: "없는이름" });
 
-    expect(result.current.state).toBe("none");
+    expect(result.current.state).toBe("empty");
+
+    if (result.current.state !== "empty") {
+      throw new Error("empty가 아니다");
+    }
+
+    expect(result.current.reason).toBe("noRows");
   });
 
   it("누르면 그 사람과 마지막 관리자인지를 같이 건넨다", async () => {
     const onPress = jest.fn();
     const { result } = await mounted({ onPress });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.rows[1].press();
 

@@ -19,7 +19,7 @@ export function WorkDaysSheet({
 }: WorkDaysSheetProps) {
   const fragment = useWorkDaysSheet(month, profileId);
 
-  if (fragment.state === "loading") {
+  if (fragment.state === "pending") {
     return pending;
   }
 

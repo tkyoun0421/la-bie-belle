@@ -6,14 +6,14 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { MEMBER_LIST_COPY } from "@/entities/member/consts/member.const";
 import {
   useMemberRows,
+  type MemberRowsEmptyReason,
   type MemberRowsInput,
 } from "@/entities/member/hooks/useMemberRows";
 
 export type MemberRowsProps = MemberRowsInput & {
   pending?: ReactNode;
   failed?: ReactNode;
-  empty?: ReactNode;
-  searchEmpty?: ReactNode;
+  empty?: (reason: MemberRowsEmptyReason) => ReactNode;
   before?: ReactNode;
   header?: ReactNode;
   more?: ReactNode;
@@ -25,7 +25,6 @@ export function MemberRows({
   pending,
   failed,
   empty,
-  searchEmpty,
   before,
   header,
   more,
@@ -44,49 +43,47 @@ export function MemberRows({
   }
 
   if (fragment.state === "empty") {
-    return empty ?? null;
+    return fragment.reason === "noMembers" ? (
+      (empty?.(fragment.reason) ?? null)
+    ) : (
+      <>
+        {before}
+        {empty?.(fragment.reason) ?? null}
+      </>
+    );
   }
 
   return (
     <>
       {before}
+      {header}
 
-      {fragment.state === "searchEmpty" ? searchEmpty : null}
-
-      {fragment.state === "rows" ? (
-        <>
-          {header}
-          <Card className={className}>
-            {fragment.rows.map((row, at) => (
-              <ListRow
-                key={row.key}
-                title={row.displayName}
-                detail={row.detail}
-                value={row.value}
-                left={
-                  <Avatar
-                    name={row.displayName}
-                    photoUrl={row.photoUrl}
-                    className={faded ? "opacity-60" : undefined}
-                  />
-                }
-                right={
-                  row.isAdmin ? (
-                    <Badge
-                      variant="brand"
-                      label={MEMBER_LIST_COPY.adminBadge}
-                    />
-                  ) : undefined
-                }
-                chevron
-                divider={at > 0}
-                onPress={row.press}
+      <Card className={className}>
+        {fragment.rows.map((row, at) => (
+          <ListRow
+            key={row.key}
+            title={row.displayName}
+            detail={row.detail}
+            value={row.value}
+            left={
+              <Avatar
+                name={row.displayName}
+                photoUrl={row.photoUrl}
+                className={faded ? "opacity-60" : undefined}
               />
-            ))}
-            {fragment.canExpand ? more : null}
-          </Card>
-        </>
-      ) : null}
+            }
+            right={
+              row.isAdmin ? (
+                <Badge variant="brand" label={MEMBER_LIST_COPY.adminBadge} />
+              ) : undefined
+            }
+            chevron
+            divider={at > 0}
+            onPress={row.press}
+          />
+        ))}
+        {fragment.canExpand ? more : null}
+      </Card>
     </>
   );
 }

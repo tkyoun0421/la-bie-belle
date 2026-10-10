@@ -7,12 +7,14 @@ export type PayrollHistoryRowsProps = {
   span: DateSpan;
   pending?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
+  empty?: ReactNode;
 };
 
 export function PayrollHistoryRows({
   span,
   pending,
   failed,
+  empty,
 }: PayrollHistoryRowsProps) {
   const fragment = usePayrollHistoryRows(span);
 
@@ -22,6 +24,10 @@ export function PayrollHistoryRows({
 
   if (fragment.state === "failed") {
     return failed?.(fragment.retry) ?? null;
+  }
+
+  if (fragment.state === "empty") {
+    return empty ?? null;
   }
 
   return (

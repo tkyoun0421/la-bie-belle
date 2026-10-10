@@ -6,8 +6,8 @@ import {
 } from "@/entities/schedule/model/daySheet.policy";
 import type {
   ScheduleAgendaController,
+  ScheduleAgendaDay,
   ScheduleAgendaInput,
-  ScheduleAgendaState,
 } from "@/entities/schedule/model/scheduleAgenda.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import {
@@ -30,15 +30,17 @@ export function useScheduleAgenda({
     month,
   );
 
-  const state: ScheduleAgendaState = isLoading
-    ? "loading"
-    : error !== null
-      ? "failed"
-      : "ready";
+  if (isLoading) {
+    return { state: "pending" };
+  }
+
+  if (error !== null) {
+    return { state: "failed", retry: refetch };
+  }
 
   const today = kstToday();
 
-  const days = (data ?? [])
+  const days: ScheduleAgendaDay[] = (data ?? [])
     .map((day) => ({
       day,
       myAssignment: myAssignmentOf(day.assignments, myProfileId),
@@ -63,11 +65,7 @@ export function useScheduleAgenda({
       requestSwap: () => onRequestSwap(day.workDate),
     }));
 
-  return {
-    state,
-    empty: days.length === 0,
-    days,
-    myProfileId,
-    retry: refetch,
-  };
+  return days.length === 0
+    ? { state: "empty" }
+    : { state: "ready", days, myProfileId };
 }

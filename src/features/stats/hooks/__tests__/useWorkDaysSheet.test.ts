@@ -80,7 +80,7 @@ describe("useWorkDaysSheet — 조각이 그 사람의 날을 읽는다", () => 
   it("기다리는 중은 상태 이름으로 낸다", () => {
     const { result } = mounted("p1");
 
-    expect(result.current.state).toBe("loading");
+    expect(result.current.state).toBe("pending");
   });
 
   it("그 사람의 이름과 날 목록과 합계를 낸다", async () => {

@@ -8,8 +8,6 @@ import {
   sortApprovals,
 } from "@/entities/workRequest/utils/approvalsList.utils";
 
-export type ApprovalRowsState = "pending" | "failed" | "empty" | "rows";
-
 export type ApprovalRow = {
   id: string;
   title: string;
@@ -22,10 +20,11 @@ export type ApprovalRowsInput = {
   onPress: (approval: PendingApproval) => void;
 };
 
-export type ApprovalRowsController = {
-  state: ApprovalRowsState;
-  rows: ApprovalRow[];
-};
+export type ApprovalRowsController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; rows: ApprovalRow[] };
 
 type CancelRow = ApprovalListRow & { source: PendingApproval };
 
@@ -60,17 +59,13 @@ export function useApprovalRows({
     press: () => onPress(row.source),
   }));
 
-  function stateOf(): ApprovalRowsState {
-    if (error !== null) {
-      return "failed";
-    }
-
-    if (data === undefined) {
-      return "pending";
-    }
-
-    return rows.length === 0 ? "empty" : "rows";
+  if (error !== null) {
+    return { state: "failed" };
   }
 
-  return { state: stateOf(), rows };
+  if (data === undefined) {
+    return { state: "pending" };
+  }
+
+  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
 }

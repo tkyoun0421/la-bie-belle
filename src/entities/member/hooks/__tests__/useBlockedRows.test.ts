@@ -104,7 +104,12 @@ describe("useBlockedRows — 조각이 차단한 사람을 부른다", () => {
   it("줄이 언제 차단했는지를 말하고 모르면 빈 줄이다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.state).toBe("rows");
+    expect(result.current.state).toBe("ready");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
     expect(result.current.rows[0].name).toBe("한지우");
     expect(result.current.rows[0].detail).toContain("차단했어요");
     expect(result.current.rows[1].detail).toBe("");
@@ -113,6 +118,10 @@ describe("useBlockedRows — 조각이 차단한 사람을 부른다", () => {
   it("누르면 그 사람을 건넨다", async () => {
     const onPress = jest.fn();
     const { result } = await mounted(onPress);
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
 
     result.current.rows[0].press();
 

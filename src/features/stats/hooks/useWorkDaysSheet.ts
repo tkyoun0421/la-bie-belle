@@ -17,7 +17,7 @@ export type WorkDaysSheetRow = {
 };
 
 export type WorkDaysSheetController =
-  | { state: "loading" }
+  | { state: "pending" }
   | { state: "failed" }
   | {
       state: "ready";
@@ -45,7 +45,7 @@ export function useWorkDaysSheet(
   );
 
   if (work.isLoading) {
-    return { state: "loading" };
+    return { state: "pending" };
   }
 
   if (work.error !== null) {

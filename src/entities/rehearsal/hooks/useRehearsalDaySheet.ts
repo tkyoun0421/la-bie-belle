@@ -9,8 +9,6 @@ import {
   type DaySheetContent,
 } from "@/entities/rehearsal/utils/daySheetRows.utils";
 
-export type RehearsalDaySheetState = "pending" | "failed" | "ready";
-
 export type RehearsalDaySheetInput = {
   workDate: string;
   month: string;
@@ -18,12 +16,15 @@ export type RehearsalDaySheetInput = {
   formKind: RehearsalKind;
 };
 
-export type RehearsalDaySheetController = {
-  state: RehearsalDaySheetState;
-  title: string;
-  content: DaySheetContent;
-  canAdd: boolean;
-};
+export type RehearsalDaySheetController =
+  | { state: "pending" }
+  | { state: "failed" }
+  | {
+      state: "ready";
+      title: string;
+      content: DaySheetContent;
+      canAdd: boolean;
+    };
 
 export function useRehearsalDaySheet({
   workDate,
@@ -37,16 +38,16 @@ export function useRehearsalDaySheet({
   const asked = isAdmin ? all : mine;
   const rows = (asked.data ?? []).filter((row) => row.workDate === workDate);
 
-  function stateOf(): RehearsalDaySheetState {
-    if (asked.error !== null) {
-      return "failed";
-    }
+  if (asked.error !== null) {
+    return { state: "failed" };
+  }
 
-    return asked.data === undefined ? "pending" : "ready";
+  if (asked.data === undefined) {
+    return { state: "pending" };
   }
 
   return {
-    state: stateOf(),
+    state: "ready",
     title: spellDate(workDate),
     content: daySheetRows(rows, isAdmin),
     canAdd: !isAdmin && canAddOn(formKind, rows),
