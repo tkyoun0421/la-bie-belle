@@ -8,6 +8,14 @@ const TIME_ROW = {
   name: null,
 };
 
+const ZERO_ROW = {
+  id: "row-3",
+  startsAt: "10:00",
+  endsAt: "10:00",
+  count: null,
+  name: null,
+};
+
 const COUNT_ROW = {
   id: "row-2",
   startsAt: null,
@@ -87,6 +95,28 @@ describe("daySheetRows — 합계 줄은 줄이 둘 이상일 때만 선다", ()
     expect(result.kind).toBe("rows");
     if (result.kind === "rows") {
       expect(result.totalLine).toBe("합계 · 4시간");
+    }
+  });
+});
+
+describe("daySheetRows — 길이가 0분인 줄은 「0시간」이다", () => {
+  it("줄 하나는 「10:00–10:00 · 0시간」이다 — 「0분」으로 쓰지 않는다", () => {
+    const result = daySheetRows([ZERO_ROW], false);
+
+    expect(result.kind).toBe("rows");
+    if (result.kind === "rows") {
+      expect(result.lines).toEqual([
+        { id: "row-3", text: "10:00–10:00 · 0시간" },
+      ]);
+    }
+  });
+
+  it("0분짜리 줄만 둘이면 합계가 「합계 · 0시간」이다", () => {
+    const result = daySheetRows([ZERO_ROW, ZERO_ROW], false);
+
+    expect(result.kind).toBe("rows");
+    if (result.kind === "rows") {
+      expect(result.totalLine).toBe("합계 · 0시간");
     }
   });
 });

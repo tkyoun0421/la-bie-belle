@@ -68,3 +68,4 @@ status: proposed
 - [SDLC를 유지하는 문서 구조 개선](docs-sdlc-coherence.md) — 여섯 단계의 하위 파일 배치, 업무별 설계·화면 소유권, 기존 문서 이관 명세, 단계 간 참조 규칙
 - [SDLC 문서 템플릿과 작성 방법](docs-authoring-playbook.md) — 문서별 복사용 틀, 절별 작성 질문·예시·검토 기준, 기존 구조 제안과 함께 적용할 순서
 - [시안·디자인 시스템·콘텐츠 개선](design-sian-improvements.md) — 서체·터치 영역·홈 정보 위계, 공통 상태와 미리보기, 근무 변경·급여 근거·첫 출근 안내의 대안과 채택 기준
+- [중복과 책임 과적의 묶음과 순서](codebase-refactor-triage.md) — 어긋난 값 다섯, mutation 뒤처리 세 꼴, 중복 116 집단, `screens`에 남은 계산 쉰넷의 거처, controller 넷의 무게

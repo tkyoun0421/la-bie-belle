@@ -1,9 +1,7 @@
 import { spellDate } from "@/shared/utils/kstDate";
-import { spellWon } from "@/shared/utils/spellNumber";
+import { spellDuration, spellWon } from "@/shared/utils/spellNumber";
 import type { PayrollDayKind } from "@/entities/payroll/model/payroll.type";
 import { NO_AMOUNT } from "@/features/payrollCompute/consts/payrollCompute.const";
-
-const MINUTES_PER_HOUR = 60;
 
 const ABSENT_SUBTITLE = "결근";
 
@@ -30,17 +28,6 @@ export type PayrollHistoryRow = {
   amountLabel: string;
 };
 
-function spellLength(minutes: number): string {
-  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-  const rest = minutes % MINUTES_PER_HOUR;
-
-  if (hours === 0) {
-    return `${rest}분`;
-  }
-
-  return rest === 0 ? `${hours}시간` : `${hours}시간 ${rest}분`;
-}
-
 function shiftLine(day: PayrollHistoryDay): string {
   if (day.position !== null) {
     const position = day.isEducation ? `${day.position} 교육` : day.position;
@@ -50,7 +37,7 @@ function shiftLine(day: PayrollHistoryDay): string {
 
   const rehearsal = day.rehearsalMinutes ?? 0;
 
-  return rehearsal === 0 ? "" : `리허설 ${spellLength(rehearsal)}`;
+  return rehearsal === 0 ? "" : `리허설 ${spellDuration(rehearsal)}`;
 }
 
 function subtitleOf(day: PayrollHistoryDay): string {
@@ -60,7 +47,9 @@ function subtitleOf(day: PayrollHistoryDay): string {
 
   const notes = [
     shiftLine(day),
-    day.overtimeMinutes === 0 ? "" : `연장 ${spellLength(day.overtimeMinutes)}`,
+    day.overtimeMinutes === 0
+      ? ""
+      : `연장 ${spellDuration(day.overtimeMinutes)}`,
     day.kind === "wage-pending" ? WAGE_PENDING_NOTE : "",
   ];
 

@@ -35,6 +35,14 @@ describe("myPayrollSubtitle — 결근한 날은 근무 회수·시간에서 빠
   });
 });
 
+describe("myPayrollSubtitle — 한 시간이 안 되면 분만 적는다", () => {
+  it("30분짜리 근무 하루면 '근무 1건 · 30분'이다 — '근무 1건 · 0시간 30분'으로 쓰지 않는다", () => {
+    const days = [day(30, "normal")];
+
+    expect(myPayrollSubtitle(days)).toBe("근무 1건 · 30분");
+  });
+});
+
 describe("myPayrollSubtitle — 시급이 아직 없는 날(wage-pending)은 든다", () => {
   it("금액이 0원인 wage-pending 날도 회수 1건·그 날 분만큼을 더한다", () => {
     const days = [day(480, "wage-pending")];

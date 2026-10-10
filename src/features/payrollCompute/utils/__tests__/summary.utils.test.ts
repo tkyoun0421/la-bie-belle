@@ -125,6 +125,14 @@ describe("summarizeAccrual — 결근은 근무 회수·시간에서 빠진다",
   });
 });
 
+describe("summarizeAccrual — 한 시간이 안 되면 분만 적는다", () => {
+  it("30분짜리 근무 하루면 「1회 · 30분」이다 — 「1회 · 0시간 30분」으로 쓰지 않는다", () => {
+    const accrual = summarizeAccrual([presentDay({ minutes: 30 })]);
+
+    expect(accrual.work).toBe("1회 · 30분");
+  });
+});
+
 describe("summarizeAccrual — 지각 판정은 getAttendanceStatus를 그대로 쓴다", () => {
   it("체크인이 지각 기준(10분)을 넘기면 지각이 1회다", () => {
     const accrual = summarizeAccrual([presentDay(), lateDay()]);

@@ -1,3 +1,4 @@
+import { spellDuration } from "@/shared/utils/spellNumber";
 import {
   dayTotal,
   type RehearsalClock,
@@ -7,7 +8,6 @@ import type {
   AdjustmentKind,
   AdjustSheetRow,
 } from "@/features/adjustment/model/adjustSheetRow.type";
-import { spellHours } from "@/features/adjustment/utils/spellHours.utils";
 import {
   adjustedMinutes,
   paidMinutes,
@@ -41,7 +41,7 @@ function clock(value: string): string {
 }
 
 export function adjustSheetHead(day: WorkDayHours): string {
-  return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellHours(
+  return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellDuration(
     assignedMinutes(day),
   )}`;
 }
@@ -69,10 +69,10 @@ function rehearsalLineOf(rows: readonly RehearsalClock[]): string | null {
   if (only !== null && isClockRow(only)) {
     return `리허설 ${clock(only.startsAt ?? "")}–${clock(
       only.endsAt ?? "",
-    )} · ${spellHours(total.minutes)}`;
+    )} · ${spellDuration(total.minutes)}`;
   }
 
-  return `리허설 ${total.count}건 · ${spellHours(total.minutes)}`;
+  return `리허설 ${total.count}건 · ${spellDuration(total.minutes)}`;
 }
 
 export function adjustSheetRows(input: AdjustSheetRowsInput): AdjustSheetRow[] {
