@@ -24,6 +24,7 @@
 | --- | --- |
 | `src/entities/session/model/session.type.ts:1` | `AuthDestination = "/login" \| "/pending" \| "/blocked" \| "/left" \| "/"` |
 | `src/features/auth/model/auth.type.ts:3` | `EntryDecision = AuthDestination \| "/retry"` |
+| `src/entities/session/model/resolveAdminGuard.policy.ts:3` | `AdminGuardMove` — 같은 꼴을 하나 더 든다 |
 
 리터럴 유니온이라 **글자가 타입 자리에 박힌다.** 상수를 바꿔도 이 타입은 안 따라온다 — `typeof`로 가리키게 해야 한 자리가 된다.
 
@@ -62,7 +63,8 @@
 | `src/entities/session/model/session.type.ts` | `AuthDestination`이 `typeof LOGIN_PATH \| …` 꼴로 상수를 가리킨다 |
 | `src/features/auth/model/auth.type.ts` | `EntryDecision`의 `"/retry"`가 `typeof RETRY_PATH`가 된다 |
 | 축 3의 네 자리 | 리터럴을 상수로 바꾼다. 템플릿은 `` `${WORKER_SCHEDULE_PATH}?date=${…}` `` 꼴이다 |
-| `eslint-rules/noRoutePathLiteral.mjs` | 신설 — `src/app/` 밖에서 `"/…"` 꼴 경로 리터럴을 막는다. `navigation.const.ts`는 면제다 |
+| `eslint-rules/noRoutePathLiteral.mjs` | 신설 — `src/app/` 밖에서 경로 리터럴을 막는다. `navigation.const.ts`는 면제다. **무는 목록을 그 파일에서 읽어 세운다** — 규칙이 경로를 또 적으면 열 번째 집이 된다 |
+| `scripts/syncEdgeShared.mts` · `eslint-rules/noNodeImportInEdgeShared.mjs` | `destination.policy.ts`가 Deno로 복사되는 파일이라 `shared/consts`가 복사 목록에 든다. 그 규칙의 짝 목록도 따라 늘고, **`__tests__`는 그 규칙 밖이 된다** — `edge:sync`가 import 사슬만 따라가 테스트를 복사하지 않는다 |
 | `eslint-rules/index.mjs` · `eslint.config.mjs` · `tests/lint/rules.ts` · `docs/4-test/execution.md` | 규칙 하나를 켜는 다섯 자리의 나머지 넷 |
 
 **규칙 3이 막지 않는다.** `shared`는 모든 층이 직접 당길 수 있어 `entities/session`과 `entities/notification`이 각자 `shared/consts`에서 받는다.
@@ -74,7 +76,7 @@
 - **AC-01** `src/shared/consts/navigation.const.ts`가 실물 라우트 23개에 닿는 경로 상수를 전부 든다. 빠진 다섯이 선다
 - **AC-02** 경로 상수를 내보내는 파일이 `navigation.const.ts` 하나다. `qr.const.ts`와 `retry.const.ts`에 경로가 없다
 - **AC-03** `AuthDestination`과 `EntryDecision`이 글자 대신 `typeof <상수>`를 든다. 상수를 고치면 타입이 따라온다
-- **AC-04** 축 3의 네 자리가 상수를 당긴다. `src/app/` 밖 `.ts`·`.tsx`에 경로꼴 리터럴이 0이다
+- **AC-04** 축 3의 네 자리가 상수를 당긴다. **규칙이 무는 스물둘에 대해** `src/app/` 밖 `.ts`·`.tsx`의 경로꼴 리터럴이 0이다. **`"/"` 하나는 기계가 못 막는다** — 글자가 슬래시 하나뿐이라 경로인지 경로의 구분자인지 AST로 가를 수 없다. 스물셋 가운데 그 자리만 되돌아가도 lint가 안 잡고 사람이 본다
 - **AC-05** `eslint-rules/noRoutePathLiteral.mjs`가 그것을 막고 규칙이 다섯 자리에 한 커밋으로 선다
 - **AC-06** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
@@ -92,6 +94,8 @@
 ## 리스크
 
 **축 2가 이 묶음에서 가장 위험하다.** `AuthDestination`은 `resolveAuthDestination`의 반환 타입이고 `resolveGateMove`가 그 값을 `pathname`과 비교한다. `typeof` 꼴로 바꾸면 값은 같지만 타입 추론이 달라질 수 있다 — `GATE_PATHS`가 `readonly string[]`이라 `includes`가 넓은 타입을 받는데, 상수를 쓰면 그 배열의 타입도 좁아진다.
+
+**`destination.policy.ts`를 건드리면 Edge 복사가 걸린다.** 그 파일이 `pnpm edge:sync`로 Deno에 복사되는 자리라, 새로 당기는 `shared/consts/navigation.const.ts`가 복사 목록에 없으면 **`pnpm dev`가 그것을 먼저 돌려 개발이 안 뜬다.** 목록을 늘리면 규칙 21(「Deno로 가는 파일에 Node API 금지」)의 짝 목록도 같이 늘어야 한다 — `tests/lint/edgeSharedFolders.test.ts`가 두 목록이 같은지 센다.
 
 **`/schedule`의 상수 이름을 정해야 한다.** `navigation.const.ts`에 이미 `ADMIN_SCHEDULE_PATH`가 있어 짝이 필요하다. 근무자 쪽이라 `WORKER_SCHEDULE_PATH`가 `WORKER_HOME_PATH`와 결이 맞는다.
 
