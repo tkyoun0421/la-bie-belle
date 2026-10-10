@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+          # 이 job은 pnpm을 안 쓴다. 켜두면 setup-node가 캐시를 위해 pnpm을 찾다 깨진다.
+          package-manager-cache: false
       - name: 추적 중인 spec·plan의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
