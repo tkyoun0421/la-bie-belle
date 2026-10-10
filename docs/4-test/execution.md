@@ -213,6 +213,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 38 | api 밖의 snake_case 필드 선언 | house | `house/no-snake-case-field` | `eslint-rules/__tests__/noSnakeCaseField.test.ts` |
 | 39 | ui의 model·utils 값 import | house | `house/ui-value-import` | `eslint-rules/__tests__/uiValueImport.test.ts` |
 | 40 | ui의 라우팅 훅 | house | `house/ui-no-router` | `eslint-rules/__tests__/uiNoRouter.test.ts` |
+| 41 | 기다리지 않는 쓰기 뒤처리 | house | `house/mutation-settle-shape` | `eslint-rules/__tests__/mutationSettleShape.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 

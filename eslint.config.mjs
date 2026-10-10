@@ -174,6 +174,7 @@ const eslintConfig = defineConfig([
       "house/no-snake-case-field": "error",
       "house/ui-no-router": "error",
       "house/ui-value-import": "error",
+      "house/mutation-settle-shape": "error",
     },
   },
 
