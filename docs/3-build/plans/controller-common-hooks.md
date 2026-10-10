@@ -15,7 +15,7 @@
 | 서버 시계 조립 | **13** | 뽑는다. 셋은 세 줄이 글자까지 같다 |
 | 토스트 들기 | **12** | 뽑는다. 꼴을 먼저 정한다 |
 | 달 고르기와 곁 상태 씻기 | 5 | 뽑는다. 씻는 일은 콜백으로 받는다 |
-| 세션에서 프로필 두 겹 | 5 | 뽑는다. 셋이 `role`·`isAdmin`까지 더 짠다 |
+| 세션에서 프로필 두 겹 | **9** | 뽑는다. 셋이 `role`·`isAdmin`까지 더 짠다 |
 | mutation 성공 보고 닫고 씻기 | 4 | 뽑는다. **묶음 B 뒤에 온다** |
 | 날짜별 Map을 루프로 짜기 | 4 | 뽑는다. 하나가 이미 `utils`로 내려가 있다 |
 | 시트 열림을 합집합 타입으로 | 4 | **묶음 G에 넘긴다** — 같은 축이다 |
@@ -47,12 +47,18 @@
 | `src/shared/hooks/useToast.ts` | 신설 — `{ kind, message } \| null`과 `showToast`·`dismissToast`를 낸다 |
 | `src/entities/clock/hooks/useServerNow.ts` | 신설 — 시계 저장소와 `nowWithOffset`을 묶어 지금 시각을 낸다. **`shared`가 아니라 `entities/clock`이다** — 도메인 하나를 읽는 훅이다 |
 | `src/shared/hooks/useMonthCursor.ts` | 신설 — 달을 들고 옮기며, 옮길 때 할 일을 콜백으로 받는다 |
-| `src/entities/profile/hooks/useMyStanding.ts` | 신설 — 세션에서 프로필 두 겹을 받고 `role`·`isAdmin`까지 낸다 |
+| `src/features/auth/hooks/useMyStanding.ts` | 신설 — 세션에서 프로필 두 겹을 받고 `role`·`isAdmin`까지 낸다. **`entities`가 아니라 `features/auth`다** |
 | `src/shared/hooks/useCloseSheetOnSuccess.ts` | `useScheduleAdminScreen.ts:161`의 지역 함수를 올린다 |
 | 날짜별 Map 넷 | 이미 `utils`로 내려간 하나로 모은다 |
 | 토스트 12 · 시계 13 · 달 5 · 프로필 5 · 성공 닫기 4 | 지역 상태와 조립을 지우고 그 훅을 부른다 |
 
-**`shared/hooks`에 둘이 이미 있다**(`useHardwareBack`·`useThemeSheet`). 도메인을 모르는 훅만 거기 가고, 도메인 하나를 읽는 훅은 그 `entities` 슬라이스로 간다 — [ADR-016](../../2-design/adr/ADR-016-fragments-own-their-data.md)의 「무엇을 아는가」 축이다. 그래서 시계와 프로필은 `entities`다.
+**`shared/hooks`에 둘이 이미 있다**(`useHardwareBack`·`useThemeSheet`). 도메인을 모르는 훅만 거기 가고, 도메인 하나를 읽는 훅은 그 `entities` 슬라이스로 간다 — [ADR-016](../../2-design/adr/ADR-016-fragments-own-their-data.md)의 「무엇을 아는가」 축이다. 그래서 시계는 `entities/clock`이다.
+
+**`useMyStanding`은 `entities`에 못 산다.** 세션과 프로필 둘을 맞추는 일이고 **규칙 3이 같은 층 슬라이스끼리를 막는다** — `entities/profile`에 두면 `entities/session`을 못 당기고 `entities/session`에 두면 그 반대다. ADR-016이 「도메인 여럿을 맞추면 `features`」로 이미 답했다.
+
+**`features/auth`가 그 자리다.** 그 슬라이스가 `decideEntry.lib.ts`와 `resolveEntryDestination.lib.ts`로 「누구인지 보고 어디로 보낼지」를 이미 판정한다 — `useMyStanding`은 같은 물음의 훅 꼴이다. `features/stats`의 읽기 훅 둘이 이미 `entities/session`을 당겨 이 길이 서 있다.
+
+**자리가 다섯이 아니라 아홉이다.** 세션과 프로필을 같이 당기는 파일을 전수로 셌다 — `features/payrollCompute/services/useMyPayrollViewDaysQuery.ts`·`features/stats/hooks/useStatsAttendance.ts`·`features/stats/hooks/useStatsPositions.ts`와 `screens`의 `scheduleWorker`·`rehearsal`·`profile`·`payroll`·`stats`·`pending`이다.
 
 **규칙 「`hooks`·`services`·`stores` 밖의 `use*` export」가 자리를 지킨다.** 새 훅 다섯이 전부 `hooks` 세그먼트다.
 
@@ -61,7 +67,7 @@
 - **AC-01** 토스트를 지역 상태로 드는 controller가 0이다. 12자리가 `useToast`를 부르고 꼴이 `{ kind, message } | null` 하나다
 - **AC-02** 서버 시계를 손으로 조립하는 자리가 0이다. 13자리가 `useServerNow`를 부른다
 - **AC-03** 달을 들고 옮기는 다섯 자리가 `useMonthCursor`를 부르고, 옮길 때 씻을 것은 콜백으로 넘긴다
-- **AC-04** 세션에서 프로필 두 겹을 짜는 다섯 자리가 `useMyStanding`을 부른다. `role`·`isAdmin`을 더 짜던 셋도 거기서 받는다
+- **AC-04** 세션에서 프로필 두 겹을 짜는 **아홉** 자리가 `useMyStanding`을 부른다. `role`·`isAdmin`을 더 짜던 자리도 거기서 받는다
 - **AC-05** `useCloseSheetOnSuccess`가 `src/shared/hooks/`에 서고 네 자리가 그것을 부른다. 지역 선언이 0이다
 - **AC-06** 날짜별 Map을 루프로 짜는 자리가 0이다. 넷이 같은 `utils`를 부른다
 - **AC-07** 새 훅 다섯에 짝 테스트가 선다
@@ -69,12 +75,12 @@
 
 ## 작업 순서
 
-**선행 둘이 있다** — 묶음 B(`mutation-settle-shape`)가 `useCloseSheetOnSuccess`가 읽는 `isSuccess`의 시점을 바꾸고, 묶음 G(`fragment-state-contract`)가 합집합 타입의 꼴을 정한다. **B 뒤에 AC-05를 한다.**
+**선행 둘이 다 섰다** — 묶음 B(`mutation-settle-shape`)가 `isSuccess`의 시점을 「새 데이터가 온 뒤」로 정했고 묶음 G(`fragment-state-contract`)가 판별 union의 꼴을 정했다.
 
 1. 실패 테스트를 쓴다 — 새 훅 다섯의 짝이다. 훅이 아직 없어 `await import`와 `@ts-expect-error` 한 줄을 쓴다
 2. `useServerNow`를 세운다. 열세 자리로 가장 넓고 꼴이 하나라 가장 깨끗하다
 3. `useToast`를 세운다. 글자로 들던 열두 자리가 `kind: "info"`로 간다
-4. `useMyStanding`과 `useMonthCursor`를 세운다. 달 쪽은 씻는 일이 화면마다 달라 콜백 꼴을 먼저 정한다
+4. `useMyStanding`과 `useMonthCursor`를 세운다. 달 쪽은 `goPrev`·`goNext`로 통일하고 씻는 일만 `onMove`로 받는다
 5. 날짜별 Map 넷을 모은다
 6. **B가 merge된 뒤** `useCloseSheetOnSuccess`를 올린다
 7. 검증하고 PR을 연다
@@ -83,9 +89,11 @@
 
 **2번 걸음이 열세 화면을 건드린다.** 조립이 세 줄이라 작지만 자리가 넓어 한 번에 전부 바꿔야 한다 — 반만 옮기면 두 꼴이 공존한다.
 
-**달 고르기의 콜백 꼴이 판정 하나다.** 씻는 상태가 넷·다섯·넷으로 달라 공통은 「달이 바뀌면 씻는다」뿐이다. 훅이 `onMove` 하나를 받아 호출만 하는 꼴이면 얇아서 뽑을 값이 적을 수 있다 — **그 얇음을 재서 보고한다.** 값이 없으면 AC-03을 빼는 것이 맞다.
+**달 고르기의 값은 씻기가 아니라 인터페이스에 있다.** 다섯 자리를 읽으니 씻는 상태가 넷·셋·없음·없음으로 갈리고 **둘은 씻을 것이 아예 없다**. 공통은 「달을 들고 옮긴다」뿐이라 얇아 보이는데, **같은 일에 이름이 두 꼴이다** — `useScheduleWorkerScreen`·`useScheduleAdminScreen`이 `goMonth(step)`을, `useAdminStatsScreen`·`useStatsScreen`이 `goPrev`·`goNext`를 쓴다.
 
-**`useMonthCursor`가 `shared`인지 `entities/clock`인지가 그 판정에 걸린다.** 달 글자(`2026-10`)를 다루는 일이 도메인인가 도구인가다. 지금은 `shared/utils`에 `monthIn`·`monthRange`·`monthBoundary`가 있어 도구 쪽으로 기울지만, 훅이 저장소를 읽으면 달라진다.
+**`goPrev`·`goNext`로 통일한다.** `goMonth(step)`은 달 셈을 호출부로 흘려 호출부가 `1`과 `-1`을 알아야 한다. 사람이 하는 일은 「이전 달」과 「다음 달」이다. 씻는 일은 `onMove` 콜백으로 받고 **씻을 것이 없는 둘은 그 인자를 안 준다.**
+
+**`useMonthCursor`는 `shared/hooks`다.** 첫 달을 인자로 받아 시계를 모른다 — 호출부가 이미 `useServerNow`를 든다. 달 글자(`2026-10`)를 다루는 것은 도구고 `shared/utils`의 `monthIn`·`monthRange`·`monthBoundary`가 그 자리다.
 
 **AC-07의 짝 테스트가 훅이라 `renderHook`을 쓴다.** `logic` 프로젝트가 node 환경이라 React 훅 테스트가 거기서 도는지 확인한다 — 기존 controller 짝 테스트가 그 꼴로 이미 돌고 있으니 길은 있다.
 
