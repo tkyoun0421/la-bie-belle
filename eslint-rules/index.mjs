@@ -11,6 +11,7 @@ import noArbitraryClassValues from "./noArbitraryClassValues.mjs";
 import noColorLiterals from "./noColorLiterals.mjs";
 import noCrossSliceImport from "./noCrossSliceImport.mjs";
 import noDefaultPaletteClass from "./noDefaultPaletteClass.mjs";
+import noDuplicateFailureCopy from "./noDuplicateFailureCopy.mjs";
 import noEdgeFunctionSrcImport from "./noEdgeFunctionSrcImport.mjs";
 import noExplanatoryComment from "./noExplanatoryComment.mjs";
 import noLayerReexport from "./noLayerReexport.mjs";
@@ -44,6 +45,7 @@ const house = {
     "no-color-literals": noColorLiterals,
     "no-cross-slice-import": noCrossSliceImport,
     "no-default-palette-class": noDefaultPaletteClass,
+    "no-duplicate-failure-copy": noDuplicateFailureCopy,
     "no-edge-function-src-import": noEdgeFunctionSrcImport,
     "no-explanatory-comment": noExplanatoryComment,
     "no-layer-reexport": noLayerReexport,

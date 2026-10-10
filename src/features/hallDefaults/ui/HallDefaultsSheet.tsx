@@ -3,9 +3,8 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
+import { HALL_DEFAULTS_COPY } from "@/features/hallDefaults/consts/hallDefaults.const";
 import { useHallDefaultsSheet } from "@/features/hallDefaults/hooks/useHallDefaultsSheet";
-
-const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
 
 export type HallDefaultsSheetProps = {
   starts: string;
@@ -55,7 +54,7 @@ export function HallDefaultsSheet({
 
       {sheet.failed ? (
         <Text size="sm" tone="critical" className="mt-2">
-          {SAVE_FAILED}
+          {HALL_DEFAULTS_COPY.saveFailed}
         </Text>
       ) : null}
 

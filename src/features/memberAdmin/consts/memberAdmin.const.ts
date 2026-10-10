@@ -1,3 +1,4 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
 import {
   MEMBER_DECISION_COPY,
   MEMBER_LIST_COPY,
@@ -21,7 +22,7 @@ export const MEMBER_SHEET_COPY = {
   phoneLabel: "연락처",
   genderLabel: "성별",
   birthLabel: "생년월일",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
   back: "뒤로",
   save: "저장",
   rename: "이름 고치기",
@@ -46,7 +47,7 @@ export const DETAIL_SHEET_COPY = {
   birthLabel: "생년월일",
   phoneLabel: "연락처",
   emailLabel: "구글 계정",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
   close: "닫기",
   reject: "거절",
   approve: "승인",

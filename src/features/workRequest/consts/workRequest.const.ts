@@ -1,3 +1,9 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
+export const WORK_REQUEST_COPY = {
+  sendFailed: TRANSPORT_ERROR_COPY,
+} as const;
+
 export const CANCEL_REASON_MAX_LENGTH = 100;
 
 export const CUSTOM_REJECT_REASON = "custom";
@@ -21,7 +27,7 @@ export const APPROVAL_SHEET_COPY = {
   sendReject: "거절 보내기",
   sending: "보내는 중",
   resend: "다시 보내기",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
   confirmTitle: "근무를 취소할까요?",
   confirmBack: "뒤로",
   confirmApprove: "취소 승인",

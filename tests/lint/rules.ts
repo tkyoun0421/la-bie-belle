@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 42;
+export const DOCUMENTED_LINT_RULE_COUNT = 43;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -339,6 +339,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-layer-reexport",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noLayerReexport.test.ts",
+  },
+  {
+    no: 43,
+    name: "복사된 통신 실패 문안",
+    mechanism: "house",
+    ruleId: "house/no-duplicate-failure-copy",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noDuplicateFailureCopy.test.ts",
   },
 ];
 

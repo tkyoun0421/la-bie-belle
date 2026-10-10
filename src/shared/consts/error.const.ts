@@ -39,3 +39,5 @@ export const ERROR_CODES = [
   "window_closed",
   "wrong_kind",
 ] as const;
+
+export const TRANSPORT_ERROR_COPY = "보내지 못했어요. 다시 시도해주세요";

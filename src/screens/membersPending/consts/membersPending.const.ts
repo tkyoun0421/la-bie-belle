@@ -1,3 +1,5 @@
+import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+
 export const PENDING_COPY = {
   appBarTitle: "가입 대기",
   more: "더보기",
@@ -13,7 +15,7 @@ export const BLOCKED_COPY = {
   confirmNote: "다시 로그인할 수 있게 돼요",
   unblockedSuffix: " 님의 차단을 풀었어요",
   close: "닫기",
-  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  sendFailed: TRANSPORT_ERROR_COPY,
 } as const;
 
 export const UNBLOCK_CONFIRM_TEST_ID = "members-pending-unblock-confirm";
