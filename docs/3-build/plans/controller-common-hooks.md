@@ -13,9 +13,9 @@
 | 반복되는 일 | 자리 | 판정 |
 | --- | --- | --- |
 | 서버 시계 조립 | **13** | 뽑는다. 셋은 세 줄이 글자까지 같다 |
-| 토스트 들기 | **12** | 뽑는다. 꼴을 먼저 정한다 |
+| 토스트 들기 | **10** | 뽑는다. 꼴을 먼저 정한다 |
 | 달 고르기와 곁 상태 씻기 | 5 | 뽑는다. 씻는 일은 콜백으로 받는다 |
-| 세션에서 프로필 두 겹 | **9** | 뽑는다. 셋이 `role`·`isAdmin`까지 더 짠다 |
+| 세션에서 프로필 두 겹 | **12** | 뽑는다. 셋이 `role`·`isAdmin`까지 더 짠다 |
 | mutation 성공 보고 닫고 씻기 | 4 | 뽑는다. **묶음 B 뒤에 온다** |
 | 날짜별 Map을 루프로 짜기 | 4 | 뽑는다. 하나가 이미 `utils`로 내려가 있다 |
 | 시트 열림을 합집합 타입으로 | 4 | **묶음 G에 넘긴다** — 같은 축이다 |
@@ -66,10 +66,24 @@
 
 - **AC-01** 토스트를 지역 상태로 드는 controller가 0이다. 12자리가 `useToast`를 부르고 꼴이 `{ kind, message } | null` 하나다
 - **AC-02** 서버 시계를 손으로 조립하는 자리가 0이다. 13자리가 `useServerNow`를 부른다
-- **AC-03** 달을 들고 옮기는 다섯 자리가 `useMonthCursor`를 부르고, 옮길 때 씻을 것은 콜백으로 넘긴다
-- **AC-04** 세션에서 프로필 두 겹을 짜는 **아홉** 자리가 `useMyStanding`을 부른다. `role`·`isAdmin`을 더 짜던 자리도 거기서 받는다
+- **AC-03** 달을 들고 옮기는 **넷**이 `useMonthCursor`를 부르고, 옮길 때 씻을 것은 콜백으로 넘긴다
+
+**다섯째(`useRehearsalScreen`)는 빠진다.** 이전·다음으로 옮기는 손이 없고 연월 피커로 고르기만 해서 `goPrev`·`goNext`가 그 화면에서 죽는다.
+
+**`jumpTo(month)`가 반환에 더 선다.** `useScheduleAdminScreen:248`과 `useScheduleWorkerScreen:151`이 라우터 파라미터가 지목한 달로 건너뛰는 effect를 들어 달을 심을 손이 필요하다. 받은 달을 그대로 넘기니 호출부가 `1`·`-1`을 아는 것이 아니라 「달 셈을 흘리지 않는다」를 깨지 않는다. `onMove`는 부르지 않는다.
+- **AC-04** 세션에서 프로필 두 겹을 짜는 **열두** 자리가 `useMyStanding`을 부른다. `role`·`isAdmin`을 더 짜던 자리도 거기서 받는다
+
+**열둘에 `src/app/` 셋이 든다** — `(tabs)/_layout.tsx`·`admin/_layout.tsx`·`me/rehearsals.tsx`고 뒤의 둘은 `role === "admin"`을 손으로 짠다. 그 판정이 훅으로 들어가는 것이 이 AC가 겨누는 자리다.
+
+**`useMyStanding`은 행 쿼리(`useMyProfileRowQuery`)를 든다.** 열둘 가운데 열하나가 그것이고 연락처까지 받는 것은 `useProfileScreen` 하나다. 두 겹 쿼리를 훅에 넣으면 **연락처 질의가 열한 화면에 새로 붙고** `profile.id`가 늦게 서서 그것으로 막은 뒷 쿼리가 늦게 뜬다.
+
+**`null`과 `undefined`를 접지 않는다.** `usePendingScreen:136`이 「행이 없다」와 「아직 안 왔다」를 따로 보고 `useRehearsalScreen:83`이 `role !== undefined`를 「알아냈다」로 쓴다. 훅의 `profile`은 `Profile | null | undefined`다.
 - **AC-05** `useCloseSheetOnSuccess`가 `src/shared/hooks/`에 서고 네 자리가 그것을 부른다. 지역 선언이 0이다
-- **AC-06** 날짜별 Map을 루프로 짜는 자리가 0이다. 넷이 같은 `utils`를 부른다
+- **AC-06** ~~날짜별 Map을 루프로 짜는 자리가 0이다~~ — **뺀다.** 넷이 한 가지가 아니었다
+
+**넷을 열어 보니 하는 일이 셋이다.** `useScheduleWorkerScreen:184`는 키마다 값 하나를 꽂고(나중 것이 이긴다), `useScheduleWorkerScreen:194`와 `useRehearsalScreen:115`는 배열에 쌓고, `vacancyCards.policy.ts:28`은 센다. **각각 한 자리와 두 자리와 한 자리다.** 증축 규칙의 「세 번째면 뽑는다」에 셋 다 못 미친다.
+
+처음 표가 넷으로 센 것은 **「루프로 Map을 짠다」는 생김새를 센 것**이고, 뽑는 기준은 하는 일이다. 꽂기와 쌓기와 세기는 서로 다른 판정이라 한 `utils`로 모으면 그 셋을 가르는 인자가 생겨 부르는 자리가 더 어려워진다. `entities/notification/model`의 `groupNotificationsByDate`는 **네 번째 꼴**이다 — 잇따른 같은 날을 한 묶음으로 접어서 위 셋과 다르다.
 - **AC-07** 새 훅 다섯에 짝 테스트가 선다
 - **AC-08** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
@@ -81,7 +95,6 @@
 2. `useServerNow`를 세운다. 열세 자리로 가장 넓고 꼴이 하나라 가장 깨끗하다
 3. `useToast`를 세운다. 글자로 들던 열두 자리가 `kind: "info"`로 간다
 4. `useMyStanding`과 `useMonthCursor`를 세운다. 달 쪽은 `goPrev`·`goNext`로 통일하고 씻는 일만 `onMove`로 받는다
-5. 날짜별 Map 넷을 모은다
 6. **B가 merge된 뒤** `useCloseSheetOnSuccess`를 올린다
 7. 검증하고 PR을 연다
 
