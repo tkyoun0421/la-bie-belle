@@ -123,6 +123,7 @@ describe("useMembersPendingScreen — 시트 고르는 자리와 더보기를 �
     );
 
     expect(result.current.toast?.message).toBe("이준호 님을 승인했어요");
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
 
     act(() => result.current.dismissToast());

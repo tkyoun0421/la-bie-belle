@@ -289,6 +289,7 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
     act(() => result.current.picker?.pick(entry!));
 
     expect(result.current.toast?.message).toContain("겸임");
+    expect(result.current.toast?.kind).toBe("info");
     expect(input.onAddAssignment).not.toHaveBeenCalled();
 
     act(() => result.current.dismissToast());
