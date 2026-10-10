@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 import { toHolidayImportEntry } from "../_shared/holiday/holiday.mapper.ts";
 import {
-  type Holiday,
+  type HolidayApiEntry,
   parseHolidayApiResponse,
 } from "../_shared/holiday/holiday.schema.ts";
 
@@ -69,7 +69,10 @@ async function readYear(request: Request): Promise<number | null> {
     : null;
 }
 
-async function fetchMonth(year: number, month: number): Promise<Holiday[]> {
+async function fetchMonth(
+  year: number,
+  month: number,
+): Promise<HolidayApiEntry[]> {
   const query = new URLSearchParams({
     serviceKey: holidayApiKey,
     solYear: String(year),
@@ -87,8 +90,8 @@ async function fetchMonth(year: number, month: number): Promise<Holiday[]> {
   return parseHolidayApiResponse(await response.json());
 }
 
-async function fetchYear(year: number): Promise<Holiday[]> {
-  const byDate = new Map<string, Holiday>();
+async function fetchYear(year: number): Promise<HolidayApiEntry[]> {
+  const byDate = new Map<string, HolidayApiEntry>();
 
   for (let month = 1; month <= MONTHS; month += 1) {
     for (const holiday of await fetchMonth(year, month)) {
@@ -119,7 +122,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return respond(400, { error: "invalid_year" });
   }
 
-  let holidays: Holiday[];
+  let holidays: HolidayApiEntry[];
 
   try {
     holidays = await fetchYear(year);

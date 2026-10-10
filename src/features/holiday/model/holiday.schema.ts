@@ -1,4 +1,4 @@
-export type Holiday = {
+export type HolidayApiEntry = {
   date: string;
   name: string;
 };
@@ -46,14 +46,14 @@ function isEightDigitDate(value: unknown): value is number | string {
   );
 }
 
-export function parseHolidayApiResponse(body: unknown): Holiday[] {
+export function parseHolidayApiResponse(body: unknown): HolidayApiEntry[] {
   const items = itemsOf(body);
 
   if (items === null) {
     return [];
   }
 
-  const holidays: Holiday[] = [];
+  const holidays: HolidayApiEntry[] = [];
 
   for (const entry of items) {
     const item = asRecord(entry);
