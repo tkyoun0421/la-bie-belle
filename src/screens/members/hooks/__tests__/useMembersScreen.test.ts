@@ -106,6 +106,7 @@ describe("useMembersScreen — 시트 고르는 자리와 찾는 말을 든다",
     );
 
     expect(result.current.toast?.message).toBe("퇴사 처리했어요");
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
 
     act(() => result.current.dismissToast());

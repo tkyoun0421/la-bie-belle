@@ -8,8 +8,7 @@ import {
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
@@ -57,11 +56,7 @@ export function usePayrollScreen(): PayrollScreenController {
   const [unit, setUnit] = useState<PeriodUnit>("month");
   const [anchorDate, setAnchorDate] = useState(today);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
-    supabase,
-    me?.id ?? null,
-  );
+  const { profile, isLoading: profileLoading } = useMyStanding(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
 
   const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);

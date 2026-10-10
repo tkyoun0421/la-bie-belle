@@ -1,3 +1,4 @@
+import type { ToastState } from "@/shared/hooks/useToast";
 import type {
   ActiveMember,
   Qualification,
@@ -219,6 +220,6 @@ export type DayDetailController = {
   confirmChange: DayDetailConfirmChange | null;
   discard: DayDetailDiscard | null;
   sheets: readonly DayDetailOpenSheet[];
-  toast: string | null;
+  toast: ToastState | null;
   dismissToast: () => void;
 };

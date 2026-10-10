@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { kstDateOf, monthOf } from "@/shared/utils/kstDate";
 import { APPLICATIONS_TABS } from "@/entities/availability/consts/availability.const";
 import type { ApplicationsTab } from "@/entities/availability/hooks/useApplicationsList";
@@ -9,8 +10,7 @@ import {
   applicationsEmptyDeadlineLine,
   applicationsTitle,
 } from "@/entities/availability/utils/applicationsGrouping.utils";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
@@ -50,8 +50,8 @@ export function useApplicationsScreen(
   const [asking, setAsking] = useState(false);
   const [draft, setDraft] = useState<string | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const serverNowMs = useServerNow();
+  const now = new Date(serverNowMs).toISOString();
   const today = kstDateOf(now);
   const month = monthParam ?? monthOf(today);
 
@@ -65,17 +65,17 @@ export function useApplicationsScreen(
     reset,
   } = useSetApplicationDeadlineMutation(supabase);
 
-  const close = useCallback(() => {
+  const leave = useCallback(() => {
     setAsking(false);
     setDraft(null);
-    reset();
-  }, [reset]);
+  }, []);
 
-  useEffect(() => {
-    if (saved) {
-      close();
-    }
-  }, [saved, close]);
+  const close = useCallback(() => {
+    leave();
+    reset();
+  }, [leave, reset]);
+
+  useCloseSheetOnSuccess(saved, reset, leave);
 
   const deadline = schedule?.applicationDeadline ?? null;
   const typed = draft ?? deadline ?? today;

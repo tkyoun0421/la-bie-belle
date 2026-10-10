@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
 import { PERMISSION_OF_OTHERS } from "@/entities/notification/consts/notification.const";
 import { getReachState } from "@/entities/notification/model/reachState.policy";
@@ -11,8 +11,6 @@ import {
   getMemberSheetLine,
 } from "@/entities/notification/utils/reachMessage.utils";
 import type { MemberAdminDone } from "@/features/memberAdmin/model/memberAdmin.type";
-
-export type MembersToast = MemberAdminDone;
 
 export type MembersSheet = {
   name: string;
@@ -27,7 +25,7 @@ export type MembersScreenController = {
   today: string;
   lastAdmin: boolean;
   reachLine: string | null;
-  toast: MembersToast | null;
+  toast: ToastState | null;
   noteOf: (member: ActiveMember) => string | null;
   search: (typed: string) => void;
   expand: () => void;
@@ -66,10 +64,11 @@ export function useMembersScreen(): MembersScreenController {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState<Open | null>(null);
-  const [toast, setToast] = useState<MembersToast | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const { toast, showToast, dismissToast } = useToast();
+
+  const serverNowMs = useServerNow();
+  const now = new Date(serverNowMs).toISOString();
 
   const close = useCallback(() => setOpen(null), []);
 
@@ -77,10 +76,13 @@ export function useMembersScreen(): MembersScreenController {
     setOpen({ member, lastAdmin });
   }, []);
 
-  const finish = useCallback((done: MemberAdminDone) => {
-    setToast(done);
-    setOpen(null);
-  }, []);
+  const finish = useCallback(
+    (done: MemberAdminDone) => {
+      showToast(done.kind, done.message);
+      setOpen(null);
+    },
+    [showToast],
+  );
 
   const noteOf = useCallback(
     (member: ActiveMember) =>
@@ -122,6 +124,6 @@ export function useMembersScreen(): MembersScreenController {
     openMember,
     finish,
     close,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }

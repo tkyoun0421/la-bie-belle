@@ -85,7 +85,11 @@ export function QrScreen() {
       </Dialog>
 
       {toast === null ? null : (
-        <FloatingToast message={toast} onDone={dismissToast} />
+        <FloatingToast
+          kind={toast.kind}
+          message={toast.message}
+          onDone={dismissToast}
+        />
       )}
     </Screen>
   );

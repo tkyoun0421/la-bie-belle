@@ -14,8 +14,7 @@ import {
 } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { clockOf, spellDate } from "@/shared/utils/kstDate";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
@@ -100,7 +99,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
 
   const today = kstToday();
   const month = today.slice(0, 7);
-  const clockOffset = serverClockStore((at) => at.offset);
+  const nowMs = useServerNow();
 
   const unreadCount = useUnreadCountQuery(supabase);
   const { data: schedule } = useMonthWindowQuery(supabase, month);
@@ -132,8 +131,6 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     (date: string) => router.push(`${ADMIN_SCHEDULE_PATH}?date=${date}`),
     [router],
   );
-
-  const nowMs = nowWithOffset(Date.now(), clockOffset);
 
   const openDays = days ?? [];
   const confirmed = schedule?.confirmedAt != null;

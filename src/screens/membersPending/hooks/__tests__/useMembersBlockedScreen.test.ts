@@ -101,11 +101,12 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
       expect(unblockMemberMock).toHaveBeenCalledWith(FAKE_CLIENT, "p1"),
     );
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(result.current.toast?.message).toBe(
         `최민재${BLOCKED_COPY.unblockedSuffix}`,
-      ),
-    );
+      );
+      expect(result.current.toast?.kind).toBe("success");
+    });
 
     expect(result.current.confirming).toBeNull();
   });
@@ -118,11 +119,12 @@ describe("useMembersBlockedScreen — 줄에서 바로 묻는다", () => {
     act(() => result.current.openMember(BLOCKED));
     act(() => result.current.unblock());
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(result.current.toast?.message).toBe(
         MEMBER_DECISION_COPY.alreadyDecided,
-      ),
-    );
+      );
+      expect(result.current.toast?.kind).toBe("info");
+    });
 
     expect(result.current.confirming).toBeNull();
   });

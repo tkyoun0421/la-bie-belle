@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   adminAttendanceLine,
@@ -37,12 +36,12 @@ export function useAdminStatsAttendance(
   const months = useMemo(() => [month], [month]);
 
   const attendance = useAttendanceMonthsQuery(supabase, months);
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
 
   const shown = monthIn(attendance.data, month);
 
   const tab = useMemo(() => {
-    const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+    const now = new Date(serverNowMs).toISOString();
 
     return buildAttendanceTab(
       shown?.days ?? [],
@@ -50,7 +49,7 @@ export function useAdminStatsAttendance(
       shown?.attendance.excuseStatuses ?? [],
       now,
     );
-  }, [shown, clockOffset]);
+  }, [shown, serverNowMs]);
 
   if (attendance.isLoading) {
     return { state: "pending" };

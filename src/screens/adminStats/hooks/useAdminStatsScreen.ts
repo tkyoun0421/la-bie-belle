@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
+import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
-import { monthOf, shiftMonth } from "@/shared/utils/kstDate";
+import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import {
   computeWorkTotals,
@@ -72,10 +72,10 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   const today = kstToday();
 
   const [tab, setTab] = useState<AdminStatsTab>(ADMIN_STATS_TABS[0]);
-  const [month, setMonth] = useState(() => monthOf(today));
+  const { month, goPrev, goNext } = useMonthCursor(monthOf(today));
   const [openPerson, setOpenPerson] = useState<string | null>(null);
 
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
   const months = useMemo(() => trendMonths(month), [month]);
 
   const work = useWorkMonthsQuery(
@@ -94,7 +94,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   }, [work.data, month]);
 
   const attendanceByMonth = useMemo(() => {
-    const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+    const now = new Date(serverNowMs).toISOString();
 
     return new Map(
       (attendance.data ?? []).map((one) => [
@@ -107,7 +107,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
         ),
       ]),
     );
-  }, [attendance.data, clockOffset]);
+  }, [attendance.data, serverNowMs]);
 
   const attendanceTab = attendanceByMonth.get(month) ?? {
     tally: EMPTY_TALLY,
@@ -157,8 +157,8 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
     chooseTab: (value) => setTab(tabOf(value)),
     pickPerson: (profileId) => setOpenPerson(profileId),
     goBack: () => router.back(),
-    goPrev: () => setMonth(shiftMonth(month, -1)),
-    goNext: () => setMonth(shiftMonth(month, 1)),
+    goPrev,
+    goNext,
     closeSheet: () => setOpenPerson(null),
     retry: () => {
       for (const queryKey of RETRY_KEYS) {

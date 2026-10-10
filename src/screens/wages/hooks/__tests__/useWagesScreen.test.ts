@@ -199,7 +199,8 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
     act(() => result.current.openBase());
     act(() => result.current.finish("기본 시급을 바꿨어요"));
 
-    expect(result.current.toast).toBe("기본 시급을 바꿨어요");
+    expect(result.current.toast?.message).toBe("기본 시급을 바꿨어요");
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
 
     act(() => result.current.dismissToast());

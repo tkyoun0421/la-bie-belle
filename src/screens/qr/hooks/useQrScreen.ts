@@ -4,6 +4,7 @@ import * as Sharing from "expo-sharing";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { readAppUrl } from "@/shared/config/app.config";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
 import type { HallQrCode } from "@/entities/qr/model/qr.type";
 import { useQrCodeQuery } from "@/entities/qr/services/useQrCodeQuery";
@@ -22,7 +23,7 @@ export type QrScreenController = {
   asking: boolean;
   rotateFailed: boolean;
   rotateNotice: string | undefined;
-  toast: string | null;
+  toast: ToastState | null;
   goBack: () => void;
   exportPaper: () => void;
   askRotate: () => void;
@@ -39,8 +40,9 @@ export function useQrScreen(): QrScreenController {
   const [svg, setSvg] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [asking, setAsking] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
+
+  const { toast, showToast, dismissToast } = useToast();
 
   const { data: qr } = useQrCodeQuery(supabase);
   const {
@@ -82,10 +84,10 @@ export function useQrScreen(): QrScreenController {
   useEffect(() => {
     if (rotated) {
       setAsking(false);
-      setToast(QR_SCREEN_COPY.rotateDone);
+      showToast("success", QR_SCREEN_COPY.rotateDone);
       resetRotate();
     }
-  }, [rotated, resetRotate]);
+  }, [rotated, resetRotate, showToast]);
 
   const exportPaper = useCallback(() => {
     if (svg === null || exporting) {
@@ -102,10 +104,10 @@ export function useQrScreen(): QrScreenController {
       () => setExporting(false),
       () => {
         setExporting(false);
-        setToast(QR_SCREEN_COPY.paperFailed);
+        showToast("info", QR_SCREEN_COPY.paperFailed);
       },
     );
-  }, [svg, exporting]);
+  }, [svg, exporting, showToast]);
 
   const askRotate = useCallback(() => setAsking(true), []);
 
@@ -113,8 +115,6 @@ export function useQrScreen(): QrScreenController {
     setAsking(false);
     resetRotate();
   }, [resetRotate]);
-
-  const dismissToast = useCallback(() => setToast(null), []);
 
   const goBack = useCallback(() => router.back(), [router]);
 

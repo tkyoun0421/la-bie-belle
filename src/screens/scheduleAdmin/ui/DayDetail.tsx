@@ -68,8 +68,8 @@ export function DayDetail({ onBack, ...input }: DayDetailProps) {
 
       {day.toast === null ? null : (
         <FloatingToast
-          kind="info"
-          message={day.toast}
+          kind={day.toast.kind}
+          message={day.toast.message}
           onDone={day.dismissToast}
         />
       )}

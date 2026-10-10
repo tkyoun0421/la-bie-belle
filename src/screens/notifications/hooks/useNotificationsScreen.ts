@@ -2,8 +2,7 @@ import { useRouter, type Href } from "expo-router";
 import { useCallback } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { WORKER_HOME_PATH } from "@/shared/consts/navigation.const";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { NotificationPick } from "@/entities/notification/hooks/useNotificationsList";
 import { useMarkNotificationsReadMutation } from "@/features/notificationRead/services/useMarkNotificationsReadMutation";
 import { pressNotification } from "@/screens/notifications/model/pressNotification.policy";
@@ -19,8 +18,8 @@ export function useNotificationsScreen(
   from?: string,
 ): NotificationsScreenController {
   const router = useRouter();
-  const clockOffset = serverClockStore((at) => at.offset);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset));
+  const serverNowMs = useServerNow();
+  const now = new Date(serverNowMs);
 
   const { mutate: markRead, mutateAsync: markReadAsync } =
     useMarkNotificationsReadMutation(supabase);

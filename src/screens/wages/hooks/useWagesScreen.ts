@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
@@ -36,7 +37,7 @@ export type WagesScreenController = {
   followerCount: number;
   sheet: "default" | "member" | null;
   member: WagesScreenMember | null;
-  toast: string | null;
+  toast: ToastState | null;
   openBase: () => void;
   openPerson: (profileId: string) => void;
   finish: (message: string) => void;
@@ -49,17 +50,21 @@ type SheetTarget = { kind: "default" } | { kind: "member"; profileId: string };
 export function useWagesScreen(): WagesScreenController {
   const router = useRouter();
   const [target, setTarget] = useState<SheetTarget | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   const { data: members } = useMembersQuery(supabase, "active");
   const { data: wages } = useWageRatesQuery(supabase);
 
+  const { toast, showToast, dismissToast } = useToast();
+
   const close = useCallback(() => setTarget(null), []);
 
-  const finish = useCallback((message: string) => {
-    setToast(message);
-    setTarget(null);
-  }, []);
+  const finish = useCallback(
+    (message: string) => {
+      showToast("success", message);
+      setTarget(null);
+    },
+    [showToast],
+  );
 
   const wageRates = wages?.wageRates ?? [];
   const defaultWage = wages?.defaultWageRate?.amount ?? null;
@@ -123,6 +128,6 @@ export function useWagesScreen(): WagesScreenController {
     openPerson: (profileId) => setTarget({ kind: "member", profileId }),
     finish,
     close,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }

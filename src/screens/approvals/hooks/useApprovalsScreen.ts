@@ -5,13 +5,14 @@ import {
   ADMIN_SCHEDULE_PATH,
   ORIGIN_APPROVALS,
 } from "@/shared/consts/navigation.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
 
 export type ApprovalsScreenController = {
   answered: string | null;
   sheet: PendingApproval | null;
-  toast: string | null;
+  toast: ToastState | null;
   goBack: () => void;
   openApproval: (approval: PendingApproval) => void;
   closeSheet: () => void;
@@ -25,7 +26,8 @@ export function useApprovalsScreen(): ApprovalsScreenController {
 
   const [open, setOpen] = useState<PendingApproval | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+
+  const { toast, showToast, dismissToast } = useToast();
 
   const closeSheet = useCallback(() => setOpen(null), []);
 
@@ -36,8 +38,8 @@ export function useApprovalsScreen(): ApprovalsScreenController {
 
     setAnswered(open.id);
     setOpen(null);
-    setToast(APPROVALS_COPY.rejected);
-  }, [open]);
+    showToast("success", APPROVALS_COPY.rejected);
+  }, [open, showToast]);
 
   const finishApprove = useCallback(() => {
     if (open === null) {
@@ -69,6 +71,6 @@ export function useApprovalsScreen(): ApprovalsScreenController {
     closeSheet,
     finishReject,
     finishApprove,
-    dismissToast: () => setToast(null),
+    dismissToast,
   };
 }

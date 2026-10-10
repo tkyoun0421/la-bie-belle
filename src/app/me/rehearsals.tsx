@@ -1,8 +1,7 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/shared/api/supabase";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
 import { RehearsalScreen } from "@/screens/rehearsal/ui/RehearsalScreen";
@@ -13,20 +12,14 @@ type RehearsalParams = {
 
 export default function Screen() {
   const { month } = useLocalSearchParams<RehearsalParams>();
-  const { data: user, isLoading: asking } = useSessionUserQuery(supabase);
-  const userId = user?.id ?? null;
-
-  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
-    supabase,
-    userId,
-  );
+  const { userId, profile, isAdmin, isLoading } = useMyStanding(supabase);
   const { data: grants, isLoading: grantsLoading } =
     useQualificationsQuery(supabase);
 
   const standing = resolveRehearsalGuard({
-    isAdmin: profile?.role === "admin",
+    isAdmin,
     hasGrant: hasRehearsalGrant(grants ?? [], profile?.id ?? null),
-    isLoading: asking || (userId !== null && (profileLoading || grantsLoading)),
+    isLoading: isLoading || (userId !== null && grantsLoading),
   });
 
   if (standing === "wait") {

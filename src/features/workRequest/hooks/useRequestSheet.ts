@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { answerFailure } from "@/features/workRequest/model/answerFailure.policy";
@@ -32,7 +31,7 @@ export function useRequestSheet({
   onAnswered,
   onSeatTaken,
 }: RequestSheetInput): RequestSheetController {
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
 
   const {
     mutate: answer,
@@ -62,7 +61,7 @@ export function useRequestSheet({
       requestSheetState({
         closedAt: request.closedAt,
         expiresAt: request.expiresAt,
-        serverNowMs: nowWithOffset(Date.now(), clockOffset),
+        serverNowMs,
       }) === "ended",
     sending: isPending,
     failedLine: failed ? WORK_REQUEST_COPY.sendFailed : null,

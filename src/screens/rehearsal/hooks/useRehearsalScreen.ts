@@ -2,9 +2,9 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
 import type {
   Rehearsal,
@@ -18,7 +18,7 @@ import {
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import { spellTotal } from "@/entities/rehearsal/utils/spellTotal.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import { REHEARSAL_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
@@ -74,11 +74,8 @@ export function useRehearsalScreen(
   const [openForm, setOpenForm] = useState<OpenForm | null>(null);
   const [removing, setRemoving] = useState(false);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
+  const { profile, role, isAdmin } = useMyStanding(supabase);
 
-  const role = profile?.role;
-  const isAdmin = role === "admin";
   const roleKnown = role !== undefined;
   const myProfileId = profile?.id ?? null;
 
@@ -103,14 +100,7 @@ export function useRehearsalScreen(
     setRemoving(false);
   }, []);
 
-  useEffect(() => {
-    if (!deleted) {
-      return;
-    }
-
-    closeForm();
-    resetRemove();
-  }, [deleted, closeForm, resetRemove]);
+  useCloseSheetOnSuccess(deleted, resetRemove, closeForm);
 
   const rows: Row[] = useMemo(
     () => (isAdmin ? (all.data ?? []) : (mine.data ?? [])),

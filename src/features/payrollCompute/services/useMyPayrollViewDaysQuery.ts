@@ -2,8 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
@@ -49,7 +48,7 @@ export function useMyPayrollViewDaysQuery(
   const payroll = usePayrollMonthsQuery(client, months);
   const schedule = useScheduleMonthsQuery(client, months);
   const rehearsal = useRehearsalMonthsQuery(client, months);
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
 
   const profileId = profile?.id ?? null;
 
@@ -70,14 +69,14 @@ export function useMyPayrollViewDaysQuery(
       adjustments: payroll.data.adjustments,
       excuses: payroll.data.excuseStatus,
       rehearsals: rehearsal.data,
-      now: new Date(nowWithOffset(Date.now(), clockOffset)).toISOString(),
+      now: new Date(serverNowMs).toISOString(),
     }).filter((day) => isInSpan({ from, to }, day.date));
   }, [
     profileId,
     payroll.data,
     schedule.data,
     rehearsal.data,
-    clockOffset,
+    serverNowMs,
     from,
     to,
   ]);

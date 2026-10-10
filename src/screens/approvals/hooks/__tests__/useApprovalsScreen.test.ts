@@ -90,7 +90,8 @@ describe("useApprovalsScreen — 시트 고르는 자리와 갈 데를 든다", 
     act(() => result.current.openApproval(ONE));
     act(() => result.current.finishReject());
 
-    expect(result.current.toast).toBe(APPROVALS_COPY.rejected);
+    expect(result.current.toast?.message).toBe(APPROVALS_COPY.rejected);
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
     expect(result.current.answered).toBe("one");
     expect(replaceMock).not.toHaveBeenCalled();

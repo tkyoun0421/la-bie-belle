@@ -9,11 +9,12 @@ import {
   STATS_PATH,
 } from "@/shared/consts/navigation.const";
 import { THEME_LABEL } from "@/shared/consts/theme.const";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import { useTheme } from "@/shared/stores/theme.store";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
@@ -33,7 +34,7 @@ export type ProfileScreenController = {
   themeLabel: string;
   notificationEnabled: boolean | null;
   sheet: ProfileSheetName;
-  toast: string | null;
+  toast: ToastState | null;
   signingOut: boolean;
   openContact: () => void;
   openPhoto: () => void;
@@ -54,12 +55,13 @@ export function useProfileScreen(): ProfileScreenController {
   const router = useRouter();
   const pathname = usePathname();
   const [sheet, setSheet] = useState<ProfileSheetName>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
+  const { toast, showToast, dismissToast } = useToast();
   const theme = useTheme((at) => at.theme);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data, isLoading } = useMyProfileQuery(supabase, me?.id ?? null);
+  const { user, profile, isAdmin, isLoading } = useMyStanding(supabase);
+  const profileId = profile?.id ?? null;
+  const contact = useProfilePrivateQuery(supabase, profileId);
   const { data: grants } = useQualificationsQuery(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
 
@@ -67,10 +69,13 @@ export function useProfileScreen(): ProfileScreenController {
 
   const closeSheet = useCallback(() => setSheet(null), []);
 
-  const finish = useCallback((message: string) => {
-    setToast(message);
-    setSheet(null);
-  }, []);
+  const finish = useCallback(
+    (message: string) => {
+      showToast("success", message);
+      setSheet(null);
+    },
+    [showToast],
+  );
 
   const savedContact = useCallback(
     () => finish(PROFILE_COPY.contactSaved),
@@ -81,8 +86,6 @@ export function useProfileScreen(): ProfileScreenController {
     () => finish(PROFILE_COPY.photoSaved),
     [finish],
   );
-
-  const admin = data?.role === "admin";
 
   const goNotifications = useCallback(() => {
     router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`);
@@ -109,17 +112,17 @@ export function useProfileScreen(): ProfileScreenController {
   }, [signOut, goLogin]);
 
   return {
-    loading: isLoading,
+    loading: isLoading || (profileId !== null && contact.isLoading),
     unread: (unreadCount.data ?? 0) > 0,
-    userId: me?.id ?? null,
-    profileId: data?.id ?? null,
-    photoUrl: data?.photoUrl ?? null,
-    googlePhotoUrl: me?.googlePhotoUrl ?? null,
-    admin,
-    rehearsal: admin || hasRehearsalGrant(grants ?? [], data?.id ?? null),
-    phone: data?.phone ?? "",
+    userId: user?.id ?? null,
+    profileId,
+    photoUrl: profile?.photoUrl ?? null,
+    googlePhotoUrl: user?.googlePhotoUrl ?? null,
+    admin: isAdmin,
+    rehearsal: isAdmin || hasRehearsalGrant(grants ?? [], profileId),
+    phone: contact.data?.phone ?? "",
     themeLabel: THEME_LABEL[theme],
-    notificationEnabled: data ? data.notificationsEnabled : null,
+    notificationEnabled: profile ? profile.notificationsEnabled : null,
     sheet,
     toast,
     signingOut,
@@ -130,7 +133,7 @@ export function useProfileScreen(): ProfileScreenController {
     savedContact,
     savedPhoto,
     leave,
-    dismissToast: () => setToast(null),
+    dismissToast,
     goNotifications,
     goStats,
     goRehearsals,

@@ -235,7 +235,8 @@ describe("useProfileScreen — 시트는 한 번에 하나다", () => {
     act(() => result.current.openContact());
     act(() => result.current.savedContact());
 
-    expect(result.current.toast).toBe(PROFILE_COPY.contactSaved);
+    expect(result.current.toast?.message).toBe(PROFILE_COPY.contactSaved);
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
   });
 
@@ -245,7 +246,8 @@ describe("useProfileScreen — 시트는 한 번에 하나다", () => {
     act(() => result.current.openPhoto());
     act(() => result.current.savedPhoto());
 
-    expect(result.current.toast).toBe(PROFILE_COPY.photoSaved);
+    expect(result.current.toast?.message).toBe(PROFILE_COPY.photoSaved);
+    expect(result.current.toast?.kind).toBe("success");
     expect(result.current.sheet).toBeNull();
   });
 

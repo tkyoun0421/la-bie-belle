@@ -186,9 +186,10 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
 
     act(() => result.current.exportPaper());
 
-    await waitFor(() =>
-      expect(result.current.toast).toBe(QR_SCREEN_COPY.paperFailed),
-    );
+    await waitFor(() => {
+      expect(result.current.toast?.message).toBe(QR_SCREEN_COPY.paperFailed);
+      expect(result.current.toast?.kind).toBe("info");
+    });
 
     expect(result.current.exporting).toBe(false);
   });
@@ -209,7 +210,8 @@ describe("useQrScreen — 읽은 코드를 그림으로 굽고 돌리기와 내�
     await waitFor(() => expect(result.current.asking).toBe(false));
 
     expect(rotateQrMock).toHaveBeenCalledWith(FAKE_CLIENT);
-    expect(result.current.toast).toBe(QR_SCREEN_COPY.rotateDone);
+    expect(result.current.toast?.message).toBe(QR_SCREEN_COPY.rotateDone);
+    expect(result.current.toast?.kind).toBe("success");
   });
 
   it("새로 뽑기가 넘어지면 확인창이 열린 채로 까닭을 든다", async () => {

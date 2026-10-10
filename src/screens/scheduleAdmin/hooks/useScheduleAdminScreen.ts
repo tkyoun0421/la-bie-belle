@@ -8,11 +8,13 @@ import {
   ORIGIN_APPROVALS,
   ORIGIN_NOTIFICATIONS,
 } from "@/shared/consts/navigation.const";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
+import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
+import { useToast, type ToastState } from "@/shared/hooks/useToast";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
-import { kstDateOf, shiftMonth } from "@/shared/utils/kstDate";
+import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
@@ -68,8 +70,6 @@ import {
 import { deadlineLine } from "@/screens/scheduleAdmin/utils/deadlineLine.utils";
 
 export type ScheduleAdminListState = "loading" | "missing" | "calendar";
-
-export type ScheduleAdminToast = { kind: "info" | "success"; message: string };
 
 export type ScheduleAdminCalendar = {
   isToday: (date: string) => boolean;
@@ -140,7 +140,7 @@ export type ScheduleAdminScreenController = {
   closeSheet: () => void;
   changeDeadlineDraft: (typed: string) => void;
   saveDeadline: () => void;
-  toast: ScheduleAdminToast | null;
+  toast: ToastState | null;
   dismissToast: () => void;
   day: DayDetailInput | null;
   leaveDay: () => void;
@@ -156,38 +156,33 @@ type SheetState =
   | { kind: "hours" }
   | { kind: "close" };
 
-function useCloseSheetOnSuccess(
-  succeeded: boolean,
-  reset: () => void,
-  leave: () => void,
-) {
-  useEffect(() => {
-    if (succeeded) {
-      leave();
-      reset();
-    }
-  }, [succeeded, reset, leave]);
-}
-
 export function useScheduleAdminScreen({
   month: monthParam,
   date: dateParam,
   from,
 }: ScheduleAdminScreenParams): ScheduleAdminScreenController {
   const router = useRouter();
-  const clockOffset = serverClockStore((at) => at.offset);
-  const nowMs = nowWithOffset(Date.now(), clockOffset);
+  const { toast, showToast, dismissToast } = useToast();
+
+  const nowMs = useServerNow();
   const now = new Date(nowMs).toISOString();
   const today = kstDateOf(now);
 
-  const [month, setMonth] = useState(
-    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
-  );
   const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);
   const [picking, setPicking] = useState(false);
   const [picked, setPicked] = useState<readonly string[]>([]);
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
-  const [toast, setToast] = useState<ScheduleAdminToast | null>(null);
+
+  const leaveMonth = useCallback(() => {
+    setOpenDate(null);
+    setPicking(false);
+    setPicked([]);
+  }, []);
+
+  const { month, goPrev, goNext, jumpTo } = useMonthCursor(
+    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
+    leaveMonth,
+  );
 
   const { data: schedule, isLoading: loadingWindow } = useMonthWindowQuery(
     supabase,
@@ -246,21 +241,18 @@ export function useScheduleAdminScreen({
 
   useEffect(() => {
     if (from === ORIGIN_APPROVALS) {
-      setToast({
-        kind: "success",
-        message: SCHEDULE_ADMIN_COPY.arrivedFromApprovals,
-      });
+      showToast("success", SCHEDULE_ADMIN_COPY.arrivedFromApprovals);
     }
-  }, [from]);
+  }, [from, showToast]);
 
   useEffect(() => {
     const asked = monthParam ?? dateParam?.slice(0, 7);
 
     if (asked !== undefined) {
-      setMonth(asked);
+      jumpTo(asked);
     }
     setOpenDate(dateParam ?? null);
-  }, [monthParam, dateParam]);
+  }, [monthParam, dateParam, jumpTo]);
 
   useCloseSheetOnSuccess(
     changeDeadline.isSuccess,
@@ -316,13 +308,6 @@ export function useScheduleAdminScreen({
     ),
   ).size;
 
-  const goMonth = (step: number) => {
-    setMonth(shiftMonth(month, step));
-    setOpenDate(null);
-    setPicking(false);
-    setPicked([]);
-  };
-
   const togglePicked = (date: string) =>
     setPicked(
       picked.includes(date)
@@ -344,11 +329,15 @@ export function useScheduleAdminScreen({
     const message = openDaysFailureToast(failed);
 
     setPicked(failed);
-    setToast(message === null ? null : { kind: "info", message });
 
     if (message === null) {
+      dismissToast();
       setPicking(false);
+
+      return;
     }
+
+    showToast("info", message);
   };
 
   const grantAndAssign = async (
@@ -477,8 +466,8 @@ export function useScheduleAdminScreen({
       setPicked([]);
     },
     openPickedDays,
-    goPrevMonth: () => goMonth(-1),
-    goNextMonth: () => goMonth(1),
+    goPrevMonth: goPrev,
+    goNextMonth: goNext,
     showConfirmCta:
       !picking && listState === "calendar" && affordance !== "ended",
     confirmLocked: affordance === "locked",
@@ -508,7 +497,7 @@ export function useScheduleAdminScreen({
       }
     },
     toast,
-    dismissToast: () => setToast(null),
+    dismissToast,
     day:
       day === null
         ? null

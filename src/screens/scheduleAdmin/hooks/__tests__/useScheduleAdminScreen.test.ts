@@ -393,6 +393,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     expect(result.current.picking).toBe(true);
     expect(result.current.pickedCount).toBe(1);
     expect(result.current.toast?.message).toContain("10월 21일");
+    expect(result.current.toast?.kind).toBe("info");
   });
 
   it("만들기 시트는 화면이 열고 닫기만 한다", async () => {
@@ -502,6 +503,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     expect(result.current.toast?.message).toBe(
       SCHEDULE_ADMIN_COPY.arrivedFromApprovals,
     );
+    expect(result.current.toast?.kind).toBe("success");
 
     act(() => result.current.dismissToast());
 

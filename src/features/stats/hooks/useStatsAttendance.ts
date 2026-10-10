@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
@@ -41,10 +40,10 @@ export function useStatsAttendance(month: string): StatsAttendanceController {
   const { data: me } = useSessionUserQuery(supabase);
   const profile = useMyProfileRowQuery(supabase, me?.id ?? null);
   const attendance = useAttendanceMonthsQuery(supabase, months);
-  const clockOffset = serverClockStore((at) => at.offset);
+  const serverNowMs = useServerNow();
 
   const profileId = profile.data?.id ?? null;
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
+  const now = new Date(serverNowMs).toISOString();
   const shown = monthIn(attendance.data, month);
 
   const days = useMemo(
