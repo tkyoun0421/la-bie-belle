@@ -4,8 +4,9 @@ import { useCallback, useMemo, useState } from "react";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
 import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
+import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
-import { monthOf, shiftMonth } from "@/shared/utils/kstDate";
+import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
@@ -81,7 +82,7 @@ export function useStatsScreen(): StatsScreenController {
   const today = kstToday();
 
   const [tab, setTab] = useState<StatsTab>(STATS_TABS[0]);
-  const [month, setMonth] = useState(() => monthOf(today));
+  const { month, goPrev, goNext } = useMonthCursor(monthOf(today));
 
   const { data: me } = useSessionUserQuery(supabase);
   const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
@@ -236,8 +237,8 @@ export function useStatsScreen(): StatsScreenController {
     listState,
     payrollSpan: monthSpan(month),
     chooseTab: (value) => setTab(tabOf(value)),
-    goPrev: () => setMonth(shiftMonth(month, -1)),
-    goNext: () => setMonth(shiftMonth(month, 1)),
+    goPrev,
+    goNext,
     retry: () => {
       for (const queryKey of RETRY_KEYS) {
         void queryClient.invalidateQueries({ queryKey });

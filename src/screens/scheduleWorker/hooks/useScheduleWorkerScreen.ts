@@ -2,9 +2,10 @@ import { usePathname, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
+import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
-import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
+import { spellMonth } from "@/shared/utils/kstDate";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -104,9 +105,6 @@ export function useScheduleWorkerScreen({
   const pathname = usePathname();
   const today = kstToday();
 
-  const [month, setMonth] = useState(
-    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
-  );
   const [view, setView] = useState<ScheduleWorkerView>("calendar");
   const [showMineOnly, setShowMineOnly] = useState(false);
   const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);
@@ -115,6 +113,18 @@ export function useScheduleWorkerScreen({
   const [toast, setToast] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [claimed, setClaimed] = useState<string | null>(null);
+
+  const leaveMonth = useCallback(() => {
+    setOpenDate(null);
+    setCancelling(false);
+    setClaimed(null);
+    setExpanded([]);
+  }, []);
+
+  const { month, goPrev, goNext, jumpTo } = useMonthCursor(
+    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
+    leaveMonth,
+  );
 
   const { data: sessionUser } = useSessionUserQuery(supabase);
   const { data: profile } = useMyProfileRowQuery(
@@ -142,11 +152,11 @@ export function useScheduleWorkerScreen({
     const asked = monthParam ?? dateParam?.slice(0, 7);
 
     if (asked !== undefined) {
-      setMonth(asked);
+      jumpTo(asked);
     }
     setOpenDate(dateParam ?? null);
     setCancelling(false);
-  }, [monthParam, dateParam]);
+  }, [monthParam, dateParam, jumpTo]);
 
   useEffect(() => {
     setSelected(myDates ?? []);
@@ -255,14 +265,6 @@ export function useScheduleWorkerScreen({
     };
   }, [openDate, closeSheet]);
 
-  const goMonth = (step: number) => {
-    setMonth(shiftMonth(month, step));
-    setOpenDate(null);
-    setCancelling(false);
-    setClaimed(null);
-    setExpanded([]);
-  };
-
   const openSheetOn = (date: string, asCancel: boolean) => {
     setOpenDate(date);
     setCancelling(asCancel);
@@ -350,8 +352,8 @@ export function useScheduleWorkerScreen({
     closeTop,
     goNotifications: () =>
       router.push(`${NOTIFICATIONS_PATH}?from=${pathname}`),
-    goPrevMonth: () => goMonth(-1),
-    goNextMonth: () => goMonth(1),
+    goPrevMonth: goPrev,
+    goNextMonth: goNext,
     showView: (next) => setView(next === "position" ? "position" : "calendar"),
     showMine: setShowMineOnly,
     toggleAgendaDay: (workDate) =>

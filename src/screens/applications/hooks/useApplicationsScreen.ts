@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { kstDateOf, monthOf } from "@/shared/utils/kstDate";
 import { APPLICATIONS_TABS } from "@/entities/availability/consts/availability.const";
 import type { ApplicationsTab } from "@/entities/availability/hooks/useApplicationsList";
@@ -64,17 +65,17 @@ export function useApplicationsScreen(
     reset,
   } = useSetApplicationDeadlineMutation(supabase);
 
-  const close = useCallback(() => {
+  const leave = useCallback(() => {
     setAsking(false);
     setDraft(null);
-    reset();
-  }, [reset]);
+  }, []);
 
-  useEffect(() => {
-    if (saved) {
-      close();
-    }
-  }, [saved, close]);
+  const close = useCallback(() => {
+    leave();
+    reset();
+  }, [leave, reset]);
+
+  useCloseSheetOnSuccess(saved, reset, leave);
 
   const deadline = schedule?.applicationDeadline ?? null;
   const typed = draft ?? deadline ?? today;

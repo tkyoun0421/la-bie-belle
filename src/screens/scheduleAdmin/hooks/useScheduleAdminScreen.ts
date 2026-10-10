@@ -8,8 +8,10 @@ import {
   ORIGIN_APPROVALS,
   ORIGIN_NOTIFICATIONS,
 } from "@/shared/consts/navigation.const";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
+import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
-import { kstDateOf, shiftMonth } from "@/shared/utils/kstDate";
+import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 
@@ -155,19 +157,6 @@ type SheetState =
   | { kind: "hours" }
   | { kind: "close" };
 
-function useCloseSheetOnSuccess(
-  succeeded: boolean,
-  reset: () => void,
-  leave: () => void,
-) {
-  useEffect(() => {
-    if (succeeded) {
-      leave();
-      reset();
-    }
-  }, [succeeded, reset, leave]);
-}
-
 export function useScheduleAdminScreen({
   month: monthParam,
   date: dateParam,
@@ -178,14 +167,22 @@ export function useScheduleAdminScreen({
   const now = new Date(nowMs).toISOString();
   const today = kstDateOf(now);
 
-  const [month, setMonth] = useState(
-    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
-  );
   const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);
   const [picking, setPicking] = useState(false);
   const [picked, setPicked] = useState<readonly string[]>([]);
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
   const [toast, setToast] = useState<ScheduleAdminToast | null>(null);
+
+  const leaveMonth = useCallback(() => {
+    setOpenDate(null);
+    setPicking(false);
+    setPicked([]);
+  }, []);
+
+  const { month, goPrev, goNext, jumpTo } = useMonthCursor(
+    monthParam ?? dateParam?.slice(0, 7) ?? today.slice(0, 7),
+    leaveMonth,
+  );
 
   const { data: schedule, isLoading: loadingWindow } = useMonthWindowQuery(
     supabase,
@@ -255,10 +252,10 @@ export function useScheduleAdminScreen({
     const asked = monthParam ?? dateParam?.slice(0, 7);
 
     if (asked !== undefined) {
-      setMonth(asked);
+      jumpTo(asked);
     }
     setOpenDate(dateParam ?? null);
-  }, [monthParam, dateParam]);
+  }, [monthParam, dateParam, jumpTo]);
 
   useCloseSheetOnSuccess(
     changeDeadline.isSuccess,
@@ -313,13 +310,6 @@ export function useScheduleAdminScreen({
         .map((assignment) => assignment.profileId),
     ),
   ).size;
-
-  const goMonth = (step: number) => {
-    setMonth(shiftMonth(month, step));
-    setOpenDate(null);
-    setPicking(false);
-    setPicked([]);
-  };
 
   const togglePicked = (date: string) =>
     setPicked(
@@ -475,8 +465,8 @@ export function useScheduleAdminScreen({
       setPicked([]);
     },
     openPickedDays,
-    goPrevMonth: () => goMonth(-1),
-    goNextMonth: () => goMonth(1),
+    goPrevMonth: goPrev,
+    goNextMonth: goNext,
     showConfirmCta:
       !picking && listState === "calendar" && affordance !== "ended",
     confirmLocked: affordance === "locked",

@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
+import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -103,14 +104,7 @@ export function useRehearsalScreen(
     setRemoving(false);
   }, []);
 
-  useEffect(() => {
-    if (!deleted) {
-      return;
-    }
-
-    closeForm();
-    resetRemove();
-  }, [deleted, closeForm, resetRemove]);
+  useCloseSheetOnSuccess(deleted, resetRemove, closeForm);
 
   const rows: Row[] = useMemo(
     () => (isAdmin ? (all.data ?? []) : (mine.data ?? [])),
