@@ -26,7 +26,7 @@
 | --- | --- | --- | --- |
 | `DAY_MS` | `24 * 60 * 60 * 1000` | **7** | 하루의 밀리초. 글자까지 같다 |
 | `MINUTES_PER_HOUR` | `60` | **5** (정본 하나 포함) | 한 시간의 분 |
-| `CLOCK_LENGTH` | `5` | **4** | `"HH:mm"`의 길이. `.slice(0, CLOCK_LENGTH)`로 쓴다 |
+| `CLOCK_LENGTH` | `5` | **4** | `"HH:mm"`의 길이. **상수가 아니라 함수로 모은다** — 아래 「시각 자르기」 |
 | `SCREEN_BOTTOM_PADDING` | `24` | **4** | 화면 바닥 여백. `paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom` |
 
 `DAY_MS` 일곱 자리 — `features/payrollCompute/utils/payrollTotal.utils.ts:9`·`screens/scheduleAdmin/utils/deadlineLine.utils.ts:7`·`screens/scheduleWorker/model/monthState.policy.ts:31`·`screens/adminHome/model/vacancyCards.policy.ts:8`·`screens/payroll/model/period.policy.ts:15`·`entities/member/utils/formatElapsedDays.utils.ts:3`·`entities/availability/utils/applicationsGrouping.utils.ts:4`.
@@ -65,6 +65,7 @@
 | 자리 | 바꿀 책임 |
 | --- | --- |
 | `src/shared/consts/time.const.ts` | 신설 — `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`가 선다 |
+| `src/shared/utils/kstDate.ts` | 시각을 `HH:mm`으로 자르는 손 하나가 선다. 열 자리가 그것을 부른다 |
 | `src/shared/consts/error.const.ts` | `TransportError`의 문안 상수가 `ERROR_CODES` 옆에 선다 |
 | `DAY_MS` 일곱 · `MINUTES_PER_HOUR` 넷 · `CLOCK_LENGTH` 넷 | 선언을 지우고 `shared/consts/time.const.ts`에서 당긴다 |
 | `SCREEN_BOTTOM_PADDING` 넷 | 1번 판정에 따른다 — 상수로 모으거나 토큰에서 받는다 |
@@ -76,6 +77,24 @@
 
 **`.tsx`는 공용 상수를 직접 당기지 않는다.** COPY 객체가 공용 상수를 가리키고 `.tsx`는 지금처럼 자기 COPY 객체를 읽는다 — 화면 문안은 그 슬라이스가 들고, 공용 상수는 그 문안의 출처다. 규칙 「`.tsx`는 더미 UI」가 지키는 축이다.
 
+## 시각 자르기 — 묶음 H에서 당겨 온다
+
+**`clock.slice(0, 5)`가 열 자리다.** 다섯은 맨 `5`를, 다섯은 `CLOCK_LENGTH`를 쓴다.
+
+| 맨 `5` | `CLOCK_LENGTH` |
+| --- | --- |
+| `features/workRequest/utils/requestCopy.utils.ts:10` | `features/rehearsalEdit/model/rehearsalFormTarget.policy.ts:29`·`:30` |
+| `features/payrollCompute/model/payrollDays.policy.ts:200` | `features/scheduleDay/model/dayHoursForm.policy.ts:9` |
+| `screens/adminHome/hooks/useAdminHomeScreen.ts:97` | `screens/scheduleAdmin/utils/adjustSheetRows.utils.ts:40` |
+| `entities/schedule/model/daySheet.policy.ts:113` | `entities/rehearsal/utils/daySheetRows.utils.ts:27` |
+| `entities/workRequest/utils/approvalDetail.utils.ts:49` (두 번) | |
+
+다섯 자리는 그것만 하는 지역 함수로 싸여 있다 — `requestCopy.utils.ts:10`·`dayHoursForm.policy.ts:9`·`adjustSheetRows.utils.ts:40`·`daySheetRows.utils.ts:27`·`useAdminHomeScreen.ts:97`이 전부 「받아서 자른다」 한 줄이다.
+
+**[triage 제안](../../proposals/codebase-refactor-triage.md)은 이 축을 묶음 H(반복되는 일 아홉)에 뒀는데 그러면 같은 열 자리를 두 번 고친다** — E가 상수를 `shared/consts`로 옮겨 열 자리의 import를 바꾸고, H가 다시 와 그 열 자리를 함수 호출로 바꾼다. **그래서 E가 함수까지 가져간다.**
+
+함수가 서면 `CLOCK_LENGTH`를 당기는 자리가 그 함수 하나로 줄고, 상수는 `shared/utils/kstDate.ts` 안에서만 쓰인다. 이 계획은 그래도 상수를 `shared/consts/time.const.ts`에 세운다 — 값의 집과 쓰는 손은 다른 자리다.
+
 ## 완료 조건
 
 - **AC-01** `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`의 선언이 각자 한 자리다. `src/shared/consts/time.const.ts`가 그 집이고 `src/shared/utils/spellNumber.ts:3`의 지역 선언도 거기서 받는다
@@ -83,7 +102,8 @@
 - **AC-03** `.tsx`에 그 문안의 생문안이 0이다. 둘 다 자기 슬라이스의 COPY 객체를 읽는다
 - **AC-04** `eslint-rules/noDuplicateFailureCopy.mjs`가 그것을 막고 규칙이 다섯 자리에 한 커밋으로 선다
 - **AC-05** `SCREEN_BOTTOM_PADDING`의 거처가 정해지고 네 자리가 그 한 곳에서 받는다
-- **AC-06** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
+- **AC-06** 시각을 `HH:mm`으로 자르는 손이 `src/shared/utils/kstDate.ts` 하나다. 열 자리가 그것을 부르고 지역 함수 다섯이 사라진다. `src/` 비(非)테스트 파일에 `slice(0, 5)`가 0이다
+- **AC-07** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
@@ -92,8 +112,9 @@
 3. `shared/consts/error.const.ts`에 문안 상수를 세우고 COPY 객체 9를 그것으로 돌린다
 4. `.tsx`의 생문안 둘과 지역 상수 셋을 COPY 객체로 돌린다
 5. 1번 판정대로 `SCREEN_BOTTOM_PADDING`을 옮긴다
-6. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**
-7. 검증하고 PR을 연다
+6. 시각 자르는 손을 `shared/utils/kstDate.ts`에 세우고 열 자리를 그것으로 돌린다. 지역 함수 다섯을 지운다
+7. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**
+8. 검증하고 PR을 연다
 
 실패 테스트가 따로 서지 않는다 — 값과 글자가 그대로고 사는 자리만 바뀐다. 그 불변은 기존 짝 테스트가 지키고, AC-01·02·03은 lint 규칙과 그 짝 테스트가 센다.
 

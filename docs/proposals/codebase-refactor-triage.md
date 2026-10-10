@@ -154,10 +154,10 @@ mutation service 44개 가운데 42개가 `invalidateQueries`로 뒤처리한다
 | **B. mutation 뒤처리 한 꼴** | 42자리를 한 꼴로. `isSuccess`를 새 데이터 뒤에 세울지부터 정한다 | lint 규칙 하나 | 새 행 |
 | **C. 재수출 걷기** | `screens`의 `model` 셋과 `entities/schedule/utils` 하나 | lint 규칙 하나 | 새 행. **D의 선행이다** |
 | **D. 계산 쉰넷의 거처** | 또렷한 27건을 옮기고, 애매한 19건의 갈래 다섯으로 ADR-015를 벼린다 | 가름표가 기계가 세는 꼴이 된다 | 새 행 |
-| **E. 중복 모으기** | 상수 32·문안 19·함수 21 집단 | `"보내지 못했어요"`는 lint 규칙 하나 | [`duplicated-constants-and-copy`](../backlog.md)를 키운다 |
+| **E. 중복 모으기** | 상수 32·문안 19·함수 21 집단. **plan은 그 가운데 숫자 상수 넷과 실패 문안 하나와 시각 자르기만 닫는다** — 함수·계산·타입 축은 집단마다 「같은 사실인가」를 물어야 한다 | `"보내지 못했어요"`는 lint 규칙 하나 | [`duplicated-constants-and-copy`](../backlog.md)를 키운다 |
 | **F. 경로 한 집** | 다섯 집을 `navigation.const.ts` 하나로. `/schedule`·`/check-in`을 거기 세운다 | lint 규칙 하나 | 새 행 |
 | **G. 조각 상태 계약** | 판별 union으로 21자리, 이름 하나로, 그림은 `ReactNode`로 여덟 자리 | 규칙 한 줄 | [`fragments-own-their-data`](../backlog.md)의 남은 묶음 |
-| **H. controller 쪼개기** | 넷의 무게를 덜고 반복되는 일 아홉을 공통 훅으로 | 줄 수 상한 | 같은 행의 AC-04 |
+| **H. controller 쪼개기** | 넷의 무게를 덜고 반복되는 일 **여섯**을 공통 훅으로. 시각 자르기는 E가, 시트 열림 union은 G가 받고 라우터 파라미터 둘은 안 뽑는다 | 줄 수 상한 | 무게는 같은 행의 AC-04, 반복은 [`controller-common-hooks`](../backlog.md) |
 
 ### 순서
 
