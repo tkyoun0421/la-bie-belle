@@ -10,10 +10,9 @@ import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import {
   monthSpan,
   type DateSpan,
@@ -84,11 +83,7 @@ export function useStatsScreen(): StatsScreenController {
   const [tab, setTab] = useState<StatsTab>(STATS_TABS[0]);
   const { month, goPrev, goNext } = useMonthCursor(monthOf(today));
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
-    supabase,
-    me?.id ?? null,
-  );
+  const { profile, isLoading: profileLoading } = useMyStanding(supabase);
   const serverNowMs = useServerNow();
 
   const months = useMemo(() => trendMonths(month), [month]);

@@ -12,6 +12,7 @@ import { THEME_LABEL } from "@/shared/consts/theme.const";
 import { useTheme } from "@/shared/stores/theme.store";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
+import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import { PROFILE_COPY } from "@/screens/profile/consts/profile.const";
@@ -58,6 +59,8 @@ export function useProfileScreen(): ProfileScreenController {
   const theme = useTheme((at) => at.theme);
 
   const { user, profile, isAdmin, isLoading } = useMyStanding(supabase);
+  const profileId = profile?.id ?? null;
+  const contact = useProfilePrivateQuery(supabase, profileId);
   const { data: grants } = useQualificationsQuery(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
 
@@ -105,15 +108,15 @@ export function useProfileScreen(): ProfileScreenController {
   }, [signOut, goLogin]);
 
   return {
-    loading: isLoading,
+    loading: isLoading || (profileId !== null && contact.isLoading),
     unread: (unreadCount.data ?? 0) > 0,
     userId: user?.id ?? null,
-    profileId: profile?.id ?? null,
+    profileId,
     photoUrl: profile?.photoUrl ?? null,
     googlePhotoUrl: user?.googlePhotoUrl ?? null,
     admin: isAdmin,
-    rehearsal: isAdmin || hasRehearsalGrant(grants ?? [], profile?.id ?? null),
-    phone: profile?.phone ?? "",
+    rehearsal: isAdmin || hasRehearsalGrant(grants ?? [], profileId),
+    phone: contact.data?.phone ?? "",
     themeLabel: THEME_LABEL[theme],
     notificationEnabled: profile ? profile.notificationsEnabled : null,
     sheet,

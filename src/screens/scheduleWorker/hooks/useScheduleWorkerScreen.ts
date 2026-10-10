@@ -8,15 +8,14 @@ import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { spellMonth } from "@/shared/utils/kstDate";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { myAssignmentOf } from "@/entities/schedule/utils/agendaRow.utils";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
 import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState.policy";
@@ -126,11 +125,7 @@ export function useScheduleWorkerScreen({
     leaveMonth,
   );
 
-  const { data: sessionUser } = useSessionUserQuery(supabase);
-  const { data: profile } = useMyProfileRowQuery(
-    supabase,
-    sessionUser?.id ?? null,
-  );
+  const { profile } = useMyStanding(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
   const { data: monthWindow } = useMonthWindowQuery(supabase, month);
   const { data: days } = useMonthScheduleQuery(supabase, month);

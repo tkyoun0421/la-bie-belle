@@ -3,8 +3,7 @@ import { CalendarDays, House, User, Wallet } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import {
   getPushPermission,
@@ -14,8 +13,7 @@ import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSave
 
 export default function TabsLayout() {
   const [pushToken, setPushToken] = useState<string | null>(null);
-  const { data: user } = useSessionUserQuery(supabase);
-  const { data: profile } = useMyProfileRowQuery(supabase, user?.id ?? null);
+  const { profile } = useMyStanding(supabase);
 
   useSavePushTokenMutation(supabase, pushToken, AppState);
 

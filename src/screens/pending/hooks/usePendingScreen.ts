@@ -9,7 +9,6 @@ import {
   type ProfileFormErrors,
   type ProfileGender,
 } from "@/entities/profile/model/profile.schema";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import {
   digitsOfBirthDate,
@@ -21,7 +20,7 @@ import {
   hyphenatePhone,
 } from "@/entities/profile/utils/phoneDigits.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import {
   PROFILE_FORM_COPY,
@@ -112,8 +111,7 @@ export function usePendingScreen(): PendingScreenController {
 
   useSavePushTokenMutation(supabase, pushToken, APP_STATE);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
+  const { user, profile } = useMyStanding(supabase);
   const privateQuery = useProfilePrivateQuery(supabase, profile?.id ?? null);
 
   const {
@@ -131,13 +129,13 @@ export function usePendingScreen(): PendingScreenController {
   }, []);
 
   const loading =
-    me === undefined ||
-    (me !== null &&
+    user === undefined ||
+    (user !== null &&
       (profile === undefined ||
         (profile !== null && privateQuery.data === undefined)));
 
   useEffect(() => {
-    if (seeded || loading || !me) {
+    if (seeded || loading || !user) {
       return;
     }
 
@@ -155,7 +153,7 @@ export function usePendingScreen(): PendingScreenController {
     setFrozen(answered ? [...PROFILE_FORM_STEPS] : []);
     setEverSubmitted(answered);
     setSeeded(true);
-  }, [seeded, loading, me, profile, privateQuery.data]);
+  }, [seeded, loading, user, profile, privateQuery.data]);
 
   useEffect(() => {
     if (submitted) {
@@ -167,7 +165,7 @@ export function usePendingScreen(): PendingScreenController {
 
   const stage: PendingStage = loading
     ? "loading"
-    : me === null
+    : user === null
       ? "signedOut"
       : (override ?? stageOfProfile(profile ?? null));
 
@@ -234,9 +232,9 @@ export function usePendingScreen(): PendingScreenController {
 
   return {
     stage,
-    userId: me?.id ?? null,
-    email: me?.email ?? "",
-    photoUrl: profile?.photoUrl ?? me?.googlePhotoUrl ?? null,
+    userId: user?.id ?? null,
+    email: user?.email ?? "",
+    photoUrl: profile?.photoUrl ?? user?.googlePhotoUrl ?? null,
     name: values.name,
     open,
     shown: {
