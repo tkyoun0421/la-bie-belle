@@ -24,7 +24,9 @@
 
 `MINUTES_PER_HOUR = 60`이 그 다섯 파일에 각자 선언돼 있다. 저장소 전체로는 아홉 자리고 나머지 넷은 이 계획 밖이다([`duplicated-constants-and-copy`](../../backlog.md)가 든다).
 
-**기존 테스트는 고칠 것이 없다.** 다섯 자리의 짝 테스트를 다 읽었고 틀린 값을 박아 둔 단언이 없다 — 버그를 드러내는 입력이 비어 있었을 뿐이다. `historyRows.utils.test.ts`는 30분을 `연장 30분`으로 올바로 단언하고 0분 경우가 없다. `payrollSummary` 쪽은 450분·480분을 단언하고 한 시간 미만이 없다.
+**틀린 값을 박아 둔 단언은 없다.** 다섯 자리의 짝 테스트를 다 읽었고 버그를 드러내는 입력이 비어 있었을 뿐이다. `historyRows.utils.test.ts`는 30분을 `연장 30분`으로 올바로 단언하고 0분 경우가 없다. `payrollSummary` 쪽은 450분·480분을 단언하고 한 시간 미만이 없다.
+
+**다만 한 자리는 대상을 잃는다.** `features/adjustment/utils/__tests__/spellHours.utils.test.ts`의 `describe("spellHours …")` 넷이 그 export를 `await import`로 직접 당겨 본다. AC-02가 그 export를 지우니 블록이 대상을 잃어 typecheck와 jest가 둘 다 깨진다. 그 넷은 `spellDuration`의 이름으로 공유 테스트에 서니 보장은 줄지 않지만 **입력 둘(`45분`·`585분`)이 사라지므로 그것을 공유 테스트에 옮긴다** — `585분`은 「시간이 여럿이고 분이 남는」 자리라 90분과 다른 것을 짚는다.
 
 **둘째 결함** — `screens/payroll/model/period.policy.ts:134`의 `periodSpan`이 month 갈래에서 `to`에 `` `${period.month}-31` ``을 고정으로 박는다. 2월이면 `2026-02-31`이 나간다. `features/payrollCompute/model/dateSpan.policy.ts:41`의 `monthSpan`이 `lastDayOf(month)`로 같은 일을 올바로 하고, `period.policy.ts`는 이미 그 파일에서 `DateSpan`을 타입으로, `features/payrollCompute/utils/payrollTotal.utils`에서 `weekStartOf`를 값으로 당겨 층 문제가 없다.
 
