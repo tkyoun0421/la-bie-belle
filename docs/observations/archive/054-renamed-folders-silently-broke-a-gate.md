@@ -32,7 +32,7 @@ AC-01·AC-02가 `admin-stats`를 `adminStats`로 바꿀 때 플로우 파일 이
 
 훅의 짝 테스트가 쓰는 픽스처가 전부 kebab 슬라이스였다. `src/screens/admin-orders/...`·`src/screens/orders/...`고 camel이 하나도 없다. 그 픽스처는 AC-02 전에 쓴 것이고, 폴더 이름을 바꾼 PR이 **테스트의 픽스처까지 세지 않았다.**
 
-이름을 바꾸는 패스가 `src/`의 import 지정자는 전수로 치환했다. 훅의 픽스처는 `src/` 밖이고 치환 대상도 아니었다 — [관찰 050](050-comment-paths-checked-by-nothing.md)의 주석 경로와 같은 자리다. **`src/`를 가리키는 글자가 `src/` 밖에도 산다.**
+이름을 바꾸는 패스가 `src/`의 import 지정자는 전수로 치환했다. 훅의 픽스처는 `src/` 밖이고 치환 대상도 아니었다 — [관찰 050](../050-comment-paths-checked-by-nothing.md)의 주석 경로와 같은 자리다. **`src/`를 가리키는 글자가 `src/` 밖에도 산다.**
 
 ## 게이트가 몇 턴을 비었나
 
