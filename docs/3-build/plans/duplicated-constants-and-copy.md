@@ -27,7 +27,7 @@
 | `DAY_MS` | `24 * 60 * 60 * 1000` | **7** | 하루의 밀리초. 글자까지 같다 |
 | `MINUTES_PER_HOUR` | `60` | **5** (정본 하나 포함) | 한 시간의 분 |
 | `CLOCK_LENGTH` | `5` | **4** | `"HH:mm"`의 길이. **상수가 아니라 함수로 모은다** — 아래 「시각 자르기」 |
-| `SCREEN_BOTTOM_PADDING` | `24` | **4** | 화면 바닥 여백. `paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom` |
+| `SCREEN_BOTTOM_PADDING` | `24` | **4** (쓰는 자리 5) | 화면 바닥 여백. `paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom` |
 
 `DAY_MS` 일곱 자리 — `features/payrollCompute/utils/payrollTotal.utils.ts:9`·`screens/scheduleAdmin/utils/deadlineLine.utils.ts:7`·`screens/scheduleWorker/model/monthState.policy.ts:31`·`screens/adminHome/model/vacancyCards.policy.ts:8`·`screens/payroll/model/period.policy.ts:15`·`entities/member/utils/formatElapsedDays.utils.ts:3`·`entities/availability/utils/applicationsGrouping.utils.ts:4`.
 
@@ -35,7 +35,11 @@
 
 `CLOCK_LENGTH`는 둘이 `consts` 세그먼트에 export로(`features/rehearsalEdit/consts/rehearsalEdit.const.ts:7`·`entities/rehearsal/consts/rehearsal.const.ts:3`), 둘이 지역 상수로(`features/scheduleDay/model/dayHoursForm.policy.ts:1`·`screens/scheduleAdmin/utils/adjustSheetRows.utils.ts:19`) 산다.
 
-**`SCREEN_BOTTOM_PADDING`은 판정이 필요하다.** 네 자리 전부 `screens/<이름>/consts/`에 export로 살고 값과 쓰임이 같다. 그런데 24는 여백이라 **디자인 토큰 축일 수 있다** — 상수로 모으는 것이 맞는지, `tokens.md`의 간격 토큰에서 와야 하는지 구현이 보고하고 총괄이 정한다. lint 규칙 「하드코딩한 색과 크기」가 이미 그 축을 지킨다.
+**`SCREEN_BOTTOM_PADDING`의 거처가 정해졌다 — 상수고 `shared/consts/layout.const.ts`다.** `retry`·`left`·`blocked`·`pending` 넷이 각자 `consts/`에 `= 24`로 들고 다섯 자리가 `paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom`으로 쓴다(`pending`은 화면이 둘이다).
+
+**토큰에서 받을 수 없다.** 간격 토큰은 Tailwind 유틸이고([tokens.md 눈금](../../2-design/design-system/tokens.md) 24px은 눈금 6), 생성물이 `src/app/globals.css`라 **JS로 내보내는 토큰이 없다.** 그런데 이 자리는 런타임에 오는 `insets.bottom`을 더하는 계산이라 유틸 클래스로 쓸 수 없다 — JS 값이어야 한다.
+
+**다만 그 24가 어디서 왔는지는 디자인 문서가 들어야 한다.** [components.md](../../2-design/design-system/components.md)가 「화면 아래 여백」의 수단으로 `useSafeAreaInsets`만 적고 값을 안 든다. 그래서 24가 코드에만 네 번 산다. **그 줄에 눈금을 박는다** — 상수는 그 결정의 코드 쪽 반영이다.
 
 ### 실패 문안 하나 — 14자리
 
@@ -65,10 +69,12 @@
 | 자리 | 바꿀 책임 |
 | --- | --- |
 | `src/shared/consts/time.const.ts` | 신설 — `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`가 선다 |
+| `src/shared/consts/layout.const.ts` | 신설 — `SCREEN_BOTTOM_PADDING`이 선다. 시간 축과 다른 자리다 |
+| `docs/2-design/design-system/components.md` | 「화면 아래 여백」 줄이 눈금 6(24px)에 safe-area inset을 더한다고 든다 |
 | `src/shared/utils/kstDate.ts` | 시각을 `HH:mm`으로 자르는 손 하나가 선다. 열 자리가 그것을 부른다 |
 | `src/shared/consts/error.const.ts` | `TransportError`의 문안 상수가 `ERROR_CODES` 옆에 선다 |
 | `DAY_MS` 일곱 · `MINUTES_PER_HOUR` 넷 · `CLOCK_LENGTH` 넷 | 선언을 지우고 `shared/consts/time.const.ts`에서 당긴다 |
-| `SCREEN_BOTTOM_PADDING` 넷 | 1번 판정에 따른다 — 상수로 모으거나 토큰에서 받는다 |
+| `SCREEN_BOTTOM_PADDING` 선언 넷 | 지우고 `shared/consts/layout.const.ts`에서 당긴다. 쓰는 `.tsx` 다섯의 import가 따라 바뀐다 |
 | COPY 객체 9 | `sendFailed`가 글자 대신 공용 상수를 가리킨다 |
 | `.tsx` 지역 상수 2 · 지역 상수 1 | 지우고 자기 슬라이스의 COPY 객체를 쓴다 |
 | JSX 생문안 2 | 같은 슬라이스의 `workRequest.const.ts`의 `sendFailed`를 쓴다 |
@@ -79,14 +85,14 @@
 
 ## 시각 자르기 — 묶음 H에서 당겨 온다
 
-**`clock.slice(0, 5)`가 열 자리다.** 다섯은 맨 `5`를, 다섯은 `CLOCK_LENGTH`를 쓴다.
+**자르는 호출이 열둘이고 열 줄 아홉 파일에 흩어져 있다.** 일곱이 맨 `5`를, 다섯이 `CLOCK_LENGTH`를 쓴다. 한 줄에서 두 번 자르는 자리가 둘이다 — `entities/workRequest/utils/approvalDetail.utils.ts:49`와 `entities/schedule/model/daySheet.policy.ts:113`이 시작과 끝을 같이 자른다.
 
 | 맨 `5` | `CLOCK_LENGTH` |
 | --- | --- |
 | `features/workRequest/utils/requestCopy.utils.ts:10` | `features/rehearsalEdit/model/rehearsalFormTarget.policy.ts:29`·`:30` |
 | `features/payrollCompute/model/payrollDays.policy.ts:200` | `features/scheduleDay/model/dayHoursForm.policy.ts:9` |
 | `screens/adminHome/hooks/useAdminHomeScreen.ts:97` | `screens/scheduleAdmin/utils/adjustSheetRows.utils.ts:40` |
-| `entities/schedule/model/daySheet.policy.ts:113` | `entities/rehearsal/utils/daySheetRows.utils.ts:27` |
+| `entities/schedule/model/daySheet.policy.ts:113` (두 번) | `entities/rehearsal/utils/daySheetRows.utils.ts:27` |
 | `entities/workRequest/utils/approvalDetail.utils.ts:49` (두 번) | |
 
 다섯 자리는 그것만 하는 지역 함수로 싸여 있다 — `requestCopy.utils.ts:10`·`dayHoursForm.policy.ts:9`·`adjustSheetRows.utils.ts:40`·`daySheetRows.utils.ts:27`·`useAdminHomeScreen.ts:97`이 전부 「받아서 자른다」 한 줄이다.
@@ -101,17 +107,17 @@
 - **AC-02** `"보내지 못했어요. 다시 시도해주세요"`라는 글자가 `src/shared/consts/error.const.ts` 한 자리에만 있다. 나머지 13자리가 그것을 가리킨다
 - **AC-03** `.tsx`에 그 문안의 생문안이 0이다. 둘 다 자기 슬라이스의 COPY 객체를 읽는다
 - **AC-04** `eslint-rules/noDuplicateFailureCopy.mjs`가 그것을 막고 규칙이 다섯 자리에 한 커밋으로 선다
-- **AC-05** `SCREEN_BOTTOM_PADDING`의 거처가 정해지고 네 자리가 그 한 곳에서 받는다
-- **AC-06** 시각을 `HH:mm`으로 자르는 손이 `src/shared/utils/kstDate.ts` 하나다. 열 자리가 그것을 부르고 지역 함수 다섯이 사라진다. `src/` 비(非)테스트 파일에 `slice(0, 5)`가 0이다
+- **AC-05** `SCREEN_BOTTOM_PADDING`의 선언이 `src/shared/consts/layout.const.ts` 한 자리다. 쓰는 `.tsx` 다섯이 거기서 받고 `screens/*/consts/`의 넷이 사라진다. `components.md`의 「화면 아래 여백」 줄이 눈금 6을 든다
+- **AC-06** 시각을 `HH:mm`으로 자르는 손이 `src/shared/utils/kstDate.ts` 하나다. 호출 열둘이 그것을 부르고 지역 함수 다섯이 사라진다. `src/` 비(非)테스트 파일에서 `slice(0, 5)`와 `slice(0, CLOCK_LENGTH)`가 그 손 안의 한 자리 말고 0이다
 - **AC-07** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
-1. **`SCREEN_BOTTOM_PADDING`의 거처를 보고한다** — `tokens.md`의 간격 토큰에 24가 있는지 읽고, 상수와 토큰 중 어느 쪽이 맞는지 양쪽 비용을 적는다. 총괄의 판정을 받는다
+1. **거처가 이미 정해졌다** — `SCREEN_BOTTOM_PADDING`은 `shared/consts/layout.const.ts`고 까닭은 위 절이 든다. 보고할 판정이 남지 않았다
 2. `shared/consts/time.const.ts`를 세우고 `DAY_MS`·`MINUTES_PER_HOUR`·`CLOCK_LENGTH`의 선언을 모은다. 당기던 자리를 고친다
 3. `shared/consts/error.const.ts`에 문안 상수를 세우고 COPY 객체 9를 그것으로 돌린다
 4. `.tsx`의 생문안 둘과 지역 상수 셋을 COPY 객체로 돌린다
-5. 1번 판정대로 `SCREEN_BOTTOM_PADDING`을 옮긴다
+5. `SCREEN_BOTTOM_PADDING`을 `shared/consts/layout.const.ts`로 옮기고 `components.md`의 그 줄에 눈금을 박는다
 6. 시각 자르는 손을 `shared/utils/kstDate.ts`에 세우고 열 자리를 그것으로 돌린다. 지역 함수 다섯을 지운다
 7. lint 규칙을 다섯 자리에 한 커밋으로 켠다. **자리를 다 옮긴 뒤여야 초록이 난다**
 8. 검증하고 PR을 연다
