@@ -22,7 +22,9 @@
 
 **DB 정본이 nullable이다.** `src/shared/api/databaseTypes.ts`의 `push_reachable` 뷰가 두 열을 `string | null`·`boolean | null`로 낸다. 앞의 둘이 정본과 맞고, 셋째는 애초에 DTO가 아니다 — `getPushReachable.api.ts:31`이 `row.profile_id !== null && row.has_device !== null`로 좁힌 뒤 그 꼴을 만들어 넘긴다.
 
-그래서 `.dto.ts`에 사는 것이 틀렸다. `.dto.ts`는 DB가 주는 꼴을 담는 자리고, 좁힌 뒤의 꼴은 매퍼의 입구다.
+**선례가 그 자리를 이미 정해 뒀다.** `entities/member/api/member.dto.ts`가 `QualificationRow`(nullable 뷰 row)와 `FilledQualificationRow`(좁힌 꼴)를 **같은 `.dto.ts`에 나란히** 들고, `getQualifications.api.ts:9`가 `function isFilled(row: QualificationRow): row is FilledQualificationRow`로 좁혀 `.filter(isFilled).map(toQualification)`을 한다. 매퍼는 좁힌 꼴만 받는다.
+
+그래서 **틀린 것은 자리가 아니라 이름이다.** 좁힌 꼴이 `.dto.ts`에 사는 것은 선례대로고, 그것이 뷰 row와 **같은 이름**인 것이 틀렸다. 좁히는 일이 `api/` 안에서 일어나므로 그 꼴도 `api/`의 말이다.
 
 **null을 두 자리가 다르게 다룬다.** 같은 뷰의 같은 열인데 갈린다.
 
@@ -71,27 +73,26 @@
 | --- | --- |
 | 매퍼 여섯의 `__tests__/<이름>.mapper.test.ts` | 신설. export 13개가 각자 불린다 |
 | `tests/lint/` 새 검사 | 저장소 실물에서 짝 테스트 없는 `.ts`를 세어 매퍼가 0임을 못 박는다. 검사 15의 훅이 못 보는 자리다 |
-| `entities/notification/api/notification.dto.ts` | `PushReachableRow`를 지운다 — 뷰 row가 아니다 |
-| `entities/notification/utils/notification.mapper.ts` | `toPushReachable`의 입구 타입이 그 자리에 선다. 이름은 뷰 row와 안 겹친다 |
-| `entities/notification/api/getPushReachable.api.ts` | 지역 `ViewRow`를 지우고 `member.dto.ts`가 아닌 자기 `.dto.ts`의 뷰 row 타입을 당긴다 |
-| `entities/member/api/member.dto.ts` · `entities/notification/api/notification.dto.ts` | 뷰 row 타입이 어디 한 자리에 서는지 정한다 — 두 슬라이스가 같은 뷰를 읽는다 |
+| `entities/notification/api/notification.dto.ts` | 좁힌 꼴의 이름이 `FilledPushReachableRow`가 되고, 뷰 row `PushReachableRow`가 그 옆에 선다 |
+| `entities/notification/api/getPushReachable.api.ts` | 지역 `ViewRow`를 지운다. `getQualifications.api.ts`의 꼴을 따라 `isFilled` type guard로 좁히고 `.filter(isFilled).map(toPushReachable)`을 한다 |
+| `entities/notification/utils/notification.mapper.ts` | `toPushReachable`의 입구가 `FilledPushReachableRow`다 |
 | `features/holiday/model/holiday.schema.ts` | `Holiday`를 외부 응답임이 드러나는 이름으로 바꾼다 |
 | `entities/payroll/model/payroll.type.ts` | `Holiday`는 그대로 둔다 — DB 행이 그 이름의 임자다 |
 
-**뷰 row 타입의 자리가 판정 하나다.** 규칙 3이 같은 층 슬라이스끼리 import를 막아 `entities/notification`이 `entities/member`의 `.dto.ts`를 당길 수 없다. 길이 둘이다 — 슬라이스마다 자기 `.dto.ts`에 선언하고 같은 꼴이 둘 서는 것을 받아들이거나, `shared`로 올린다. **구현이 양쪽 비용을 보고하고 총괄이 정한다.**
+**뷰 row는 슬라이스마다 자기 `.dto.ts`에 선언한다.** 규칙 3이 같은 층 슬라이스끼리 import를 막아 `entities/notification`이 `entities/member`의 `.dto.ts`를 당길 수 없다. `shared`로 올리는 길도 있지만 **저장소가 이미 반대로 정해 뒀다** — `ExcuseStatusRow`가 `attendance.dto.ts:11`과 `payroll.dto.ts:21`에 글자 하나까지 같은 꼴로 둘 선다. `.dto.ts`는 손으로 선언하는 자리고 `databaseTypes.ts`에서 파생하는 DTO가 한 자리도 없다 — 정본은 생성된 그 파일이고 `.dto.ts`는 질의가 고르는 열만 적는다. 같은 뷰라도 슬라이스가 고르는 열이 다를 수 있으니 한 자리로 묶으면 그 자유가 사라진다.
 
 ## 완료 조건
 
 - **AC-01** 매퍼 여섯에 짝 테스트가 서고 export 13개가 각자 불린다. 필드를 하나라도 잘못 옮기면 깨진다
 - **AC-02** `tests/lint/`의 새 검사가 저장소 실물에서 `.mapper.ts` 전부에 짝 테스트가 있음을 센다. 그 검사가 `DOCUMENTED_LINT_RULE_COUNT`와 `docs/4-test/execution.md`에 선다
-- **AC-03** `PushReachableRow`라는 이름이 뷰 row 하나만 가리킨다. 좁힌 뒤의 꼴은 다른 이름이고 `.dto.ts` 밖에 산다
+- **AC-03** `PushReachableRow`라는 이름이 뷰 row 하나만 가리킨다. 좁힌 꼴은 `FilledPushReachableRow`고 같은 `.dto.ts`에 선다 — `FilledQualificationRow`의 선례대로다. `getPushReachable.api.ts`의 지역 `ViewRow`가 사라지고 `isFilled` type guard가 그 일을 한다
 - **AC-04** `Holiday`라는 이름이 DB 행만 가리킨다. 외부 응답 쪽은 다른 이름이고 꼴은 안 바뀐다
 - **AC-05** null을 다르게 다루는 두 자리가 짝 테스트로 드러난다 — `listMembers`는 `has_device: null`을 `false`로 살리고 `getPushReachable`은 그 행을 버린다는 것이 단언으로 선다. **동작은 안 바꾼다**
 - **AC-06** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
-1. **이름을 먼저 정한다** — AC-03의 둘과 AC-04의 하나다. 뷰 row 타입의 자리(슬라이스마다 對 `shared`)를 보고하고 총괄의 판정을 받는다
+1. **이름이 이미 정해졌다** — 뷰 row는 `PushReachableRow`로 슬라이스마다, 좁힌 꼴은 `FilledPushReachableRow`로 같은 `.dto.ts`에, 외부 응답 쪽 `Holiday`는 AC-04가 든다. 보고할 판정이 남지 않았다
 2. 매퍼 여섯의 짝 테스트를 쓴다. `notification.mapper.ts`는 1번이 끝난 뒤다
 3. 이름을 가른다. `notification.dto.ts`의 `PushReachableRow`를 지우고 좁힌 꼴을 매퍼 옆으로 옮긴다
 4. `Holiday`를 바꾼다 — `features/holiday` 쪽만이다
