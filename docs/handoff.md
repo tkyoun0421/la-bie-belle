@@ -8,7 +8,9 @@
 
 **리팩터링 묶음 여덟의 순서가 정해졌다** — [triage 제안](proposals/codebase-refactor-triage.md)이 `accepted`고 결정 다섯을 든다. `src/` 781 파일을 네 축으로 전수 조사한 결과가 거기 있다. **층 규칙은 지켜지고 고칠 것은 경계 안에 쌓인 중복과 한 자리에 모인 무게다.**
 
-순서는 A(값이 틀리는 축) → B(mutation 뒤처리) → C(재수출 걷기) → E·F(중복·경로) → D·G·H다. **plan 다섯이 `ready`로 서 있다** — [mutation-settle-shape](3-build/plans/mutation-settle-shape.md)(B)·[reexport-launders-layers](3-build/plans/reexport-launders-layers.md)(C)·[mapper-tests-and-type-names](3-build/plans/mapper-tests-and-type-names.md)(A 뒤쪽)·[duplicated-constants-and-copy](3-build/plans/duplicated-constants-and-copy.md)(E)·[route-paths-one-home](3-build/plans/route-paths-one-home.md)(F)다. 남은 D·G·H는 plan이 아직 없고 `screens-calc-placement`는 C가 선행이라 `blocked`다.
+순서는 A(값이 틀리는 축) → B(mutation 뒤처리) → C(재수출 걷기) → E·F(중복·경로) → D·G·H다. **plan 다섯이 `ready`로 서 있다** — [mutation-settle-shape](3-build/plans/mutation-settle-shape.md)(B)·[reexport-launders-layers](3-build/plans/reexport-launders-layers.md)(C)·[mapper-tests-and-type-names](3-build/plans/mapper-tests-and-type-names.md)(A 뒤쪽)·[duplicated-constants-and-copy](3-build/plans/duplicated-constants-and-copy.md)(E)·[route-paths-one-home](3-build/plans/route-paths-one-home.md)(F)·[fragment-state-contract](3-build/plans/fragment-state-contract.md)(G)·[controller-common-hooks](3-build/plans/controller-common-hooks.md)(H, B가 선행이라 `blocked`)다. **plan이 없는 것은 D 하나다** — `screens-calc-placement`고, ADR-015 가름표의 구멍 다섯을 메우는 결정이 먼저라 `blocked`다(C도 선행이다).
+
+**plan을 쓰며 묶음끼리 겹치는 자리 셋을 풀었다.** 시각 자르기 열 자리는 H에서 E로 넘겼다 — `CLOCK_LENGTH` 상수를 옮기는 일과 그것을 쓰는 손을 모으는 일이 같은 열 자리라 따로 하면 import를 두 번 고친다. 시트 열림 합집합 타입 넷은 H에서 G로 넘겼다 — 조각 상태 계약과 같은 꼴이다. 그리고 `useCloseSheetOnSuccess`를 올리는 일은 B가 `isSuccess`의 시점을 바꾼 뒤여야 해서 H가 B를 선행으로 든다.
 
 **A 앞쪽은 [PR #516](https://github.com/tkyoun0421/la-bie-belle/pull/516)으로 merge됐다** — `spellDuration`이 `shared/utils/spellNumber.ts`에 서고 지역 함수 다섯과 `MINUTES_PER_HOUR` 선언 다섯이 사라졌다. `periodSpan`의 `2026-02-31`도 고쳤다. **다음 첫 수는 B다** — [plan](3-build/plans/mutation-settle-shape.md)이 `test-planner`의 판정까지 담고 있어 writer를 바로 띄울 수 있다.
 
