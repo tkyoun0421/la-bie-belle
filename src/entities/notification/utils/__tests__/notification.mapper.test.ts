@@ -1,6 +1,5 @@
-// @ts-expect-error 대상 타입(FilledPushReachableRow)이 아직 없다
 // eslint-disable-next-line house/dto-segment
-import type { FilledPushReachableRow } from "@/entities/notification/api/notification.dto";
+import type { PushReachableRow } from "@/entities/notification/api/notification.dto";
 import {
   toNotification,
   toPushReachable,
@@ -64,7 +63,7 @@ describe("toNotification — 가지 아홉 열이 섞이지 않는다", () => {
 
 describe("toPushReachable — 받을 수 있는 사람 행을 옮긴다", () => {
   it("profile_id가 profileId로, has_device가 hasDevice로 간다", () => {
-    const row: FilledPushReachableRow = {
+    const row: PushReachableRow = {
       profile_id: "p1",
       has_device: true,
     };
@@ -76,7 +75,7 @@ describe("toPushReachable — 받을 수 있는 사람 행을 옮긴다", () => 
   });
 
   it("has_device가 false인 사람도 그대로 옮겨진다", () => {
-    const row: FilledPushReachableRow = {
+    const row: PushReachableRow = {
       profile_id: "p2",
       has_device: false,
     };

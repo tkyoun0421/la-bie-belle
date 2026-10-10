@@ -63,11 +63,7 @@ async function readDevices(
   }
 
   return new Map(
-    (data ?? []).flatMap((row) =>
-      row.profile_id === null
-        ? []
-        : [[row.profile_id, row.has_device ?? false] as const],
-    ),
+    (data ?? []).map((row) => [row.profile_id, row.has_device] as const),
   );
 }
 

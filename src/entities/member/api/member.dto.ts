@@ -36,6 +36,6 @@ export type ActiveMemberRow = MemberRow & {
 };
 
 export type PushReachableRow = {
-  profile_id: string | null;
-  has_device: boolean | null;
+  profile_id: string;
+  has_device: boolean;
 };
