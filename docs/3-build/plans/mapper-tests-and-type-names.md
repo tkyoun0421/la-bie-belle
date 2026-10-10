@@ -93,8 +93,8 @@ where public.is_admin();
 
 | 자리 | 바꿀 책임 |
 | --- | --- |
-| 매퍼 여섯의 `__tests__/<이름>.mapper.test.ts` | 신설. export 13개가 각자 불린다 |
-| `tests/lint/` 새 검사 | 저장소 실물에서 짝 테스트 없는 `.ts`를 세어 매퍼가 0임을 못 박는다. 검사 15의 훅이 못 보는 자리다 |
+| 매퍼 여섯의 `__tests__/<이름>.mapper.test.ts` | 신설. export 13개가 각자 불린다. 행을 객체 리터럴로 매퍼에 바로 넘긴다 — 형제 열둘이 그 꼴이고 리터럴은 남는 필드까지 걸러 DTO 타입을 당길 때보다 검사가 세다. `house/dto-segment`가 `.mapper.test.ts`를 면제하지 않아 DTO를 당기면 `eslint-disable`이 한 줄 붙는데, 그 import가 지키는 것은 `pnpm typecheck`가 이미 지킨다 |
+| `tests/lint/` 새 검사 | 저장소 실물에서 짝 테스트 없는 `.ts`를 세어 매퍼가 0임을 못 박는다. 검사 15의 훅이 못 보는 자리다. **짝을 파일 이름이 아니라 폴더로 묶는다** — `scheduleDay.mapper.test.ts`가 `schedule.mapper.ts`의 `toScheduleDay`·`toOpenSlot`을 단언하므로 이름으로 묶으면 실제로 단언되는 것을 위반으로 센다. 훅은 파일 이름으로 보니 그 둘이 갈리는데, **검사가 묻는 것이 「그 export가 단언되나」라서 폴더가 맞다** |
 | `entities/notification/api/notification.dto.ts` | `PushReachableRow`가 그대로 남는다 — 그 꼴이 뷰의 보장과 맞는다 |
 | `entities/notification/api/getPushReachable.api.ts` | 지역 `ViewRow`와 null을 막는 가지를 지운다. 자기 `.dto.ts`의 `PushReachableRow`로 받아 바로 `map(toPushReachable)`을 한다 |
 | `entities/member/api/member.dto.ts` | `PushReachableRow`의 두 열이 non-nullable이 된다 — 뷰의 보장과 맞춘다 |
@@ -109,7 +109,7 @@ where public.is_admin();
 ## 완료 조건
 
 - **AC-01** 매퍼 여섯에 짝 테스트가 서고 export 13개가 각자 불린다. 필드를 하나라도 잘못 옮기면 깨진다
-- **AC-02** `tests/lint/`의 새 검사가 저장소 실물에서 `.mapper.ts` 전부에 짝 테스트가 있음을 센다. 그 검사가 `DOCUMENTED_LINT_RULE_COUNT`와 `docs/4-test/execution.md`에 선다
+- **AC-02** `tests/lint/`의 새 검사가 저장소 실물에서 `.mapper.ts` 전부에 짝 테스트가 있음을 센다. **등록은 선례 둘을 따른다** — `fileNaming.ts`와 `databaseTypes.ts`가 규칙 표가 아니라 `docs/4-test/execution.md`의 「`pnpm test`에 끼는 문서 검사」 목록에 선다. `DOCUMENTED_LINT_RULE_COUNT`는 `mechanism`이 `eslint`·`house`·`prettier`인 줄에서 다시 세는 값이라 소스를 훑는 검사가 들어갈 자리가 아니다
 - **AC-03** `PushReachableRow`라는 이름이 꼴 하나만 가리킨다. 두 슬라이스가 각자 `.dto.ts`에 선언하고 두 열이 **non-nullable**이다 — 뷰가 그것을 보장한다. `getPushReachable.api.ts`의 지역 `ViewRow`가 사라진다
 - **AC-04** `Holiday`라는 이름이 DB 행만 가리킨다. 외부 응답 쪽은 다른 이름이고 꼴은 안 바뀐다
 - **AC-05** null을 막는 가지가 두 자리에서 사라진다 — `listMembers`의 `?? false`와 `profile_id === null`, `getPushReachable`의 `!== null` 둘이다. **동작은 안 바뀐다** — 뷰가 null을 못 내므로 닿을 수 없는 가지고, `getPushReachable.api.integration.test.ts:30`이 기기 없는 사람도 `hasDevice: false`로 온다고 이미 단언한다
