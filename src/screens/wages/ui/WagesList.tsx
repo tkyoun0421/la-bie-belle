@@ -1,3 +1,4 @@
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { WageRows } from "@/entities/payroll/ui/WageRows";
 import { WageRowsFailed } from "@/entities/payroll/ui/WageRowsFailed";
 import { WageRowsLoading } from "@/entities/payroll/ui/WageRowsLoading";
@@ -10,21 +11,21 @@ export type WagesListProps = {
 };
 
 export function WagesList({ screen }: WagesListProps) {
-  if (screen.listState === "loading") {
-    return <WagesLoading />;
-  }
-
-  if (screen.listState === "empty") {
-    return <WagesEmpty />;
-  }
-
   return (
-    <WageRows
-      people={screen.people}
-      onPressPerson={screen.openPerson}
-      pending={<WageRowsLoading />}
-      failed={<WageRowsFailed />}
+    <FragmentView
+      fragment={screen.listState}
+      pending={<WagesLoading />}
       empty={<WagesEmpty />}
-    />
+    >
+      {() => (
+        <WageRows
+          people={screen.people}
+          onPressPerson={screen.openPerson}
+          pending={<WageRowsLoading />}
+          failed={<WageRowsFailed />}
+          empty={<WagesEmpty />}
+        />
+      )}
+    </FragmentView>
   );
 }

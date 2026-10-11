@@ -6,6 +6,7 @@ import { supabase } from "@/shared/api/supabase";
 import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthOf } from "@/shared/utils/kstDate";
 import { tenThousandWonLabel } from "@/shared/utils/moneyLabel.utils";
 import { monthIn } from "@/shared/utils/monthIn";
@@ -39,7 +40,10 @@ import {
 export type StatsTab = (typeof STATS_TABS)[number];
 
 export type StatsListState =
-  "loading" | "failed" | "empty" | "attendance" | "position" | "payroll";
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; tab: StatsTab };
 
 export type StatsTrendPoint = {
   month: number;
@@ -115,7 +119,7 @@ export function useStatsScreen(): StatsScreenController {
         : [work, payroll, rehearsal];
 
   const loading = profileLoading || sources.some((one) => one.isLoading);
-  const failed = sources.some((one) => one.error !== null);
+  const failure = sources.find((one) => one.error !== null)?.error ?? null;
 
   const shownAttendance = monthIn(attendance.data, month);
   const shownWork = monthIn(work.data, month);
@@ -197,15 +201,21 @@ export function useStatsScreen(): StatsScreenController {
         ? totals.totalCount === 0
         : payrollDays.length === 0;
 
-  const listState: StatsListState = loading
-    ? "loading"
-    : failed
-      ? "failed"
-      : empty
-        ? "empty"
-        : tab;
+  const listState: StatsListState = fragmentOf(
+    { data: loading ? undefined : tab, error: failure },
+    {
+      empty: () => empty,
+      ready: () => ({ tab }),
+    },
+  );
 
   const payrollTotal = values.get(month) ?? 0;
+
+  const trendLabels: Record<StatsTab, string> = {
+    attendance: `${values.get(month) ?? 0}%`,
+    position: hoursLabel(totals.totalMinutes),
+    payroll: tenThousandWonLabel(payrollTotal),
+  };
 
   const goBack = useCallback(() => router.back(), [router]);
 
@@ -222,13 +232,7 @@ export function useStatsScreen(): StatsScreenController {
     selectedMonth: Number(month.slice(5, MONTH_LENGTH)),
     points,
     trendValueLabel:
-      listState === "loading" || listState === "failed" || listState === "empty"
-        ? undefined
-        : tab === "attendance"
-          ? `${values.get(month) ?? 0}%`
-          : tab === "position"
-            ? hoursLabel(totals.totalMinutes)
-            : tenThousandWonLabel(payrollTotal),
+      listState.state === "ready" ? trendLabels[listState.tab] : undefined,
     listState,
     payrollSpan: monthSpan(month),
     chooseTab: (value) => setTab(tabOf(value)),

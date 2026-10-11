@@ -6,6 +6,7 @@ import {
   NOTIFICATIONS_PATH,
 } from "@/shared/consts/navigation.const";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
@@ -25,8 +26,13 @@ import {
 } from "@/features/payrollCompute/model/period.policy";
 import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 
+type PayrollView = "history" | "months";
+
 export type PayrollListState =
-  "loading" | "failed" | "empty" | "history" | "months";
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; view: PayrollView };
 
 export type PayrollScreenController = {
   goBack: (() => void) | undefined;
@@ -71,15 +77,15 @@ export function usePayrollScreen(): PayrollScreenController {
   const leftDate = profile?.leftAt == null ? null : kstDateOf(profile.leftAt);
   const hasLeft = leftDate !== null;
 
-  const listState: PayrollListState = loading
-    ? "loading"
-    : payroll.error !== null
-      ? "failed"
-      : (payroll.data?.length ?? 0) === 0
-        ? "empty"
-        : unit === "year"
-          ? "months"
-          : "history";
+  const view: PayrollView = unit === "year" ? "months" : "history";
+
+  const listState: PayrollListState = fragmentOf(
+    { data: loading ? undefined : payroll.data, error: payroll.error },
+    {
+      empty: (days) => days.length === 0,
+      ready: () => ({ view }),
+    },
+  );
 
   const goLeft = useCallback(() => router.replace(LEFT_PATH), [router]);
 

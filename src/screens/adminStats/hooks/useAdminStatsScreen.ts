@@ -6,6 +6,7 @@ import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
@@ -31,7 +32,10 @@ import {
 export type AdminStatsTab = (typeof ADMIN_STATS_TABS)[number];
 
 export type AdminStatsListState =
-  "loading" | "failed" | "empty" | "work" | "attendance";
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; tab: AdminStatsTab };
 
 export type AdminStatsTrendPoint = {
   month: number;
@@ -132,13 +136,18 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   const empty =
     tab === "work" ? totals.totalCount === 0 : attendanceTab.rows.length === 0;
 
-  const listState: AdminStatsListState = active.isLoading
-    ? "loading"
-    : active.error !== null
-      ? "failed"
-      : empty
-        ? "empty"
-        : tab;
+  const listState: AdminStatsListState = fragmentOf(
+    { data: active.isLoading ? undefined : tab, error: active.error },
+    {
+      empty: () => empty,
+      ready: () => ({ tab }),
+    },
+  );
+
+  const trendLabels: Record<AdminStatsTab, string> = {
+    work: hoursLabel(totals.totalMinutes),
+    attendance: percentLabel(attendanceTab),
+  };
 
   return {
     tab,
@@ -146,11 +155,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
     selectedMonth: Number(month.slice(5, MONTH_LENGTH)),
     points,
     trendValueLabel:
-      listState === "loading" || listState === "failed" || listState === "empty"
-        ? undefined
-        : tab === "work"
-          ? hoursLabel(totals.totalMinutes)
-          : percentLabel(attendanceTab),
+      listState.state === "ready" ? trendLabels[listState.tab] : undefined,
     listState,
     emptyTotal: tab === "work" ? NO_VALUE : null,
     openPerson,
