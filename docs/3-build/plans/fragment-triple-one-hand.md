@@ -2,6 +2,8 @@
 
 조각 controller 21개가 **똑같은 질문 셋**을 각자 쓰고 짝 `.tsx` 21개가 **똑같은 분기 셋**을 각자 쓴다. 다른 것은 마지막 가지뿐이다. 그 셋을 `shared`의 손 둘로 모은다.
 
+**스물하나를 세고 열아홉에 간다.** `entities/notification/hooks/useNotificationsList.ts`는 입력 꼴이 달라 처음부터 밖이고(판정 ⑤) `entities/schedule/hooks/useDaySheet.ts`는 `failed` 가지를 여는 식이 달라 밖이다(AC-02).
+
 ## 입력 명세·기준
 
 정본은 [ADR-016](../../2-design/adr/ADR-016-fragments-own-their-data.md)의 「상태는 판별 union이고 이름이 넷이다」와 ADR-015의 세그먼트 열이다. 셈의 출처는 [제안](../../proposals/declarative-refactor-triage.md)의 묶음 1이고, 스물한 자리를 전부 열어 다시 셌다.
