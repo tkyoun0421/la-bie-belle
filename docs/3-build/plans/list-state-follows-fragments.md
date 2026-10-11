@@ -46,6 +46,8 @@ AST로 전수 훑어 **글자 union 가운데 읽기 상태 어휘를 쓰는 별
 
 ## 판정은 이미 났다 — 묻지 말고 이 꼴로 쓴다
 
+**⑦ `fragmentOf`가 `failed` 가지를 강제한다.** `fragmentState.policy.ts:12`의 `BeforeData<Failed>`가 `{ state: "pending" } | ({ state: "failed" } & Failed)`라 **어느 오버로드로 불러도 `failed`가 반환 타입에 든다.** 그래서 `failed`를 안 두는 자리(`WagesListState`·`ScheduleAdminListState`)는 그 손을 못 쓰고 판별 union을 손으로 세운다 — 2겹 삼항 하나가 남는 것이 맞다.
+
 **① 공용 손을 새로 만들지 않는다.** `shared/model/fragmentState.policy.ts`의 `fragmentOf`와 `shared/ui/FragmentView.tsx`가 이미 섰다. **그것을 쓴다.**
 
 **`makeListState(isLoading, error, empty, defaultValue)` 꼴을 만들지 않는다.** 글자 하나를 돌려주면 **좁혀지지 않아** 부르는 쪽이 같은 조건을 다시 묻는다. `features/payrollCompute/model/fragmentState.policy.ts`가 정확히 그 꼴이었고 [fragment-triple-one-hand](fragment-triple-one-hand.md)가 **지웠다** — `usePayrollMonthRows.ts`가 `read.data === undefined`를 다시 묻고 닿지 않는 `[]`를 들고 있었다. 되돌리지 않는다.
@@ -87,7 +89,11 @@ export type StatsListState =
 
 **범위를 접미사 셋으로 넓힌다 — `Controller`·`ListState`·`Body`다.** 어휘로 거르면 안 된다: 읽기 상태 어휘를 쓰는 별칭 열여섯 가운데 **아홉이 거짓 양성**이고(`AttendanceStatus`의 `pending`이 「승인 대기」다), 거짓 양성이 남으면 다음 사람이 `eslint-disable`로 덮는다.
 
-접미사로 거르면 **여덟이 정확히 걸리고 거짓 양성이 0이다.** `ScheduleWorkerBodyState`가 `*BodyState`로 걸리는데 이미 판별 union이라 통과한다.
+접미사로 거르면 거짓 양성이 0이다. **그런데 넓혀도 지금 걸리는 것이 0건이다** — `eslint-rules/fragmentStateContract.mjs`의 `stateLiteralsOf`가 `branch.type !== "TSTypeLiteral"`이면 `[]`를 내서, 평평한 **글자** union은 가지가 `TSLiteralType`이라 **통째로 지나간다.** 넓힌 효과는 뒤를 지키는 쪽이다 — 선 union이 다시 평평해지거나 정본 밖 이름을 쓰면 그때 걸린다.
+
+**`ScheduleWorkerBodyState`는 그 접미사 셋에 안 걸린다.** `endsWith("Body")`가 `…BodyState`를 안 잡는다 — 끝이 `State`다.
+
+**구멍을 막는 한 줄이 있고 이 task에서 안 넣는다.** 「맨 글자 가지가 읽기 상태 어휘를 쓰면 문다」를 더하면 지금 저장소의 `*Controller`·`*ListState`·`*Body` 별칭 전부에 거짓 양성이 0이고(`MemberSheetBody`는 `"detail"|"rename"|"none"`이라 어휘가 없어 통과한다) **이 task가 안 옮긴 셋이 정확히 걸린다.** 그러면 `eslint-disable`로 덮게 된다 — 그 셋을 옮기는 task가 이 한 줄을 같이 넣는다.
 
 ESLint 규칙을 건드리면 **한 커밋에 다섯 자리가 같이 간다** — `.mjs`, `eslint-rules/index.mjs`, `eslint.config.mjs`, `tests/lint/rules.ts`(행과 `DOCUMENTED_LINT_RULE_COUNT`), `docs/4-test/execution.md`(표의 행과 **산문의 수**). 짝 테스트도 `eslint-rules/__tests__/`에 선다. **규칙 번호를 새로 주지 않는다 — 45의 범위를 넓히는 것이라 행이 늘지 않는다.**
 
