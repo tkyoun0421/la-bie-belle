@@ -202,6 +202,12 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **화면 훅은 그 화면 이름을 받는다.** `screens/<슬라이스>/hooks/use<화면>.ts`고 `Query`·`Mutation` 접미사는 안 붙는다 — 그 둘은 서버 상태를 읽고 쓰는 훅의 표시고, 화면 훅은 그것들을 모아 화면 하나가 쓸 꼴로 내놓는다. `screens/wages/hooks/useWagesScreen.ts`가 그 꼴이다.
 
+**타입 가드 이름은 `is`로 시작한다.** 반환 타입이 `값 is 좁은타입`인 함수가 그것이다 — 지금 저장소의 열셋이 전부 그 꼴이라 새로 정하는 것이 아니라 이미 사실인 것을 적는 것이다(`isFilled`·`isBranch`·`isProfileGender`).
+
+**까닭은 가드가 거짓말을 할 수 있다는 것이다.** `값 is 좁은타입`은 **서술어가 하는 주장**이고 TS가 그 몸통이 실제로 그것을 검사하는지 보지 않는다. 그래서 가드는 「믿어라」를 담은 자리고, 호출부가 그것을 **이름만 보고 알아야** 한다 — `isTheme(raw)`를 보면 좁히는 중임을 알지만 `themeOf(raw)`는 값을 꺼내는 것처럼 읽힌다.
+
+**가드를 만드는 손은 가드가 아니라 다르게 짓는다.** `memberOf(THEMES)`는 가드를 내는 손이라 `is`로 시작하지 않고, 그것이 낸 가드를 받는 쪽이 `const isTheme = memberOf(THEMES)`로 이름 붙인다.
+
 **훅 이름에 `Query`와 `Mutation`을 박는다.** 파일 이름과 export 이름이 같아야 코드에서 파일로 바로 건너가니 함수 이름도 같이 바뀐다 — `useMonthSchedule`이 `useMonthScheduleQuery`가 된다. 호출부가 그 이름만 보고 읽기인지 쓰기인지 알고, 층의 뜻(entities는 읽기·features는 쓰기)이 import 줄에서 보인다.
 
 **폴더 이름도 camelCase다.** 슬라이스 폴더가 `workRequest`·`scheduleDay`고 세그먼트 폴더는 단어 하나라 영향이 없다. `screens/`의 슬라이스는 ADR-001이 「라우트 이름과 같게」로 정했는데 그 짝을 camel로 읽는다 — 라우트 `/admin-home`의 슬라이스가 `screens/adminHome`이다. 1:1이 유지되면서 저장소에 폴더 꼴이 하나만 산다.

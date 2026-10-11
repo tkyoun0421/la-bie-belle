@@ -55,6 +55,16 @@ export function memberOf<Member extends string>(
 
 **`indexOf`를 쓰는 둘은 가드가 아니라 다른 답일 수 있다.** 그 자리가 묻는 것은 「이 포지션이 정본 순서에 있나」가 아니라 **「몇째냐」**다. 구현이 **그 값이 어디에 쓰이는지 먼저 보고** 가드가 맞는지 가린다 — 안 맞으면 `Record<Position, number>` 표가 답이다.
 
+### ①-2 가드 이름은 `is`로 시작하고 검사가 그것을 지킨다
+
+**반환 타입이 `값 is 좁은타입`인 함수는 `is`로 시작한다.** 지금 저장소의 열셋이 전부 그 꼴이라 **위반이 0건**이다 — 새로 정하는 것이 아니라 이미 사실인 것을 지키는 것이다. 근거는 [ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)고 까닭은 **가드가 거짓말을 할 수 있어** 호출부가 이름만 보고 「여기서 좁힌다」를 알아야 한다는 것이다.
+
+**이 task가 가드를 가장 많이 만드니 검사도 여기서 세운다.** 판정이 순수하게 구문이라 믿을 만하다 — 반환 타입이 `TSTypePredicate`인데 이름이 `/^is[A-Z]/`가 아니면 문다. **지금 거짓 양성이 0이다.**
+
+**가드를 내는 손은 안 문다.** `memberOf`는 반환 타입이 `(value: unknown) => value is Member`고 그 자체는 서술어가 아니다 — 검사가 **함수의 반환 타입이 서술어인 경우만** 보면 그 구분이 공짜다.
+
+ESLint 규칙을 세우면 **한 커밋에 다섯 자리가 같이 간다** — `.mjs`, `eslint-rules/index.mjs`, `eslint.config.mjs`, `tests/lint/rules.ts`(행과 `DOCUMENTED_LINT_RULE_COUNT`를 46에서 47로), `docs/4-test/execution.md`(표의 행과 **산문의 수**). 짝 테스트도 `eslint-rules/__tests__/`에 선다.
+
 ### ② 오류 꼴은 `in`이 좁힌다
 
 ```ts
@@ -139,7 +149,8 @@ return rate === null ? [] : [[one.month, rate] as [string, number]];
 - **AC-05** ⑤⑥ 의 열이 **가족마다 한 자리로 모인다.** `shared/ui`의 `.tsx` 다섯이 각자 단언하지 않는다. `as unknown as`가 그 한 자리 밖에 0건이다
 - **AC-06** 실행 코드의 `as` 총 수가 **서른넷에서 열 이하로** 내려간다. 남은 것은 ⑤⑥ 의 가둔 자리와 **동작이 바뀌어 안 건드린 자리**뿐이고, 자리마다 왜 남는지가 PR 본문에 적힌다
 - **AC-07** **동작이 바뀌는 자리를 안 바꾼다.** `getHallDefaults.api.ts`처럼 가드를 세우면 지금 통과하는 입력이 막히는 자리는 백로그 행으로 남긴다
-- **AC-08** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
+- **AC-08** 반환 타입이 서술어인 함수가 전부 `is`로 시작한다. **규칙 47이 그것을 문다** — 지금 열셋에 거짓 양성이 0이고, 가드를 내는 손(`memberOf`)은 **안 물린다**
+- **AC-09** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
 ## 작업 순서
 
