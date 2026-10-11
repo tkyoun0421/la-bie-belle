@@ -179,6 +179,7 @@ const eslintConfig = defineConfig([
       "house/no-route-path-literal": "error",
       "house/fragment-state-contract": "error",
       "house/controller-type-not-generic": "error",
+      "house/type-guard-name": "error",
     },
   },
 

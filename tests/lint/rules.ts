@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 46;
+export const DOCUMENTED_LINT_RULE_COUNT = 47;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -371,6 +371,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/controller-type-not-generic",
     enforcedBy: null,
     test: "eslint-rules/__tests__/controllerTypeNotGeneric.test.ts",
+  },
+  {
+    no: 47,
+    name: "is로 시작하지 않는 타입 가드 이름",
+    mechanism: "house",
+    ruleId: "house/type-guard-name",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/typeGuardName.test.ts",
   },
 ];
 
