@@ -1,6 +1,5 @@
 import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
-import { positionRank } from "@/entities/schedule/model/positionRank.policy";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type {
   PersonTotal,
@@ -124,6 +123,12 @@ function add<Row extends Tallied>(
   row.minutes += minutes;
   row.count += 1;
   rows.set(key, row);
+}
+
+function positionRank(position: string): number {
+  const at = POSITION_ORDER.findIndex((known) => known === position);
+
+  return at === -1 ? POSITION_ORDER.length : at;
 }
 
 function minutesOfTime(time: string): number {

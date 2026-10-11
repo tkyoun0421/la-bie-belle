@@ -6,7 +6,7 @@ import type {
   CheckIn,
   ExcuseStatus,
 } from "@/entities/attendance/model/attendance.type";
-import { excuseDecisionOf } from "@/entities/attendance/model/excuseDecision.policy";
+import { isExcuseDecision } from "@/entities/attendance/model/excuseDecision.policy";
 
 export function toCheckIn(row: CheckInRow): CheckIn {
   return {
@@ -26,6 +26,6 @@ export function toExcuseStatus(row: ExcuseStatusRow): ExcuseStatus {
     profileId: row.profile_id,
     submittedAt: row.submitted_at,
     decidedAt: row.decided_at,
-    decision: excuseDecisionOf(row.decision),
+    decision: isExcuseDecision(row.decision) ? row.decision : null,
   };
 }

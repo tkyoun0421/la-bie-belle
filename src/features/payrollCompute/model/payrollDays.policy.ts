@@ -5,7 +5,7 @@ import type {
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
-import { excuseDecisionOf } from "@/entities/attendance/model/excuseDecision.policy";
+import { isExcuseDecision } from "@/entities/attendance/model/excuseDecision.policy";
 import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 import {
   dayAmount,
@@ -80,7 +80,7 @@ function excuseRecord(excuse: PayrollExcuse): ExcuseStatusRecord {
   return {
     submittedAt: excuse.submittedAt,
     decidedAt: excuse.decidedAt,
-    decision: excuseDecisionOf(excuse.decision),
+    decision: isExcuseDecision(excuse.decision) ? excuse.decision : null,
   };
 }
 

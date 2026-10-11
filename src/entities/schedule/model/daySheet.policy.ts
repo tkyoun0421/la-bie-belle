@@ -1,5 +1,5 @@
 import { clockOf } from "@/shared/utils/kstDate";
-import { positionRank } from "@/entities/schedule/model/positionRank.policy";
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
 export type RosterSlot = {
@@ -15,6 +15,12 @@ export type RosterAssignment = {
 };
 
 export type RosterRow = RosterAssignment | { kind: "vacant"; position: string };
+
+function positionRank(position: string): number {
+  const at = POSITION_ORDER.findIndex((known) => known === position);
+
+  return at === -1 ? POSITION_ORDER.length : at;
+}
 
 function orderedPositions(
   slots: readonly RosterSlot[],
