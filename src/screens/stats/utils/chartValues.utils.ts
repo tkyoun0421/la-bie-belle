@@ -60,7 +60,7 @@ export function myAttendanceValues(
   now: string,
 ): Map<string, number> {
   return new Map(
-    (loaded ?? []).flatMap((one) => {
+    (loaded ?? []).flatMap((one): [string, number][] => {
       const rate = attendanceRate(
         myAttendanceTally(
           one.days,
@@ -71,7 +71,7 @@ export function myAttendanceValues(
         ),
       );
 
-      return rate === null ? [] : [[one.month, rate] as [string, number]];
+      return rate === null ? [] : [[one.month, rate]];
     }),
   );
 }
@@ -83,7 +83,7 @@ export function myPayrollValues(
   rehearsals: readonly Rehearsal[],
 ): Map<string, number> {
   return new Map(
-    (loaded ?? []).flatMap((one) => {
+    (loaded ?? []).flatMap((one): [string, number][] => {
       const days = myPayrollDaysOfMonth(
         loaded,
         one.month,
@@ -94,12 +94,7 @@ export function myPayrollValues(
 
       return one.days.length === 0 && days.length === 0
         ? []
-        : [
-            [one.month, days.reduce((sum, day) => sum + day.amount, 0)] as [
-              string,
-              number,
-            ],
-          ];
+        : [[one.month, days.reduce((sum, day) => sum + day.amount, 0)]];
     }),
   );
 }

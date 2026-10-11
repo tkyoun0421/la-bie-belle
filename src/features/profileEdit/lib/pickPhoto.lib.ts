@@ -7,7 +7,7 @@ import {
 
 export type PickedAsset = { uri: string };
 
-export type PickPhotoDeps = {
+export type PickPhotoDeps<SaveFormat = unknown> = {
   launchImageLibraryAsync: () => Promise<{
     canceled: boolean;
     assets: PickedAsset[] | null;
@@ -15,9 +15,9 @@ export type PickPhotoDeps = {
   manipulateAsync: (
     uri: string,
     actions: { resize: { width: number; height: number } }[],
-    options: { compress: number; format: unknown },
+    options: { compress: number; format: SaveFormat },
   ) => Promise<{ uri: string }>;
-  saveFormatJpeg: unknown;
+  saveFormatJpeg: SaveFormat;
 };
 
 export type PickedPhoto = {
@@ -26,8 +26,8 @@ export type PickedPhoto = {
   extension: string;
 };
 
-export async function pickAndShrinkPhoto(
-  deps: PickPhotoDeps,
+export async function pickAndShrinkPhoto<SaveFormat>(
+  deps: PickPhotoDeps<SaveFormat>,
 ): Promise<PickedPhoto | null> {
   const picked = await deps.launchImageLibraryAsync();
 

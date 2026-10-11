@@ -41,11 +41,9 @@ export function useMembersQuery<Kind extends MemberKind>(
   client: DB,
   kind: Kind,
 ): MembersResult<RowOf[Kind]> {
-  const list = LIST_OF[kind] as (client: DB) => Promise<RowOf[Kind][]>;
-
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.member.list(kind),
-    queryFn: () => list(client),
+    queryFn: (): Promise<RowOf[Kind][]> => LIST_OF[kind](client),
   });
 
   return { data, error, isLoading };

@@ -2,10 +2,10 @@ import { clockOf } from "@/shared/utils/kstDate";
 import type {
   AttendanceStatusInput,
   CheckInRecord,
-  ExcuseDecision,
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
+import { excuseDecisionOf } from "@/entities/attendance/model/excuseDecision.policy";
 import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 import {
   dayAmount,
@@ -76,15 +76,11 @@ export type PayrollDay = Omit<DayAmount, "kind"> & {
 
 const ABSENT: DayAmount = { minutes: 0, amount: 0, kind: "absent" };
 
-function decisionOf(decision: string | null): ExcuseDecision | null {
-  return decision === "approved" || decision === "rejected" ? decision : null;
-}
-
 function excuseRecord(excuse: PayrollExcuse): ExcuseStatusRecord {
   return {
     submittedAt: excuse.submittedAt,
     decidedAt: excuse.decidedAt,
-    decision: decisionOf(excuse.decision),
+    decision: excuseDecisionOf(excuse.decision),
   };
 }
 

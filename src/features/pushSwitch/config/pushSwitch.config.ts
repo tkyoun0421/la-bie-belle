@@ -1,8 +1,13 @@
 import Constants from "expo-constants";
 
-export function readPushProjectId(): string | null {
-  const eas = Constants.expoConfig?.extra?.eas as
-    { projectId?: string } | undefined;
+function projectIdOf(eas: unknown): string | null {
+  if (typeof eas !== "object" || eas === null || !("projectId" in eas)) {
+    return null;
+  }
 
-  return eas?.projectId ?? null;
+  return typeof eas.projectId === "string" ? eas.projectId : null;
+}
+
+export function readPushProjectId(): string | null {
+  return projectIdOf(Constants.expoConfig?.extra?.eas);
 }

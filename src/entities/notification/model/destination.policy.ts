@@ -9,6 +9,7 @@ import type {
   NotificationKind,
   NotificationPayload,
 } from "@/entities/notification/model/notification.type";
+import { isNotificationKind } from "@/entities/notification/model/notificationKind.policy";
 
 type Point = (payload: NotificationPayload) => string;
 
@@ -65,8 +66,11 @@ export type NotificationDestinationInput = {
 export function toNotificationDestination(
   row: NotificationDestinationInput,
 ): string | null {
-  const point: Point | null | undefined =
-    POINT_OF[row.kind as NotificationKind];
+  if (!isNotificationKind(row.kind)) {
+    return null;
+  }
 
-  return point == null ? null : point(row.payload);
+  const point = POINT_OF[row.kind];
+
+  return point === null ? null : point(row.payload);
 }

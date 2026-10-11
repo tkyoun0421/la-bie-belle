@@ -20,7 +20,7 @@ function styledIcon(icon: LucideIcon): ComponentType<LucideProps> {
       target: false,
       nativeStyleMapping: { color: "color", fill: "fill" },
     },
-  }) as ComponentType<LucideProps>;
+  });
 
   styledIcons.set(icon, styledComponent);
 

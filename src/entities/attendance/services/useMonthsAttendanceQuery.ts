@@ -20,12 +20,9 @@ export function useMonthsAttendanceQuery(
       queryFn: () => getMonthAttendance(client, month),
     })),
     combine: (results): MonthsResult<AttendanceByMonth> =>
-      combineMonths(results, months, (at) => ({
+      combineMonths(results, months, (at, arrived) => ({
         month: months[at],
-        attendance: (results[at].data ?? {
-          checkIns: [],
-          excuseStatuses: [],
-        }) as Attendance,
+        attendance: arrived[at],
       })),
   });
 }
