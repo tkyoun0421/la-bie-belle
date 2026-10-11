@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
@@ -72,31 +73,21 @@ export function useStatsAttendance(month: string): StatsAttendanceController {
     [shown, profileId, now],
   );
 
-  if (profile.isLoading || attendance.isLoading) {
-    return { state: "pending" };
-  }
+  return fragmentOf([profile, attendance], {
+    empty: () => days.length === 0,
+    ready: () => ({
+      line: monthAttendanceLine(tally),
+      shares: attendanceRatioShares(tally),
+      rows: days.map((day) => {
+        const row = myAttendanceRow(day);
 
-  if (profile.error !== null || attendance.error !== null) {
-    return { state: "failed" };
-  }
-
-  if (days.length === 0) {
-    return { state: "empty" };
-  }
-
-  return {
-    state: "ready",
-    line: monthAttendanceLine(tally),
-    shares: attendanceRatioShares(tally),
-    rows: days.map((day) => {
-      const row = myAttendanceRow(day);
-
-      return {
-        key: day.workDate,
-        title: row.title,
-        detail: row.subtitle,
-        value: row.value,
-      };
+        return {
+          key: day.workDate,
+          title: row.title,
+          detail: row.subtitle,
+          value: row.value,
+        };
+      }),
     }),
-  };
+  });
 }

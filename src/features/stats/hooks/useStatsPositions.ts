@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -45,27 +46,17 @@ export function useStatsPositions(month: string): StatsPositionsController {
     return computeMyWorkTotals(inputs.assignments, inputs.days, profileId);
   }, [shown, profileId]);
 
-  if (profile.isLoading || work.isLoading) {
-    return { state: "pending" };
-  }
-
-  if (profile.error !== null || work.error !== null) {
-    return { state: "failed" };
-  }
-
-  if (totals.totalCount === 0) {
-    return { state: "empty" };
-  }
-
-  return {
-    state: "ready",
-    totalLabel: hoursLabel(totals.totalMinutes),
-    rows: totals.byPosition.map((row) => ({
-      key: row.position,
-      title: row.position,
-      detail: `${row.count}${STATS_COPY.countSuffix}`,
-      value: hoursLabel(row.minutes),
-      weight: row.minutes,
-    })),
-  };
+  return fragmentOf([profile, work], {
+    empty: () => totals.totalCount === 0,
+    ready: () => ({
+      totalLabel: hoursLabel(totals.totalMinutes),
+      rows: totals.byPosition.map((row) => ({
+        key: row.position,
+        title: row.position,
+        detail: `${row.count}${STATS_COPY.countSuffix}`,
+        value: hoursLabel(row.minutes),
+        weight: row.minutes,
+      })),
+    }),
+  });
 }

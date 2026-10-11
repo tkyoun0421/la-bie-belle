@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
@@ -51,26 +52,16 @@ export function useAdminStatsAttendance(
     );
   }, [shown, serverNowMs]);
 
-  if (attendance.isLoading) {
-    return { state: "pending" };
-  }
-
-  if (attendance.error !== null) {
-    return { state: "failed" };
-  }
-
-  if (tab.rows.length === 0) {
-    return { state: "empty" };
-  }
-
-  return {
-    state: "ready",
-    line: adminAttendanceLine(tab.tally),
-    shares: adminAttendanceShares(tab.tally),
-    rows: tab.rows.map((row) => ({
-      key: row.profileId,
-      displayName: row.displayName,
-      value: attendanceRowValue(row),
-    })),
-  };
+  return fragmentOf(attendance, {
+    empty: () => tab.rows.length === 0,
+    ready: () => ({
+      line: adminAttendanceLine(tab.tally),
+      shares: adminAttendanceShares(tab.tally),
+      rows: tab.rows.map((row) => ({
+        key: row.profileId,
+        displayName: row.displayName,
+        value: attendanceRowValue(row),
+      })),
+    }),
+  });
 }

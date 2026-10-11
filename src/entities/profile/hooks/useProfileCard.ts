@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { PROFILE_CARD_COPY } from "@/entities/profile/consts/profile.const";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import {
@@ -27,28 +28,21 @@ export type ProfileCardController =
 export function useProfileCard({
   userId,
 }: ProfileCardInput): ProfileCardController {
-  const { data, error } = useMyProfileQuery(supabase, userId);
+  const read = useMyProfileQuery(supabase, userId);
 
-  if (error !== null) {
-    return { state: "failed" };
-  }
-
-  if (data === undefined) {
-    return { state: "pending" };
-  }
-
-  return {
-    state: "ready",
-    name: data.displayName ?? "",
-    photoUrl: data.photoUrl,
-    roleLabel:
-      data.role === "admin"
-        ? PROFILE_CARD_COPY.admin
-        : PROFILE_CARD_COPY.worker,
-    gender: spellGender(data.gender),
-    birthDate: data.birthDate
-      ? spellBirthDate(digitsOfBirthDate(data.birthDate))
-      : "",
-    phone: data.phone ?? "",
-  };
+  return fragmentOf(read, {
+    ready: (profile) => ({
+      name: profile.displayName ?? "",
+      photoUrl: profile.photoUrl,
+      roleLabel:
+        profile.role === "admin"
+          ? PROFILE_CARD_COPY.admin
+          : PROFILE_CARD_COPY.worker,
+      gender: spellGender(profile.gender),
+      birthDate: profile.birthDate
+        ? spellBirthDate(digitsOfBirthDate(profile.birthDate))
+        : "",
+      phone: profile.phone ?? "",
+    }),
+  });
 }

@@ -1,5 +1,6 @@
 import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { spellWon } from "@/shared/utils/spellNumber";
 import {
   buildWageRows,
@@ -30,25 +31,18 @@ export function useWageRows({
   people,
   onPressPerson,
 }: WageRowsSource): WageRowsController {
-  const { data, error } = useWageRatesQuery(supabase);
+  const read = useWageRatesQuery(supabase);
 
-  if (error !== null) {
-    return { state: "failed" };
-  }
-
-  if (data === undefined) {
-    return { state: "pending" };
-  }
-
-  const rows: WageRowLine[] = buildWageRows(people, data.wageRates).map(
-    (row) => ({
-      profileId: row.profileId,
-      displayName: row.displayName,
-      photoUrl: row.photoUrl ?? null,
-      valueLabel: row.amount === null ? NO_VALUE : spellWon(row.amount),
-      press: () => onPressPerson(row.profileId),
+  return fragmentOf(read, {
+    empty: (rates) => buildWageRows(people, rates.wageRates).length === 0,
+    ready: (rates) => ({
+      rows: buildWageRows(people, rates.wageRates).map((row) => ({
+        profileId: row.profileId,
+        displayName: row.displayName,
+        photoUrl: row.photoUrl ?? null,
+        valueLabel: row.amount === null ? NO_VALUE : spellWon(row.amount),
+        press: () => onPressPerson(row.profileId),
+      })),
     }),
-  );
-
-  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
+  });
 }

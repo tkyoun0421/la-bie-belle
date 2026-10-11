@@ -21,7 +21,8 @@ jest.unstable_mockModule(
   }),
 );
 
-const { renderHook, waitFor } = await import("@testing-library/react-native");
+const { renderHook, waitFor, act } =
+  await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
@@ -157,6 +158,12 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
     expect(result.current.state).toBe("failed");
   });
 
+  it("질의는 성공해도 그 달에 그 날이 없으면 failed다", async () => {
+    const { result } = await mounted({ workDate: "2026-10-20" });
+
+    expect(result.current.state).toBe("failed");
+  });
+
   it("쓰기로 들어가는 문은 받아서 그대로 넘긴다", async () => {
     const { result, input } = await mounted();
 
@@ -169,5 +176,46 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
 
     expect(input.onCancelShift).toHaveBeenCalled();
     expect(input.onRequestSwap).toHaveBeenCalled();
+  });
+
+  it("재시도 중에도 값이 이미 있으면 pending으로 돌아가지 않는다", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    function wrapper({ children }: { children: ReactNode }) {
+      return React.createElement(
+        QueryClientProvider,
+        { client: queryClient },
+        children,
+      );
+    }
+
+    let resolveRefetch: (value: unknown) => void = () => {};
+
+    getMonthScheduleMock.mockResolvedValueOnce([MY_DAY]).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveRefetch = resolve;
+        }),
+    );
+
+    const { result } = renderHook(() => useDaySheet(inputOf()), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    act(() => {
+      void queryClient.refetchQueries();
+    });
+
+    await waitFor(() => expect(getMonthScheduleMock).toHaveBeenCalledTimes(2));
+
+    expect(result.current.state).toBe("ready");
+
+    resolveRefetch([MY_DAY]);
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
   });
 });

@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { spellDate } from "@/shared/utils/kstDate";
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
@@ -35,21 +36,15 @@ export function useRehearsalDaySheet({
   const mine = useMyRehearsalsQuery(supabase, month, !isAdmin);
   const all = useAllRehearsalsQuery(supabase, month, isAdmin);
 
-  const asked = isAdmin ? all : mine;
-  const rows = (asked.data ?? []).filter((row) => row.workDate === workDate);
+  return fragmentOf(isAdmin ? all : mine, {
+    ready: (asked) => {
+      const rows = asked.filter((row) => row.workDate === workDate);
 
-  if (asked.error !== null) {
-    return { state: "failed" };
-  }
-
-  if (asked.data === undefined) {
-    return { state: "pending" };
-  }
-
-  return {
-    state: "ready",
-    title: spellDate(workDate),
-    content: daySheetRows(rows, isAdmin),
-    canAdd: !isAdmin && canAddOn(formKind, rows),
-  };
+      return {
+        title: spellDate(workDate),
+        content: daySheetRows(rows, isAdmin),
+        canAdd: !isAdmin && canAddOn(formKind, rows),
+      };
+    },
+  });
 }

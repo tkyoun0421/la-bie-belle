@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import type { APPLICATIONS_TABS } from "@/entities/availability/consts/availability.const";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import {
@@ -46,37 +47,25 @@ export function useApplicationsList({
   month,
   tab,
 }: ApplicationsListInput): ApplicationsListController {
-  const { data, error } = useMonthAvailabilitiesQuery(supabase, month);
+  const read = useMonthAvailabilitiesQuery(supabase, month);
 
-  const applications = data ?? [];
-
-  if (error !== null) {
-    return { state: "failed" };
-  }
-
-  if (data === undefined) {
-    return { state: "pending" };
-  }
-
-  if (applications.length === 0) {
-    return { state: "empty" };
-  }
-
-  return {
-    state: "ready",
-    tab,
-    dateGroups: groupApplicationsByDate(applications).map((group) => ({
-      key: group.workDate,
-      heading: spellApplicationDate(group.workDate),
-      names: group.names.map((name, at) => ({
-        key: `${group.workDate}-${at}`,
-        name,
+  return fragmentOf(read, {
+    empty: (applications) => applications.length === 0,
+    ready: (applications) => ({
+      tab,
+      dateGroups: groupApplicationsByDate(applications).map((group) => ({
+        key: group.workDate,
+        heading: spellApplicationDate(group.workDate),
+        names: group.names.map((name, at) => ({
+          key: `${group.workDate}-${at}`,
+          name,
+        })),
       })),
-    })),
-    personGroups: groupApplicationsByPerson(applications).map((group) => ({
-      key: group.profileId,
-      displayName: group.displayName,
-      dates: group.workDates.map(spellApplicationDate).join(", "),
-    })),
-  };
+      personGroups: groupApplicationsByPerson(applications).map((group) => ({
+        key: group.profileId,
+        displayName: group.displayName,
+        dates: group.workDates.map(spellApplicationDate).join(", "),
+      })),
+    }),
+  });
 }

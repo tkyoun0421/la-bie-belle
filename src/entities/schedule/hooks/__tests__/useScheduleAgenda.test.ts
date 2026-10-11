@@ -21,7 +21,8 @@ jest.unstable_mockModule(
   }),
 );
 
-const { renderHook, waitFor } = await import("@testing-library/react-native");
+const { renderHook, waitFor, act } =
+  await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
@@ -269,5 +270,48 @@ describe("useScheduleAgenda — 조각이 자기 달을 부른다", () => {
     expect(all.result.current.days).toHaveLength(2);
     expect(mine.result.current.days).toHaveLength(1);
     expect(mine.result.current.days[0].workDate).toBe("2026-10-17");
+  });
+
+  it("재시도 중에도 값이 이미 있으면 pending으로 돌아가지 않는다", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    function wrapper({ children }: { children: ReactNode }) {
+      return React.createElement(
+        QueryClientProvider,
+        { client: queryClient },
+        children,
+      );
+    }
+
+    let resolveRefetch: (value: unknown) => void = () => {};
+
+    getMonthScheduleMock
+      .mockResolvedValueOnce([dayAt("2026-10-03")])
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveRefetch = resolve;
+          }),
+      );
+
+    const { result } = renderHook(() => useScheduleAgenda(inputOf()), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    act(() => {
+      void queryClient.refetchQueries();
+    });
+
+    await waitFor(() => expect(getMonthScheduleMock).toHaveBeenCalledTimes(2));
+
+    expect(result.current.state).toBe("ready");
+
+    resolveRefetch([dayAt("2026-10-03")]);
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
   });
 });

@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { spellSentLine } from "@/entities/member/utils/elapsedLine.utils";
@@ -28,23 +29,18 @@ export function usePendingRows({
   now,
   onPress,
 }: PendingRowsInput): PendingRowsController {
-  const { data, error } = useMembersQuery(supabase, "pending");
+  const read = useMembersQuery(supabase, "pending");
 
-  const rows: MemberWaitRow[] = (data ?? []).map((row) => ({
-    id: row.id,
-    name: row.displayName ?? "",
-    photoUrl: row.photoUrl,
-    detail: spellSentLine(row.submittedAt, now),
-    press: () => onPress(row),
-  }));
-
-  if (error !== null) {
-    return { state: "failed" };
-  }
-
-  if (data === undefined) {
-    return { state: "pending" };
-  }
-
-  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
+  return fragmentOf(read, {
+    empty: (members) => members.length === 0,
+    ready: (members) => ({
+      rows: members.map((row) => ({
+        id: row.id,
+        name: row.displayName ?? "",
+        photoUrl: row.photoUrl,
+        detail: spellSentLine(row.submittedAt, now),
+        press: () => onPress(row),
+      })),
+    }),
+  });
 }

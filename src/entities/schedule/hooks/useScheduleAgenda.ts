@@ -1,9 +1,11 @@
 import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import {
   canShowShiftActions,
   rosterOfDay,
 } from "@/entities/schedule/model/daySheet.policy";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type {
   ScheduleAgendaController,
   ScheduleAgendaDay,
@@ -16,31 +18,20 @@ import {
   spellWorkDate,
 } from "@/entities/schedule/utils/agendaRow.utils";
 
-export function useScheduleAgenda({
-  month,
-  myProfileId,
-  showMineOnly,
-  expanded,
-  onToggle,
-  onCancelShift,
-  onRequestSwap,
-}: ScheduleAgendaInput): ScheduleAgendaController {
-  const { data, error, isLoading, refetch } = useMonthScheduleQuery(
-    supabase,
-    month,
-  );
-
-  if (isLoading) {
-    return { state: "pending" };
-  }
-
-  if (error !== null) {
-    return { state: "failed", retry: refetch };
-  }
-
+function agendaDaysOf(
+  days: readonly ScheduleDay[],
+  {
+    myProfileId,
+    showMineOnly,
+    expanded,
+    onToggle,
+    onCancelShift,
+    onRequestSwap,
+  }: ScheduleAgendaInput,
+): ScheduleAgendaDay[] {
   const today = kstToday();
 
-  const days: ScheduleAgendaDay[] = (data ?? [])
+  return days
     .map((day) => ({
       day,
       myAssignment: myAssignmentOf(day.assignments, myProfileId),
@@ -64,8 +55,19 @@ export function useScheduleAgenda({
       cancelShift: () => onCancelShift(day.workDate),
       requestSwap: () => onRequestSwap(day.workDate),
     }));
+}
 
-  return days.length === 0
-    ? { state: "empty" }
-    : { state: "ready", days, myProfileId };
+export function useScheduleAgenda(
+  input: ScheduleAgendaInput,
+): ScheduleAgendaController {
+  const read = useMonthScheduleQuery(supabase, input.month);
+
+  return fragmentOf(read, {
+    empty: (days) => agendaDaysOf(days, input).length === 0,
+    failed: () => ({ retry: read.refetch }),
+    ready: (days) => ({
+      days: agendaDaysOf(days, input),
+      myProfileId: input.myProfileId,
+    }),
+  });
 }

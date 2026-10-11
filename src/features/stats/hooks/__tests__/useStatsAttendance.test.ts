@@ -36,7 +36,8 @@ jest.unstable_mockModule(
   () => ({ getMonthAttendance: getMonthAttendanceMock }),
 );
 
-const { renderHook, waitFor } = await import("@testing-library/react-native");
+const { renderHook, waitFor, act } =
+  await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
@@ -143,5 +144,52 @@ describe("useStatsAttendance — 조각이 자기 근태를 읽는다", () => {
     const { result } = mounted();
 
     await waitFor(() => expect(result.current.state).toBe("failed"));
+  });
+
+  it("재시도 중에도 값이 이미 있으면 pending으로 돌아가지 않는다", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    function wrapper({ children }: { children: ReactNode }) {
+      return React.createElement(
+        QueryClientProvider,
+        { client: queryClient },
+        children,
+      );
+    }
+
+    getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
+
+    let resolveRefetch: (value: unknown) => void = () => {};
+
+    getMonthAttendanceMock
+      .mockResolvedValueOnce(EMPTY_ATTENDANCE)
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveRefetch = resolve;
+          }),
+      );
+
+    const { result } = renderHook(() => useStatsAttendance(MONTH), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    act(() => {
+      void queryClient.refetchQueries();
+    });
+
+    await waitFor(() =>
+      expect(getMonthAttendanceMock).toHaveBeenCalledTimes(2),
+    );
+
+    expect(result.current.state).toBe("ready");
+
+    resolveRefetch(EMPTY_ATTENDANCE);
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
   });
 });
