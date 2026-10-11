@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import {
   useApplicationsList,
   type ApplicationsListInput,
@@ -20,21 +21,20 @@ export function ApplicationsList({
 }: ApplicationsListProps) {
   const fragment = useApplicationsList(input);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed ?? null;
-  }
-
-  if (fragment.state === "empty") {
-    return empty ?? null;
-  }
-
-  if (fragment.tab === "date") {
-    return <ApplicationsDateGroups groups={fragment.dateGroups} />;
-  }
-
-  return <ApplicationsPersonGroups groups={fragment.personGroups} />;
+  return (
+    <FragmentView
+      fragment={fragment}
+      pending={pending}
+      failed={failed}
+      empty={empty}
+    >
+      {(ready) =>
+        ready.tab === "date" ? (
+          <ApplicationsDateGroups groups={ready.dateGroups} />
+        ) : (
+          <ApplicationsPersonGroups groups={ready.personGroups} />
+        )
+      }
+    </FragmentView>
+  );
 }

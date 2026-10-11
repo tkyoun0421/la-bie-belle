@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { Text } from "@/shared/ui/Text";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import { usePayrollAccrual } from "@/features/payrollCompute/hooks/usePayrollAccrual";
@@ -14,35 +15,31 @@ export type PayrollAccrualProps = {
 export function PayrollAccrual({ span, pending, failed }: PayrollAccrualProps) {
   const fragment = usePayrollAccrual(span);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed ?? null;
-  }
-
   return (
-    <View className="mt-6 gap-2">
-      <View className="flex-row items-baseline justify-between">
-        <Text size="sm" tone="muted">
-          {PAYROLL_VIEW_COPY.workLabel}
-        </Text>
-        <Text size="sm" weight="medium" numeric>
-          {fragment.work}
-        </Text>
-      </View>
+    <FragmentView fragment={fragment} pending={pending} failed={failed}>
+      {(ready) => (
+        <View className="mt-6 gap-2">
+          <View className="flex-row items-baseline justify-between">
+            <Text size="sm" tone="muted">
+              {PAYROLL_VIEW_COPY.workLabel}
+            </Text>
+            <Text size="sm" weight="medium" numeric>
+              {ready.work}
+            </Text>
+          </View>
 
-      {fragment.late === null ? null : (
-        <View className="flex-row items-baseline justify-between">
-          <Text size="sm" tone="muted">
-            {PAYROLL_VIEW_COPY.lateLabel}
-          </Text>
-          <Text size="sm" weight="medium" numeric>
-            {fragment.late}
-          </Text>
+          {ready.late === null ? null : (
+            <View className="flex-row items-baseline justify-between">
+              <Text size="sm" tone="muted">
+                {PAYROLL_VIEW_COPY.lateLabel}
+              </Text>
+              <Text size="sm" weight="medium" numeric>
+                {ready.late}
+              </Text>
+            </View>
+          )}
         </View>
       )}
-    </View>
+    </FragmentView>
   );
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { ListRow } from "@/shared/ui/ListRow";
 import { RowBars } from "@/shared/ui/RowBars";
 import { Text } from "@/shared/ui/Text";
@@ -20,40 +21,37 @@ export function StatsPositions({
 }: StatsPositionsProps) {
   const fragment = useStatsPositions(month);
 
-  if (fragment.state === "pending") {
-    return pending;
-  }
-
-  if (fragment.state === "failed") {
-    return failed;
-  }
-
-  if (fragment.state === "empty") {
-    return empty;
-  }
-
   return (
-    <View>
-      <Text size="3xl" weight="bold" tone="brand" numeric className="mt-6">
-        {fragment.totalLabel}
-      </Text>
+    <FragmentView
+      fragment={fragment}
+      pending={pending}
+      failed={failed}
+      empty={empty}
+    >
+      {(ready) => (
+        <View>
+          <Text size="3xl" weight="bold" tone="brand" numeric className="mt-6">
+            {ready.totalLabel}
+          </Text>
 
-      <View className="mt-8">
-        <RowBars
-          testID="stats-positions"
-          items={fragment.rows.map((row) => ({
-            key: row.key,
-            value: row.weight,
-            row: (
-              <ListRow
-                title={row.title}
-                detail={row.detail}
-                value={row.value}
-              />
-            ),
-          }))}
-        />
-      </View>
-    </View>
+          <View className="mt-8">
+            <RowBars
+              testID="stats-positions"
+              items={ready.rows.map((row) => ({
+                key: row.key,
+                value: row.weight,
+                row: (
+                  <ListRow
+                    title={row.title}
+                    detail={row.detail}
+                    value={row.value}
+                  />
+                ),
+              }))}
+            />
+          </View>
+        </View>
+      )}
+    </FragmentView>
   );
 }
