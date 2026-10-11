@@ -4,6 +4,7 @@ const TESTS_FOLDER = "__tests__";
 
 const COPIED_TO_DENO = [
   "src/shared/consts/",
+  "src/shared/model/",
   "src/entities/notification/consts/",
   "src/entities/notification/model/",
   "src/entities/notification/utils/",
