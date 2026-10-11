@@ -1,10 +1,11 @@
-const { plot, segmentsOf, linePointsOf, areaPointsOf } = await import(
-  // @ts-expect-error 넷이 아직 이 자리에 없다
-  "@/shared/utils/trendChart.utils"
-);
-
-type TrendChartPoint = { month: number; value: number | null };
-type PlotPoint = { index: number; x: number; y: number };
+import {
+  areaPointsOf,
+  linePointsOf,
+  plot,
+  segmentsOf,
+  type PlotPoint,
+  type TrendChartPoint,
+} from "@/shared/utils/trendChart.utils";
 
 function point(month: number, value: number | null): TrendChartPoint {
   return { month, value };

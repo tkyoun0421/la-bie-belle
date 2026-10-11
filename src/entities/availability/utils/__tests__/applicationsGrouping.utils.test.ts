@@ -1,4 +1,5 @@
 import {
+  applicationsByDate,
   groupApplicationsByDate,
   groupApplicationsByPerson,
 } from "@/entities/availability/utils/applicationsGrouping.utils";
@@ -8,6 +9,25 @@ const ROWS = [
   { profileId: "profile-2", workDate: "2026-10-10", name: "김지우" },
   { profileId: "profile-1", workDate: "2026-10-10", name: "박서연" },
 ];
+
+describe("applicationsByDate — 날짜로 찾게 이름과 profileId를 같이 꽂는다", () => {
+  it("같은 날짜의 이름과 profileId가 만난 순서로 모인다", () => {
+    const byDate = applicationsByDate(ROWS);
+
+    expect(byDate.get("2026-10-10")).toEqual({
+      names: ["김지우", "박서연"],
+      profileIds: ["profile-2", "profile-1"],
+    });
+    expect(byDate.get("2026-10-11")).toEqual({
+      names: ["박서연"],
+      profileIds: ["profile-1"],
+    });
+  });
+
+  it("신청이 없으면 빈 Map이다", () => {
+    expect(applicationsByDate([]).size).toBe(0);
+  });
+});
 
 describe("groupApplicationsByDate — 날짜마다 그날 신청한 사람 이름을 묶는다", () => {
   it("날짜 오름차순으로 서고 각 날짜에 신청자 이름이 모인다", () => {
