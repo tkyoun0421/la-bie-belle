@@ -16,14 +16,15 @@ import {
   spellDeadline,
   type MonthState,
 } from "@/entities/schedule/model/monthState.policy";
-import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { myAssignmentOf } from "@/entities/schedule/utils/agendaRow.utils";
+import { indexDaysByDate } from "@/entities/schedule/utils/dayIndex.utils";
 import { hasIncomingRequest } from "@/entities/workRequest/model/incomingRequest.policy";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
+import { groupRequestsByDate } from "@/entities/workRequest/utils/requestGrouping.utils";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
 import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
@@ -177,27 +178,12 @@ export function useScheduleWorkerScreen({
     resetSend();
   }, [sendFailed, resetSend, showToast]);
 
-  const dayOf = useMemo(() => {
-    const byDate = new Map<string, ScheduleDay>();
+  const dayOf = useMemo(() => indexDaysByDate(days ?? []), [days]);
 
-    for (const day of days ?? []) {
-      byDate.set(day.workDate, day);
-    }
-
-    return byDate;
-  }, [days]);
-
-  const requestsOf = useMemo(() => {
-    const byDate = new Map<string, SlotRequest[]>();
-
-    for (const request of slotRequests ?? []) {
-      const date = request.workDate;
-
-      byDate.set(date, [...(byDate.get(date) ?? []), request]);
-    }
-
-    return byDate;
-  }, [slotRequests]);
+  const requestsOf = useMemo(
+    () => groupRequestsByDate(slotRequests ?? []),
+    [slotRequests],
+  );
 
   const state = monthState({ schedule: monthWindow ?? null, today });
   const loading = monthWindow === undefined || days === undefined;

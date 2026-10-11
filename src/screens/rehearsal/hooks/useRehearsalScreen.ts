@@ -13,6 +13,7 @@ import type {
 } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
+import { groupRehearsalsByDate } from "@/entities/rehearsal/utils/rehearsalGrouping.utils";
 import {
   dayTotal,
   monthTotal,
@@ -107,15 +108,7 @@ export function useRehearsalScreen(
     [isAdmin, all.data, mine.data],
   );
 
-  const rowsOf = useMemo(() => {
-    const byDate = new Map<string, Row[]>();
-
-    for (const row of rows) {
-      byDate.set(row.workDate, [...(byDate.get(row.workDate) ?? []), row]);
-    }
-
-    return byDate;
-  }, [rows]);
+  const rowsOf = useMemo(() => groupRehearsalsByDate(rows), [rows]);
 
   const myAssignments = useMemo(
     () =>

@@ -8,6 +8,11 @@ export type DateGroup = {
   names: string[];
 };
 
+export type DateApplications = {
+  names: string[];
+  profileIds: string[];
+};
+
 export type PersonGroup = {
   profileId: string;
   displayName: string;
@@ -18,12 +23,26 @@ function nameOf(row: Availability): string {
   return row.name ?? "";
 }
 
+export function applicationsByDate(
+  rows: readonly Availability[],
+): Map<string, DateApplications> {
+  return new Map(
+    [...groupBy(rows, (row) => row.workDate)].map(([workDate, group]) => [
+      workDate,
+      {
+        names: group.map(nameOf),
+        profileIds: group.map((row) => row.profileId),
+      },
+    ]),
+  );
+}
+
 export function groupApplicationsByDate(
   rows: readonly Availability[],
 ): DateGroup[] {
-  return [...groupBy(rows, (row) => row.workDate)]
+  return [...applicationsByDate(rows)]
     .sort(([one], [other]) => one.localeCompare(other))
-    .map(([workDate, group]) => ({ workDate, names: group.map(nameOf) }));
+    .map(([workDate, { names }]) => ({ workDate, names }));
 }
 
 export function groupApplicationsByPerson(

@@ -19,6 +19,7 @@ import { isMonthFullyPast } from "@/shared/model/monthEmptyState.policy";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
+import { applicationsByDate } from "@/entities/availability/utils/applicationsGrouping.utils";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
@@ -32,6 +33,7 @@ import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
+import { indexDaysByDate } from "@/entities/schedule/utils/dayIndex.utils";
 import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
 import {
   confirmedLine,
@@ -264,29 +266,10 @@ export function useScheduleAdminScreen({
   const slotRows = openSlots ?? [];
   const applications = availabilities ?? [];
 
-  const dayOf = new Map(dayList.map((day) => [day.workDate, day]));
+  const dayOf = indexDaysByDate(dayList);
   const vacancyOf = countOpenSlotsByDate(slotRows);
 
-  const applicationCountOf = new Map<string, number>();
-  const applicationNamesOf = new Map<string, string[]>();
-  const applicationIdsOf = new Map<string, string[]>();
-
-  for (const row of applications) {
-    applicationCountOf.set(
-      row.workDate,
-      (applicationCountOf.get(row.workDate) ?? 0) + 1,
-    );
-
-    const names = applicationNamesOf.get(row.workDate) ?? [];
-
-    names.push(row.name ?? "");
-    applicationNamesOf.set(row.workDate, names);
-
-    const ids = applicationIdsOf.get(row.workDate) ?? [];
-
-    ids.push(row.profileId);
-    applicationIdsOf.set(row.workDate, ids);
-  }
+  const applicationsOf = applicationsByDate(applications);
 
   const confirmed = schedule?.confirmedAt != null;
   const deadline = schedule?.applicationDeadline ?? null;
@@ -447,7 +430,7 @@ export function useScheduleAdminScreen({
           : dayOf.has(date),
       press: (date) => (picking ? togglePicked(date) : setOpenDate(date)),
       applicationCountOf: (date) =>
-        confirmed ? 0 : (applicationCountOf.get(date) ?? 0),
+        confirmed ? 0 : (applicationsOf.get(date)?.names.length ?? 0),
       vacancyCountOf: (date) =>
         confirmedVacancyCount({
           isConfirmed: confirmed,
@@ -507,8 +490,9 @@ export function useScheduleAdminScreen({
             endsAt: day.endsAt,
             slots: day.slots,
             assignments: day.assignments,
-            applicationNames: applicationNamesOf.get(day.workDate) ?? [],
-            appliedProfileIds: applicationIdsOf.get(day.workDate) ?? [],
+            applicationNames: applicationsOf.get(day.workDate)?.names ?? [],
+            appliedProfileIds:
+              applicationsOf.get(day.workDate)?.profileIds ?? [],
             members: activeMembers ?? [],
             qualifications: qualifications ?? [],
             slotRequests: (slotRequests ?? []).filter(
