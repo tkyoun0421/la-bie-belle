@@ -1,3 +1,4 @@
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
 import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 import { StatsPayroll } from "@/features/payrollCompute/ui/StatsPayroll";
@@ -35,24 +36,21 @@ export function StatsList({ screen }: StatsListProps) {
     );
   }
 
-  if (screen.listState === "loading") {
-    return <StatsLoading />;
-  }
-
-  if (screen.listState === "failed") {
-    return <StatsFailed onRetry={screen.retry} />;
-  }
-
-  if (screen.listState === "empty") {
-    return <StatsEmpty />;
-  }
-
   return (
-    <StatsPayroll
-      span={screen.payrollSpan}
-      onOpenHistory={screen.openPayrollHistory}
-      pending={<PayrollViewLoading />}
-      failed={(retry) => <PayrollViewFailed onRetry={retry} />}
-    />
+    <FragmentView
+      fragment={screen.listState}
+      pending={<StatsLoading />}
+      failed={<StatsFailed onRetry={screen.retry} />}
+      empty={<StatsEmpty />}
+    >
+      {() => (
+        <StatsPayroll
+          span={screen.payrollSpan}
+          onOpenHistory={screen.openPayrollHistory}
+          pending={<PayrollViewLoading />}
+          failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+        />
+      )}
+    </FragmentView>
   );
 }

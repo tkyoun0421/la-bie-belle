@@ -1,11 +1,11 @@
-const CONTROLLER_SUFFIX = "Controller";
+const WATCHED_SUFFIXES = ["Controller", "ListState", "Body"];
 
 const STATE_FIELD = "state";
 
 const STATE_NAMES = new Set(["pending", "failed", "empty", "ready", "sending"]);
 
-function isControllerAlias(node) {
-  return node.id.name.endsWith(CONTROLLER_SUFFIX);
+function isWatchedAlias(node) {
+  return WATCHED_SUFFIXES.some((suffix) => node.id.name.endsWith(suffix));
 }
 
 function propertyName(member) {
@@ -53,7 +53,7 @@ const fragmentStateContract = {
     type: "problem",
     docs: {
       description:
-        "controller의 상태를 판별 union으로 묶고 상태 이름을 정본 다섯으로 가둔다.",
+        "controller와 목록 상태의 상태를 판별 union으로 묶고 상태 이름을 정본 다섯으로 가둔다.",
     },
     schema: [],
     messages: {
@@ -64,7 +64,7 @@ const fragmentStateContract = {
   create(context) {
     return {
       TSTypeAliasDeclaration(node) {
-        if (!isControllerAlias(node)) {
+        if (!isWatchedAlias(node)) {
           return;
         }
 

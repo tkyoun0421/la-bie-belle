@@ -212,7 +212,7 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
   it("근무한 날이 없으면 empty다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("empty");
+    expect(result.current.listState).toEqual({ state: "empty" });
   });
 
   it("근무한 날이 있으면 history 자리가 선다", async () => {
@@ -220,7 +220,12 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("history"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({
+        state: "ready",
+        view: "history",
+      }),
+    );
   });
 
   it("조각에 넘기는 구간이 보고 있는 기간과 같다", async () => {
@@ -246,7 +251,12 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
     act(() => result.current.chooseUnit("year"));
 
-    await waitFor(() => expect(result.current.listState).toBe("months"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({
+        state: "ready",
+        view: "months",
+      }),
+    );
 
     act(() => result.current.openMonth("2026-10"));
 
@@ -259,7 +269,9 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("failed"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "failed" }),
+    );
   });
 
   it("퇴사하면 종을 안 그리고 뒤로가 선다", async () => {
@@ -302,13 +314,17 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("failed"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "failed" }),
+    );
 
     getMonthScheduleMock.mockResolvedValue([]);
 
     act(() => result.current.retry());
 
-    await waitFor(() => expect(result.current.listState).toBe("empty"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "empty" }),
+    );
   });
 });
 

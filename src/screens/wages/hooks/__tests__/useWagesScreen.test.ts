@@ -108,7 +108,7 @@ async function mounted() {
   const hook = renderHook(() => useWagesScreen(), { wrapper });
 
   await waitFor(() =>
-    expect(hook.result.current.listState).not.toBe("loading"),
+    expect(hook.result.current.listState).not.toEqual({ state: "pending" }),
   );
 
   return hook;
@@ -122,7 +122,7 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
       wrapper,
     });
 
-    expect(result.current.listState).toBe("loading");
+    expect(result.current.listState).toEqual({ state: "pending" });
   });
 
   it("승인된 사람이 없으면 empty다", async () => {
@@ -130,7 +130,7 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
 
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("empty");
+    expect(result.current.listState).toEqual({ state: "empty" });
   });
 
   it("기본 시급 줄이 지금 값과 쓰는 사람 수를 말한다", async () => {
@@ -155,7 +155,7 @@ describe("useWagesScreen — 목록과 시트 고르는 자리를 든다", () =>
   it("승인된 사람을 조각이 그릴 꼴로 넘긴다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("rows");
+    expect(result.current.listState).toEqual({ state: "ready" });
     expect(result.current.people).toEqual([
       { profileId: "p1", displayName: "이준호", photoUrl: null },
       { profileId: "p2", displayName: "박수진", photoUrl: null },

@@ -1,3 +1,4 @@
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { PayrollHistoryRows } from "@/features/payrollCompute/ui/PayrollHistoryRows";
 import { PayrollMonthRows } from "@/features/payrollCompute/ui/PayrollMonthRows";
 import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
@@ -12,36 +13,31 @@ export type PayrollListProps = {
 };
 
 export function PayrollList({ screen }: PayrollListProps) {
-  if (screen.listState === "loading") {
-    return <PayrollLoading />;
-  }
-
-  if (screen.listState === "failed") {
-    return <PayrollFailed onRetry={screen.retry} />;
-  }
-
-  if (screen.listState === "empty") {
-    return <PayrollEmpty />;
-  }
-
-  if (screen.listState === "months") {
-    return (
-      <PayrollMonthRows
-        span={screen.span}
-        onOpenMonth={screen.openMonth}
-        pending={<PayrollViewLoading />}
-        failed={(retry) => <PayrollViewFailed onRetry={retry} />}
-        empty={<PayrollEmpty />}
-      />
-    );
-  }
-
   return (
-    <PayrollHistoryRows
-      span={screen.span}
-      pending={<PayrollViewLoading />}
-      failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+    <FragmentView
+      fragment={screen.listState}
+      pending={<PayrollLoading />}
+      failed={<PayrollFailed onRetry={screen.retry} />}
       empty={<PayrollEmpty />}
-    />
+    >
+      {(ready) =>
+        ready.view === "months" ? (
+          <PayrollMonthRows
+            span={screen.span}
+            onOpenMonth={screen.openMonth}
+            pending={<PayrollViewLoading />}
+            failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+            empty={<PayrollEmpty />}
+          />
+        ) : (
+          <PayrollHistoryRows
+            span={screen.span}
+            pending={<PayrollViewLoading />}
+            failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+            empty={<PayrollEmpty />}
+          />
+        )
+      }
+    </FragmentView>
   );
 }

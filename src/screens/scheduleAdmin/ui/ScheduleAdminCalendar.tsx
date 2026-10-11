@@ -1,4 +1,5 @@
 import { ScrollView, View } from "react-native";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { Screen } from "@/shared/ui/Screen";
 import type { ScheduleAdminScreenController } from "@/screens/scheduleAdmin/hooks/useScheduleAdminScreen";
 import { ScheduleAdminBottomCta } from "@/screens/scheduleAdmin/ui/ScheduleAdminBottomCta";
@@ -25,13 +26,13 @@ export function ScheduleAdminCalendar({ screen }: ScheduleAdminCalendarProps) {
 
       <ScrollView>
         <View className="gap-3 px-5 pb-8">
-          {screen.listState === "loading" ? (
-            <ScheduleCalendarLoading />
-          ) : screen.listState === "missing" ? (
-            <ScheduleCalendarMissing screen={screen} />
-          ) : (
-            <ScheduleCalendarMonth screen={screen} />
-          )}
+          <FragmentView
+            fragment={screen.listState}
+            pending={<ScheduleCalendarLoading />}
+            empty={<ScheduleCalendarMissing screen={screen} />}
+          >
+            {() => <ScheduleCalendarMonth screen={screen} />}
+          </FragmentView>
         </View>
       </ScrollView>
 

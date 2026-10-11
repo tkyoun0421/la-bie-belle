@@ -107,6 +107,24 @@ export type WageRowsController =
 
 **가지를 늘리고 싶은 것은 대개 상태가 아니라 그 가지의 데이터다.** 상태 이름이 넷을 넘으려 하면 먼저 그것을 묻는다.
 
+**그 넷은 조각만의 것이 아니다 — 어느 그림을 그릴지 고르는 controller 상태가 전부 그 규격이다.** 조각이든 화면의 목록이든 묻는 것이 같다: 아직 안 왔나, 실패했나, 와 보니 없나, 그릴 수 있나.
+
+지금 `*ListState`와 `*Body` 여덟이 그 규격 밖에 산다. 꼴이 셋으로 어긋난다 — **평평한 글자 union이라** 가지마다의 데이터가 타입에서 안 갈리고, **`pending` 대신 `loading`을 쓰고**, **준비됐을 때의 값이 상태 가지로 올라와 있다**(`StatsListState`는 탭 셋이 상태 이름 자리에 서서 여섯 갈래고 `NotificationsListState`는 일곱이다).
+
+마지막 것이 위의 질문에 「아니다」라고 답해야 할 자리다. **탭은 상태가 아니라 `ready` 가지의 데이터다.**
+
+```ts
+type StatsListState =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "empty" }
+  | { state: "ready"; tab: StatsTab };
+```
+
+이렇게 가두면 `tab`을 `ready` 밖에서 읽을 수 없고, 그것을 밖에서 읽으려고 서 있던 식들이 사라진다.
+
+**`pending`이라는 낱말이 이 저장소에서 둘로 쓰인다.** `AttendanceStatus`와 `MemberKind`의 `pending`은 「승인 대기」라는 **도메인 상태**고 가져오는 중이 아니다. 그 둘은 이 규격 밖이다 — 가름은 **그 값이 「어느 그림을 그릴지」를 고르느냐**다.
+
 | 늘리려던 것 | 실제 | 가는 자리 |
 | --- | --- | --- |
 | 다음 쪽이 있나 (`normal`·`end`) | `ready`인데 더 받을 수 있나 | `{ state: "ready"; …; hasMore: boolean }` |

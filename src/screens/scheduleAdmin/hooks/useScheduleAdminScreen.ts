@@ -70,7 +70,8 @@ import {
   openDaysFailureToast,
 } from "@/screens/scheduleAdmin/model/openModeSelection.policy";
 
-export type ScheduleAdminListState = "loading" | "missing" | "calendar";
+export type ScheduleAdminListState =
+  { state: "pending" } | { state: "empty" } | { state: "ready" };
 
 export type ScheduleAdminCalendar = {
   isToday: (date: string) => boolean;
@@ -337,13 +338,13 @@ export function useScheduleAdminScreen({
   const assignmentCount = day === null ? 0 : liveAssignmentCount(day);
 
   const listState: ScheduleAdminListState = loadingWindow
-    ? "loading"
+    ? { state: "pending" }
     : schedule == null
-      ? "missing"
-      : "calendar";
+      ? { state: "empty" }
+      : { state: "ready" };
 
   const noticeLine =
-    listState !== "calendar" || picking
+    listState.state !== "ready" || picking
       ? null
       : confirmed
         ? confirmedLine({
@@ -410,8 +411,8 @@ export function useScheduleAdminScreen({
     createLabel: `${monthName}${SCHEDULE_ADMIN_COPY.createSuffix}`,
     noticeLine,
     showAllClosedHint:
-      listState === "calendar" && dayList.length === 0 && !picking,
-    showApplications: listState === "calendar" && !confirmed && !picking,
+      listState.state === "ready" && dayList.length === 0 && !picking,
+    showApplications: listState.state === "ready" && !confirmed && !picking,
     applicationsTitle: `${SCHEDULE_ADMIN_COPY.applicationsPrefix}${applications.length}${SCHEDULE_ADMIN_COPY.applicationsSuffix}`,
     calendar: {
       isToday: (date) => date === today,
@@ -451,7 +452,7 @@ export function useScheduleAdminScreen({
     goPrevMonth: goPrev,
     goNextMonth: goNext,
     showConfirmCta:
-      !picking && listState === "calendar" && affordance !== "ended",
+      !picking && listState.state === "ready" && affordance !== "ended",
     confirmLocked: affordance === "locked",
     confirmUnlockLine:
       affordance === "locked" && deadline !== null

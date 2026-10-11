@@ -17,7 +17,8 @@ import {
 } from "@/features/wageAdmin/utils/followerCount.utils";
 import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 
-export type WagesListState = "loading" | "empty" | "rows";
+export type WagesListState =
+  { state: "pending" } | { state: "empty" } | { state: "ready" };
 
 export type WagesScreenMember = {
   profileId: string;
@@ -86,7 +87,12 @@ export function useWagesScreen(): WagesScreenController {
       ? (people.find((person) => person.profileId === target.profileId) ?? null)
       : null;
 
-  const loading = members === undefined || wages === undefined;
+  const listState: WagesListState =
+    members === undefined || wages === undefined
+      ? { state: "pending" }
+      : people.length === 0
+        ? { state: "empty" }
+        : { state: "ready" };
 
   const goBack = useCallback(() => {
     if (router.canGoBack()) {
@@ -99,7 +105,7 @@ export function useWagesScreen(): WagesScreenController {
 
   return {
     goBack,
-    listState: loading ? "loading" : people.length === 0 ? "empty" : "rows",
+    listState,
     people,
     baseValue: hasDefaultWage ? spellWon(defaultWage) : WAGES_COPY.noBase,
     baseNote: spellBaseWageNote({ hasDefaultWage, followerCount }),

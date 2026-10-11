@@ -358,7 +358,7 @@ export const RULES: EnforcedRule[] = [
   },
   {
     no: 45,
-    name: "controller 상태의 판별 union과 정본 상태 이름",
+    name: "controller·ListState·Body 별칭의 판별 union과 정본 상태 이름",
     mechanism: "house",
     ruleId: "house/fragment-state-contract",
     enforcedBy: null,
