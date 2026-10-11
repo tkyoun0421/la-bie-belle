@@ -54,11 +54,12 @@ export function computeWorkTotals(
 ): WorkTotals {
   const minutesByDay = new Map(days.map((day) => [day.id, shiftMinutes(day)]));
   const people = new Map<string, PersonTotal>();
-  const positions = new Map<string, PositionTotal>();
-
-  for (const position of POSITION_ORDER) {
-    positions.set(position, { position, minutes: 0, count: 0 });
-  }
+  const positions = new Map<string, PositionTotal>(
+    POSITION_ORDER.map((position): [string, PositionTotal] => [
+      position,
+      { position, minutes: 0, count: 0 },
+    ]),
+  );
 
   let totalMinutes = 0;
   let totalCount = 0;

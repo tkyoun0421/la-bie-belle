@@ -1,7 +1,6 @@
-const { groupBy, countBy } = await import(
-  // @ts-expect-error 공용 손이 아직 이 자리에 없다
-  "@/shared/utils/collect"
-);
+import { jest } from "@jest/globals";
+
+import { countBy, groupBy } from "@/shared/utils/collect";
 
 type Entry = { id: number; category: string };
 
