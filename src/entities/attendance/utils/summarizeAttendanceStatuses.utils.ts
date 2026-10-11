@@ -1,19 +1,17 @@
+import { countBy } from "@/shared/utils/collect";
 import type {
   AttendanceStatus,
   AttendanceSummary,
 } from "@/entities/attendance/model/attendance.type";
 
+function isStatus(status: AttendanceStatus | null): status is AttendanceStatus {
+  return status !== null;
+}
+
 export function summarizeAttendanceStatuses(
   statuses: (AttendanceStatus | null)[],
 ): AttendanceSummary {
-  const summary: AttendanceSummary = {};
-
-  for (const status of statuses) {
-    if (status === null) {
-      continue;
-    }
-    summary[status] = (summary[status] ?? 0) + 1;
-  }
-
-  return summary;
+  return Object.fromEntries(
+    countBy(statuses.filter(isStatus), (status) => status),
+  );
 }

@@ -1,4 +1,5 @@
 import { DAY_MS } from "@/shared/consts/time.const";
+import { countBy } from "@/shared/utils/collect";
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { WITHIN_DAYS } from "@/screens/adminHome/consts/adminHome.const";
@@ -25,16 +26,9 @@ function daysUntil(workDate: string, today: string): number {
 export function vacancyDaysOf(
   slots: readonly Pick<OpenSlot, "workDate">[],
 ): VacancyDay[] {
-  const countByDate = new Map<string, number>();
-
-  for (const slot of slots) {
-    countByDate.set(slot.workDate, (countByDate.get(slot.workDate) ?? 0) + 1);
-  }
-
-  return [...countByDate].map(([workDate, vacancyCount]) => ({
-    workDate,
-    vacancyCount,
-  }));
+  return [...countBy(slots, (slot) => slot.workDate)].map(
+    ([workDate, vacancyCount]) => ({ workDate, vacancyCount }),
+  );
 }
 
 export function vacancyCards({ days, now }: VacancyCardsInput): VacancyCard[] {

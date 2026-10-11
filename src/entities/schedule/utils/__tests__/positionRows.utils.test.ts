@@ -75,6 +75,14 @@ describe("groupSlotsByPosition — 아홉 줄로 자리를 가른다", () => {
     expect(groups["메인"].map((s) => s.id)).toEqual(["slot-겸임"]);
     expect(groups["드레스"]).toEqual([]);
   });
+
+  it("POSITION_ORDER에 없는 포지션의 슬롯은 아홉 키 어디에도 안 들어가고 조용히 버려진다", () => {
+    const groups = groupSlotsByPosition([slot("slot-모름", ["사진사"])]);
+
+    for (const position of POSITION_ORDER) {
+      expect(groups[position].map((s) => s.id)).not.toContain("slot-모름");
+    }
+  });
 });
 
 describe("slotFillCount — 분자는 살아 있는 정규 배정이 있는 자리 수, 분모는 살아 있는 자리 수다", () => {

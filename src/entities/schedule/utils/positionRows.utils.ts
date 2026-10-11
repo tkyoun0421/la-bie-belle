@@ -25,17 +25,14 @@ function isLive(slot: ScheduleSlot): boolean {
 export function groupSlotsByPosition(
   slots: readonly ScheduleSlot[],
 ): Record<string, ScheduleSlot[]> {
-  const groups: Record<string, ScheduleSlot[]> = {};
+  const live = slots.filter(isLive);
 
-  for (const position of POSITION_ORDER) {
-    groups[position] = [];
-  }
-
-  for (const slot of slots.filter(isLive)) {
-    groups[slot.positions[0]]?.push(slot);
-  }
-
-  return groups;
+  return Object.fromEntries(
+    POSITION_ORDER.map((position): [string, ScheduleSlot[]] => [
+      position,
+      live.filter((slot) => slot.positions[0] === position),
+    ]),
+  );
 }
 
 export function slotFillCount(

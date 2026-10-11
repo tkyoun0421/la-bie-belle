@@ -180,7 +180,15 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
 
-**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. **가름은 `useReducer`를 타느냐다.** `screens/rehearsal/model/addSheetState.reducer.ts`가 그 꼴이고 `RehearsalScreen.tsx`가 그것을 `useReducer`에 건다 — 전이 함수와 action 유니언이 `.reducer.ts`에 살고 훅 호출은 controller나 `.tsx`에 남는다. `screens/scheduleAdmin/model/adjustChoiceState.policy.ts`는 상태 꼴과 전이를 들어도 `useReducer`를 안 타고 화면 둘이 함수로 부르므로 `.policy.ts`다.
+**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. **가름은 `useReducer`를 타느냐다.** `features/rehearsalEdit/model/addSheetState.reducer.ts`가 그 꼴이고 `features/rehearsalEdit/hooks/useRehearsalFormSheet.ts`가 그것을 `useReducer`에 건다 — 전이 함수와 action 유니언이 `.reducer.ts`에 살고 훅 호출은 controller에 남는다. `shared/model/adjustChoiceState.policy.ts`는 상태 꼴과 전이를 들어도 `useReducer`를 안 타고 부르는 쪽이 함수로 쓰므로 `.policy.ts`다.
+
+**`useReducer`로 가는 가름은 「있을 수 없는 조합이 타입에 남나」다.** 중간 그림이 아니다 — React는 한 손 안의 `setState` 여럿을 묶어 한 번만 그린다.
+
+가는 자리는 **한 개념이 변수 여럿에 흩어진 곳**이다. `screens/scheduleAdmin/hooks/useDayDetail.ts`의 `closePicker`가 `setPicker(null)`·`setExpanded(false)`·`setPicked([])`·`setInspecting(null)`·`setQualifying(null)` 다섯을 부른다 — 「고르는 창이 닫혔다」 하나가 변수 다섯이고, 뒤의 넷은 **창이 열렸을 때만 뜻이 있다.** 판별 union으로 묶으면 닫힌 것이 값 하나가 되고 `picked`가 찬 채로 닫히는 조합이 타입에서 사라진다.
+
+**안 가는 자리도 또렷하다.** 상태 둘이 같이 뒤집히는 것(`setPicking` + `setPickFailed` 꼴)은 reducer와 action 유니언을 세우는 값이 없다 — 그 둘은 서로 모순되는 조합이 없고 이름이 이미 무엇인지 말한다.
+
+얻는 둘은 이것이다. **전이가 순수 함수라 테스트가 `dispatch` 없이 선다**는 것과, **「무엇이 같이 바뀌나」가 한 자리에 살아** 호출부마다 다시 세지 않는다는 것이다.
 
 **Context는 `stores`다.** 하위트리에 상태를 나눠 주는 도구고 zustand와 역할이 같다. Context 객체와 그것을 읽는 훅이 `<도메인>.context.ts`에 살고 Provider 컴포넌트는 `.tsx`라 `ui/`에 남는다 — 지금 `shared/ui/DragAndDrop.tsx` 하나가 Context와 Provider와 훅 둘과 컴포넌트 둘을 삼백한 줄에 들고 export 다섯을 낸다.
 

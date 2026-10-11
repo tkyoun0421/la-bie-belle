@@ -153,24 +153,19 @@ function payrollDate(
 export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
   const dayById = new Map(input.days.map((day) => [day.id, day]));
   const dayByDate = new Map(input.days.map((day) => [day.workDate, day]));
-  const dates = new Set<string>();
-
   const touchedDayIds = [
     ...input.assignments.map((row) => row.dayId),
     ...input.adjustments.map((row) => row.dayId),
   ];
 
-  for (const dayId of touchedDayIds) {
-    const day = dayById.get(dayId);
+  const dates = new Set([
+    ...touchedDayIds.flatMap((dayId): string[] => {
+      const day = dayById.get(dayId);
 
-    if (day !== undefined) {
-      dates.add(day.workDate);
-    }
-  }
-
-  for (const rehearsal of input.rehearsals) {
-    dates.add(rehearsal.workDate);
-  }
+      return day === undefined ? [] : [day.workDate];
+    }),
+    ...input.rehearsals.map((rehearsal) => rehearsal.workDate),
+  ]);
 
   return [...dates].sort().map((date) => payrollDate(input, dayByDate, date));
 }

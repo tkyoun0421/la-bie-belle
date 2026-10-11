@@ -1,3 +1,4 @@
+import { countBy } from "@/shared/utils/collect";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { formatScheduleDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
@@ -17,13 +18,7 @@ export type OpenSlotSummary = {
 export function countOpenSlotsByDate(
   rows: readonly OpenSlot[],
 ): Record<string, number> {
-  const counts: Record<string, number> = {};
-
-  for (const row of rows) {
-    counts[row.workDate] = (counts[row.workDate] ?? 0) + 1;
-  }
-
-  return counts;
+  return Object.fromEntries(countBy(rows, (row) => row.workDate));
 }
 
 export function summarizeOpenSlots(rows: readonly OpenSlot[]): OpenSlotSummary {
