@@ -117,6 +117,8 @@ export function countBy<Item, Key>(
 | `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:193` | `entities/workRequest/utils`의 새 파일 |
 | `screens/rehearsal/hooks/useRehearsalScreen.ts:113` | `entities/rehearsal/utils`의 새 파일 |
 | `shared/ui/TrendChart.tsx` | `shared/utils`의 새 파일. **알고리즘은 그대로, 짝 테스트가 처음 선다** |
+| `shared/consts/trendChart.const.ts` | **새로 선다.** `CHART_HEIGHT`·`PLOT_INSET`을 함수 넷과 `.tsx`가 같이 쓰는데 `utils`에서 내보내면 규칙 `house/consts-segment`가 막는다 — 정해진 값은 `consts`가 든다. 안 내보내는 표현용 값은 `.tsx`에 남는다 |
+| `screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts`의 `dayOf` | 이미 선언형이라 루프 셈의 대상이 아니었는데, 워커 쪽을 `entities/schedule`로 내리면 **같은 계산을 하는 손이 둘**이 된다. AC-08이 막는 꼴이라 그 손을 쓴다 |
 
 ## 완료 조건
 
