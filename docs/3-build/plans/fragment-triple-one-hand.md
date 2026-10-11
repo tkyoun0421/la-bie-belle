@@ -89,7 +89,7 @@ const rows: PayrollMonthLine[] = (
 
 **③ `pending`을 재는 식은 스물한 자리 전부 `data === undefined`로 모은다.** 지금 `isLoading`으로 재는 일곱이 바뀐다. 근거는 **조건부 질의를 조각이 하나도 안 읽는다**는 것이다 — `enabled`를 가진 질의는 `entities/profile/services/useProfilePrivateQuery.ts` 하나뿐이고 그것을 읽는 셋(`usePendingScreen`·`useProfileScreen`·`useMembersPendingScreen`)이 전부 화면 controller다. 그래서 「안 돌린 질의가 영원히 `pending`에 머문다」가 이 스물한 자리에 없다. 그리고 `data === undefined`는 TypeScript가 따라갈 수 있어 ①이 성립한다.
 
-**④ `empty`와 `failed`를 재는 식은 손이 콜백으로 받는다.** 자리마다 다른 식을 그대로 넘긴다 — `rows.length === 0`·`totals.totalCount === 0`·그룹화 전 원본 길이·`useMemberRows`의 3단 `reason`이 전부 각자 산다. **동작이 안 바뀐다.** `useDaySheet`가 「질의 실패 ∪ 그 날 없음」을 `failed` 하나로 합친 것도 그 식을 그대로 넘기면 되어 판정이 필요 없다.
+**④ `empty`를 재는 식은 손이 콜백으로 받고 `failed`는 값만 받는다.** 자리마다 다른 식을 그대로 넘긴다 — `rows.length === 0`·`totals.totalCount === 0`·그룹화 전 원본 길이·`useMemberRows`의 3단 `reason`이 전부 각자 산다. **동작이 안 바뀐다.** `useDaySheet`가 「질의 실패 ∪ 그 날 없음」을 `failed` 하나로 합친 자리는 **이 손으로 안 간다** — `failed` 가지를 여는 것이 `error !== null` 하나라서다. AC-02가 그 자리를 뺀 까닭을 든다.
 
 **⑤ `useNotificationsList`는 밖이다.** 입력이 `{data, error}`가 아니라 페이징 여섯 필드고, 이미 `resolveNotificationsListState`로 뽑힌 7상태 머신에 전가한다. 손의 입구를 그 한 자리에 맞춰 넓히면 나머지 스물이 안 쓰는 인자를 받는다. **대상은 스물이다.**
 
@@ -123,12 +123,12 @@ controller 쪽과 `.tsx` 쪽이 **같은 union의 두 끝**이다. 한쪽만 고
 ## 완료 조건
 
 - **AC-01** `src/shared/model/fragmentState.policy.ts`의 손이 데이터를 든 판별 union을 돌려준다. `ready` 가지를 좁힌 뒤 **호출부가 `data === undefined`를 다시 묻지 않는다** — 그 재질문과 닿지 않는 기본값이 대상 스물에서 0이다
-- **AC-02** controller 20개가 그 손을 부른다. `error !== null`·`data === undefined`를 직접 묻는 자리가 그 스물에서 0이다. `useNotificationsList`는 밖이다
+- **AC-02** controller 19개가 그 손을 부른다. `error !== null`·`data === undefined`를 직접 묻는 자리가 그 열아홉에서 0이다. `useNotificationsList`와 `entities/schedule/hooks/useDaySheet.ts`는 밖이다 — 후자는 「질의 실패 ∪ 그 달에 그 날 없음」을 `failed` 하나로 접는데 **손의 `failed`는 식이 아니라 값만 받는다.** 판정 ④가 「식을 그대로 넘기면 된다」고 적었지만 `failed` 가지를 여는 것은 `error !== null` 하나다. 그 자리를 맞추려면 없는 `Error`를 지어내 꽂아야 한다 — `day === null`이 실패인가 빈 것인가는 사용자가 보는 것을 바꾸는 설계 판정이라 뒤 task로 간다
 - **AC-03** 스물 자리의 Controller 타입이 **인라인 union으로 남는다.** 제네릭 인스턴스화가 0이다
 - **AC-04** `.tsx` 19개가 `shared/ui`의 손을 쓴다. `MemberRows.tsx`와 `ProfileCard.tsx`는 그대로다
 - **AC-05** `features/payrollCompute/model/fragmentState.policy.ts`가 없고 그것을 당기던 다섯이 `shared`를 당긴다
 - **AC-06** 규칙 46이 `*Controller` 별칭의 제네릭 인스턴스화를 막는다. 짝 테스트가 통과 케이스 둘(`= MemberWaitRowsController` 꼴의 맨 이름 별칭, 인라인 union)과 위반 하나(`= FragmentState<{…}>`)를 든다. `tests/lint/rules.ts`의 수가 46이고 `docs/4-test/execution.md`의 산문도 46이다
-- **AC-07** `pending`을 재는 식이 스물 자리 전부 `data === undefined`다. `isLoading`으로 재던 일곱이 바뀌고 **그 일곱의 짝 테스트가 같은 state를 단언한다**
+- **AC-07** `pending`을 재는 식이 열아홉 자리 전부 `data === undefined`다. `isLoading`으로 재던 일곱이 바뀌고 **그 일곱의 기존 `.state` 단언이 같은 답을 낸다.** 「재시도 중」을 따로 단언하지 않는다 — **그 경우는 두 기준이 같은 답을 내서 아무것도 가르지 못한다.** 재시도 중에는 `data`가 이미 있어 `data === undefined`가 거짓이고, `isLoading`도 `isPending && isFetching`인데 데이터가 있으면 `isPending`이 거짓이라 같이 거짓이다
 - **AC-08** `empty`와 `failed`를 재는 식이 자리마다 그대로다 — 바뀐 뒤에도 같은 입력이 같은 가지를 낸다. `useMemberRows`의 `reason` 3단과 `useDaySheet`의 「질의 실패 ∪ 그 날 없음」이 특히 그렇다
 - **AC-09** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
 
@@ -148,6 +148,8 @@ controller 쪽과 `.tsx` 쪽이 **같은 union의 두 끝**이다. 한쪽만 고
 `pnpm lint` · `pnpm typecheck` · `pnpm test`. 테스트는 `pnpm exec jest <경로>`로 좁혀 돌린다 — `pnpm test -- <경로>`는 pnpm이 플래그를 먹는다.
 
 **integration과 e2e는 밖이다.** 이 묶음은 분기를 모을 뿐이고 질의·DB·라우팅을 안 건드린다. 그 층이 새로 잡을 실패가 없다.
+
+**`shared/ui`의 손에 짝 테스트가 선다.** 가지 넷을 고르는 판정이 들어 있어 `.tsx` 열아홉의 간접 검증에만 맡기지 않는다. `tdd-guard-unit.py`가 `src/shared/ui/`를 면제하지만 면제는 「안 써도 된다」고 「쓰면 안 된다」가 아니다.
 
 **짝 테스트의 단언은 대개 그대로 산다.** 스물한 자리의 짝 테스트가 `.state`를 196번 참조하는데, 손이 여전히 `{ state: "ready", … }` 꼴의 값을 돌려주므로 그 단언이 대상을 잃지 않는다. 깨지는 것은 `pending` 기준이 바뀌는 일곱이고 AC-07이 그것을 든다.
 
