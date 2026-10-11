@@ -20,42 +20,33 @@ export type PushMessage = {
 export function buildPushMessages(
   rows: readonly ClaimedPushNotification[],
 ): PushMessage[] {
-  const messages: PushMessage[] = [];
-
-  for (const row of rows) {
+  return rows.flatMap((row) => {
     const title = toNotificationTitle(row);
     const destination = toNotificationDestination(row);
 
     if (title === null || destination === null) {
-      continue;
+      return [];
     }
 
-    for (const token of row.tokens) {
-      messages.push({
-        to: token,
-        title: title.title,
-        body: title.sub,
-        data: { kind: row.kind, destination },
-        notificationId: row.id,
-      });
-    }
-  }
-
-  return messages;
+    return row.tokens.map((token) => ({
+      to: token,
+      title: title.title,
+      body: title.sub,
+      data: { kind: row.kind, destination },
+      notificationId: row.id,
+    }));
+  });
 }
 
 export function chunkPushMessages(
   messages: readonly PushMessage[],
 ): PushMessage[][] {
-  const chunks: PushMessage[][] = [];
-
-  for (
-    let start = 0;
-    start < messages.length;
-    start += PUSH_MESSAGES_PER_REQUEST
-  ) {
-    chunks.push(messages.slice(start, start + PUSH_MESSAGES_PER_REQUEST));
-  }
-
-  return chunks;
+  return Array.from(
+    { length: Math.ceil(messages.length / PUSH_MESSAGES_PER_REQUEST) },
+    (_unused, at) =>
+      messages.slice(
+        at * PUSH_MESSAGES_PER_REQUEST,
+        (at + 1) * PUSH_MESSAGES_PER_REQUEST,
+      ),
+  );
 }

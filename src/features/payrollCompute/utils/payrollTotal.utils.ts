@@ -1,4 +1,5 @@
 import { DAY_MS } from "@/shared/consts/time.const";
+import { groupBy } from "@/shared/utils/collect";
 import type { PayrollDay } from "@/features/payrollCompute/model/payrollDays.policy";
 
 export type WeekTotal = {
@@ -20,22 +21,13 @@ export function weekStartOf(date: string): string {
 }
 
 export function weekTotals(days: readonly PayrollDay[]): WeekTotal[] {
-  const byWeek = new Map<string, WeekTotal>();
-
-  for (const day of days) {
-    const weekStart = weekStartOf(day.date);
-    const kept = byWeek.get(weekStart) ?? { weekStart, minutes: 0, amount: 0 };
-
-    byWeek.set(weekStart, {
+  return [...groupBy(days, (day) => weekStartOf(day.date))]
+    .map(([weekStart, group]) => ({
       weekStart,
-      minutes: kept.minutes + day.minutes,
-      amount: kept.amount + day.amount,
-    });
-  }
-
-  return [...byWeek.values()].sort((left, right) =>
-    left.weekStart < right.weekStart ? -1 : 1,
-  );
+      minutes: group.reduce((sum, day) => sum + day.minutes, 0),
+      amount: amountTotal(group),
+    }))
+    .sort((left, right) => (left.weekStart < right.weekStart ? -1 : 1));
 }
 
 export function amountTotal(days: readonly { amount: number }[]): number {

@@ -50,15 +50,16 @@ export function buildAttendanceTab(
   excuseStatuses: readonly AttendanceInputExcuseStatus[],
   now: string,
 ): AttendanceTab {
-  const names = new Map<string, string>();
-
-  for (const day of days) {
-    for (const assignment of day.assignments) {
-      if (assignment.endedAt === null) {
-        names.set(assignment.profileId, assignment.name ?? "");
-      }
-    }
-  }
+  const names = new Map(
+    days.flatMap((day) =>
+      day.assignments
+        .filter((assignment) => assignment.endedAt === null)
+        .map((assignment): [string, string] => [
+          assignment.profileId,
+          assignment.name ?? "",
+        ]),
+    ),
+  );
 
   const rows = buildAttendanceRows(
     [...names].map(([profileId, displayName]) => ({

@@ -1,3 +1,4 @@
+import { groupBy } from "@/shared/utils/collect";
 import { spellWon } from "@/shared/utils/spellNumber";
 
 export type PayrollMonthRow = {
@@ -8,15 +9,12 @@ export type PayrollMonthRow = {
 export function monthRowsOfDays(
   days: readonly { date: string; amount: number }[],
 ): PayrollMonthRow[] {
-  const byMonth = new Map<string, number>();
-
-  for (const day of days) {
-    const month = day.date.slice(0, 7);
-
-    byMonth.set(month, (byMonth.get(month) ?? 0) + day.amount);
-  }
-
-  return [...byMonth].map(([month, amount]) => ({ month, amount }));
+  return [...groupBy(days, (day) => day.date.slice(0, 7))].map(
+    ([month, group]) => ({
+      month,
+      amount: group.reduce((sum, day) => sum + day.amount, 0),
+    }),
+  );
 }
 
 export type PayrollYearRow =

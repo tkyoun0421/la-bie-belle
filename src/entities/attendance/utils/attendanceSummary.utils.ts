@@ -18,21 +18,13 @@ function isTallied(status: AttendanceStatus | null): status is TalliedStatus {
 export function tallyMonthlyAttendance(
   days: AttendanceStatusInput[],
 ): MonthlyAttendanceTally {
-  const tally: MonthlyAttendanceTally = {
-    present: 0,
-    late: 0,
-    absent: 0,
-    excused: 0,
-  };
-
-  for (const day of days) {
-    const status = getAttendanceStatus(day);
-    if (isTallied(status)) {
-      tally[status] += 1;
-    }
-  }
-
-  return tally;
+  return days
+    .map((day) => getAttendanceStatus(day))
+    .filter(isTallied)
+    .reduce<MonthlyAttendanceTally>(
+      (tally, status) => ({ ...tally, [status]: tally[status] + 1 }),
+      { present: 0, late: 0, absent: 0, excused: 0 },
+    );
 }
 
 export function attendanceRate(

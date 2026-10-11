@@ -1,8 +1,8 @@
+import { groupBy } from "@/shared/utils/collect";
 import type {
   AttendanceStatusInput,
   CheckIn,
   ExcuseStatus,
-  ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
 import type {
   ScheduleAssignment,
@@ -43,15 +43,9 @@ export function buildAttendanceInputs(
       checkIn,
     ]),
   );
-  const excusesAt = new Map<string, ExcuseStatusRecord[]>();
-
-  for (const excuse of excuseStatuses) {
-    const key = pairKey(excuse.dayId, excuse.profileId);
-    const here = excusesAt.get(key) ?? [];
-
-    here.push(excuse);
-    excusesAt.set(key, here);
-  }
+  const excusesAt = groupBy(excuseStatuses, (excuse) =>
+    pairKey(excuse.dayId, excuse.profileId),
+  );
 
   return days.flatMap((day) =>
     day.assignments

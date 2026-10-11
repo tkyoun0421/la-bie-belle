@@ -118,6 +118,54 @@ useEffect(() => {
 
 **한 번 그린 뒤에 다시 그린다.** 다른 상태에서 끌어낼 수 있는 값을 `useEffect`로 넣으면 첫 그림이 옛 값으로 나가고 그다음에 고쳐진다. `screens/pending/hooks/usePendingScreen.ts`가 넷으로 가장 많고 `screens/qr/hooks/useQrScreen.ts`가 둘이다.
 
+### 묶음 6 — 지금 React 버전이 주는 손을 쓴다
+
+`react`가 **19.2.3**이고 `useEffectEvent`·`use`·`useOptimistic`·`useActionState`를 내보낸다. 그 가운데 **이 앱에 맞는 것이 셋이다.**
+
+**`useEffectEvent`가 가장 크다.** 부작용이 「최신 값을 읽어야 하지만 그 값이 바뀌었다고 다시 걸리면 안 되는」 자리를 위한 손이다.
+
+```ts
+export function FloatingToast({ kind, message, onDone }: FloatingToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(onDone, TOAST_STAY_MS);
+    return () => clearTimeout(timer);
+  }, [message, onDone]);
+```
+
+`onDone`이 의존 배열에 있어 **그 함수의 정체가 바뀌면 2400ms 타이머가 처음부터 다시 돈다.** 지금 안 터지는 까닭은 `shared/hooks/useToast.ts`가 `dismissToast`를 `useCallback(…, [])`로 감쌌기 때문이다 — **보장이 그 효과에서 멀리 떨어진 다른 파일에 산다.** 누가 그 `useCallback`을 걷으면 토스트가 안 사라지고, 걷은 자리에서는 아무것도 안 깨진다.
+
+`shared/hooks/useHardwareBack.ts`도 같은 꼴이다. `onBack`이 의존 배열에 있어 **그 정체가 바뀔 때마다 리스너를 떼고 다시 건다.**
+
+**이것이 `useCallback` 259개의 한 몫이다.** 그 가운데 상당수가 계산을 아끼려는 것이 아니라 **자식의 의존 배열을 안정시키려고** 있다. `useEffectEvent`는 그 이유를 없앤다.
+
+**`use(Context)`가 한 자리다.** `shared/stores/drag.context.ts`가 `useContext`를 쓰는 유일한 곳이다. 문턱에 못 미치지만 그 파일을 건드릴 때 같이 간다.
+
+**`useReducer`는 집이 이미 있고 갈 자리를 셌다.** [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 `model/<이름>.reducer.ts`를 그 자리로 두고 가름을 「`useReducer`를 타느냐」로 박았다. 선례가 `features/rehearsalEdit/model/addSheetState.reducer.ts` 하나다.
+
+한 손이 `setState`를 둘 이상 부르는 자리를 AST로 전수 세니 **파일 열다섯에 서른둘이다.** 그 가운데 **넷만 간다.**
+
+| 파일 | `useState` | 한 손이 둘 이상 | 왜 가나 |
+| --- | --- | --- | --- |
+| `screens/scheduleAdmin/hooks/useDayDetail.ts` | **12** | 9 | `closePicker`가 다섯을 되돌린다. 「고르는 창이 닫혔다」 하나가 변수 다섯이고 뒤의 넷은 **창이 열렸을 때만 뜻이 있다** |
+| `screens/pending/hooks/usePendingScreen.ts` | 9 | 3 | 한 `useEffect`가 넷을 넣는다(`setValues`·`setFrozen`·`setEverSubmitted`·`setSeeded`). 묶음 5와 같은 파일이다 |
+| `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts` | 7 | 4 | `setOpenDate` + `setCancelling`이 네 자리에서 같이 움직인다 |
+| `screens/rehearsal/hooks/useRehearsalScreen.ts` | 5 | 2 | 한 손이 넷을 되돌린다(`setMonth`·`setOpenDate`·`setOpenForm`·`setPickerYear`) |
+
+**나머지 열하나는 안 간다.** 상태 둘이 같이 뒤집히는 꼴(`setPicking` + `setPickFailed`·`setMenuOpen` + `setFace`·`setAnswered` + `setOpen`)이 그 대부분이고, 그 둘은 **서로 모순되는 조합이 없어** reducer와 action 유니언을 세우는 값이 없다. `screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts`는 `setSheetState`가 이미 판별 union이라 절반이 돼 있고 `shared/ui/DragProvider.tsx`는 ADR-001이 허용하는 측정값 자리다.
+
+**가름은 「있을 수 없는 조합이 타입에 남나」다.** 중간 그림이 아니다 — React는 한 손 안의 `setState` 여럿을 묶어 한 번만 그린다. 얻는 둘은 전이가 순수 함수라 **테스트가 `dispatch` 없이 서는 것**과 「무엇이 같이 바뀌나」가 **한 자리에 사는 것**이다.
+
+**안 쓰는 것 넷과 까닭이다.**
+
+| 손 | 왜 안 쓰나 |
+| --- | --- |
+| `useActionState`·`useFormStatus` | 웹 `<form>`의 action을 위한 손이다. React Native에 그 action이 없다. `react-dom`이 의존에 있는 것은 Expo web 때문이고 이 앱의 화면은 그 길로 안 그려진다 |
+| `useOptimistic` | TanStack Query가 이미 mutation의 상태를 든다 — service 42개가 `onMutate`와 `onSuccess`를 쓰고 규칙 41이 그 뒤처리 꼴을 박았다. 한 mutation에 낙관 갱신 체계를 둘 두면 되돌리기가 어느 쪽 몫인지 모른다 |
+| `useDeferredValue`·`useTransition` | 성능을 바꾸는 손이고 **느리다는 측정이 없다.** 측정 없이 넣으면 무엇이 좋아졌는지 말할 수 없다 |
+| 고차 컴포넌트(HOC) | 저장소에 0건이다. 조각을 감싸는 일은 `shared/ui/FragmentView.tsx`가 **children 함수를 받는 컴포넌트**로 이미 푼다 — HOC로 바꾸면 props 계약이 안 보이고 지금 맞아떨어진 타입 추론이 깨진다. ADR-015의 고정 세그먼트에 「컴포넌트를 내는 함수」의 자리도 없다 |
+
+**고차 함수(HOF)는 이미 가고 있는 방향이다.** 묶음 1의 `fragmentOf(read, { empty, ready, failed })`와 묶음 2의 `groupBy(items, keyOf)`가 함수를 받는 함수다. 묶음 4에 한 자리가 더 있다 — **가드를 만드는 손**이다. 글자 union을 `includes`로 좁히려면 가드 안에서 `as`가 필요해지는데, `memberOf(THEMES)` 하나가 그 `as`를 **한 자리에 가두면** 열세 자리에 흩어지지 않는다.
+
 ## 순서와 왜 그 순서인가
 
 **묶음 1이 먼저다.** 42자리를 건드리고 그 자리가 다른 묶음의 대상과 겹친다 — 묶음 3의 4겹 삼항이 거기 살고, 묶음 2의 `hooks` 5자리와 묶음 5의 `hooks` 13자리가 같은 controller 파일에 산다. 1을 뒤로 미루면 그 파일들을 두 번 고친다.
@@ -125,6 +173,8 @@ useEffect(() => {
 **묶음 2와 4는 서로 안 겹쳐 같이 간다.** 전자는 `utils`·`model`, 후자는 흩어져 있지만 바꾸는 줄이 다르다.
 
 **묶음 3과 5가 마지막이다.** 둘 다 `hooks`에 몰려 있어 묶음 1이 그 파일을 정리한 뒤가 싸다.
+
+**묶음 6은 묶음 5와 붙는다.** `useEffectEvent`가 걷는 것이 의존 배열이고 묶음 5가 걷는 것이 그 배열에 매달린 `setState`다 — 같은 파일을 두 번 열지 않는다. `useReducer`도 거기서 쓴다.
 
 ## 리스크
 

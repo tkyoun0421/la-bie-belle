@@ -237,3 +237,44 @@ describe("parseHolidayApiResponse — 항목에 dateName이 없으면 던지지 
     expect(parseHolidayApiResponse(body)).toEqual([]);
   });
 });
+
+describe("parseHolidayApiResponse — 여럿 가운데 하나만 모양이 깨져도 이미 쌓은 나머지까지 버려진다", () => {
+  it("정상 둘 사이에 dateName이 빠진 항목이 섞이면 빈 배열이다", () => {
+    const body = {
+      response: {
+        header: { resultCode: "00", resultMsg: "NORMAL SERVICE." },
+        body: {
+          items: {
+            item: [
+              {
+                dateKind: "01",
+                dateName: "개천절",
+                isHoliday: "Y",
+                locdate: 20261003,
+                seq: 1,
+              },
+              {
+                dateKind: "01",
+                isHoliday: "Y",
+                locdate: 20261006,
+                seq: 2,
+              },
+              {
+                dateKind: "01",
+                dateName: "한글날",
+                isHoliday: "Y",
+                locdate: 20261009,
+                seq: 3,
+              },
+            ],
+          },
+          numOfRows: 10,
+          pageNo: 1,
+          totalCount: 3,
+        },
+      },
+    };
+
+    expect(parseHolidayApiResponse(body)).toEqual([]);
+  });
+});

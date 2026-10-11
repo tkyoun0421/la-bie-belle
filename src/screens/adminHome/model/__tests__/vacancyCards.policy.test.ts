@@ -1,6 +1,7 @@
 import {
   vacancyCards,
   vacancyDaysLeftLine,
+  vacancyDaysOf,
 } from "@/screens/adminHome/model/vacancyCards.policy";
 
 const TODAY = "2026-10-08T00:00:00Z";
@@ -50,6 +51,24 @@ describe("vacancyCards — 빈 자리가 0인 날은 카드가 안 선다", () =
 describe("vacancyCards — 대상이 없으면 빈 배열이다", () => {
   it("days가 비어 있으면 빈 배열이다", () => {
     expect(vacancyCards({ days: [], now: TODAY })).toEqual([]);
+  });
+});
+
+describe("vacancyDaysOf — 같은 날짜의 슬롯이 여럿이면 한 행으로 묶여 수가 된다", () => {
+  it("같은 날짜 슬롯 셋이 vacancyCount 3인 행 하나로 묶인다", () => {
+    const days = vacancyDaysOf([
+      { workDate: "2026-10-10" },
+      { workDate: "2026-10-10" },
+      { workDate: "2026-10-10" },
+    ]);
+
+    expect(days).toEqual([{ workDate: "2026-10-10", vacancyCount: 3 }]);
+  });
+});
+
+describe("vacancyDaysOf — 대상이 없으면 빈 배열이다", () => {
+  it("슬롯이 없으면 빈 배열이다", () => {
+    expect(vacancyDaysOf([])).toEqual([]);
   });
 });
 

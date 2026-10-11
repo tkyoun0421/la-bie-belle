@@ -29,45 +29,54 @@ export type PushResultGroups = {
   needsReview: PushNeedsReview[];
 };
 
+type DeliveredOutcome = Omit<PushOutcome, "response"> & {
+  response: Extract<PushResponse, { status: "ok" }>;
+};
+
+type FailedOutcome = Omit<PushOutcome, "response"> & {
+  response: Extract<PushResponse, { status: "error" }>;
+};
+
+function isDelivered(outcome: PushOutcome): outcome is DeliveredOutcome {
+  return outcome.response.status === "ok";
+}
+
+function isFailed(outcome: PushOutcome): outcome is FailedOutcome {
+  return outcome.response.status === "error";
+}
+
+function errorCodeOf(outcome: FailedOutcome): string | undefined {
+  return outcome.response.details?.error;
+}
+
+function hasOwnGroup(outcome: FailedOutcome): boolean {
+  const code = errorCodeOf(outcome);
+
+  return code === DEVICE_NOT_REGISTERED || code === INVALID_CREDENTIALS;
+}
+
 export function splitPushResults(
   outcomes: readonly PushOutcome[],
 ): PushResultGroups {
-  const groups: PushResultGroups = {
-    success: [],
-    discardTokens: [],
-    retry: [],
-    needsReview: [],
-  };
+  const failed = outcomes.filter(isFailed);
 
-  for (const outcome of outcomes) {
-    const { response } = outcome;
-
-    if (response.status === "ok") {
-      groups.success.push({
-        id: outcome.id,
-        receiptId: response.id ?? null,
-      });
-      continue;
-    }
-
-    const code = response.details?.error;
-
-    if (code === DEVICE_NOT_REGISTERED) {
-      groups.discardTokens.push(outcome.token);
-      continue;
-    }
-
-    if (code === INVALID_CREDENTIALS) {
-      groups.needsReview.push({
+  return {
+    success: outcomes.filter(isDelivered).map((outcome) => ({
+      id: outcome.id,
+      receiptId: outcome.response.id ?? null,
+    })),
+    discardTokens: failed
+      .filter((outcome) => errorCodeOf(outcome) === DEVICE_NOT_REGISTERED)
+      .map((outcome) => outcome.token),
+    retry: failed
+      .filter((outcome) => !hasOwnGroup(outcome))
+      .map((outcome) => ({ id: outcome.id, token: outcome.token })),
+    needsReview: failed
+      .filter((outcome) => errorCodeOf(outcome) === INVALID_CREDENTIALS)
+      .map((outcome) => ({
         id: outcome.id,
         token: outcome.token,
-        message: response.message,
-      });
-      continue;
-    }
-
-    groups.retry.push({ id: outcome.id, token: outcome.token });
-  }
-
-  return groups;
+        message: outcome.response.message,
+      })),
+  };
 }

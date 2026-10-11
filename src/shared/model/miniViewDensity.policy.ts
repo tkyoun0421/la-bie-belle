@@ -4,20 +4,20 @@ export type MiniViewDensityInput = {
   maxAssignedCount: number;
 };
 
-export function miniViewDensity({
-  isOpen,
+type MiniViewLoadInput = Omit<MiniViewDensityInput, "isOpen">;
+
+function loadOf({
   assignedCount,
   maxAssignedCount,
+}: MiniViewLoadInput): number {
+  return maxAssignedCount <= 0 ? 0 : assignedCount / maxAssignedCount;
+}
+
+export function miniViewDensity({
+  isOpen,
+  ...day
 }: MiniViewDensityInput): number | null {
-  if (!isOpen) {
-    return null;
-  }
-
-  if (maxAssignedCount <= 0) {
-    return 0;
-  }
-
-  return assignedCount / maxAssignedCount;
+  return isOpen ? loadOf(day) : null;
 }
 
 export type MiniViewDay = {
@@ -33,19 +33,10 @@ export function miniViewLoads(
     0,
   );
 
-  const loads: Record<number, { load: number }> = {};
-
-  for (const day of days) {
-    const load = miniViewDensity({
-      isOpen: true,
-      assignedCount: day.assignedCount,
-      maxAssignedCount,
-    });
-
-    if (load !== null) {
-      loads[Number(day.workDate.slice(8, 10))] = { load };
-    }
-  }
-
-  return loads;
+  return Object.fromEntries(
+    days.map((day): [number, { load: number }] => [
+      Number(day.workDate.slice(8, 10)),
+      { load: loadOf({ assignedCount: day.assignedCount, maxAssignedCount }) },
+    ]),
+  );
 }

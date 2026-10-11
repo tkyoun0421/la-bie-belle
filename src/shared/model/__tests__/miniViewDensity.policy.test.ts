@@ -1,4 +1,7 @@
-import { miniViewDensity } from "@/shared/model/miniViewDensity.policy";
+import {
+  miniViewDensity,
+  miniViewLoads,
+} from "@/shared/model/miniViewDensity.policy";
 
 describe("miniViewDensity — 안 연 날은 빈칸이다", () => {
   it("isOpen이 false면 null이다", () => {
@@ -53,5 +56,34 @@ describe("miniViewDensity — 이 달에 배정이 하나도 없으면 나눗셈
     });
 
     expect(density).toBe(0);
+  });
+});
+
+describe("miniViewLoads — 키는 날짜 전체가 아니라 일(day) 숫자다", () => {
+  it("2026-10-05가 5로, 2026-10-12가 12로 들어간다", () => {
+    const loads = miniViewLoads([
+      { workDate: "2026-10-05", assignedCount: 2 },
+      { workDate: "2026-10-12", assignedCount: 4 },
+    ]);
+
+    expect(Object.keys(loads).sort()).toEqual(["5", "12"].sort());
+  });
+});
+
+describe("miniViewLoads — load는 이 달 최대 배정 인원에 대한 비율이다", () => {
+  it("최대가 4면 배정 2는 0.5, 배정 4는 1이다", () => {
+    const loads = miniViewLoads([
+      { workDate: "2026-10-05", assignedCount: 2 },
+      { workDate: "2026-10-12", assignedCount: 4 },
+    ]);
+
+    expect(loads[5]).toEqual({ load: 0.5 });
+    expect(loads[12]).toEqual({ load: 1 });
+  });
+});
+
+describe("miniViewLoads — 대상이 없으면 빈 객체다", () => {
+  it("날이 없으면 load도 하나도 없다", () => {
+    expect(miniViewLoads([])).toEqual({});
   });
 });

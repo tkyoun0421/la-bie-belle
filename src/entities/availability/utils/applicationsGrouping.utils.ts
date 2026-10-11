@@ -1,4 +1,5 @@
 import { DAY_MS } from "@/shared/consts/time.const";
+import { groupBy } from "@/shared/utils/collect";
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { Availability } from "@/entities/availability/model/availability.type";
 
@@ -20,42 +21,23 @@ function nameOf(row: Availability): string {
 export function groupApplicationsByDate(
   rows: readonly Availability[],
 ): DateGroup[] {
-  const byDate = new Map<string, string[]>();
-
-  for (const row of rows) {
-    const names = byDate.get(row.workDate) ?? [];
-
-    names.push(nameOf(row));
-    byDate.set(row.workDate, names);
-  }
-
-  return [...byDate.entries()]
+  return [...groupBy(rows, (row) => row.workDate)]
     .sort(([one], [other]) => one.localeCompare(other))
-    .map(([workDate, names]) => ({ workDate, names }));
+    .map(([workDate, group]) => ({ workDate, names: group.map(nameOf) }));
 }
 
 export function groupApplicationsByPerson(
   rows: readonly Availability[],
 ): PersonGroup[] {
-  const byPerson = new Map<string, PersonGroup>();
-
-  for (const row of rows) {
-    const group = byPerson.get(row.profileId) ?? {
-      profileId: row.profileId,
-      displayName: nameOf(row),
-      workDates: [],
-    };
-
-    group.workDates.push(row.workDate);
-    byPerson.set(row.profileId, group);
-  }
-
-  return [...byPerson.values()].map((group) => ({
-    ...group,
-    workDates: [...group.workDates].sort((one, other) =>
-      one.localeCompare(other),
-    ),
-  }));
+  return [...groupBy(rows, (row) => row.profileId)].map(
+    ([profileId, group]) => ({
+      profileId,
+      displayName: nameOf(group[0]),
+      workDates: group
+        .map((row) => row.workDate)
+        .sort((one, other) => one.localeCompare(other)),
+    }),
+  );
 }
 
 export function spellApplicationDate(workDate: string): string {

@@ -123,6 +123,43 @@ describe("buildAttendanceInputs — dayId와 profileId가 둘 다 맞아야 그 
   });
 });
 
+describe("buildAttendanceInputs — 같은 (dayId, profileId) 쌍에 소명(excuse)이 둘이면 둘 다 그 입력에 쌓인다", () => {
+  it("재제출된 소명 둘이 같은 입력의 excuses에 모두 들어간다", () => {
+    const days = [
+      {
+        id: "day-3",
+        workDate: "2026-09-12",
+        startsAt: "10:00:00",
+        endsAt: "18:00:00",
+        assignments: [{ profileId: "p6", endedAt: null }],
+      },
+    ];
+
+    const excuseStatuses: AttendanceInputExcuseStatus[] = [
+      {
+        dayId: "day-3",
+        profileId: "p6",
+        submittedAt: "2026-09-12T09:00:00.000Z",
+        decidedAt: null,
+        decision: null,
+      },
+      {
+        dayId: "day-3",
+        profileId: "p6",
+        submittedAt: "2026-09-12T09:30:00.000Z",
+        decidedAt: "2026-09-12T10:00:00.000Z",
+        decision: "approved",
+      },
+    ];
+
+    const inputs = buildAttendanceInputs(days, [], excuseStatuses, NOW);
+
+    expect(inputs).toHaveLength(1);
+    expect(inputs[0].excuses).toHaveLength(2);
+    expect(inputs[0].excuses).toEqual(expect.arrayContaining(excuseStatuses));
+  });
+});
+
 describe("daysOfPerson — 그 사람 배정만 남긴다", () => {
   it("남의 배정은 그 날의 배정 목록에서 빠진다", () => {
     const mine = daysOfPerson(DAYS, "p1");
