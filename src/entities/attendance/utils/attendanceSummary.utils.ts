@@ -1,19 +1,14 @@
+import { memberOf } from "@/shared/model/memberOf.policy";
 import { TALLIED_STATUSES } from "@/entities/attendance/consts/attendance.const";
 import type {
-  AttendanceStatus,
   AttendanceStatusInput,
   MonthlyAttendanceTally,
-  TalliedStatus,
 } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 
 const PERCENT = 100;
 
-function isTallied(status: AttendanceStatus | null): status is TalliedStatus {
-  return (TALLIED_STATUSES as readonly (AttendanceStatus | null)[]).includes(
-    status,
-  );
-}
+const isTallied = memberOf(TALLIED_STATUSES);
 
 export function tallyMonthlyAttendance(
   days: AttendanceStatusInput[],

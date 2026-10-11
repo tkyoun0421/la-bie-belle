@@ -27,22 +27,12 @@ function assetOf(lookup: AssetLookup | null, key: string): number | null {
   }
 }
 
-const scenes = openAssets(
-  () =>
-    require.context(
-      "../../../assets/illustrations",
-      false,
-      /\.webp$/,
-    ) as unknown as AssetLookup,
+const scenes = openAssets(() =>
+  require.context("../../../assets/illustrations", false, /\.webp$/),
 );
 
-const tossfaces = openAssets(
-  () =>
-    require.context(
-      "../../../assets/tossface",
-      false,
-      /\.svg$/,
-    ) as unknown as AssetLookup,
+const tossfaces = openAssets(() =>
+  require.context("../../../assets/tossface", false, /\.svg$/),
 );
 
 export type IllustrationScene =

@@ -20,9 +20,9 @@ export function usePayrollMonthsByMonthQuery(
       queryFn: () => getPayrollMonth(client, month),
     })),
     combine: (results): MonthsResult<PayrollByMonth> =>
-      combineMonths(results, months, (at) => ({
+      combineMonths(results, months, (at, arrived) => ({
         month: months[at],
-        payroll: results[at].data as PayrollMonth,
+        payroll: arrived[at],
       })),
   });
 }

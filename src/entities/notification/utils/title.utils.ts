@@ -2,6 +2,7 @@ import type {
   NotificationKind,
   NotificationPayload,
 } from "@/entities/notification/model/notification.type";
+import { isNotificationKind } from "@/entities/notification/model/notificationKind.policy";
 import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
 export type NotificationTitle = {
@@ -129,8 +130,11 @@ export type NotificationTitleInput = {
 export function toNotificationTitle(
   row: NotificationTitleInput,
 ): NotificationTitle | null {
-  const compose: Compose | null | undefined =
-    COMPOSE_OF[row.kind as NotificationKind];
+  if (!isNotificationKind(row.kind)) {
+    return null;
+  }
 
-  return compose == null ? null : compose(row.payload);
+  const compose = COMPOSE_OF[row.kind];
+
+  return compose === null ? null : compose(row.payload);
 }

@@ -126,7 +126,7 @@ function add<Row extends Tallied>(
 }
 
 function positionRank(position: string): number {
-  const at = (POSITION_ORDER as readonly string[]).indexOf(position);
+  const at = POSITION_ORDER.findIndex((known) => known === position);
 
   return at === -1 ? POSITION_ORDER.length : at;
 }

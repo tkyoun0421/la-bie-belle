@@ -8,14 +8,18 @@ const PHONE_FORMAT_CONSTRAINT = "profile_private_phone_format";
 
 const NOTHING_CHANGED = "연락처를 바꾸지 못했다 — 갱신된 행이 없다";
 
-type UpdateFailure = { code?: string; message?: string };
-
 function isPhoneFormatViolation(error: unknown): boolean {
-  const { code, message } = (error ?? {}) as UpdateFailure;
+  if (typeof error !== "object" || error === null) {
+    return false;
+  }
+
+  const code = "code" in error ? error.code : null;
+  const message = "message" in error ? error.message : null;
 
   return (
     code === CHECK_VIOLATION &&
-    (message ?? "").includes(PHONE_FORMAT_CONSTRAINT)
+    typeof message === "string" &&
+    message.includes(PHONE_FORMAT_CONSTRAINT)
   );
 }
 

@@ -1,8 +1,11 @@
 import { THEMES } from "@/shared/consts/theme.const";
+import { memberOf } from "@/shared/model/memberOf.policy";
 import type { Theme, ThemeColorScheme } from "@/shared/model/theme.type";
 
+const isTheme = memberOf(THEMES);
+
 export function parseStoredTheme(raw: string | null): Theme {
-  return THEMES.includes(raw as Theme) ? (raw as Theme) : "system";
+  return isTheme(raw) ? raw : "system";
 }
 
 export function toColorScheme(theme: Theme): ThemeColorScheme {

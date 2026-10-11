@@ -20,9 +20,9 @@ export function useWorkMonthsQuery(
       queryFn: () => getMonthSchedule(client, month),
     })),
     combine: (results): MonthsResult<WorkMonth> =>
-      combineMonths(results, months, (at) => ({
+      combineMonths(results, months, (at, arrived) => ({
         month: months[at],
-        days: results[at].data ?? [],
+        days: arrived[at],
       })),
   });
 }

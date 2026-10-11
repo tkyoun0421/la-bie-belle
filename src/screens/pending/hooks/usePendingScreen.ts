@@ -7,7 +7,6 @@ import {
   isProfileGender,
   validateProfileForm,
   type ProfileFormErrors,
-  type ProfileGender,
 } from "@/entities/profile/model/profile.schema";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import {
@@ -266,10 +265,14 @@ export function usePendingScreen(): PendingScreenController {
       }
     },
     chooseGender: (picked: string) => {
-      if (isProfileGender(picked)) {
-        setValues((at) => ({ ...at, gender: picked as ProfileGender }));
-        freeze("gender");
+      if (!isProfileGender(picked)) {
+        return;
       }
+
+      const gender = picked;
+
+      setValues((at) => ({ ...at, gender }));
+      freeze("gender");
     },
     writeBirthDate: (typed: string) =>
       writeChecked("birthDate", digitsOnly(typed, BIRTH_DATE_LENGTH)),

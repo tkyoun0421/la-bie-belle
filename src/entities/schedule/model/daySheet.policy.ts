@@ -17,7 +17,7 @@ export type RosterAssignment = {
 export type RosterRow = RosterAssignment | { kind: "vacant"; position: string };
 
 function positionRank(position: string): number {
-  const at = (POSITION_ORDER as readonly string[]).indexOf(position);
+  const at = POSITION_ORDER.findIndex((known) => known === position);
 
   return at === -1 ? POSITION_ORDER.length : at;
 }

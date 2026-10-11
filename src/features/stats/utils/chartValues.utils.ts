@@ -30,10 +30,10 @@ export function attendanceValues(
   tabs: ReadonlyMap<string, AttendanceTab>,
 ): Map<string, number> {
   return new Map(
-    (loaded ?? []).flatMap((one) => {
+    (loaded ?? []).flatMap((one): [string, number][] => {
       const rate = attendanceRate(tabs.get(one.month)?.tally);
 
-      return rate === null ? [] : [[one.month, rate] as [string, number]];
+      return rate === null ? [] : [[one.month, rate]];
     }),
   );
 }
