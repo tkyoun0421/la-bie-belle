@@ -241,7 +241,7 @@ async function mounted(params: Params = {}) {
   const hook = render(params);
 
   await waitFor(() =>
-    expect(hook.result.current.listState).not.toBe("loading"),
+    expect(hook.result.current.listState).not.toEqual({ state: "pending" }),
   );
 
   return hook;
@@ -251,7 +251,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
   it("읽기 전에는 loading이다", () => {
     const { result } = render();
 
-    expect(result.current.listState).toBe("loading");
+    expect(result.current.listState).toEqual({ state: "pending" });
   });
 
   it("근무표가 없는 달은 missing이고 만들기가 선다", async () => {
@@ -259,7 +259,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
 
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("missing");
+    expect(result.current.listState).toEqual({ state: "empty" });
     expect(result.current.canCreate).toBe(true);
     expect(result.current.emptyTitle).toBe(
       `10월${SCHEDULE_ADMIN_COPY.monthNotYet}`,
@@ -280,7 +280,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
   it("마감이 안 지난 달은 확정이 잠기고 풀리는 날을 말한다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("calendar");
+    expect(result.current.listState).toEqual({ state: "ready" });
     expect(result.current.noticeLine).toContain("5일 남았어요");
     expect(result.current.confirmLocked).toBe(true);
     expect(result.current.confirmUnlockLine).toContain("10월 11일부터");

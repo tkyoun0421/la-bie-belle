@@ -110,7 +110,7 @@ async function mounted() {
   const hook = renderHook(() => useAdminStatsScreen(), { wrapper });
 
   await waitFor(() =>
-    expect(hook.result.current.listState).not.toBe("loading"),
+    expect(hook.result.current.listState).not.toEqual({ state: "pending" }),
   );
 
   return hook;
@@ -128,7 +128,7 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
   it("근무표가 없으면 empty다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("empty");
+    expect(result.current.listState).toEqual({ state: "empty" });
     expect(result.current.trendValueLabel).toBeUndefined();
   });
 
@@ -137,7 +137,12 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("work"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({
+        state: "ready",
+        tab: "work",
+      }),
+    );
 
     expect(result.current.trendValueLabel).toContain("시간");
   });
@@ -163,7 +168,12 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     act(() => result.current.chooseTab("attendance"));
 
-    await waitFor(() => expect(result.current.listState).toBe("attendance"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({
+        state: "ready",
+        tab: "attendance",
+      }),
+    );
 
     expect(result.current.trendValueLabel).toContain("%");
   });
@@ -206,7 +216,9 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("failed"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "failed" }),
+    );
   });
 
   it("다시 시도가 두 키를 다시 읽는다", async () => {
@@ -214,13 +226,17 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
 
     const { result } = await mounted();
 
-    await waitFor(() => expect(result.current.listState).toBe("failed"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "failed" }),
+    );
 
     getMonthScheduleMock.mockResolvedValue([]);
 
     act(() => result.current.retry());
 
-    await waitFor(() => expect(result.current.listState).toBe("empty"));
+    await waitFor(() =>
+      expect(result.current.listState).toEqual({ state: "empty" }),
+    );
   });
 });
 
@@ -236,7 +252,7 @@ describe("useAdminStatsScreen — 갈 데를 controller가 정한다", () => {
   it("빈 달의 근무 탭은 자리를 비워 두는 값을 든다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.listState).toBe("empty");
+    expect(result.current.listState).toEqual({ state: "empty" });
     expect(result.current.emptyTotal).not.toBeNull();
   });
 

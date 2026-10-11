@@ -24,7 +24,7 @@ AST로 전수 훑어 **글자 union 가운데 읽기 상태 어휘를 쓰는 별
 | `NotificationsListState` | `entities/notification/model/notificationRows.policy.ts:30` | **7갈래 평평** | 넷 |
 | `AdminStatsListState` | `screens/adminStats/hooks/useAdminStatsScreen.ts:33` | 5갈래 평평 | 탭 둘 — `work`·`attendance` |
 | `PayrollListState` | `screens/payroll/hooks/usePayrollScreen.ts:28` | 5갈래 평평 | `history`·`months` |
-| `ScheduleAdminListState` | `screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts:73` | 3갈래 평평 | `missing`·`calendar` |
+| `ScheduleAdminListState` | `screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts:73` | 3갈래 평평 | `calendar`. **`missing`은 데이터가 아니라 `empty`다** |
 | `WagesListState` | `screens/wages/hooks/useWagesScreen.ts:20` | 3갈래 평평 | `rows` |
 | `ScheduleWorkerBody` | `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:43` | 3갈래 평평 | 둘 |
 | `ScheduleWorkerBodyState` | `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:41` | **이미 판별** | — |
@@ -72,6 +72,10 @@ export type StatsListState =
 | `useStatsScreen.ts:225` | 3겹 4갈래 | **`listState`가 준비 상태인지 다시 묻는 자리다.** `ready` 가지 안에서만 `tab`이 보이면 그 질문이 없어진다 |
 
 **④ `.tsx`의 세 `if`는 `FragmentView`가 든다.** `StatsList.tsx`와 `WagesList.tsx`가 그 꼴이다. 바꿀 자리를 구현이 `grep`으로 세지 말고 **`listState`를 읽는 31자리를 전부 열어** 가린다.
+
+**`missing`이 `empty`로 간다.** 「그 달 근무표 레코드가 없다」는 **와 보니 없는 것**이고 다른 화면의 `empty`와 같은 성격이다. 만들기 버튼을 설명하는 값(`canCreate`·`emptyTitle`·`createHint`)이 **이미 `listState` 밖의 필드로 따로 산다** — `empty`로 접어도 화면이 잃는 것이 없다.
+
+**`PayrollListState`의 `ready` 가지는 `view`를 든다.** `history`와 `months`는 탭이 아니라 `unit`에서 파생된 「어느 조각을 그릴지」라서 `tab`이라는 이름이 안 맞는다. **받은 테스트가 그 이름으로 계약을 박았으니 구현이 그 이름을 쓴다.**
 
 **⑤ `ScheduleWorkerBodyState`는 이미 판별 union이다.** 그 옆의 `ScheduleWorkerBody`가 평평하다 — **둘의 관계를 먼저 읽고** 하나로 합칠지 그대로 둘지 정한다. 합치면 `.tsx`가 따라 바뀐다.
 
@@ -129,6 +133,14 @@ ESLint 규칙을 건드리면 **한 커밋에 다섯 자리가 같이 간다** �
 `pnpm lint` · `pnpm typecheck` · `pnpm test`. 좁혀 돌릴 때는 `pnpm exec jest <경로>`를 쓴다 — `pnpm test -- <경로>`는 pnpm이 플래그를 먹는다. `.tsx`를 렌더하는 테스트는 `--selectProjects components`다.
 
 **전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
+
+## 받은 그물에 대해 알아 둘 것
+
+**`toEqual`은 타입을 안 본다.** `@types/jest`가 `toEqual<E = any>(expected: E)`로 정의해서(`node_modules/@types/jest/index.d.ts:960`) 평평한 글자와 객체를 비교해도 **typecheck가 초록이다.** 그래서 받은 단언 30은 **런타임에서만 실패하고** 실패 메시지가 전부 모양 불일치다.
+
+**대기 헬퍼가 구현 전에는 안 기다린다.** `mounted()` 꼴의 헬퍼가 `.not.toEqual({ state: "pending" })`로 기다리는데, 지금 값이 글자라 **그 비교가 첫 동기 검사에서 바로 참이 되어** `waitFor`가 즉시 빠진다. 그래서 `useScheduleAdminScreen`에서 **무관한 테스트 일곱에서 여덟이 타이밍 경합으로 같이 깨지고 실행마다 그 집합이 바뀐다.**
+
+**구현이 들어가면 저절로 사라진다** — 값이 `{ state: "pending" }`이 되는 순간 `not.toEqual`이 거짓이 되어 헬퍼가 원래대로 기다린다. **그러니 구현 전 실패 수가 30보다 많이 보이는 것이 정상이고, 구현 뒤에 남으면 그때가 진짜 결함이다.**
 
 ## 리스크
 
