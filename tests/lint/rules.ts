@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 45;
+export const DOCUMENTED_LINT_RULE_COUNT = 46;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -363,6 +363,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/fragment-state-contract",
     enforcedBy: null,
     test: "eslint-rules/__tests__/fragmentStateContract.test.ts",
+  },
+  {
+    no: 46,
+    name: "Controller 별칭의 제네릭 인스턴스화",
+    mechanism: "house",
+    ruleId: "house/controller-type-not-generic",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/controllerTypeNotGeneric.test.ts",
   },
 ];
 

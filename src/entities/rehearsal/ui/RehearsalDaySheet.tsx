@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
 import { DAY_SHEET_COPY } from "@/entities/rehearsal/consts/rehearsal.const";
@@ -26,57 +27,53 @@ export function RehearsalDaySheet({
 }: RehearsalDaySheetProps) {
   const fragment = useRehearsalDaySheet(input);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed ?? null;
-  }
-
-  const { content } = fragment;
-
   return (
-    <View>
-      <Text size="lg" weight="semibold">
-        {fragment.title}
-      </Text>
+    <FragmentView fragment={fragment} pending={pending} failed={failed}>
+      {({ title, content, canAdd }) => (
+        <View>
+          <Text size="lg" weight="semibold">
+            {title}
+          </Text>
 
-      {content.kind === "empty" ? (
-        <Text size="sm" tone="subtle" className="py-6 text-center">
-          {content.message}
-        </Text>
-      ) : (
-        <View className="mt-2">
-          {content.lines.map((line, at) => (
-            <ListRow
-              key={line.id}
-              testID={`rehearsal-row-${line.id}`}
-              title={line.text}
-              divider={at > 0}
-              chevron={onPressRow !== undefined}
-              onPress={
-                onPressRow === undefined ? undefined : () => onPressRow(line.id)
-              }
-            />
-          ))}
+          {content.kind === "empty" ? (
+            <Text size="sm" tone="subtle" className="py-6 text-center">
+              {content.message}
+            </Text>
+          ) : (
+            <View className="mt-2">
+              {content.lines.map((line, at) => (
+                <ListRow
+                  key={line.id}
+                  testID={`rehearsal-row-${line.id}`}
+                  title={line.text}
+                  divider={at > 0}
+                  chevron={onPressRow !== undefined}
+                  onPress={
+                    onPressRow === undefined
+                      ? undefined
+                      : () => onPressRow(line.id)
+                  }
+                />
+              ))}
 
-          {content.totalLine === null ? null : (
-            <>
-              <Divider className="my-2" />
-              <Text size="xs" tone="subtle" numeric className="text-right">
-                {content.totalLine}
-              </Text>
-            </>
+              {content.totalLine === null ? null : (
+                <>
+                  <Divider className="my-2" />
+                  <Text size="xs" tone="subtle" numeric className="text-right">
+                    {content.totalLine}
+                  </Text>
+                </>
+              )}
+            </View>
           )}
+
+          {canAdd ? (
+            <Button variant="primary" className="mt-4" onPress={onAdd}>
+              {DAY_SHEET_COPY.add}
+            </Button>
+          ) : null}
         </View>
       )}
-
-      {fragment.canAdd ? (
-        <Button variant="primary" className="mt-4" onPress={onAdd}>
-          {DAY_SHEET_COPY.add}
-        </Button>
-      ) : null}
-    </View>
+    </FragmentView>
   );
 }

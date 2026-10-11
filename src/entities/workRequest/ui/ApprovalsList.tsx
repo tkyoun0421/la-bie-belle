@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import {
   useApprovalRows,
   type ApprovalRowsInput,
@@ -19,17 +20,14 @@ export function ApprovalsList({
 }: ApprovalsListProps) {
   const fragment = useApprovalRows(input);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed ?? null;
-  }
-
-  if (fragment.state === "empty") {
-    return empty ?? null;
-  }
-
-  return <ApprovalRows rows={fragment.rows} />;
+  return (
+    <FragmentView
+      fragment={fragment}
+      pending={pending}
+      failed={failed}
+      empty={empty}
+    >
+      {(ready) => <ApprovalRows rows={ready.rows} />}
+    </FragmentView>
+  );
 }

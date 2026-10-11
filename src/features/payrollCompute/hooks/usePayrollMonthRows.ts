@@ -1,7 +1,8 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { fragmentStateOf } from "@/features/payrollCompute/model/fragmentState.policy";
+import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
 import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
   monthRowsOfDays,
@@ -26,24 +27,11 @@ export type PayrollMonthRowsSource = {
   onOpenMonth: (month: string) => void;
 };
 
-export function usePayrollMonthRows({
-  span,
-  onOpenMonth,
-}: PayrollMonthRowsSource): PayrollMonthRowsController {
-  const read = useMyPayrollViewDaysQuery(supabase, span);
-  const state = fragmentStateOf(read);
-
-  if (state === "pending") {
-    return { state };
-  }
-
-  if (state === "failed") {
-    return { state, retry: read.refetch };
-  }
-
-  const rows: PayrollMonthLine[] = (
-    read.data === undefined ? [] : yearRows(monthRowsOfDays(read.data))
-  ).map((row) =>
+function monthLinesOf(
+  days: readonly PayrollViewDay[],
+  onOpenMonth: (month: string) => void,
+): PayrollMonthLine[] {
+  return yearRows(monthRowsOfDays(days)).map((row) =>
     row.type === "month"
       ? {
           key: row.month,
@@ -58,6 +46,17 @@ export function usePayrollMonthRows({
           press: undefined,
         },
   );
+}
 
-  return rows.length === 0 ? { state: "empty" } : { state, rows };
+export function usePayrollMonthRows({
+  span,
+  onOpenMonth,
+}: PayrollMonthRowsSource): PayrollMonthRowsController {
+  const read = useMyPayrollViewDaysQuery(supabase, span);
+
+  return fragmentOf(read, {
+    empty: (days) => yearRows(monthRowsOfDays(days)).length === 0,
+    failed: () => ({ retry: read.refetch }),
+    ready: (days) => ({ rows: monthLinesOf(days, onOpenMonth) }),
+  });
 }

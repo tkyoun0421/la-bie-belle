@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { ListRow } from "@/shared/ui/ListRow";
 import { usePayrollHistoryRows } from "@/features/payrollCompute/hooks/usePayrollHistoryRows";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
@@ -18,29 +19,24 @@ export function PayrollHistoryRows({
 }: PayrollHistoryRowsProps) {
   const fragment = usePayrollHistoryRows(span);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed?.(fragment.retry) ?? null;
-  }
-
-  if (fragment.state === "empty") {
-    return empty ?? null;
-  }
-
   return (
-    <>
-      {fragment.rows.map((row, at) => (
-        <ListRow
-          key={row.date}
-          divider={at > 0}
-          title={row.title}
-          detail={row.subtitle}
-          value={row.amountLabel}
-        />
-      ))}
-    </>
+    <FragmentView
+      fragment={fragment}
+      pending={pending}
+      failed={(branch) => failed?.(branch.retry)}
+      empty={empty}
+    >
+      {(ready) =>
+        ready.rows.map((row, at) => (
+          <ListRow
+            key={row.date}
+            divider={at > 0}
+            title={row.title}
+            detail={row.subtitle}
+            value={row.amountLabel}
+          />
+        ))
+      }
+    </FragmentView>
   );
 }

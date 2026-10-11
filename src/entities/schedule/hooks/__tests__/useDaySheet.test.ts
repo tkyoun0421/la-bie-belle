@@ -157,6 +157,12 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
     expect(result.current.state).toBe("failed");
   });
 
+  it("질의는 성공해도 그 달에 그 날이 없으면 failed다", async () => {
+    const { result } = await mounted({ workDate: "2026-10-20" });
+
+    expect(result.current.state).toBe("failed");
+  });
+
   it("쓰기로 들어가는 문은 받아서 그대로 넘긴다", async () => {
     const { result, input } = await mounted();
 

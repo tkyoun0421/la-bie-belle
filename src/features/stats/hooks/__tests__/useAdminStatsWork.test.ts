@@ -133,4 +133,33 @@ describe("useAdminStatsWork — 조각이 그 달의 근무를 읽는다", () =>
 
     await waitFor(() => expect(result.current.state).toBe("failed"));
   });
+
+  it("근무표는 있어도 전부 끝난 배정이면 집계값(totalCount)으로 empty를 잰다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      {
+        id: "day-2026-10-02",
+        workDate: "2026-10-02",
+        startsAt: "18:00:00",
+        endsAt: "23:00:00",
+        openedAt: "2026-10-02T00:00:00.000Z",
+        slots: [],
+        assignments: [
+          {
+            id: "assign-ended",
+            slotId: null,
+            position: "메인",
+            kind: "regular",
+            profileId: "p1",
+            endedAt: "2026-10-02T20:00:00.000Z",
+            name: "이준호",
+          },
+        ],
+        checkIns: [],
+      },
+    ]);
+
+    const { result } = mounted();
+
+    await waitFor(() => expect(result.current.state).toBe("empty"));
+  });
 });

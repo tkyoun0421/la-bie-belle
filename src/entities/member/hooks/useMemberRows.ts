@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
 import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
@@ -91,25 +92,16 @@ export function useMemberRows({
 
   const canExpand = !searching && !expanded && folded.length > 0;
 
-  if (active.error !== null || left.error !== null) {
-    return { state: "failed" };
-  }
+  const reason: MemberRowsEmptyReason =
+    kind === "active" && actives.length === 0 && lefts.length === 0
+      ? "noMembers"
+      : kind === "active" && foundActive.length === 0 && foundLeft.length === 0
+        ? "noMatch"
+        : "noRows";
 
-  if (active.data === undefined || left.data === undefined) {
-    return { state: "pending" };
-  }
-
-  if (kind === "active" && actives.length === 0 && lefts.length === 0) {
-    return { state: "empty", reason: "noMembers" };
-  }
-
-  if (kind === "active" && foundActive.length === 0 && foundLeft.length === 0) {
-    return { state: "empty", reason: "noMatch" };
-  }
-
-  if (rows.length === 0) {
-    return { state: "empty", reason: "noRows" };
-  }
-
-  return { state: "ready", rows, canExpand };
+  return fragmentOf([active, left], {
+    empty: () => rows.length === 0,
+    emptyValue: () => ({ reason }),
+    ready: () => ({ rows, canExpand }),
+  });
 }

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import type { ListRowValueTone } from "@/shared/ui/ListRow";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -51,37 +52,27 @@ export function useAdminStatsWork(month: string): AdminStatsWorkController {
     return computeWorkTotals(inputs.assignments, inputs.days);
   }, [work.data, month]);
 
-  if (work.isLoading) {
-    return { state: "pending" };
-  }
-
-  if (work.error !== null) {
-    return { state: "failed" };
-  }
-
-  if (totals.totalCount === 0) {
-    return { state: "empty" };
-  }
-
-  return {
-    state: "ready",
-    totalLabel: hoursLabel(totals.totalMinutes),
-    countLine: `${STATS_COPY.workCountPrefix}${totals.totalCount}${STATS_COPY.workCountSuffix}`,
-    peopleRows: totals.byPerson.map((row) => ({
-      key: row.profileId,
-      profileId: row.profileId,
-      displayName: row.displayName,
-      detail: `${row.count}${STATS_COPY.timesSuffix}`,
-      value: hoursLabel(row.minutes),
-      weight: row.minutes,
-    })),
-    positionRows: totals.byPosition.map((row) => ({
-      key: row.position,
-      title: row.position,
-      detail: `${row.count}${STATS_COPY.countSuffix}`,
-      value: hoursLabel(row.minutes),
-      weight: row.minutes,
-      valueTone: row.minutes === 0 ? "zero" : "answer",
-    })),
-  };
+  return fragmentOf(work, {
+    empty: () => totals.totalCount === 0,
+    ready: () => ({
+      totalLabel: hoursLabel(totals.totalMinutes),
+      countLine: `${STATS_COPY.workCountPrefix}${totals.totalCount}${STATS_COPY.workCountSuffix}`,
+      peopleRows: totals.byPerson.map((row) => ({
+        key: row.profileId,
+        profileId: row.profileId,
+        displayName: row.displayName,
+        detail: `${row.count}${STATS_COPY.timesSuffix}`,
+        value: hoursLabel(row.minutes),
+        weight: row.minutes,
+      })),
+      positionRows: totals.byPosition.map((row): AdminStatsPositionRow => ({
+        key: row.position,
+        title: row.position,
+        detail: `${row.count}${STATS_COPY.countSuffix}`,
+        value: hoursLabel(row.minutes),
+        weight: row.minutes,
+        valueTone: row.minutes === 0 ? "zero" : "answer",
+      })),
+    }),
+  });
 }

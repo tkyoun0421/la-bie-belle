@@ -1,6 +1,6 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
-import { fragmentStateOf } from "@/features/payrollCompute/model/fragmentState.policy";
 import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 import {
   payrollHistoryRows,
@@ -17,17 +17,10 @@ export function usePayrollHistoryRows(
   span: DateSpan,
 ): PayrollHistoryRowsController {
   const read = useMyPayrollViewDaysQuery(supabase, span);
-  const state = fragmentStateOf(read);
 
-  if (state === "pending") {
-    return { state };
-  }
-
-  if (state === "failed") {
-    return { state, retry: read.refetch };
-  }
-
-  const rows = payrollHistoryRows(read.data ?? []);
-
-  return rows.length === 0 ? { state: "empty" } : { state, rows };
+  return fragmentOf(read, {
+    empty: (days) => payrollHistoryRows(days).length === 0,
+    failed: () => ({ retry: read.refetch }),
+    ready: (days) => ({ rows: payrollHistoryRows(days) }),
+  });
 }

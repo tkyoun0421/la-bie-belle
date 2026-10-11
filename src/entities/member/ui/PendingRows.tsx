@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Card } from "@/shared/ui/Card";
+import { FragmentView } from "@/shared/ui/FragmentView";
 import { ListRow } from "@/shared/ui/ListRow";
 import {
   usePendingRows,
@@ -21,31 +22,28 @@ export function PendingRows({
 }: PendingRowsProps) {
   const fragment = usePendingRows(input);
 
-  if (fragment.state === "pending") {
-    return pending ?? null;
-  }
-
-  if (fragment.state === "failed") {
-    return failed ?? null;
-  }
-
-  if (fragment.state === "empty") {
-    return empty ?? null;
-  }
-
   return (
-    <Card className="py-0">
-      {fragment.rows.map((row, at) => (
-        <ListRow
-          key={row.id}
-          title={row.name}
-          detail={row.detail}
-          left={<Avatar name={row.name} photoUrl={row.photoUrl} />}
-          chevron
-          divider={at > 0}
-          onPress={row.press}
-        />
-      ))}
-    </Card>
+    <FragmentView
+      fragment={fragment}
+      pending={pending}
+      failed={failed}
+      empty={empty}
+    >
+      {(ready) => (
+        <Card className="py-0">
+          {ready.rows.map((row, at) => (
+            <ListRow
+              key={row.id}
+              title={row.name}
+              detail={row.detail}
+              left={<Avatar name={row.name} photoUrl={row.photoUrl} />}
+              chevron
+              divider={at > 0}
+              onPress={row.press}
+            />
+          ))}
+        </Card>
+      )}
+    </FragmentView>
   );
 }

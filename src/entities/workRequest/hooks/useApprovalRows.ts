@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import type { ApprovalListRow } from "@/entities/workRequest/model/approvalList.type";
 import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -39,33 +40,34 @@ function cancelRowsOf(approvals: readonly PendingApproval[]): CancelRow[] {
   );
 }
 
+function visibleRowsOf(
+  approvals: readonly PendingApproval[],
+  answered: string | null,
+): CancelRow[] {
+  const all = cancelRowsOf(approvals);
+
+  return answered === null ? all : removeApproval(all, answered);
+}
+
 export function useApprovalRows({
   answered,
   onPress,
 }: ApprovalRowsInput): ApprovalRowsController {
-  const { data, error } = usePendingApprovalsQuery(supabase);
+  const read = usePendingApprovalsQuery(supabase);
 
-  const all = cancelRowsOf(data ?? []);
-  const visible = answered === null ? all : removeApproval(all, answered);
-
-  const rows: ApprovalRow[] = visible.map((row) => ({
-    id: row.id,
-    title: cancelApprovalRowTitle({
-      displayName: row.source.name ?? "",
-      workDate: row.workDate,
-      position: row.source.position,
+  return fragmentOf(read, {
+    empty: (approvals) => visibleRowsOf(approvals, answered).length === 0,
+    ready: (approvals) => ({
+      rows: visibleRowsOf(approvals, answered).map((row) => ({
+        id: row.id,
+        title: cancelApprovalRowTitle({
+          displayName: row.source.name ?? "",
+          workDate: row.workDate,
+          position: row.source.position,
+        }),
+        detail: row.source.reason,
+        press: () => onPress(row.source),
+      })),
     }),
-    detail: row.source.reason,
-    press: () => onPress(row.source),
-  }));
-
-  if (error !== null) {
-    return { state: "failed" };
-  }
-
-  if (data === undefined) {
-    return { state: "pending" };
-  }
-
-  return rows.length === 0 ? { state: "empty" } : { state: "ready", rows };
+  });
 }

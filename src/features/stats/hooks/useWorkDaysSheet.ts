@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
+import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { spellDate } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -44,25 +45,18 @@ export function useWorkDaysSheet(
     [profileId, inputs],
   );
 
-  if (work.isLoading) {
-    return { state: "pending" };
-  }
-
-  if (work.error !== null) {
-    return { state: "failed" };
-  }
-
-  return {
-    state: "ready",
-    name:
-      inputs.assignments.find(
-        (assignment) => assignment.profileId === profileId,
-      )?.displayName ?? "",
-    rows: personDays.days.map((row) => ({
-      key: `${row.workDate}-${row.position}`,
-      title: `${spellDate(row.workDate)} · ${row.label}`,
-      value: hoursLabel(row.minutes),
-    })),
-    total: `${STATS_COPY.totalPrefix}${personDays.totalCount}${STATS_COPY.timesSuffix} · ${hoursLabel(personDays.totalMinutes)}`,
-  };
+  return fragmentOf(work, {
+    ready: () => ({
+      name:
+        inputs.assignments.find(
+          (assignment) => assignment.profileId === profileId,
+        )?.displayName ?? "",
+      rows: personDays.days.map((row) => ({
+        key: `${row.workDate}-${row.position}`,
+        title: `${spellDate(row.workDate)} · ${row.label}`,
+        value: hoursLabel(row.minutes),
+      })),
+      total: `${STATS_COPY.totalPrefix}${personDays.totalCount}${STATS_COPY.timesSuffix} · ${hoursLabel(personDays.totalMinutes)}`,
+    }),
+  });
 }
