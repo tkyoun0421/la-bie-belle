@@ -1,4 +1,5 @@
 import constsSegment from "./constsSegment.mjs";
+import controllerTypeNotGeneric from "./controllerTypeNotGeneric.mjs";
 import dtoSegment from "./dtoSegment.mjs";
 import dumbUi from "./dumbUi.mjs";
 import entitiesReadOnly from "./entitiesReadOnly.mjs";
@@ -35,6 +36,7 @@ const house = {
   meta: { name: "eslint-plugin-house" },
   rules: {
     "consts-segment": constsSegment,
+    "controller-type-not-generic": controllerTypeNotGeneric,
     "dto-segment": dtoSegment,
     "dumb-ui": dumbUi,
     "entities-read-only": entitiesReadOnly,
