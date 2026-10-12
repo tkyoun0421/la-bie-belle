@@ -1,12 +1,9 @@
 import type { Notification } from "@/entities/notification/model/notification.type";
-
-const policy =
-  await import("@/entities/notification/model/notificationRows.policy");
-
-const { groupNotificationsByDate, unreadAdminNoticeIds } = policy;
-
-// @ts-expect-error 대상 export가 아직 없다
-const resolveNotificationsPaging = policy.resolveNotificationsPaging;
+import {
+  groupNotificationsByDate,
+  resolveNotificationsPaging,
+  unreadAdminNoticeIds,
+} from "@/entities/notification/model/notificationRows.policy";
 
 function buildRow(
   id: string,
