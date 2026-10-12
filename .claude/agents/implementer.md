@@ -132,6 +132,15 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 ```
 
+**PR을 열기 전에 `impact` 게이트에 미리 묻는다.** 그 게이트는 바뀐 파일이 어느 spec·plan의 입력인지 보고 PR 본문의 「영향 확인」 절이 그 문서들을 전부 드는지 검사한다. 안 들면 떨어지고, **본문을 고치면 CI가 새로 돌아 그만큼 늦어진다**(`gh run rerun`은 낡은 payload를 다시 돌려서 소용없다).
+
+```bash
+git diff --name-only main...HEAD \
+  | node --experimental-strip-types scripts/checkSourcesImpact.mts
+```
+
+`영향받는 문서: …`로 들 파일 이름을 그대로 뱉는다. **그 이름들을 「영향 확인」이라는 제목의 절 안에 적는다** — 파일 이름(basename)만 있으면 되고, 문서마다 **고쳤는지 안 고쳤는지와 그 까닭**을 한 줄로 단다. 「추적 중인 spec·plan의 입력이 바뀌지 않았다」가 나오면 그 절이 필요 없다.
+
 PR 본문은 한국어로 무엇을·왜 구조로 쓰고 끝에 다음 줄을 넣는다.
 
 ```
