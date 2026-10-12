@@ -89,7 +89,7 @@ memberSheetVisuals({ renaming, erased, left }): { body; footer; menuLabel }
 
 **`Input.tsx:41`은 `.tsx`에 있는데 남아도 된다.** `error`와 `focused`로 테두리 class를 고르는 것은 **UI를 담당하는 로직**이다. 다만 **첫 일치가 이기는 꼴을 선언형으로 적는 것**은 그 자리에서도 읽기가 낫다.
 
-**`usePendingScreen:164`는 상태 모양 때문에 서 있다.** `override`가 제출 직후 임시 단계를 보여주려고 존재한다 — 그 식은 「`override`가 있으면 그것, 없으면 계산」이다. **`effect-derived-values`가 그 파일의 `useState` 아홉을 볼 때 같이 본다** — 여기서는 안 건드리고 그 task로 넘긴다.
+**`usePendingScreen:164`는 상태 모양 때문에 서 있다.** `override`가 제출 직후 임시 단계를 보여주려고 존재한다 — 그 식은 「`override`가 있으면 그것, 없으면 계산」이다. 처음엔 「여기서는 안 건드린다」고 적었는데 **AC-08(남는 것은 셋)과 부딪혔다** — 안 건드리면 넷이 남는다. **꼴만 이른 `return`으로 펴고 `override`와 `useState` 아홉은 그대로 둔다.** 상태 모양 질문은 `effect-derived-values`에 남는다.
 
 ### 태그 붙은 값 만들기 — 셋. `.policy.ts`로 내린다
 
@@ -142,6 +142,20 @@ memberSheetVisuals({ renaming, erased, left }): { body; footer; menuLabel }
 | `screens/scheduleAdmin/hooks/useScheduleAdminScreen.ts:340` | **[`list-state-follows-fragments`](list-state-follows-fragments.md)가 세운 판별 union이다.** `fragmentOf`가 `failed` 가지를 강제해서 손으로 세운 자리고, 2겹 삼항 하나가 남는 것이 맞다 |
 | `screens/wages/hooks/useWagesScreen.ts:91` | 같다 |
 | `screens/stats/hooks/useStatsScreen.ts:198` | **이미 갈라져 있다.** `fragmentOf`의 `empty` 콜백이 그 식을 받는다 |
+
+## 자리를 못 옮긴 여섯
+
+**규칙 15가 새로 내보내는 함수마다 짝 테스트를 먼저 요구한다.** 이 task는 받은 그물 둘 말고 테스트를 안 쓰니 `model/`로 export 하는 것이 막힌다. **꼴은 고쳤고 자리만 남았다** — 각 hook의 비공개 함수로 섰다.
+
+| 함수 | 사는 곳 | 가야 할 곳 |
+| --- | --- | --- |
+| `form` | `useRehearsalScreen` | `screens/rehearsal/model` |
+| `sheet` | `useScheduleWorkerScreen` | `screens/scheduleWorker/model` |
+| 타일 입력 | `useAdminHomeScreen` | `screens/adminHome/model` |
+| `emptyReasonOf` | `useMemberRows` | `entities/member/model` |
+| `memberSheetVisuals` · `refusalOf` | `useMemberSheet` | `features/memberAdmin/model` |
+
+`as-assertions-to-guards`의 `positionRank`가 같은 까닭으로 복사로 남았다. **짝 테스트를 쓰는 task가 서면 일곱을 한 번에 옮긴다** — 백로그 행이 든다.
 
 ## 완료 조건
 
