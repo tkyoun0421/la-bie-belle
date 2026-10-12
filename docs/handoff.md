@@ -6,24 +6,19 @@
 
 ## 다음 작업
 
-**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯 가운데 다섯이 닫혔고 마지막 하나가 실패 테스트까지 섰다.** `declarative-accumulation`·`list-state-follows-fragments`·`as-assertions-to-guards`([PR #537](https://github.com/tkyoun0421/la-bie-belle/pull/537))·`guard-chains-to-policies`([PR #539](https://github.com/tkyoun0421/la-bie-belle/pull/539))가 `done`이다. 전체 suite 플레이크는 벽시계 경합으로 밝혀져 `asyncUtilTimeout`을 5초로 올렸다([PR #540](https://github.com/tkyoun0421/la-bie-belle/pull/540) · [관찰 069](observations/069-query-service-tests-flake-under-full-suite.md)).
+**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯이 전부 닫혔다.** 마지막 [`effect-derived-values`](3-build/plans/effect-derived-values.md)가 [PR #546](https://github.com/tkyoun0421/la-bie-belle/pull/546)이다 — reducer 넷이 `screens/*/model`에 서고, mutation 완료 콜백 여덟이 `onSuccess`/`onError`의 호출별 콜백(`shared/model/mutationCallbacks.type.ts`)으로, 타이머 둘과 리스너 하나가 `useEffectEvent`로, `NotificationsListState` 일곱 글자가 더 불러오기 축 `resolveNotificationsPaging` 넷으로, `bodyState`·`body` 둘이 `ScheduleWorkerBody` 판별 union 하나로 갔다. 구현자가 **804초**에 끝냈고 되돌림 세 꼴이 0회다([관찰 071](observations/071-implementer-time-goes-to-knowable-rework.md) 둘째 측정).
 
-**다음 수는 [`effect-derived-values`](3-build/plans/effect-derived-values.md)다** — `modern-react-hooks`와 `flat-state-unions-remainder`를 한 PR로 묶었다. 같은 파일을 건드려서다. 브랜치 `feat/effect-derived-values`에 작성자 넷이 실패 테스트를 세웠다 — reducer 넷의 전이, 콜백 identity가 바뀌어도 한 번만 불리는 것(hook 일곱 + 타이머 둘 + 리스너 하나), 규칙 45가 글자 union alias를 무는 것, `resolveNotificationsPaging`과 `ScheduleWorkerBody` 판별 union. **구현자를 띄우는 것이 다음 손이다.** 구현자에게 줄 사실:
+**[`post-refactor-audit`](backlog.md)가 돌고 있다** — 읽기 전용 worktree에서 저장소 전체를 AST로 세고 `docs/proposals/post-refactor-audit.md`를 PR로 낸다. 축 여덟은 죽은 가지 · 그물 없는 자리 · 동작이 틀릴 수 있는 꼴 · 설계 문서와 어긋난 코드 · 중복 · 이름이 거짓인 자리 · 층을 건넌 자리 · 기계가 셀 수 있는데 사람이 세는 자리다. PR이 오면 **묶음 제안 행을 backlog로 옮기는 것이 다음 손이다.**
 
-- `react-hooks/exhaustive-deps`가 이 저장소에 **없다** — `eslint --print-config`에 `react-hooks/` 규칙이 0이다. 의존 배열은 lint가 아니라 AST로 센다
-- 규칙 45(`eslint-rules/fragmentStateContract.mjs`)는 `*Controller`·`*ListState`·`*Body`만 보고 **글자 union 그 자체는 안 건다** — 「가지가 전부 `TSLiteralType`이면 `flat`」 한 조건이 빈 자리고 지금 `src`에서 걸리는 것은 `NotificationsListState`·`ScheduleWorkerBody` 둘뿐이다
-- `useHardwareBack.test.ts`의 「손이 바뀌면 떼고 새로 건다」는 옛 계약이라 지운다 — 새 계약은 「구독은 한 번, 최신 손을 부른다」
-- `usePendingEditor`는 effect 안에서 `reset()`을 같이 불러 지금도 두 번 안 불린다 — 그물이 없고 AC-02(콜백이 의존 배열에 0건)만 적용된다. `onSuccess`로 가면 `reset()`도 같이 간다
-- `useConfirmSheet`의 `RESULT_STAY_MS`(1650)가 export되지 않아 테스트가 같은 수를 따로 든다
-- `FloatingToast`는 `message`가 바뀌면 타이머를 다시 세우는 것이 의도된 동작이다 — `message`는 의존 배열에 남는다
-
-**그 뒤가 [`post-refactor-audit`](backlog.md)다** — 묶음이 다 닫히면 저장소 전체를 다시 감사한다. 셈은 스크립트가 한다.
-
-**정본과 코드가 어긋난 자리 스물여섯을 [제안](proposals/canon-and-code-divergence.md)이 들었다**([PR #541](https://github.com/tkyoun0421/la-bie-belle/pull/541)). 판정 일곱이 총괄 몫이고 추천은 `backlog.md`의 `canon-and-code-divergence-fixes` 행에 있다. 검사가 전부 초록인 채로 거짓인 자리들이라 산문 속 백틱 경로를 보는 검사(규칙 48)가 그 뒤에 선다.
-
+- [`callbacks-in-effect-deps-remainder`](backlog.md) — 콜백이 `useEffect` 의존 배열에 든 자리 **열여덟**이 남았다. 계획이 grep으로 「여덟 + 셋」이라 센 것을 AST가 스물아홉으로 냈고 그물이 선 열하나만 갔다. `unit-test-writer`가 먼저다 — #546의 일곱 `it`이 꼴이다
+- [`canon-and-code-divergence-fixes`](backlog.md) — [제안](proposals/canon-and-code-divergence.md)([PR #541](https://github.com/tkyoun0421/la-bie-belle/pull/541))의 **판정 일곱**이 총괄 몫이다. 추천은 행에 있다. 그 뒤 산문 속 백틱 경로를 보는 검사(규칙 48)
 - [`rule-15-blocked-functions-to-model`](backlog.md) — 규칙 15가 막아 제 자리로 못 간 함수 일곱. `unit-test-writer`가 먼저다
-- [`tests-read-the-real-clock`](backlog.md) — 진짜 시계를 읽는 테스트 열. `useMyPayrollViewDaysQuery`가 2026-10-12에 터져 [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542)가 `nowWithOffset`을 고정했고 같은 꼴이 열 더 있다
+- [`tests-read-the-real-clock`](backlog.md) — 진짜 시계를 읽는 테스트 열. [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542)가 꼴이다
 - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 앞 묶음들이 찾고 안 건드린 셋
+
+**규칙 45는 어휘로 문다.** `*Controller`·`*ListState`·`*Body` alias가 글자 union이고 읽기 상태 어휘(`pending`·`failed`·`empty`·`ready`·`sending`·`loading`·`error`)가 들면 `flat`이다. 「글자면 전부」는 `MemberSheetBody`(`detail`·`rename`·`none`)를 물어 안 된다 — 그것은 몸이 어느 그림인지 고르는 데이터다.
+
+**`react-hooks/exhaustive-deps`가 이 저장소에 없다.** 의존 배열은 lint가 아니라 AST 센서스가 센다 — 구현자 리턴이 그 수를 들고 온다.
 
 ### 상시 주의
 
