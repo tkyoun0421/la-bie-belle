@@ -30,6 +30,15 @@ jest.unstable_mockModule(
   () => ({ getMyRehearsals: getMyRehearsalsMock }),
 );
 
+const FIXED_NOW_MS = Date.parse("2026-10-01T12:00:00+09:00");
+
+const clockPolicy = await import("@/entities/clock/model/serverClock.policy");
+
+jest.unstable_mockModule("@/entities/clock/model/serverClock.policy", () => ({
+  ...clockPolicy,
+  nowWithOffset: () => FIXED_NOW_MS,
+}));
+
 const FAKE_CLIENT = {} as never;
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
@@ -90,7 +99,11 @@ function scheduleDay(workDate: string) {
   };
 }
 
+const NOW_MS = Date.parse("2026-10-10T03:00:00.000Z");
+
 beforeEach(() => {
+  jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
+
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
   getPayrollMonthMock.mockReset();
@@ -107,6 +120,10 @@ beforeEach(() => {
   getPayrollMonthMock.mockResolvedValue(EMPTY_PAYROLL);
   getMonthScheduleMock.mockResolvedValue([]);
   getMyRehearsalsMock.mockResolvedValue([]);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 const OCTOBER = { from: "2026-10-01", to: "2026-10-31" };
