@@ -16,6 +16,24 @@ import { useConfirmScheduleMutation } from "@/features/scheduleConfirm/services/
 
 const RESULT_STAY_MS = 1650;
 
+function sheetFaceOf({
+  done,
+  failed,
+}: {
+  done: boolean;
+  failed: boolean;
+}): ConfirmSheetFace {
+  if (done) {
+    return "done";
+  }
+
+  if (failed) {
+    return "failed";
+  }
+
+  return "ask";
+}
+
 export function useConfirmSheet({
   month,
   openSlots,
@@ -38,11 +56,7 @@ export function useConfirmSheet({
   const monthName = formatMonthName(month);
   const summary = summarizeOpenSlots(openSlots);
 
-  const face: ConfirmSheetFace = done
-    ? "done"
-    : confirm.isError
-      ? "failed"
-      : "ask";
+  const face = sheetFaceOf({ done, failed: confirm.isError });
 
   const vacancy: ConfirmSheetVacancy | null =
     summary.totalCount === 0

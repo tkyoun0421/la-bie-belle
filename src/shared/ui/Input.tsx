@@ -5,6 +5,24 @@ import { cn } from "@/shared/utils/cn";
 
 const COUNTER_REMAINING = 30;
 
+function borderOf({
+  invalid,
+  focused,
+}: {
+  invalid: boolean;
+  focused: boolean;
+}): string {
+  if (invalid) {
+    return "border-bg-critical-solid";
+  }
+
+  if (focused) {
+    return "border-stroke-brand-solid";
+  }
+
+  return "border-stroke-neutral";
+}
+
 export type InputProps = TextInputProps & {
   label?: string;
   error?: string;
@@ -38,11 +56,7 @@ export function Input({
       </Text>
     ) : null;
 
-  const border = error
-    ? "border-bg-critical-solid"
-    : focused
-      ? "border-stroke-brand-solid"
-      : "border-stroke-neutral";
+  const border = borderOf({ invalid: Boolean(error), focused });
 
   return (
     <View className={cn("gap-2", className)}>
