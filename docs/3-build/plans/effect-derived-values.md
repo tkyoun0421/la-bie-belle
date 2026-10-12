@@ -15,7 +15,7 @@
 | **A. 파생 상태를 effect가 만든다** | 4 | 그리는 중에 계산한다 |
 | **B. 콜백이 의존 배열에 들어 다시 걸린다** | 11 | `useEffectEvent` |
 | **C. 한 손이 상태 여럿을 되돌린다** | 4 파일 | `useReducer` + `model/<이름>.reducer.ts` |
-| **D. 평평한 상태 union** | 3 + 규칙 45 | 판별 union, 검사 한 줄 |
+| **D. 평평한 상태 union** | 3 + 규칙 45 | 축을 가르고, 검사 한 조건 |
 | **E. `useContext` 하나** | 1 | `use(Context)` |
 
 ## 판정은 이미 났다 — 묻지 말고 이 꼴로 쓴다
@@ -100,15 +100,16 @@ useEffect(() => {
 
 ### D. 평평한 상태 union 셋 — 그리고 검사가 이것을 물게 한다
 
+**규칙 45가 보는 것과 안 보는 것.** `eslint-rules/fragmentStateContract.mjs`는 이름이 `Controller`·`ListState`·`Body`로 끝나는 type alias만 본다. 거는 것은 둘이다 — alias 자체가 `state` 필드를 든 객체 하나면 `flat`, 가지의 `state` 글자가 다섯 이름(`pending`·`failed`·`empty`·`ready`·`sending`) 밖이면 `name`. **alias가 글자 union 그 자체(`"a" | "b"`)면 둘 다 안 건다** — `branchesOf`가 `TSLiteralType` 가지를 내고 `stateLiteralsOf`가 그걸 `[]`로 돌려보낸다. 그래서 `NotificationsListState`(`ListState`)와 `ScheduleWorkerBody`(`Body`)가 감시 안에 있는데 초록이다. `ScheduleWorkerBodyState`는 접미사가 `State`라 **감시 밖**이다.
+
 | 자리 | 지금 | 가는 꼴 |
 | --- | --- | --- |
-| `entities/notification/model/notificationRows.policy.ts:30` `NotificationsListState` | `"loading" \| "error" \| "empty" \| "loadingMore" \| "errorMore" \| "end" \| "normal"` 일곱 | **축이 둘이다** — 목록 자체(`pending`·`failed`·`empty`·`ready`)와 **더 불러오기**(`idle`·`pending`·`failed`·`end`). 한 축에 일곱을 눕혀 놓은 것이라 두 필드로 가른다 |
-| `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:41` `ScheduleWorkerBodyState` | `"loading" \| MonthState` | ADR-016의 네 이름을 쓰는 판별 union으로. `MonthState`는 `ready` 가지의 데이터다 |
-| 같은 파일 `:43` `ScheduleWorkerBody` | `"loading" \| "confirmed" \| "picker"` | 같다 — `loading`은 `pending`, 나머지 둘은 `ready`의 `body` |
+| `entities/notification/model/notificationRows.policy.ts:30` `NotificationsListState` | `loading`·`error`·`empty` + `loadingMore`·`errorMore`·`end`·`normal` 일곱 | **축이 둘 섞였다.** 앞 셋은 목록 자체의 상태인데 `useNotificationsList.ts:144-152`가 그 셋을 **자기가 따로 판정해** `pending`·`failed`·`empty`로 돌려주고, policy 결과는 `paging`이란 이름으로 받아 `loadingMore: paging === "loadingMore"` 꼴로만 읽는다. 그러니 policy는 **더 불러오기 축 하나만** 답한다 — `NotificationsPaging = "idle" \| "pending" \| "failed" \| "end"`, 함수는 `resolveNotificationsPaging`, 입력은 `isFetchingNextPage`·`isFetchNextPageError`·`hasNextPage` 셋. hook의 반환 모양(`loadingMore`·`failedMore`·`hasMore`)은 **그대로**다 |
+| `screens/scheduleWorker/hooks/useScheduleWorkerScreen.ts:41·43` `ScheduleWorkerBodyState`·`ScheduleWorkerBody` | `"loading" \| MonthState`와 `"loading" \| "confirmed" \| "picker"` 둘이 `:300-301`에서 같은 `loading`을 따로 든다 | **하나로.** `ScheduleWorkerBody = { state: "pending" } \| { state: "ready"; month: MonthState; kind: "confirmed" \| "picker" }`. `bodyState` 필드는 사라지고 `body` 하나가 남는다. `ScheduleWorkerScreen.tsx:83`의 `screen.bodyState === "collecting"`은 `screen.body.state === "ready" && screen.body.month === "collecting"`으로 |
 
-**`NotificationsListState`는 축을 가르는 것이 핵심이다.** `loadingMore`는 「목록은 `ready`인데 더 불러오기가 `pending`」이고 `errorMore`는 「목록은 `ready`인데 더 불러오기가 `failed`」다. 일곱 글자는 그 두 축의 조합 가운데 **있을 수 있는 것만** 손으로 늘어놓은 것이다. `{ state: "ready"; more: "idle" | "pending" | "failed" | "end" }`로 적으면 조합이 타입에 들어온다.
+**둘이 따로 `loading`을 드는 것이 바로 「있을 수 없는 조합」이다** — `bodyState: "loading", body: "picker"`가 타입에 들어 있다.
 
-**규칙 45가 평평한 글자 union을 물게 한다 — 한 줄이다.** `eslint-rules/fragmentStateContract.mjs:34`의 `stateLiteralsOf`가 `TSTypeLiteral`이 아니면 `[]`를 돌려줘서 글자 union(`TSLiteralType` 가지)이 통째로 빠진다. **`TSLiteralType`이고 그 글자가 네 이름 어휘(`loading`·`error`·`pending`·`failed`·`empty`·`ready`)에 들면 가지로 센다.** 지금 이 줄을 더하면 **위 셋이 물리고 다른 것은 안 물린다** — `list-state-follows-fragments`에서 세 자리를 두고 이 수정을 미룬 까닭이 「셋을 바꾸기 전에 켜면 `eslint-disable`을 부른다」였고, 이 PR이 셋을 바꾸니 **같은 PR에서 켠다.** 검사 짝 테스트에 **평평한 글자 union이 물리는 경우 둘**을 더한다.
+**규칙 45를 넓히는 것은 한 조건이다.** 감시하는 alias의 `branchesOf(shape)`가 **전부 `TSLiteralType`이면 `flat`**으로 건다 — 상태 이름 어휘는 안 본다, 글자 union 그 자체가 납작한 것이다. 지금 `src`에서 이 조건에 걸리는 것은 **위 둘뿐**이다(`ListState`·`Body`·`Controller`로 끝나는 글자 union alias를 다 셌다 — `RequestSheetState`·`MonthState`·`ReachState` 같은 것은 접미사가 달라 밖이다). **둘을 바꾼 뒤 켠다** — 먼저 켜면 `eslint-disable`을 부른다. 짝 테스트에 **글자 union alias가 물리는 경우 둘**을 더한다.
 
 ### E. `use(Context)` 하나
 
@@ -128,9 +129,9 @@ useEffect(() => {
 | B의 열하나 | `onSuccess`로 가거나 `useEffectEvent`로. 콜백이 의존 배열에서 빠진다 |
 | B의 짝 테스트 | **콜백 identity를 바꿔도 한 번만 불리는 것**을 단언한다 — 지금은 부모의 `useCallback`이 숨겨 주는 버그다 |
 | A의 둘 (`useRehearsalScreen:93`·`useScheduleWorkerScreen:159`) | effect가 사라지고 「인자가 바뀌면 초기화」가 그리는 중에 선다 |
-| `notificationRows.policy.ts` + 그 소비자 | 두 축의 판별 union. 소비자가 `state === "loadingMore"`를 묻던 자리가 `state === "ready" && more === "pending"`으로 |
-| `useScheduleWorkerScreen.ts:41·43` | 판별 union으로. C와 같은 파일이라 한 번에 |
-| `eslint-rules/fragmentStateContract.mjs` + 짝 테스트 | `TSLiteralType` 가지 한 줄. 테스트 둘 |
+| `notificationRows.policy.ts` + `useNotificationsList.ts` | policy가 더 불러오기 축만 답한다. hook은 `paging === "pending"` 꼴로 따라가고 **반환 모양은 그대로** |
+| `useScheduleWorkerScreen.ts:41·43` + `ScheduleWorkerScreen.tsx:83` | `body` 판별 union 하나. C와 같은 파일이라 한 번에 |
+| `eslint-rules/fragmentStateContract.mjs` + 짝 테스트 | 「전부 글자면 `flat`」 한 조건. 테스트 둘 |
 | `shared/stores/drag.context.ts` | `use(Context)` |
 
 ## 완료 조건
@@ -139,9 +140,9 @@ useEffect(() => {
 - **AC-02** 콜백(`on*`)이 `useEffect` 의존 배열에 든 자리가 **0건**이다. `onSuccess`로 갔거나 `useEffectEvent`가 들었다
 - **AC-03** B의 짝 테스트가 **콜백 identity를 바꿔도 완료 콜백이 한 번만 불리는 것**을 단언한다 — 지금 코드로는 **두 번 불려 실패해야** 하는 테스트다(부모의 `useCallback`을 끼우지 않고 렌더하면)
 - **AC-04** reducer 넷이 `model/<이름>.reducer.ts`에 서고 **짝 테스트가 `dispatch` 없이** 전이를 단언한다. 상태 타입이 판별 union이라 **「창이 닫혔는데 고른 것이 있다」 같은 조합이 타입에 없다**
-- **AC-05** C의 hook 넷의 **반환 객체 모양이 그대로**다 — 기존 단언이 하나도 안 바뀐다
-- **AC-06** `NotificationsListState`가 두 축의 판별 union이고 소비자가 따라간다. `ScheduleWorkerBodyState`·`ScheduleWorkerBody`가 ADR-016의 네 이름을 쓴다
-- **AC-07** 규칙 45가 **평평한 글자 union을 문다.** 짝 테스트에 물리는 경우 둘이 더해지고, **`src`에서 거짓 양성이 0이다**(세 자리를 바꾼 뒤 켜니 0이어야 한다)
+- **AC-05** C의 hook 넷의 **반환 객체 모양이 그대로**다 — 기존 단언이 하나도 안 바뀐다. **예외는 D가 바꾸는 `useScheduleWorkerScreen`의 `body` 하나**고 그 단언은 작성자가 고친다
+- **AC-06** `NotificationsListState`가 사라지고 `resolveNotificationsPaging`이 더 불러오기 축 넷만 답한다. `ScheduleWorkerBody`가 판별 union 하나고 `bodyState`가 사라진다
+- **AC-07** 규칙 45가 **글자 union alias를 문다.** 짝 테스트에 물리는 경우 둘이 더해지고, **`src`에서 거짓 양성이 0이다**(둘을 바꾼 뒤 켜니 0이어야 한다)
 - **AC-08** `drag.context.ts`가 `use(Context)`를 쓴다
 - **AC-09** `useReducer`가 **네 파일에만** 있다. 다른 파일에 새로 들어가지 않는다
 - **AC-10** `pnpm lint`·`pnpm typecheck`·`pnpm test`가 초록이다
@@ -149,7 +150,7 @@ useEffect(() => {
 ## 작업 순서
 
 1. **작성자 둘이 먼저 쓴다.** 하나는 reducer 넷의 전이 단언(규칙 15가 요구하고 순수 함수라 싸다), 하나는 B의 「identity가 바뀌어도 한 번」 단언과 D의 상태 모양 단언
-2. D의 셋을 판별 union으로 바꾸고 **같은 커밋에서** 규칙 45의 한 줄을 켠다 — 먼저 켜면 셋이 물려 `eslint-disable`을 부른다
+2. D의 둘을 바꾸고 **같은 커밋에서** 규칙 45의 한 조건을 켠다 — 먼저 켜면 둘이 물려 `eslint-disable`을 부른다
 3. C — reducer 넷을 세우고 hook이 `useReducer`로 간다. **`useDayDetail`부터** — 가장 크고(656줄) 창 다섯이 묶이는 효과가 가장 또렷하다
 4. B — 자리마다 `onSuccess`로 갈 수 있나 먼저 묻고, 못 가는 자리만 `useEffectEvent`
 5. A의 둘 — effect를 지우고 「인자가 바뀌면 초기화」를 그리는 중에
