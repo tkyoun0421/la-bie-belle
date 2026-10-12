@@ -67,6 +67,7 @@ const logic = {
   extensionsToTreatAsEsm: [".ts", ".mts"],
   moduleFileExtensions: ["mts", "mjs", ...nodePreset.moduleFileExtensions],
   transform: transformOf(nodePreset),
+  setupFilesAfterEnv: ["<rootDir>/tests/setup/asyncUtilTimeout.ts"],
 };
 
 const components = {
@@ -82,6 +83,7 @@ const components = {
     "^react-native-worklets$":
       require.resolve("react-native-worklets/src/mock.ts"),
   },
+  setupFilesAfterEnv: ["<rootDir>/tests/setup/asyncUtilTimeout.ts"],
 };
 
 module.exports = { logic, components };
