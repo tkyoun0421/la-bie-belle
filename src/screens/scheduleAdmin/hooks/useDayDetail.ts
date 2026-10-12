@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useToast } from "@/shared/hooks/useToast";
 import {
   extraMinutes,
@@ -32,6 +32,7 @@ import { canNotifyMember } from "@/features/scheduleConfirm/model/notifyReach.po
 import { dayHoursLine } from "@/features/scheduleDay/model/dayHoursForm.policy";
 import {
   ADJUSTMENT_REASON,
+  CLOSED_DAY_DETAIL_PICKER,
   SCHEDULE_ADMIN_COPY,
 } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import type {
@@ -49,6 +50,7 @@ import type {
   DayDetailSlotSheet,
   PendingChange,
 } from "@/screens/scheduleAdmin/model/dayDetail.type";
+import { dayDetailPickerReducer } from "@/screens/scheduleAdmin/model/dayDetailPicker.reducer";
 import {
   canDropOnTarget,
   dropOutcome,
@@ -104,11 +106,10 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   } = input;
 
   const [unlocked, setUnlocked] = useState<readonly string[]>([]);
-  const [picker, setPicker] = useState<PickerTarget | null>(null);
-  const [expanded, setExpanded] = useState(false);
-  const [picked, setPicked] = useState<readonly string[]>([]);
-  const [inspecting, setInspecting] = useState<PickerEntry | null>(null);
-  const [qualifying, setQualifying] = useState<PickerEntry | null>(null);
+  const [pickerState, dispatchPicker] = useReducer(
+    dayDetailPickerReducer,
+    CLOSED_DAY_DETAIL_PICKER,
+  );
   const [openSlotSheet, setOpenSlotSheet] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingChange | null>(null);
   const [discarding, setDiscarding] = useState<{
@@ -120,6 +121,13 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const [chosen, setChosen] = useState<string | null>(null);
 
   const [extra, setExtra] = useState<string | null>(null);
+
+  const picking = pickerState.kind === "picking" ? pickerState : null;
+  const picker = picking?.target ?? null;
+  const expanded = picking?.expanded ?? false;
+  const picked = picking?.picked ?? [];
+  const inspecting = picking?.inspecting ?? null;
+  const qualifying = picking?.qualifying ?? null;
 
   const rows = dayDetailRows({ applicationCount: applicationNames.length });
   const groups = groupSlotsByPosition(slots);
@@ -204,11 +212,11 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   );
 
   const closePicker = useCallback(() => {
-    setPicker(null);
-    setExpanded(false);
-    setPicked([]);
-    setInspecting(null);
-    setQualifying(null);
+    dispatchPicker({ type: "close" });
+  }, []);
+
+  const openPicker = useCallback((target: PickerTarget) => {
+    dispatchPicker({ type: "open", target });
   }, []);
 
   const requestBadgeOf = useCallback(
@@ -217,11 +225,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   );
 
   const toggleRequested = useCallback((profileId: string) => {
-    setPicked((taken) =>
-      taken.includes(profileId)
-        ? taken.filter((one) => one !== profileId)
-        : [...taken, profileId],
-    );
+    dispatchPicker({ type: "toggle", profileId });
   }, []);
 
   const entries = useMemo(
@@ -325,7 +329,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       }
 
       if (outcome.kind === "needs_qualification") {
-        setQualifying(entry);
+        dispatchPicker({ type: "qualify", entry });
         return;
       }
 
@@ -370,14 +374,13 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const pressSlot = useCallback(
     (position: string, slotId: string) => {
       if (assignmentForSlot(slotId, assignments) === null) {
-        setPicker({ position, slotId, replacing: null });
-        setExpanded(false);
+        openPicker({ position, slotId, replacing: null });
         return;
       }
 
       setOpenSlotSheet(slotId);
     },
-    [assignments],
+    [assignments, openPicker],
   );
 
   const canDrop = useCallback(
@@ -434,10 +437,8 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
           ? unlocked.filter((one) => one !== position)
           : [...unlocked, position],
       ),
-    onPressEducation: () => {
-      setPicker({ position, slotId: null, replacing: null });
-      setExpanded(false);
-    },
+    onPressEducation: () =>
+      openPicker({ position, slotId: null, replacing: null }),
     onPressSlot: (slotId) => pressSlot(position, slotId),
     onAddSlot: () => onAddSlot(dayId, position),
   }));
@@ -448,9 +449,9 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     setExtra(null);
   };
 
-  const closeInspecting = () => setInspecting(null);
+  const closeInspecting = () => dispatchPicker({ type: "stop_inspecting" });
 
-  const closeQualifying = () => setQualifying(null);
+  const closeQualifying = () => dispatchPicker({ type: "stop_qualifying" });
 
   const closeSlotSheet = () => setOpenSlotSheet(null);
 
@@ -469,9 +470,9 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
             entries.every((entry) => entry.category !== "assignable"),
           picked,
           sending: sending,
-          expand: () => setExpanded(true),
+          expand: () => dispatchPicker({ type: "expand" }),
           pick,
-          inspect: setInspecting,
+          inspect: (entry) => dispatchPicker({ type: "inspect", entry }),
           toggle: toggleRequested,
           send: sendRequest,
           close: closePicker,
@@ -511,7 +512,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
           confirmed: isConfirmed,
           merged: openSlot.positions.length > 1,
           replace: () => {
-            setPicker({
+            openPicker({
               position: openSlot.positions[0],
               slotId: openSlot.id,
               replacing: {
@@ -520,7 +521,6 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
                 outgoingName: nameOf(openAssignment.profileId),
               },
             });
-            setExpanded(false);
             setOpenSlotSheet(null);
           },
           split: () => {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { PROFILE_FORM_COPY } from "@/features/profileEdit/consts/profileEdit.const";
 import { PHOTO_PICK_DEPS } from "@/features/profileEdit/lib/photoPickDeps.lib";
@@ -26,17 +26,9 @@ export function usePendingEditor({
   const {
     mutate,
     isPending: sending,
-    isSuccess: saved,
     isError: sendFailed,
     reset,
   } = useUpdatePhotoMutation(supabase);
-
-  useEffect(() => {
-    if (saved) {
-      reset();
-      onUploaded();
-    }
-  }, [saved, reset, onUploaded]);
 
   const pick = useCallback(async () => {
     setPicking(true);
@@ -46,14 +38,22 @@ export function usePendingEditor({
       const picked = await pickAndShrinkPhoto(PHOTO_PICK_DEPS);
 
       if (picked !== null && userId !== null) {
-        mutate({ userId, ...picked });
+        mutate(
+          { userId, ...picked },
+          {
+            onSuccess: () => {
+              reset();
+              onUploaded();
+            },
+          },
+        );
       }
     } catch {
       setPickFailed(true);
     } finally {
       setPicking(false);
     }
-  }, [userId, mutate]);
+  }, [userId, mutate, reset, onUploaded]);
 
   const failed = pickFailed || sendFailed;
 

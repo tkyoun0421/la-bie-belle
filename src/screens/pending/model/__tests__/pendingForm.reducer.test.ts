@@ -1,20 +1,30 @@
-const { UNSEEDED_PENDING_FORM, pendingFormReducer } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/pending/model/pendingForm.reducer"
-);
+import { UNSEEDED_PENDING_FORM } from "@/screens/pending/consts/pending.const";
+import {
+  pendingFormReducer,
+  type PendingFormAction,
+  type PendingFormState,
+} from "@/screens/pending/model/pendingForm.reducer";
+import type { PendingFormValues } from "@/screens/pending/model/pendingForm.type";
+
+type Seeded = Extract<PendingFormState, { kind: "seeded" }>;
 
 const STEPS = ["photo", "name", "gender", "birthDate", "phone"];
 
-const SEEDED_VALUES = {
+const SEEDED_VALUES: PendingFormValues = {
   name: "가짜이름",
   gender: "female",
   birthDate: "19900101",
   phone: "01000000001",
 };
 
-const EMPTY_VALUES = { name: "", gender: null, birthDate: "", phone: "" };
+const EMPTY_VALUES: PendingFormValues = {
+  name: "",
+  gender: null,
+  birthDate: "",
+  phone: "",
+};
 
-const SEEDED_EMPTY = {
+const SEEDED_EMPTY: Seeded = {
   kind: "seeded",
   values: EMPTY_VALUES,
   frozen: [],
@@ -54,7 +64,7 @@ describe("pendingFormReducer — 씨를 뿌린다", () => {
   });
 
   it("이미 뿌린 뒤에 다시 뿌려도 상태가 바뀌지 않는다", () => {
-    const state = {
+    const state: Seeded = {
       kind: "seeded",
       values: { ...EMPTY_VALUES, name: "가짜이름" },
       frozen: ["name"],
@@ -73,7 +83,7 @@ describe("pendingFormReducer — 씨를 뿌린다", () => {
 
 describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
   it("값을 쓰면 적은 칸만 바뀌고 얼린 칸은 그대로다", () => {
-    const state = { ...SEEDED_EMPTY, frozen: ["photo"] };
+    const state: Seeded = { ...SEEDED_EMPTY, frozen: ["photo"] };
 
     const next = pendingFormReducer(state, {
       type: "write",
@@ -87,7 +97,7 @@ describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
   });
 
   it("칸을 얼리면 끝에 붙는다", () => {
-    const state = { ...SEEDED_EMPTY, frozen: ["photo"] };
+    const state: Seeded = { ...SEEDED_EMPTY, frozen: ["photo"] };
 
     const next = pendingFormReducer(state, { type: "freeze", step: "name" });
 
@@ -95,7 +105,7 @@ describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
   });
 
   it("이미 언 칸을 또 얼려도 한 번만 든다", () => {
-    const state = { ...SEEDED_EMPTY, frozen: ["photo", "name"] };
+    const state: Seeded = { ...SEEDED_EMPTY, frozen: ["photo", "name"] };
 
     const next = pendingFormReducer(state, { type: "freeze", step: "photo" });
 
@@ -103,7 +113,10 @@ describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
   });
 
   it("칸을 녹이면 얼린 목록에서만 빠진다", () => {
-    const state = { ...SEEDED_EMPTY, frozen: ["photo", "name", "gender"] };
+    const state: Seeded = {
+      ...SEEDED_EMPTY,
+      frozen: ["photo", "name", "gender"],
+    };
 
     const next = pendingFormReducer(state, { type: "thaw", step: "name" });
 
@@ -111,7 +124,7 @@ describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
   });
 
   it("제출이 끝났다고 적으면 everSubmitted만 켜진다", () => {
-    const state = { ...SEEDED_EMPTY, frozen: ["photo"] };
+    const state: Seeded = { ...SEEDED_EMPTY, frozen: ["photo"] };
 
     const next = pendingFormReducer(state, { type: "submitted" });
 
@@ -120,7 +133,7 @@ describe("pendingFormReducer — 씨를 뿌린 뒤의 전이", () => {
 });
 
 describe("pendingFormReducer — 씨를 뿌리기 전에는 쓰기·얼리기·제출 기록이 상태를 바꾸지 않는다", () => {
-  it.each([
+  it.each<[string, PendingFormAction]>([
     ["write", { type: "write", values: { name: "가짜이름" } }],
     ["freeze", { type: "freeze", step: "name" }],
     ["thaw", { type: "thaw", step: "name" }],

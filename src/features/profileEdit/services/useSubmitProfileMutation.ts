@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import {
   submitProfile,
   type SubmitProfileInput,
 } from "@/features/profileEdit/api/submitProfile.api";
 
 export type SubmitProfileResult = {
-  mutate: (input: SubmitProfileInput) => void;
+  mutate: (input: SubmitProfileInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -26,9 +27,9 @@ export function useSubmitProfileMutation(client: DB): SubmitProfileResult {
   });
 
   const send = useCallback(
-    (input: SubmitProfileInput) => {
+    (input: SubmitProfileInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

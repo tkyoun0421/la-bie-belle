@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { formatMonthName } from "@/entities/schedule/utils/formatScheduleDate.utils";
 import {
@@ -42,16 +42,17 @@ export function useConfirmSheet({
 }: ConfirmSheetInput): ConfirmSheetController {
   const confirm = useConfirmScheduleMutation(supabase);
   const done = confirm.isSuccess;
+  const close = useEffectEvent(onClose);
 
   useEffect(() => {
     if (!done) {
       return;
     }
 
-    const timer = setTimeout(onClose, RESULT_STAY_MS);
+    const timer = setTimeout(() => close(), RESULT_STAY_MS);
 
     return () => clearTimeout(timer);
-  }, [done, onClose]);
+  }, [done]);
 
   const monthName = formatMonthName(month);
   const summary = summarizeOpenSlots(openSlots);

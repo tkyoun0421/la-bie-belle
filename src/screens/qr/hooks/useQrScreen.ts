@@ -46,8 +46,7 @@ export function useQrScreen(): QrScreenController {
 
   const { data: qr } = useQrCodeQuery(supabase);
   const {
-    mutate: rotate,
-    isSuccess: rotated,
+    mutate: sendRotate,
     isError: rotateFailed,
     reset: resetRotate,
   } = useRotateQrMutation(supabase);
@@ -81,14 +80,6 @@ export function useQrScreen(): QrScreenController {
     };
   }, [code]);
 
-  useEffect(() => {
-    if (rotated) {
-      setAsking(false);
-      showToast("success", QR_SCREEN_COPY.rotateDone);
-      resetRotate();
-    }
-  }, [rotated, resetRotate, showToast]);
-
   const exportPaper = useCallback(() => {
     if (svg === null || exporting) {
       return;
@@ -115,6 +106,17 @@ export function useQrScreen(): QrScreenController {
     setAsking(false);
     resetRotate();
   }, [resetRotate]);
+
+  const rotate = useCallback(
+    () =>
+      sendRotate({
+        onSuccess: () => {
+          setAsking(false);
+          showToast("success", QR_SCREEN_COPY.rotateDone);
+        },
+      }),
+    [sendRotate, showToast],
+  );
 
   const goBack = useCallback(() => router.back(), [router]);
 

@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { LOGIN_PATH } from "@/shared/consts/navigation.const";
 import { APP_STATE } from "@/shared/lib/appState.lib";
@@ -21,10 +21,7 @@ import {
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
-import {
-  PROFILE_FORM_COPY,
-  PROFILE_FORM_STEPS,
-} from "@/features/profileEdit/consts/profileEdit.const";
+import { PROFILE_FORM_COPY } from "@/features/profileEdit/consts/profileEdit.const";
 import { firstOpenStep } from "@/features/profileEdit/model/profileFormStep.policy";
 import type { ProfileFormStep } from "@/features/profileEdit/model/profileFormStep.type";
 import { useSubmitProfileMutation } from "@/features/profileEdit/services/useSubmitProfileMutation";
@@ -40,6 +37,7 @@ import {
   PROMPT_OUTCOME_OF,
   ROTATE_INTERVAL_MS,
   ROTATING_LINES,
+  UNSEEDED_PENDING_FORM,
 } from "@/screens/pending/consts/pending.const";
 import {
   transitionNotificationPromptView,
@@ -47,6 +45,7 @@ import {
   type NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
 import { stageOfProfile } from "@/screens/pending/model/pendingForm.policy";
+import { pendingFormReducer } from "@/screens/pending/model/pendingForm.reducer";
 import type {
   PendingFormValues,
   PendingStage,
@@ -94,12 +93,12 @@ export type PendingScreenController = {
 
 export function usePendingScreen(): PendingScreenController {
   const router = useRouter();
-  const [seeded, setSeeded] = useState(false);
+  const [form, dispatchForm] = useReducer(
+    pendingFormReducer,
+    UNSEEDED_PENDING_FORM,
+  );
   const [override, setOverride] = useState<PendingStage | null>(null);
-  const [values, setValues] = useState<PendingFormValues>(EMPTY_PENDING_FORM);
-  const [frozen, setFrozen] = useState<ProfileFormStep[]>([]);
   const [touched, setTouched] = useState<ProfileFormStep[]>([]);
-  const [everSubmitted, setEverSubmitted] = useState(false);
   const [line, setLine] = useState(0);
   const [promptView, setPromptView] = useState<NotificationPromptView>(
     INITIAL_NOTIFICATION_PROMPT_VIEW,
@@ -114,15 +113,13 @@ export function usePendingScreen(): PendingScreenController {
   const {
     mutate: sendProfile,
     isPending: submitting,
-    isSuccess: submitted,
     isError: submitFailed,
-    reset: resetSubmit,
   } = useSubmitProfileMutation(supabase);
 
   const { signOut, isPending: signingOut } = useSignOutMutation(supabase);
 
   const freeze = useCallback((step: ProfileFormStep) => {
-    setFrozen((at) => (at.includes(step) ? at : [...at, step]));
+    dispatchForm({ type: "freeze", step });
   }, []);
 
   const loading =
@@ -131,34 +128,27 @@ export function usePendingScreen(): PendingScreenController {
       (profile === undefined ||
         (profile !== null && privateQuery.data === undefined)));
 
-  useEffect(() => {
-    if (seeded || loading || !user) {
-      return;
-    }
-
+  if (form.kind === "unseeded" && !loading && user) {
     const contact = privateQuery.data ?? null;
     const gender = isProfileGender(contact?.gender) ? contact.gender : null;
-    const answered =
-      contact !== null || (profile?.submittedAt ?? null) !== null;
 
-    setValues({
-      name: profile?.displayName ?? "",
-      gender,
-      birthDate: digitsOfBirthDate(contact?.birthDate ?? null),
-      phone: digitsOnly(contact?.phone ?? "", PENDING_PHONE_LENGTH),
+    dispatchForm({
+      type: "seed",
+      values: {
+        name: profile?.displayName ?? "",
+        gender,
+        birthDate: digitsOfBirthDate(contact?.birthDate ?? null),
+        phone: digitsOnly(contact?.phone ?? "", PENDING_PHONE_LENGTH),
+      },
+      answered: contact !== null || (profile?.submittedAt ?? null) !== null,
     });
-    setFrozen(answered ? [...PROFILE_FORM_STEPS] : []);
-    setEverSubmitted(answered);
-    setSeeded(true);
-  }, [seeded, loading, user, profile, privateQuery.data]);
+  }
 
-  useEffect(() => {
-    if (submitted) {
-      setOverride(everSubmitted ? "waiting" : "celebrating");
-      setEverSubmitted(true);
-      resetSubmit();
-    }
-  }, [submitted, everSubmitted, resetSubmit]);
+  const values: PendingFormValues =
+    form.kind === "seeded" ? form.values : EMPTY_PENDING_FORM;
+  const frozen: readonly ProfileFormStep[] =
+    form.kind === "seeded" ? form.frozen : [];
+  const everSubmitted = form.kind === "seeded" && form.everSubmitted;
 
   const stage = ((): PendingStage => {
     if (loading) {
@@ -204,7 +194,7 @@ export function usePendingScreen(): PendingScreenController {
   const writeChecked = (step: "birthDate" | "phone", next: string) => {
     const edited = { ...values, [step]: next };
 
-    setValues(edited);
+    dispatchForm({ type: "write", values: { [step]: next } });
 
     if (validateProfileForm(edited)[step] === undefined) {
       freeze(step);
@@ -264,7 +254,8 @@ export function usePendingScreen(): PendingScreenController {
     prompt: getNotificationPromptCopy(promptView),
     promptTone: promptView,
     signingOut,
-    writeName: (typed: string) => setValues((at) => ({ ...at, name: typed })),
+    writeName: (typed: string) =>
+      dispatchForm({ type: "write", values: { name: typed } }),
     submitName: () => {
       if (values.name.trim() !== "") {
         freeze("name");
@@ -275,9 +266,7 @@ export function usePendingScreen(): PendingScreenController {
         return;
       }
 
-      const gender = picked;
-
-      setValues((at) => ({ ...at, gender }));
+      dispatchForm({ type: "write", values: { gender: picked } });
       freeze("gender");
     },
     writeBirthDate: (typed: string) =>
@@ -286,16 +275,23 @@ export function usePendingScreen(): PendingScreenController {
       writeChecked("phone", digitsOnly(typed, PENDING_PHONE_LENGTH)),
     touch: (step: ProfileFormStep) =>
       setTouched((at) => (at.includes(step) ? at : [...at, step])),
-    thaw: (step: ProfileFormStep) =>
-      setFrozen((at) => at.filter((frozenStep) => frozenStep !== step)),
+    thaw: (step: ProfileFormStep) => dispatchForm({ type: "thaw", step }),
     freezePhoto,
     send: () =>
-      sendProfile({
-        displayName: values.name.trim(),
-        phone: hyphenatePhone(values.phone),
-        birthDate: isoDateOfDigits(values.birthDate),
-        gender: values.gender ?? "",
-      }),
+      sendProfile(
+        {
+          displayName: values.name.trim(),
+          phone: hyphenatePhone(values.phone),
+          birthDate: isoDateOfDigits(values.birthDate),
+          gender: values.gender ?? "",
+        },
+        {
+          onSuccess: () => {
+            setOverride(everSubmitted ? "waiting" : "celebrating");
+            dispatchForm({ type: "submitted" });
+          },
+        },
+      ),
     retry: () => setOverride("form"),
     turnOnNotifications,
     leave,

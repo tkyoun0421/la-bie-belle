@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { PHOTO_SHEET_COPY } from "@/features/profileEdit/consts/profileEdit.const";
 import { PHOTO_PICK_DEPS } from "@/features/profileEdit/lib/photoPickDeps.lib";
@@ -33,15 +33,8 @@ export function usePhotoSheet({
   const {
     mutate,
     isPending: sending,
-    isSuccess: saved,
     isError: sendFailed,
   } = useUpdatePhotoMutation(supabase);
-
-  useEffect(() => {
-    if (saved) {
-      onSaved();
-    }
-  }, [saved, onSaved]);
 
   const pick = useCallback(async () => {
     setPicking(true);
@@ -51,20 +44,20 @@ export function usePhotoSheet({
       const picked = await pickAndShrinkPhoto(PHOTO_PICK_DEPS);
 
       if (picked !== null && userId !== null) {
-        mutate({ userId, ...picked });
+        mutate({ userId, ...picked }, { onSuccess: onSaved });
       }
     } catch {
       setPickFailed(true);
     } finally {
       setPicking(false);
     }
-  }, [userId, mutate]);
+  }, [userId, mutate, onSaved]);
 
   const useGoogle = useCallback(() => {
     if (googlePhotoUrl !== null) {
-      mutate({ photoUrl: googlePhotoUrl });
+      mutate({ photoUrl: googlePhotoUrl }, { onSuccess: onSaved });
     }
-  }, [googlePhotoUrl, mutate]);
+  }, [googlePhotoUrl, mutate, onSaved]);
 
   const failed = pickFailed || sendFailed;
 

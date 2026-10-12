@@ -4,6 +4,8 @@ const STATE_FIELD = "state";
 
 const STATE_NAMES = new Set(["pending", "failed", "empty", "ready", "sending"]);
 
+const READ_STATE_WORDS = new Set([...STATE_NAMES, "loading", "error"]);
+
 function isWatchedAlias(node) {
   return WATCHED_SUFFIXES.some((suffix) => node.id.name.endsWith(suffix));
 }
@@ -29,6 +31,15 @@ function stateMemberOf(literal) {
 
 function branchesOf(node) {
   return node.type === "TSUnionType" ? node.types : [node];
+}
+
+function isFlatStateUnion(shape) {
+  const branches = branchesOf(shape);
+
+  return (
+    branches.every((branch) => branch.type === "TSLiteralType") &&
+    branches.some((branch) => READ_STATE_WORDS.has(branch.literal.value))
+  );
 }
 
 function stateLiteralsOf(branch) {
@@ -73,6 +84,14 @@ const fragmentStateContract = {
         if (shape.type === "TSTypeLiteral" && stateMemberOf(shape) !== null) {
           context.report({
             node: stateMemberOf(shape),
+            messageId: "flat",
+            data: { name: node.id.name },
+          });
+        }
+
+        if (isFlatStateUnion(shape)) {
+          context.report({
+            node: shape,
             messageId: "flat",
             data: { name: node.id.name },
           });

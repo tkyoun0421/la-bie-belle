@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { BackHandler } from "react-native";
 
 export type BackPressSource = {
@@ -12,13 +12,18 @@ export function useHardwareBack(
   onBack: (() => boolean) | null,
   source: BackPressSource = BackHandler,
 ): void {
+  const listening = onBack !== null;
+  const pressBack = useEffectEvent(() => onBack?.() ?? false);
+
   useEffect(() => {
-    if (onBack === null) {
+    if (!listening) {
       return;
     }
 
-    const subscription = source.addEventListener("hardwareBackPress", onBack);
+    const subscription = source.addEventListener("hardwareBackPress", () =>
+      pressBack(),
+    );
 
     return () => subscription.remove();
-  }, [onBack, source]);
+  }, [listening, source]);
 }

@@ -1,5 +1,5 @@
 import { usePathname, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
@@ -27,7 +27,14 @@ import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotReq
 import { groupRequestsByDate } from "@/entities/workRequest/utils/requestGrouping.utils";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
-import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
+import {
+  CLOSED_SCHEDULE_WORKER_SHEET,
+  SCHEDULE_WORKER_COPY,
+} from "@/screens/scheduleWorker/consts/scheduleWorker.const";
+import {
+  scheduleWorkerSheetReducer,
+  type ScheduleWorkerSheetState,
+} from "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer";
 import {
   spellNotOpen,
   spellSubmitted,
@@ -38,9 +45,9 @@ export type ScheduleWorkerParams = {
   date?: string;
 };
 
-export type ScheduleWorkerBodyState = "loading" | MonthState;
-
-export type ScheduleWorkerBody = "loading" | "confirmed" | "picker";
+export type ScheduleWorkerBody =
+  | { state: "pending" }
+  | { state: "ready"; month: MonthState; kind: "confirmed" | "picker" };
 
 export type ScheduleWorkerView = "calendar" | "position";
 
@@ -66,7 +73,6 @@ export type ScheduleWorkerScreenController = {
   month: string;
   monthTitle: string;
   unread: boolean;
-  bodyState: ScheduleWorkerBodyState;
   body: ScheduleWorkerBody;
   view: ScheduleWorkerView;
   showMineOnly: boolean;
@@ -98,6 +104,21 @@ export type ScheduleWorkerScreenController = {
   dismissToast: () => void;
 };
 
+type SelectionEdits = {
+  base: readonly string[] | undefined;
+  dates: string[];
+};
+
+function sheetOpenedOn(date: string | undefined): ScheduleWorkerSheetState {
+  return date === undefined
+    ? CLOSED_SCHEDULE_WORKER_SHEET
+    : scheduleWorkerSheetReducer(CLOSED_SCHEDULE_WORKER_SHEET, {
+        type: "open",
+        date,
+        asCancel: false,
+      });
+}
+
 export function useScheduleWorkerScreen({
   month: monthParam,
   date: dateParam,
@@ -108,17 +129,22 @@ export function useScheduleWorkerScreen({
 
   const [view, setView] = useState<ScheduleWorkerView>("calendar");
   const [showMineOnly, setShowMineOnly] = useState(false);
-  const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);
+  const [sheetState, dispatchSheet] = useReducer(
+    scheduleWorkerSheetReducer,
+    dateParam,
+    sheetOpenedOn,
+  );
   const [expanded, setExpanded] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [cancelling, setCancelling] = useState(false);
+  const [edits, setEdits] = useState<SelectionEdits | null>(null);
   const [claimed, setClaimed] = useState<string | null>(null);
+
+  const openDate = sheetState.kind === "open" ? sheetState.openDate : null;
+  const cancelling = sheetState.kind === "open" && sheetState.cancelling;
 
   const { toast, showToast, dismissToast } = useToast();
 
   const leaveMonth = useCallback(() => {
-    setOpenDate(null);
-    setCancelling(false);
+    dispatchSheet({ type: "close" });
     setClaimed(null);
     setExpanded([]);
   }, []);
@@ -152,13 +178,15 @@ export function useScheduleWorkerScreen({
     if (asked !== undefined) {
       jumpTo(asked);
     }
-    setOpenDate(dateParam ?? null);
-    setCancelling(false);
+    dispatchSheet(
+      dateParam === undefined
+        ? { type: "close" }
+        : { type: "open", date: dateParam, asCancel: false },
+    );
   }, [monthParam, dateParam, jumpTo]);
 
-  useEffect(() => {
-    setSelected(myDates ?? []);
-  }, [myDates]);
+  const selected =
+    edits !== null && edits.base === myDates ? edits.dates : (myDates ?? []);
 
   useEffect(() => {
     if (!sent) {
@@ -223,8 +251,7 @@ export function useScheduleWorkerScreen({
   );
 
   const closeSheet = useCallback(() => {
-    setOpenDate(null);
-    setCancelling(false);
+    dispatchSheet({ type: "close" });
   }, []);
 
   const seatTaken = useCallback(
@@ -249,8 +276,7 @@ export function useScheduleWorkerScreen({
   }, [openDate, closeSheet]);
 
   const openSheetOn = (date: string, asCancel: boolean) => {
-    setOpenDate(date);
-    setCancelling(asCancel);
+    dispatchSheet({ type: "open", date, asCancel });
   };
 
   const sheet = ((): ScheduleWorkerSheet | null => {
@@ -279,7 +305,7 @@ export function useScheduleWorkerScreen({
     };
   })();
 
-  const bodyOf: Record<MonthState, ScheduleWorkerBody> = {
+  const bodyKindOf: Record<MonthState, "confirmed" | "picker"> = {
     not_created: "picker",
     collecting: "picker",
     closed_awaiting_confirmation: "picker",
@@ -297,8 +323,9 @@ export function useScheduleWorkerScreen({
     month,
     monthTitle: spellMonth(month),
     unread: (unreadCount.data ?? 0) > 0,
-    bodyState: loading ? "loading" : state,
-    body: loading ? "loading" : bodyOf[state],
+    body: loading
+      ? { state: "pending" }
+      : { state: "ready", month: state, kind: bodyKindOf[state] },
     view,
     showMineOnly,
     deadlineLine:
@@ -336,7 +363,10 @@ export function useScheduleWorkerScreen({
       confirmed || collecting
         ? (date) => {
             if (collecting) {
-              setSelected(toggleSelectedDate(selected, date));
+              setEdits({
+                base: myDates,
+                dates: toggleSelectedDate(selected, date),
+              });
               return;
             }
 
@@ -358,7 +388,7 @@ export function useScheduleWorkerScreen({
     toggleAgendaDay: (workDate) =>
       setExpanded(toggleSelectedDate(expanded, workDate)),
     askCancelOn: (workDate) => openSheetOn(workDate, true),
-    askCancel: () => setCancelling(true),
+    askCancel: () => dispatchSheet({ type: "ask_cancel" }),
     requestSwap: () => undefined,
     submit: () => send({ month, dates: selected }),
     seatTaken,

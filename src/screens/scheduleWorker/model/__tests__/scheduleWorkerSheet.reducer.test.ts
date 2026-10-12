@@ -1,10 +1,14 @@
-const { CLOSED_SCHEDULE_WORKER_SHEET, scheduleWorkerSheetReducer } =
-  await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer"
-  );
+import { CLOSED_SCHEDULE_WORKER_SHEET } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
+import {
+  scheduleWorkerSheetReducer,
+  type ScheduleWorkerSheetState,
+} from "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer";
 
-const OPEN = { kind: "open", openDate: "2026-10-12", cancelling: false };
+const OPEN: ScheduleWorkerSheetState = {
+  kind: "open",
+  openDate: "2026-10-12",
+  cancelling: false,
+};
 
 describe("scheduleWorkerSheetReducer — 초기 상태", () => {
   it("시트가 닫혀 있고 취소 중이라는 값은 없다", () => {
@@ -42,7 +46,11 @@ describe("scheduleWorkerSheetReducer — 시트를 연다", () => {
   });
 
   it("열린 채 다른 날을 열면 날과 취소 여부가 새 값으로 바뀐다", () => {
-    const state = { kind: "open", openDate: "2026-10-12", cancelling: true };
+    const state: ScheduleWorkerSheetState = {
+      kind: "open",
+      openDate: "2026-10-12",
+      cancelling: true,
+    };
 
     const next = scheduleWorkerSheetReducer(state, {
       type: "open",
@@ -80,7 +88,11 @@ describe("scheduleWorkerSheetReducer — 취소를 묻는다", () => {
 
 describe("scheduleWorkerSheetReducer — 시트를 닫으면 취소 중이 남지 않는다", () => {
   it("취소 중이던 시트를 닫으면 closed 하나만 남는다", () => {
-    const state = { kind: "open", openDate: "2026-10-12", cancelling: true };
+    const state: ScheduleWorkerSheetState = {
+      kind: "open",
+      openDate: "2026-10-12",
+      cancelling: true,
+    };
 
     const next = scheduleWorkerSheetReducer(state, { type: "close" });
 

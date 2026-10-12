@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useReducer, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
@@ -24,10 +24,12 @@ import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import { REHEARSAL_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
+import {
+  initialRehearsalScreenState,
+  rehearsalScreenReducer,
+} from "@/screens/rehearsal/model/rehearsalScreen.reducer";
 
 type Row = Rehearsal;
-
-type OpenForm = { mode: "add" } | { mode: "edit"; id: string };
 
 export type RehearsalScreenController = {
   goBack: () => void;
@@ -69,11 +71,25 @@ export function useRehearsalScreen(
   const router = useRouter();
   const today = kstToday();
 
-  const [month, setMonth] = useState(monthOf(monthParam ?? today));
-  const [openDate, setOpenDate] = useState<string | null>(null);
-  const [pickerYear, setPickerYear] = useState<number | null>(null);
-  const [openForm, setOpenForm] = useState<OpenForm | null>(null);
+  const [screen, dispatch] = useReducer(
+    rehearsalScreenReducer,
+    monthOf(monthParam ?? today),
+    initialRehearsalScreenState,
+  );
+  const [followedParam, setFollowedParam] = useState(monthParam);
   const [removing, setRemoving] = useState(false);
+
+  if (followedParam !== monthParam) {
+    setFollowedParam(monthParam);
+
+    if (monthParam !== undefined) {
+      dispatch({ type: "follow_month", month: monthOf(monthParam) });
+    }
+  }
+
+  const { month, pickerYear } = screen;
+  const openDate = screen.kind === "browsing" ? null : screen.openDate;
+  const openForm = screen.kind === "form" ? screen.form : null;
 
   const { profile, role, isAdmin } = useMyStanding(supabase);
 
@@ -90,14 +106,8 @@ export function useRehearsalScreen(
     reset: resetRemove,
   } = useRemoveRehearsalMutation(supabase);
 
-  useEffect(() => {
-    if (monthParam !== undefined) {
-      setMonth(monthOf(monthParam));
-    }
-  }, [monthParam]);
-
   const closeForm = useCallback(() => {
-    setOpenForm(null);
+    dispatch({ type: "close_form" });
     setRemoving(false);
   }, []);
 
@@ -157,17 +167,14 @@ export function useRehearsalScreen(
   const openEdit = useCallback(
     (id: string) => {
       if (openRows.some((candidate) => candidate.id === id)) {
-        setOpenForm({ mode: "edit", id });
+        dispatch({ type: "open_form", form: { mode: "edit", id } });
       }
     },
     [openRows],
   );
 
   const pickMonth = useCallback((picked: string) => {
-    setMonth(picked);
-    setOpenDate(null);
-    setOpenForm(null);
-    setPickerYear(null);
+    dispatch({ type: "pick_month", month: picked });
   }, []);
 
   const closeTop = useMemo(() => {
@@ -181,7 +188,7 @@ export function useRehearsalScreen(
 
     if (openDate !== null) {
       return () => {
-        setOpenDate(null);
+        dispatch({ type: "close_day" });
 
         return true;
       };
@@ -217,14 +224,15 @@ export function useRehearsalScreen(
     },
     isToday: (date) => date === today,
     canPressDay: () => true,
-    openDay: setOpenDate,
-    closeDay: () => setOpenDate(null),
+    openDay: (date) => dispatch({ type: "open_day", date }),
+    closeDay: () => dispatch({ type: "close_day" }),
     pickMonth,
     pickerYear,
-    openPicker: () => setPickerYear(Number(month.slice(0, 4))),
-    changePickerYear: setPickerYear,
-    closePicker: () => setPickerYear(null),
-    openAdd: () => setOpenForm({ mode: "add" }),
+    openPicker: () =>
+      dispatch({ type: "open_picker", year: Number(month.slice(0, 4)) }),
+    changePickerYear: (year) => dispatch({ type: "change_picker_year", year }),
+    closePicker: () => dispatch({ type: "close_picker" }),
+    openAdd: () => dispatch({ type: "open_form", form: { mode: "add" } }),
     openEdit: isAdmin ? undefined : openEdit,
     closeForm,
     askRemove: editing === null ? undefined : () => setRemoving(true),

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { WORK_REQUEST_COPY } from "@/features/workRequest/consts/workRequest.const";
 import { isValidCancelReason } from "@/features/workRequest/model/cancelReason.policy";
@@ -33,17 +33,10 @@ export function useCancelShiftSheet({
   const {
     mutate: send,
     isPending,
-    isSuccess,
     isError,
   } = useCreateCancelRequestMutation(supabase);
 
   const canSend = isValidCancelReason(reason);
-
-  useEffect(() => {
-    if (isSuccess) {
-      onSent();
-    }
-  }, [isSuccess, onSent]);
 
   return {
     title: cancelSheetTitle(workDate, position),
@@ -54,7 +47,7 @@ export function useCancelShiftSheet({
     writeReason: setReason,
     send: () => {
       if (canSend) {
-        send({ assignmentId, reason: reason.trim() });
+        send({ assignmentId, reason: reason.trim() }, { onSuccess: onSent });
       }
     },
   };

@@ -1,11 +1,23 @@
-const { CLOSED_DAY_DETAIL_PICKER, dayDetailPickerReducer } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/scheduleAdmin/model/dayDetailPicker.reducer"
-);
+import type {
+  PickerEntry,
+  PickerTarget,
+} from "@/features/scheduleAssign/model/pickerEntry.type";
+import { CLOSED_DAY_DETAIL_PICKER } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
+import {
+  dayDetailPickerReducer,
+  type DayDetailPickerAction,
+  type DayDetailPickerState,
+} from "@/screens/scheduleAdmin/model/dayDetailPicker.reducer";
 
-const TARGET = { position: "홀", slotId: "slot-1", replacing: null };
+type Picking = Extract<DayDetailPickerState, { kind: "picking" }>;
 
-const OTHER_TARGET = {
+const TARGET: PickerTarget = {
+  position: "홀",
+  slotId: "slot-1",
+  replacing: null,
+};
+
+const OTHER_TARGET: PickerTarget = {
   position: "주방",
   slotId: "slot-2",
   replacing: {
@@ -15,7 +27,7 @@ const OTHER_TARGET = {
   },
 };
 
-const ENTRY = {
+const ENTRY: PickerEntry = {
   profileId: "profile-1",
   displayName: "가짜하나",
   category: "assignable",
@@ -25,9 +37,13 @@ const ENTRY = {
   gender: null,
 };
 
-const OTHER_ENTRY = { ...ENTRY, profileId: "profile-2", displayName: "가짜둘" };
+const OTHER_ENTRY: PickerEntry = {
+  ...ENTRY,
+  profileId: "profile-2",
+  displayName: "가짜둘",
+};
 
-const PICKING = {
+const PICKING: Picking = {
   kind: "picking",
   target: TARGET,
   expanded: false,
@@ -141,7 +157,7 @@ describe("dayDetailPickerReducer — 열린 창 안에서의 전이", () => {
 
 describe("dayDetailPickerReducer — 창을 닫으면 열린 가지의 데이터가 하나도 안 남는다", () => {
   it("대상·펼침·고른 것·살펴보기·자격 물음이 전부 찬 상태에서 닫아도 closed 하나만 남는다", () => {
-    const state = {
+    const state: Picking = {
       kind: "picking",
       target: OTHER_TARGET,
       expanded: true,
@@ -165,7 +181,7 @@ describe("dayDetailPickerReducer — 창을 닫으면 열린 가지의 데이터
 });
 
 describe("dayDetailPickerReducer — 닫힌 상태에서는 창 안의 action이 상태를 바꾸지 않는다", () => {
-  it.each([
+  it.each<[string, DayDetailPickerAction]>([
     ["expand", { type: "expand" }],
     ["toggle", { type: "toggle", profileId: "profile-1" }],
     ["inspect", { type: "inspect", entry: ENTRY }],

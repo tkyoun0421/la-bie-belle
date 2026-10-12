@@ -1,18 +1,25 @@
-const { initialRehearsalScreenState, rehearsalScreenReducer } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/rehearsal/model/rehearsalScreen.reducer"
-);
+import {
+  initialRehearsalScreenState,
+  rehearsalScreenReducer,
+  type RehearsalScreenState,
+} from "@/screens/rehearsal/model/rehearsalScreen.reducer";
 
-const BROWSING = { kind: "browsing", month: "2026-10", pickerYear: null };
+type Branch<Kind> = Extract<RehearsalScreenState, { kind: Kind }>;
 
-const DAY = {
+const BROWSING: Branch<"browsing"> = {
+  kind: "browsing",
+  month: "2026-10",
+  pickerYear: null,
+};
+
+const DAY: Branch<"day"> = {
   kind: "day",
   month: "2026-10",
   pickerYear: null,
   openDate: "2026-10-12",
 };
 
-const ADD_FORM = {
+const ADD_FORM: Branch<"form"> = {
   kind: "form",
   month: "2026-10",
   pickerYear: null,

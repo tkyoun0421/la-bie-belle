@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import {
   uploadAvatar,
   type UploadAvatarInput,
@@ -14,7 +15,7 @@ function isPicked(input: UpdatePhotoInput): input is UploadAvatarInput {
 }
 
 export type UpdatePhotoResult = {
-  mutate: (input: UpdatePhotoInput) => void;
+  mutate: (input: UpdatePhotoInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;

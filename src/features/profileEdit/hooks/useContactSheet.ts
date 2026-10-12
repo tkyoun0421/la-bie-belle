@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import { isValidPhone } from "@/entities/profile/model/profile.schema";
@@ -42,15 +42,8 @@ export function useContactSheet({
   const {
     mutate,
     isPending: sending,
-    isSuccess: saved,
     error,
   } = useUpdateContactMutation(supabase);
-
-  useEffect(() => {
-    if (saved) {
-      onSaved();
-    }
-  }, [saved, onSaved]);
 
   const code = errorCodeOf(error);
   const rejected = code === REJECTED_CODE;
@@ -60,8 +53,8 @@ export function useContactSheet({
   }, []);
 
   const save = useCallback(() => {
-    mutate({ profileId, phone: hyphenatePhone(draft) });
-  }, [mutate, profileId, draft]);
+    mutate({ profileId, phone: hyphenatePhone(draft) }, { onSuccess: onSaved });
+  }, [mutate, profileId, draft, onSaved]);
 
   const failed = error !== null && !rejected;
 

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { createCancelRequest } from "@/features/workRequest/api/createCancelRequest.api";
 
 export type CreateCancelRequestInput = {
@@ -10,7 +11,10 @@ export type CreateCancelRequestInput = {
 };
 
 export type CreateCancelRequestResult = {
-  mutate: (input: CreateCancelRequestInput) => void;
+  mutate: (
+    input: CreateCancelRequestInput,
+    callbacks?: MutationCallbacks,
+  ) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -35,9 +39,9 @@ export function useCreateCancelRequestMutation(
   });
 
   const send = useCallback(
-    (input: CreateCancelRequestInput) => {
+    (input: CreateCancelRequestInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

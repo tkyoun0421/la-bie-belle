@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 import type { View } from "react-native";
 
 export type DropState = "idle" | "over" | "over-blocked";
@@ -16,7 +16,7 @@ export type DragContextValue = {
 export const DragContext = createContext<DragContextValue | null>(null);
 
 export function useDrag(): DragContextValue {
-  const value = useContext(DragContext);
+  const value = use(DragContext);
 
   if (value === null) {
     throw new Error("DragProvider 안에서만 쓴다");
