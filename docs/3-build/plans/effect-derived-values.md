@@ -98,6 +98,8 @@ useEffect(() => {
 
 **열둘 전부를 reducer에 넣지 않는다.** `useDayDetail`의 열둘 가운데 **창과 함께 움직이는 것만** 들어간다 — 측정값이나 독립된 토글은 `useState`로 남는다. 어느 것이 들어가는지는 「`closePicker`가 되돌리는가」가 가른다.
 
+**작성자가 hook을 읽고 정한 것 — 구현은 테스트의 모양을 따른다.** reducer 넷의 상태·action union과 export 이름은 짝 테스트가 글자까지 박았다(`dayDetailPicker`·`pendingForm`·`scheduleWorkerSheet`·`rehearsalScreen`). 가지 이름은 `closed`·`picking`, `unseeded`·`seeded`, `closed`·`open`, `browsing`·`day`·`form`이다 — 통신 상태가 아니라 화면이 든 UI 상태라 ADR-016의 네 이름을 쓰지 않는다. 지금 hook과 다르게 간 자리가 하나다 — `useRehearsalScreen`의 `closeDay`는 `openDate`만 지우고 `openForm`을 남겨 「날은 없는데 폼은 열린」 조합을 만든다. reducer는 `form` 가지에서 `close_day`가 오면 `browsing`으로 간다. 그 조합이 바로 이 묶음이 없애려는 것이다. `removing`은 `closeForm`이 같이 되돌리는 다섯째인데 reducer 밖 `useState`로 남긴다. `inspecting`은 `picking` 가지 안에 산다.
+
 ### D. 평평한 상태 union 셋 — 그리고 검사가 이것을 물게 한다
 
 **규칙 45가 보는 것과 안 보는 것.** `eslint-rules/fragmentStateContract.mjs`는 이름이 `Controller`·`ListState`·`Body`로 끝나는 type alias만 본다. 거는 것은 둘이다 — alias 자체가 `state` 필드를 든 객체 하나면 `flat`, 가지의 `state` 글자가 다섯 이름(`pending`·`failed`·`empty`·`ready`·`sending`) 밖이면 `name`. **alias가 글자 union 그 자체(`"a" | "b"`)면 둘 다 안 건다** — `branchesOf`가 `TSLiteralType` 가지를 내고 `stateLiteralsOf`가 그걸 `[]`로 돌려보낸다. 그래서 `NotificationsListState`(`ListState`)와 `ScheduleWorkerBody`(`Body`)가 감시 안에 있는데 초록이다. `ScheduleWorkerBodyState`는 접미사가 `State`라 **감시 밖**이다.
