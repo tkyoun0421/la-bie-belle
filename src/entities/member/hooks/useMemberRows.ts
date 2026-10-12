@@ -40,6 +40,30 @@ function detailOf(parts: readonly string[]): string {
   return parts.filter((part) => part !== "").join(" ");
 }
 
+function emptyReasonOf({
+  kind,
+  memberCount,
+  foundCount,
+}: {
+  kind: MemberRowsKind;
+  memberCount: number;
+  foundCount: number;
+}): MemberRowsEmptyReason {
+  if (kind !== "active") {
+    return "noRows";
+  }
+
+  if (memberCount === 0) {
+    return "noMembers";
+  }
+
+  if (foundCount === 0) {
+    return "noMatch";
+  }
+
+  return "noRows";
+}
+
 export function useMemberRows({
   kind,
   query,
@@ -92,12 +116,11 @@ export function useMemberRows({
 
   const canExpand = !searching && !expanded && folded.length > 0;
 
-  const reason: MemberRowsEmptyReason =
-    kind === "active" && actives.length === 0 && lefts.length === 0
-      ? "noMembers"
-      : kind === "active" && foundActive.length === 0 && foundLeft.length === 0
-        ? "noMatch"
-        : "noRows";
+  const reason = emptyReasonOf({
+    kind,
+    memberCount: actives.length + lefts.length,
+    foundCount: foundActive.length + foundLeft.length,
+  });
 
   return fragmentOf([active, left], {
     empty: () => rows.length === 0,

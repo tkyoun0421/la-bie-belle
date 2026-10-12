@@ -30,6 +30,7 @@ import { ADMIN_HOME_COPY } from "@/screens/adminHome/consts/adminHome.const";
 import {
   homeTileSummary,
   monthName,
+  type HomeTileSummaryInput,
 } from "@/screens/adminHome/model/homeTileSummary.policy";
 import {
   todayBandShares,
@@ -137,20 +138,26 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
   const tileVacancies = tileSlots ?? [];
 
   const summary = homeTileSummary(
-    tileSchedule == null
-      ? { state: "not_created", month: tiled }
-      : tileSchedule.confirmedAt != null
-        ? {
-            state: "confirmed",
-            month: tiled,
-            vacancyCount: tileVacancies.length,
-          }
-        : {
-            state: "in_progress",
-            month: tiled,
-            openDays: (tileDays ?? []).length,
-            vacancyCount: tileVacancies.length,
-          },
+    ((): HomeTileSummaryInput => {
+      if (tileSchedule == null) {
+        return { state: "not_created", month: tiled };
+      }
+
+      if (tileSchedule.confirmedAt != null) {
+        return {
+          state: "confirmed",
+          month: tiled,
+          vacancyCount: tileVacancies.length,
+        };
+      }
+
+      return {
+        state: "in_progress",
+        month: tiled,
+        openDays: (tileDays ?? []).length,
+        vacancyCount: tileVacancies.length,
+      };
+    })(),
   );
 
   const todayDay = openDays.find((day) => day.workDate === today) ?? null;

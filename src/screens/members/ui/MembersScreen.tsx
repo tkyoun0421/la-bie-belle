@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -7,12 +8,25 @@ import { Input } from "@/shared/ui/Input";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import type { MemberRowsEmptyReason } from "@/entities/member/hooks/useMemberRows";
 import { MemberRows } from "@/entities/member/ui/MemberRows";
 import { MemberSheet } from "@/features/memberAdmin/ui/MemberSheet";
 import { MEMBERS_COPY } from "@/screens/members/consts/members.const";
 import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
 import { MembersEmpty } from "@/screens/members/ui/MembersEmpty";
 import { MembersLoading } from "@/screens/members/ui/MembersLoading";
+
+const EMPTY_VIEW: Record<MemberRowsEmptyReason, ReactNode> = {
+  noMembers: <MembersEmpty />,
+  noMatch: (
+    <Card className="mt-4">
+      <Text size="base" weight="medium" className="text-center">
+        {MEMBERS_COPY.searchEmpty}
+      </Text>
+    </Card>
+  ),
+  noRows: null,
+};
 
 export function MembersScreen() {
   const screen = useMembersScreen();
@@ -32,17 +46,7 @@ export function MembersScreen() {
             onPress={screen.openMember}
             className="mt-4 py-0"
             pending={<MembersLoading />}
-            empty={(reason) =>
-              reason === "noMembers" ? (
-                <MembersEmpty />
-              ) : reason === "noMatch" ? (
-                <Card className="mt-4">
-                  <Text size="base" weight="medium" className="text-center">
-                    {MEMBERS_COPY.searchEmpty}
-                  </Text>
-                </Card>
-              ) : null
-            }
+            empty={(reason) => EMPTY_VIEW[reason]}
             before={
               <Input
                 placeholder={MEMBERS_COPY.searchPlaceholder}

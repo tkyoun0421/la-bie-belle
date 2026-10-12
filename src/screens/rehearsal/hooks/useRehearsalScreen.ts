@@ -138,14 +138,21 @@ export function useRehearsalScreen(
       ? (openRows.find((row) => row.id === openForm.id) ?? null)
       : null;
 
-  const form: RehearsalFormTarget | null =
-    openForm === null || openDate === null
-      ? null
-      : openForm.mode === "add"
-        ? { mode: "add", workDate: openDate, formKind: openKind }
-        : editing === null
-          ? null
-          : { mode: "edit", rehearsal: editing };
+  const form = ((): RehearsalFormTarget | null => {
+    if (openForm === null || openDate === null) {
+      return null;
+    }
+
+    if (openForm.mode === "add") {
+      return { mode: "add", workDate: openDate, formKind: openKind };
+    }
+
+    if (editing === null) {
+      return null;
+    }
+
+    return { mode: "edit", rehearsal: editing };
+  })();
 
   const openEdit = useCallback(
     (id: string) => {
