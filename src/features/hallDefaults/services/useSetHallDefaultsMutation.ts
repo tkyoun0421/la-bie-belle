@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import {
   setHallDefaults,
   type HallDefaultsInput,
 } from "@/features/hallDefaults/api/setHallDefaults.api";
 
 export type SetHallDefaultsResult = {
-  mutate: (input: HallDefaultsInput) => void;
+  mutate: (input: HallDefaultsInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -26,9 +27,9 @@ export function useSetHallDefaultsMutation(client: DB): SetHallDefaultsResult {
   });
 
   const send = useCallback(
-    (input: HallDefaultsInput) => {
+    (input: HallDefaultsInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

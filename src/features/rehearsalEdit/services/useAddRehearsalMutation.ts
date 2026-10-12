@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import {
   addRehearsal,
   type AddRehearsalInput,
 } from "@/features/rehearsalEdit/api/addRehearsal.api";
 
 export type AddRehearsalResult = {
-  mutate: (input: AddRehearsalInput) => void;
+  mutate: (input: AddRehearsalInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -30,9 +31,9 @@ export function useAddRehearsalMutation(client: DB): AddRehearsalResult {
   });
 
   const send = useCallback(
-    (input: AddRehearsalInput) => {
+    (input: AddRehearsalInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { HALL_DEFAULTS_COPY } from "@/features/hallDefaults/consts/hallDefaults.const";
@@ -33,19 +33,12 @@ export function useHallDefaultsSheet({
   const {
     mutate: sendDefaults,
     isPending,
-    isSuccess,
     isError,
   } = useSetHallDefaultsMutation(supabase);
 
-  useEffect(() => {
-    if (isSuccess) {
-      onSaved();
-    }
-  }, [isSuccess, onSaved]);
-
   const save = useCallback(() => {
-    sendDefaults({ slots, starts, ends });
-  }, [sendDefaults, slots, starts, ends]);
+    sendDefaults({ slots, starts, ends }, { onSuccess: onSaved });
+  }, [sendDefaults, slots, starts, ends, onSaved]);
 
   return {
     starts,

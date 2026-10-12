@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { View } from "react-native";
 import { Toast, type ToastKind } from "@/shared/ui/Toast";
 
@@ -13,11 +13,13 @@ export type FloatingToastProps = {
 };
 
 export function FloatingToast({ kind, message, onDone }: FloatingToastProps) {
+  const finish = useEffectEvent(onDone);
+
   useEffect(() => {
-    const timer = setTimeout(onDone, TOAST_STAY_MS);
+    const timer = setTimeout(() => finish(), TOAST_STAY_MS);
 
     return () => clearTimeout(timer);
-  }, [message, onDone]);
+  }, [message]);
 
   return (
     <View

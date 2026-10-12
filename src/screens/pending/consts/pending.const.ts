@@ -9,6 +9,7 @@ import type {
   NotificationPromptOutcome,
   NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
+import type { PendingFormState } from "@/screens/pending/model/pendingForm.reducer";
 
 export const EMPTY_PENDING_FORM: ProfileFormValues = {
   name: "",
@@ -75,3 +76,5 @@ export const EMAIL_AVATAR_SIZE = 24;
 export const BIRTH_DATE_LENGTH = 8;
 
 export const PENDING_PHONE_LENGTH = 11;
+
+export const UNSEEDED_PENDING_FORM: PendingFormState = { kind: "unseeded" };

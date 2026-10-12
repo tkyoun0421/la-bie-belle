@@ -56,25 +56,27 @@ describe("useHardwareBack — 닫을 것이 있을 때만 뒤로를 가로챈다
     expect(handler.remove).toHaveBeenCalledTimes(1);
   });
 
-  it("손이 바뀌면 떼고 새로 건다", () => {
+  it("손이 바뀌어도 구독은 한 번이고 최신 손이 불린다", () => {
     const handler = fakeBackHandler();
+    const source = {
+      addEventListener: jest.fn(handler.source.addEventListener),
+    };
     const first = jest.fn(() => true);
     const second = jest.fn(() => true);
 
     const { rerender } = renderHook(
       ({ onBack }: { onBack: (() => boolean) | null }) =>
-        useHardwareBack(onBack, handler.source),
+        useHardwareBack(onBack, source),
       { initialProps: { onBack: first as (() => boolean) | null } },
     );
 
     rerender({ onBack: second });
 
-    expect(handler.remove).toHaveBeenCalledTimes(1);
-    expect(handler.listeners).toHaveLength(2);
+    expect(source.addEventListener).toHaveBeenCalledTimes(1);
 
-    handler.listeners[1]();
+    handler.listeners[0]();
 
     expect(second).toHaveBeenCalledTimes(1);
-    expect(first).toHaveBeenCalledTimes(0);
+    expect(first).not.toHaveBeenCalled();
   });
 });

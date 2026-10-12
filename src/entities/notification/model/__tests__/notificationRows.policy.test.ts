@@ -1,10 +1,9 @@
 import type { Notification } from "@/entities/notification/model/notification.type";
-
-const {
+import {
   groupNotificationsByDate,
-  resolveNotificationsListState,
+  resolveNotificationsPaging,
   unreadAdminNoticeIds,
-} = await import("@/entities/notification/model/notificationRows.policy");
+} from "@/entities/notification/model/notificationRows.policy";
 
 function buildRow(
   id: string,
@@ -64,108 +63,54 @@ describe("groupNotificationsByDate — 받은 날의 한국 달력일로 줄을 
   });
 });
 
-describe("resolveNotificationsListState — 처음 읽는 중이면 로딩이다", () => {
-  it("isLoading이 true면 다른 값과 무관하게 로딩이다", () => {
-    const state = resolveNotificationsListState({
-      rows: [],
-      isLoading: true,
-      isError: false,
-      isFetchingNextPage: false,
-      hasNextPage: false,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("loading");
+function paging(overrides: {
+  isFetchingNextPage?: boolean;
+  isFetchNextPageError?: boolean;
+  hasNextPage?: boolean;
+}) {
+  return resolveNotificationsPaging({
+    isFetchingNextPage: false,
+    isFetchNextPageError: false,
+    hasNextPage: false,
+    ...overrides,
   });
-});
+}
 
-describe("resolveNotificationsListState — 첫 읽기가 실패하면 못 읽음이다", () => {
-  it("isError가 true면 못 읽음이다", () => {
-    const state = resolveNotificationsListState({
-      rows: [],
-      isLoading: false,
-      isError: true,
-      isFetchingNextPage: false,
-      hasNextPage: false,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("error");
+describe("resolveNotificationsPaging — 더 불러오기 축 하나만 답한다", () => {
+  it("다음 쪽을 읽는 중이면 pending이다", () => {
+    expect(paging({ isFetchingNextPage: true, hasNextPage: true })).toBe(
+      "pending",
+    );
   });
-});
 
-describe("resolveNotificationsListState — 받은 알림이 없으면 빈 상태다", () => {
-  it("rows가 비어 있고 로딩·에러가 아니면 빈 상태다", () => {
-    const state = resolveNotificationsListState({
-      rows: [],
-      isLoading: false,
-      isError: false,
-      isFetchingNextPage: false,
-      hasNextPage: false,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("empty");
+  it("다음 쪽 읽기가 실패했으면 failed다", () => {
+    expect(paging({ isFetchNextPageError: true, hasNextPage: true })).toBe(
+      "failed",
+    );
   });
-});
 
-describe("resolveNotificationsListState — 바닥에서 다음 쪽을 읽는 중이면 더 읽는 중이다", () => {
-  it("isFetchingNextPage가 true면 더 읽는 중이다", () => {
-    const state = resolveNotificationsListState({
-      rows: [buildRow("a1", "2025-09-13T10:00:00+09:00")],
-      isLoading: false,
-      isError: false,
-      isFetchingNextPage: true,
-      hasNextPage: true,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("loadingMore");
+  it("더 읽을 쪽이 있고 읽는 중도 실패도 아니면 idle이다", () => {
+    expect(paging({ hasNextPage: true })).toBe("idle");
   });
-});
 
-describe("resolveNotificationsListState — 다음 쪽 읽기가 실패하면 더 못 읽음이다", () => {
-  it("isFetchNextPageError가 true면 더 못 읽음이고 이미 읽은 줄은 남는다", () => {
-    const state = resolveNotificationsListState({
-      rows: [buildRow("a1", "2025-09-13T10:00:00+09:00")],
-      isLoading: false,
-      isError: false,
-      isFetchingNextPage: false,
-      hasNextPage: true,
-      isFetchNextPageError: true,
-    });
-
-    expect(state).toBe("errorMore");
+  it("더 읽을 쪽이 없으면 end다", () => {
+    expect(paging({ hasNextPage: false })).toBe("end");
   });
-});
 
-describe("resolveNotificationsListState — 더 읽을 것이 없으면 끝이다", () => {
-  it("hasNextPage가 false면 끝이다", () => {
-    const state = resolveNotificationsListState({
-      rows: [buildRow("a1", "2025-09-13T10:00:00+09:00")],
-      isLoading: false,
-      isError: false,
-      isFetchingNextPage: false,
-      hasNextPage: false,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("end");
+  it("읽는 중이면 실패가 겹쳐도 pending이 앞선다", () => {
+    expect(
+      paging({
+        isFetchingNextPage: true,
+        isFetchNextPageError: true,
+        hasNextPage: true,
+      }),
+    ).toBe("pending");
   });
-});
 
-describe("resolveNotificationsListState — 줄이 있고 더 읽을 것도 있으면 정상이다", () => {
-  it("정상 상태다", () => {
-    const state = resolveNotificationsListState({
-      rows: [buildRow("a1", "2025-09-13T10:00:00+09:00")],
-      isLoading: false,
-      isError: false,
-      isFetchingNextPage: false,
-      hasNextPage: true,
-      isFetchNextPageError: false,
-    });
-
-    expect(state).toBe("normal");
+  it("실패했으면 더 읽을 쪽이 없어도 failed가 end보다 앞선다", () => {
+    expect(paging({ isFetchNextPageError: true, hasNextPage: false })).toBe(
+      "failed",
+    );
   });
 });
 

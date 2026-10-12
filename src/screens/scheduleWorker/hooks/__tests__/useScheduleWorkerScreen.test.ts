@@ -233,6 +233,16 @@ beforeEach(() => {
   submitAvailabilityMock.mockResolvedValue(undefined);
 });
 
+function readBody(screen: { body: unknown }) {
+  const body = screen.body;
+
+  if (typeof body !== "object" || body === null || !("month" in body)) {
+    throw new Error("준비된 몸통이 아니다");
+  }
+
+  return body;
+}
+
 async function mounted(params: { month?: string; date?: string } = {}) {
   const { wrapper } = createWrapper();
   const hook = renderHook(() => useScheduleWorkerScreen(params), {
@@ -240,7 +250,7 @@ async function mounted(params: { month?: string; date?: string } = {}) {
   });
 
   await waitFor(() =>
-    expect(hook.result.current.bodyState).not.toBe("loading"),
+    expect(hook.result.current.body).not.toEqual({ state: "pending" }),
   );
   await waitFor(() => expect(hook.result.current.myProfileId).toBe("p1"));
 
@@ -248,20 +258,22 @@ async function mounted(params: { month?: string; date?: string } = {}) {
 }
 
 describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", () => {
-  it("읽기 전에는 loading이다", () => {
+  it("읽기 전에는 몸통이 pending이다", () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useScheduleWorkerScreen({}), {
       wrapper,
     });
 
-    expect(result.current.bodyState).toBe("loading");
+    const body: unknown = result.current.body;
+
+    expect(body).toEqual({ state: "pending" });
   });
 
   it("확정된 달은 근무표고 앱바가 그 달을 부른다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.bodyState).toBe("confirmed");
+    expect(readBody(result.current).month).toBe("confirmed");
     expect(result.current.month).toBe(MONTH);
     expect(result.current.monthTitle).toBe("2026년 10월");
     expect(result.current.deadlineLine).toBeNull();
@@ -272,7 +284,7 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
 
     const { result } = await mounted();
 
-    expect(result.current.bodyState).toBe("collecting");
+    expect(readBody(result.current).month).toBe("collecting");
     expect(result.current.deadlineLine).toContain("10월 20일");
   });
 
@@ -281,7 +293,7 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
 
     const { result } = await mounted();
 
-    expect(result.current.bodyState).toBe("not_created");
+    expect(readBody(result.current).month).toBe("not_created");
     expect(result.current.notice).toBe(
       "아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요",
     );
@@ -292,7 +304,7 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
 
     const { result } = await mounted();
 
-    expect(result.current.bodyState).toBe("closed_awaiting_confirmation");
+    expect(readBody(result.current).month).toBe("closed_awaiting_confirmation");
     expect(result.current.notice).toBe(
       SCHEDULE_WORKER_COPY.awaitingConfirmation,
     );
@@ -587,40 +599,64 @@ describe("useScheduleWorkerScreen — 열려 있는 것만 뒤로가 닫는다",
 });
 
 describe("useScheduleWorkerScreen — 몸통과 갈 데를 controller가 정한다", () => {
-  it("읽기 전 몸통은 loading이다", () => {
-    const { wrapper } = createWrapper();
-
-    const { result } = renderHook(() => useScheduleWorkerScreen({}), {
-      wrapper,
-    });
-
-    expect(result.current.body).toBe("loading");
-  });
-
   it("확정된 달의 몸통은 근무표다", async () => {
     const { result } = await mounted();
 
-    expect(result.current.body).toBe("confirmed");
+    const body: unknown = result.current.body;
+
+    expect(body).toEqual({
+      state: "ready",
+      month: "confirmed",
+      kind: "confirmed",
+    });
   });
 
-  it("확정 전이면 어느 상태든 몸통이 신청 화면이다", async () => {
+  it("접수 중인 달의 몸통은 신청 화면이다", async () => {
     getMonthWindowMock.mockResolvedValue(COLLECTING);
 
-    const collecting = await mounted();
+    const { result } = await mounted();
 
-    expect(collecting.result.current.body).toBe("picker");
+    const body: unknown = result.current.body;
 
+    expect(body).toEqual({
+      state: "ready",
+      month: "collecting",
+      kind: "picker",
+    });
+  });
+
+  it("안 만든 달의 몸통은 신청 화면이다", async () => {
     getMonthWindowMock.mockResolvedValue(null);
 
-    const fresh = await mounted();
+    const { result } = await mounted();
 
-    expect(fresh.result.current.body).toBe("picker");
+    const body: unknown = result.current.body;
 
+    expect(body).toEqual({
+      state: "ready",
+      month: "not_created",
+      kind: "picker",
+    });
+  });
+
+  it("마감 뒤 확정 전인 달의 몸통은 신청 화면이다", async () => {
     getMonthWindowMock.mockResolvedValue(AWAITING);
 
-    const awaiting = await mounted();
+    const { result } = await mounted();
 
-    expect(awaiting.result.current.body).toBe("picker");
+    const body: unknown = result.current.body;
+
+    expect(body).toEqual({
+      state: "ready",
+      month: "closed_awaiting_confirmation",
+      kind: "picker",
+    });
+  });
+
+  it("몸통과 따로 도는 bodyState 필드가 없다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current).not.toHaveProperty("bodyState");
   });
 
   it("종은 어디서 왔는지를 달고 알림으로 간다", async () => {

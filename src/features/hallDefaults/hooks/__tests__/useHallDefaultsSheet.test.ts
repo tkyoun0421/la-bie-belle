@@ -139,3 +139,31 @@ describe("useHallDefaultsSheet — 실패 문안을 controller가 완성해 내�
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useHallDefaultsSheet — 완료 콜백이 바뀌어도", () => {
+  it("완료 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSaved }: { onSaved: () => void }) =>
+        useHallDefaultsSheet({
+          starts: "10:00",
+          ends: "19:00",
+          slots: SLOTS,
+          onSaved,
+        }),
+      { wrapper, initialProps: { onSaved: first } },
+    );
+
+    act(() => result.current.save());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSaved: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

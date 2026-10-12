@@ -220,3 +220,31 @@ describe("usePhotoSheet — 실패 문안을 controller가 완성해 내려준�
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("usePhotoSheet — 완료 콜백이 바뀌어도", () => {
+  it("완료 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSaved }: { onSaved: () => void }) =>
+        usePhotoSheet({
+          userId: "user-1",
+          photoUrl: null,
+          googlePhotoUrl: GOOGLE_PHOTO,
+          onSaved,
+        }),
+      { wrapper, initialProps: { onSaved: first } },
+    );
+
+    act(() => result.current.useGoogle());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSaved: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
 export type UpdateContactInput = {
@@ -10,7 +11,7 @@ export type UpdateContactInput = {
 };
 
 export type UpdateContactResult = {
-  mutate: (input: UpdateContactInput) => void;
+  mutate: (input: UpdateContactInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -29,9 +30,9 @@ export function useUpdateContactMutation(client: DB): UpdateContactResult {
   });
 
   const save = useCallback(
-    (input: UpdateContactInput) => {
+    (input: UpdateContactInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

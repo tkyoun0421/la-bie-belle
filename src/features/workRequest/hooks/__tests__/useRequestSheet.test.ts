@@ -202,3 +202,57 @@ describe("useRequestSheet — 실패 문안을 controller가 완성해 내려준
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useRequestSheet — 완료 콜백이 바뀌어도", () => {
+  it("답을 알리는 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onAnswered }: { onAnswered: () => void }) =>
+        useRequestSheet({
+          request: REQUEST,
+          onAnswered,
+          onSeatTaken: seatTaken,
+        }),
+      { wrapper, initialProps: { onAnswered: first } },
+    );
+
+    act(() => result.current.accept());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onAnswered: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("자리 뺏김을 알리는 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    respondRequestMock.mockRejectedValue(new DomainError("slot_full"));
+
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSeatTaken }: { onSeatTaken: (line: string) => void }) =>
+        useRequestSheet({
+          request: REQUEST,
+          onAnswered: answered,
+          onSeatTaken,
+        }),
+      { wrapper, initialProps: { onSeatTaken: first } },
+    );
+
+    act(() => result.current.accept());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSeatTaken: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

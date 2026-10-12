@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
   addSheetActionFor,
@@ -21,47 +21,10 @@ export function useRehearsalFormSheet({
 }: RehearsalFormSheetInput): RehearsalFormSheetController {
   const [state, dispatch] = useReducer(addSheetReducer, target, openedAddSheet);
 
-  const {
-    mutate: add,
-    isPending: adding,
-    isSuccess: added,
-    isError: addFailed,
-    error: addError,
-    reset: resetAdd,
-  } = useAddRehearsalMutation(supabase);
+  const { mutate: add, isPending: adding } = useAddRehearsalMutation(supabase);
 
-  const {
-    mutate: save,
-    isPending: savingEdit,
-    isSuccess: saved,
-    isError: editFailed,
-    error: editError,
-    reset: resetEdit,
-  } = useEditRehearsalMutation(supabase);
-
-  useEffect(() => {
-    if (added || saved) {
-      onSaved();
-    }
-  }, [added, saved, onSaved]);
-
-  useEffect(() => {
-    if (!addFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(addError, state.formKind));
-    resetAdd();
-  }, [addFailed, addError, state.formKind, resetAdd]);
-
-  useEffect(() => {
-    if (!editFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(editError, state.formKind));
-    resetEdit();
-  }, [editFailed, editError, state.formKind, resetEdit]);
+  const { mutate: save, isPending: savingEdit } =
+    useEditRehearsalMutation(supabase);
 
   return {
     ...rehearsalFormFace({ mode: target.mode, dateLabel, state }),
@@ -77,12 +40,18 @@ export function useRehearsalFormSheet({
           ? { count: Number(state.values.count) }
           : { startsAt: state.values.startsAt, endsAt: state.values.endsAt };
 
+      const settled = {
+        onSuccess: onSaved,
+        onError: (error: Error) =>
+          dispatch(addSheetActionFor(error, state.formKind)),
+      };
+
       if (target.mode === "edit") {
-        save({ id: target.rehearsal.id, ...written });
+        save({ id: target.rehearsal.id, ...written }, settled);
         return;
       }
 
-      add({ workDate: target.workDate, ...written });
+      add({ workDate: target.workDate, ...written }, settled);
     },
   };
 }

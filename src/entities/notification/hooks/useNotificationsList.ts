@@ -4,9 +4,8 @@ import { supabase } from "@/shared/api/supabase";
 import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
 import {
   groupNotificationsByDate,
-  resolveNotificationsListState,
+  resolveNotificationsPaging,
   unreadAdminNoticeIds,
-  type NotificationsListState,
 } from "@/entities/notification/model/notificationRows.policy";
 import { useNotificationsQuery } from "@/entities/notification/services/useNotificationsQuery";
 import { nearBottom } from "@/entities/notification/utils/nearBottom.utils";
@@ -68,13 +67,10 @@ export function useNotificationsList({
 
   const rows = (notifications.data?.pages ?? []).flat();
 
-  const paging: NotificationsListState = resolveNotificationsListState({
-    rows,
-    isLoading: notifications.isLoading,
-    isError: notifications.isError,
+  const paging = resolveNotificationsPaging({
     isFetchingNextPage: notifications.isFetchingNextPage,
-    hasNextPage: notifications.hasNextPage,
     isFetchNextPageError: notifications.isFetchNextPageError,
+    hasNextPage: notifications.hasNextPage,
   });
 
   const noticeIds = unreadAdminNoticeIds(rows).join(",");
@@ -140,15 +136,15 @@ export function useNotificationsList({
     [loadNextWhenNear],
   );
 
-  if (paging === "loading") {
+  if (notifications.isLoading) {
     return { state: "pending" };
   }
 
-  if (paging === "error") {
+  if (notifications.isError) {
     return { state: "failed", retry };
   }
 
-  if (paging === "empty") {
+  if (rows.length === 0) {
     return { state: "empty" };
   }
 
@@ -156,8 +152,8 @@ export function useNotificationsList({
     state: "ready",
     groups,
     hasMore: paging !== "end",
-    loadingMore: paging === "loadingMore",
-    failedMore: paging === "errorMore",
+    loadingMore: paging === "pending",
+    failedMore: paging === "failed",
     retryNextPage,
     loadNextWhenNear,
     loadNextOnScroll,

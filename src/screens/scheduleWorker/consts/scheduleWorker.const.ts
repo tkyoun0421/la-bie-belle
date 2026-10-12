@@ -1,4 +1,5 @@
 import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
+import type { ScheduleWorkerSheetState } from "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer";
 
 export const SKELETON_ROWS = [0, 1, 2];
 
@@ -13,3 +14,7 @@ export const SCHEDULE_WORKER_COPY = {
   seatTaken: "자리가 찼어요",
   sendFailed: TRANSPORT_ERROR_COPY,
 } as const;
+
+export const CLOSED_SCHEDULE_WORKER_SHEET: ScheduleWorkerSheetState = {
+  kind: "closed",
+};

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { type RequestAnswer } from "@/entities/workRequest/model/workRequest.type";
 import { respondRequest } from "@/features/workRequest/api/respondRequest.api";
 
@@ -11,7 +12,7 @@ export type RespondRequestInput = {
 };
 
 export type RespondRequestResult = {
-  mutate: (input: RespondRequestInput) => void;
+  mutate: (input: RespondRequestInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -34,9 +35,9 @@ export function useRespondRequestMutation(client: DB): RespondRequestResult {
   });
 
   const send = useCallback(
-    (input: RespondRequestInput) => {
+    (input: RespondRequestInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

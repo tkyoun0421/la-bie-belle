@@ -1,3 +1,4 @@
+import type { DayDetailPickerState } from "@/screens/scheduleAdmin/model/dayDetailPicker.reducer";
 export const EMPTY_ICON_SIZE = 44;
 
 export const SCHEDULE_ADMIN_COPY = {
@@ -36,3 +37,7 @@ export const ADJUSTMENT_REASON = {
 } as const;
 
 export const DISCARD_DROP_ID = "discard";
+
+export const CLOSED_DAY_DETAIL_PICKER: DayDetailPickerState = {
+  kind: "closed",
+};

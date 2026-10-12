@@ -22,6 +22,8 @@ const React = await import("react");
 const { useConfirmSheet } =
   await import("@/features/scheduleConfirm/hooks/useConfirmSheet");
 
+const RESULT_STAY_MS = 1650;
+
 type Input = Parameters<typeof useConfirmSheet>[0];
 
 function createWrapper() {
@@ -154,5 +156,44 @@ describe("useConfirmSheet — 조각이 자기 mutation을 부른다", () => {
     expect(onClose).not.toHaveBeenCalled();
 
     await waitFor(() => expect(onClose).toHaveBeenCalled(), { timeout: 3000 });
+  });
+
+  it("닫는 손이 중간에 바뀌어도 닫는 시점은 밀리지 않고 최신 손이 불린다", async () => {
+    jest.useFakeTimers();
+
+    try {
+      const { wrapper } = createWrapper();
+      const first = jest.fn();
+      const second = jest.fn();
+
+      const { result, rerender } = renderHook(
+        ({ onClose }: { onClose: () => void }) =>
+          useConfirmSheet(input({ onClose })),
+        { wrapper, initialProps: { onClose: first } },
+      );
+
+      act(() => result.current.confirm());
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+
+      expect(result.current.face).toBe("done");
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(RESULT_STAY_MS / 2);
+      });
+
+      rerender({ onClose: second });
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(RESULT_STAY_MS / 2);
+      });
+
+      expect(second).toHaveBeenCalledTimes(1);
+      expect(first).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

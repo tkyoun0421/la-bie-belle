@@ -68,19 +68,19 @@ export function ScheduleWorkerScreen({
 
       <ScrollView>
         <View className="gap-3 px-5 pb-5">
-          {screen.body === "loading" ? <ScheduleWorkerLoading /> : null}
+          {screen.body.state === "pending" ? <ScheduleWorkerLoading /> : null}
 
-          {screen.body === "confirmed" ? (
+          {screen.body.state === "ready" && screen.body.kind === "confirmed" ? (
             <ScheduleWorkerRoster screen={screen} />
           ) : null}
 
-          {screen.body === "picker" ? (
+          {screen.body.state === "ready" && screen.body.kind === "picker" ? (
             <ScheduleWorkerPicker screen={screen} />
           ) : null}
         </View>
       </ScrollView>
 
-      {screen.bodyState === "collecting" ? (
+      {screen.body.state === "ready" && screen.body.month === "collecting" ? (
         <BottomCTA>
           <Button
             variant="primary"

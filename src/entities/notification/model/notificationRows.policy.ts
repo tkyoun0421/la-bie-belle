@@ -27,48 +27,26 @@ export function groupNotificationsByDate<
   return groups;
 }
 
-export type NotificationsListState =
-  | "loading"
-  | "error"
-  | "empty"
-  | "loadingMore"
-  | "errorMore"
-  | "end"
-  | "normal";
+export type NotificationsPaging = "idle" | "pending" | "failed" | "end";
 
-export type NotificationsListInput = {
-  rows: readonly unknown[];
-  isLoading: boolean;
-  isError: boolean;
+export type NotificationsPagingInput = {
   isFetchingNextPage: boolean;
-  hasNextPage: boolean;
   isFetchNextPageError: boolean;
+  hasNextPage: boolean;
 };
 
-export function resolveNotificationsListState(
-  input: NotificationsListInput,
-): NotificationsListState {
-  if (input.isLoading) {
-    return "loading";
-  }
-
-  if (input.isError) {
-    return "error";
-  }
-
-  if (input.rows.length === 0) {
-    return "empty";
-  }
-
+export function resolveNotificationsPaging(
+  input: NotificationsPagingInput,
+): NotificationsPaging {
   if (input.isFetchingNextPage) {
-    return "loadingMore";
+    return "pending";
   }
 
   if (input.isFetchNextPageError) {
-    return "errorMore";
+    return "failed";
   }
 
-  return input.hasNextPage ? "normal" : "end";
+  return input.hasNextPage ? "idle" : "end";
 }
 
 export function unreadAdminNoticeIds<

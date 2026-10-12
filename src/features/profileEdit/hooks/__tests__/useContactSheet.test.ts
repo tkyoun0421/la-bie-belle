@@ -206,3 +206,31 @@ describe("useContactSheet — 실패 문안을 controller가 완성해 내려준
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useContactSheet — 완료 콜백이 바뀌어도", () => {
+  it("완료 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSaved }: { onSaved: () => void }) =>
+        useContactSheet({
+          profileId: "profile-1",
+          phone: "010-0000-0001",
+          onSaved,
+        }),
+      { wrapper, initialProps: { onSaved: first } },
+    );
+
+    act(() => result.current.write("01000000002"));
+    act(() => result.current.save());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSaved: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});
