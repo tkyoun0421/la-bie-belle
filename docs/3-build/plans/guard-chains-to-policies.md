@@ -33,7 +33,17 @@
 
 **선례가 같은 파일에 이미 섰다.** [`list-state-follows-fragments`](list-state-follows-fragments.md)가 `useStatsScreen`에 `Record<StatsTab, string>` 표를 세워 `trendValueLabel`의 3겹 삼항을 지웠다. 같은 꼴로 간다.
 
-**`:173`은 표의 값이 함수 호출이다.** 세 함수가 **읽는 값이 다르다**(`attendance.data`·`work.data`·`payrollLoaded`와 `rehearsal.data`) — 표를 값으로 만들면 **세 호출이 다 일어난다.** 표의 값을 **함수로** 두고 `tab`으로 고른 뒤 한 번만 부른다.
+**`:173`은 표의 값이 함수 호출이다.** 표를 값으로 만들면 **세 호출이 다 일어난다.** 표의 값을 **함수로** 두고 `tab`으로 고른 뒤 한 번만 부른다.
+
+| `tab` | 부르는 함수 | 읽는 데이터 |
+| --- | --- | --- |
+| `attendance` | `myAttendanceValues` | `attendance.data` |
+| `position` | `myWorkValues` | `work.data` |
+| `payroll` | `myPayrollValues` | `payrollLoaded`와 `rehearsal.data ?? []` |
+
+**세 호출이 다 일어나도 지금은 안 터진다** — 세 함수가 첫 인자를 `?? []`로 받는다. 그래서 **그물이 「고르지 않은 가지가 0번 불린다」로 호출 횟수를 센다.** 표가 다 부르면 그 단언 둘이 깨진다.
+
+**두 자리를 지킨다.** 표 값에 `rehearsal.data.length` 같은 **직접 접근을 넣으면 거기서 터진다** — `?? []`를 지킨다. 그리고 **`profileId === null`이면 표를 보기 전에 빈 `Map`을 돌려준다** — 그 가드는 표 밖에 그대로 둔다.
 
 **`useScheduleWorkerScreen`의 280과 288은 합치지 않는다.** 같은 `state`를 읽지만 **묻는 것이 다르다** — 280은 「무엇을 그리나」고 288은 「그 위에 무엇을 알리나」다. 표 둘이 맞다.
 
@@ -48,13 +58,34 @@
 | `shared/ui/Input.tsx:41` | 테두리 빛깔이 무엇 |
 | `screens/pending/hooks/usePendingScreen.ts:164` | 지금 어느 단계인가 |
 
-**`useMemberSheet`의 셋이 같은 세 값을 읽는다** — `renaming`·`erased`·`left`다. 셋이 각자 묻는 대신 **한 손이 셋을 함께 낸다.**
+**`useMemberSheet`의 셋은 같은 세 값을 읽지 않는다 — 제각기 다른 둘을 읽는다.** 그물을 깔면서 드러났고 내가 처음 적은 근거가 틀렸다.
+
+| 자리 | 읽는 것 | 안 보는 것 |
+| --- | --- | --- |
+| `:115` `body` | `renaming` · `erased` | **`left`** |
+| `:121` `footer` | `renaming` · `left` | **`erased`** |
+| `:234` `menuLabel` | 셋 다 | — |
+
+**그래도 한 손으로 묶는 것이 맞다.** 세 값이 같은 출처(`face === "rename"`·`erasedAt !== null`·`leftAt !== null`)에서 나오고, **무엇이 무엇을 안 보는지가 한 자리에서 보이는 것**이 지금처럼 세 자리에 흩어진 것보다 낫다. 「같은 값을 읽어서」가 아니라 **「같은 질문의 세 쪽이라서」**가 까닭이다.
 
 ```ts
 memberSheetVisuals({ renaming, erased, left }): { body; footer; menuLabel }
 ```
 
-**순서가 뜻에 들어오는 자리가 둘이다.** `:115`는 `renaming`이 `erased`보다 **이기고** `:121`은 `renaming`이 `left`보다 이긴다. 조건이 동시에 참일 수 있어 **그 우선순위를 손이 지켜야 하고 짝 테스트가 박아야 한다.**
+**우선순위가 뜻에 들어온다.** 조건이 동시에 참일 수 있어 손이 그 순서를 지켜야 한다. 받은 그물이 **여덟 조합을 전부** 박았다.
+
+| `renaming` | `erased` | `left` | `body` | `footer` | `menuLabel` |
+| --- | --- | --- | --- | --- | --- |
+| 거짓 | 거짓 | 거짓 | `detail` | `detail` | `markLeave` |
+| 거짓 | 거짓 | 참 | `detail` | `none` | `undoLeave` |
+| 거짓 | 참 | 거짓 | `none` | `detail` | `null` |
+| 거짓 | 참 | 참 | `none` | `none` | `null` |
+| 참 | 거짓 | 거짓 | `rename` | `rename` | `null` |
+| 참 | 거짓 | 참 | `rename` | `rename` | `null` |
+| 참 | 참 | 거짓 | `rename` | `rename` | `null` |
+| 참 | 참 | 참 | `rename` | `rename` | `null` |
+
+**묶어도 반환 객체의 모양은 그대로 둔다** — `valueRows`와 `reachLine`이 `body`를 읽고 기존 단언이 셋을 각자 읽는다. **`pressMenu`는 묶는 대상이 아니다** — `left`만 보고 `undo`와 `leave`를 고른다.
 
 **`Input.tsx:41`은 `.tsx`에 있는데 남아도 된다.** `error`와 `focused`로 테두리 class를 고르는 것은 **UI를 담당하는 로직**이다. 다만 **첫 일치가 이기는 꼴을 선언형으로 적는 것**은 그 자리에서도 읽기가 낫다.
 
