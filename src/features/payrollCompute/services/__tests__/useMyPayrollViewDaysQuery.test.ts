@@ -99,11 +99,7 @@ function scheduleDay(workDate: string) {
   };
 }
 
-const NOW_MS = Date.parse("2026-10-10T03:00:00.000Z");
-
 beforeEach(() => {
-  jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
-
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
   getPayrollMonthMock.mockReset();
