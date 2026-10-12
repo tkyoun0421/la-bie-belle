@@ -69,3 +69,4 @@ status: proposed
 - [SDLC 문서 템플릿과 작성 방법](docs-authoring-playbook.md) — 문서별 복사용 틀, 절별 작성 질문·예시·검토 기준, 기존 구조 제안과 함께 적용할 순서
 - [시안·디자인 시스템·콘텐츠 개선](design-sian-improvements.md) — 서체·터치 영역·홈 정보 위계, 공통 상태와 미리보기, 근무 변경·급여 근거·첫 출근 안내의 대안과 채택 기준
 - [중복과 책임 과적의 묶음과 순서](codebase-refactor-triage.md) — 어긋난 값 다섯, mutation 뒤처리 세 꼴, 중복 116 집단, `screens`에 남은 계산 쉰넷의 거처, controller 넷의 무게
+- [문서가 거짓이 된 자리](canon-and-code-divergence.md) — 사라진 대상을 가리키는 정본 아홉, 어긋난 수 아홉, 문서끼리의 충돌 넷, 기계가 셀 수 있는데 검사가 없는 구멍 넷
