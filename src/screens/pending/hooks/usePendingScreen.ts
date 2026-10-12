@@ -160,11 +160,17 @@ export function usePendingScreen(): PendingScreenController {
     }
   }, [submitted, everSubmitted, resetSubmit]);
 
-  const stage: PendingStage = loading
-    ? "loading"
-    : user === null
-      ? "signedOut"
-      : (override ?? stageOfProfile(profile ?? null));
+  const stage = ((): PendingStage => {
+    if (loading) {
+      return "loading";
+    }
+
+    if (user === null) {
+      return "signedOut";
+    }
+
+    return override ?? stageOfProfile(profile ?? null);
+  })();
 
   useEffect(() => {
     if (stage !== "waiting") {

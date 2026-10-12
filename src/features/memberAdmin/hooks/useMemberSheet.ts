@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { openPhone } from "@/shared/lib/openPhone.lib";
+import type { ErrorCode } from "@/shared/model/error.type";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import { spellLeftAt } from "@/entities/member/utils/spellLeftAt.utils";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
@@ -26,6 +27,55 @@ import { useMarkLeaveMutation } from "@/features/memberAdmin/services/useMarkLea
 import { useSetDisplayNameMutation } from "@/features/memberAdmin/services/useSetDisplayNameMutation";
 import { useSetRoleMutation } from "@/features/memberAdmin/services/useSetRoleMutation";
 import { useUndoLeaveMutation } from "@/features/memberAdmin/services/useUndoLeaveMutation";
+
+type MemberSheetStanding = {
+  renaming: boolean;
+  erased: boolean;
+  left: boolean;
+};
+
+type MemberSheetVisuals = {
+  body: MemberSheetBody;
+  footer: MemberSheetFooter;
+  menuLabel: string | null;
+};
+
+function memberSheetVisuals({
+  renaming,
+  erased,
+  left,
+}: MemberSheetStanding): MemberSheetVisuals {
+  if (renaming) {
+    return { body: "rename", footer: "rename", menuLabel: null };
+  }
+
+  const footer: MemberSheetFooter = left ? "none" : "detail";
+
+  if (erased) {
+    return { body: "none", footer, menuLabel: null };
+  }
+
+  return {
+    body: "detail",
+    footer,
+    menuLabel: left ? MEMBER_SHEET_COPY.undoLeave : MEMBER_SHEET_COPY.markLeave,
+  };
+}
+
+function refusalOf(
+  leaveCode: ErrorCode | null,
+  roleCode: ErrorCode | null,
+): MemberDialogKind | null {
+  if (leaveCode === "has_future_assignments") {
+    return "blocked";
+  }
+
+  if (leaveCode === "last_admin" || roleCode === "last_admin") {
+    return "last-admin";
+  }
+
+  return null;
+}
 
 export function useMemberSheet({
   member,
@@ -112,17 +162,11 @@ export function useMemberSheet({
   const renaming = face === "rename";
   const phone = member.phone;
 
-  const body: MemberSheetBody = renaming
-    ? "rename"
-    : erased
-      ? "none"
-      : "detail";
-
-  const footer: MemberSheetFooter = renaming
-    ? "rename"
-    : left
-      ? "none"
-      : "detail";
+  const { body, footer, menuLabel } = memberSheetVisuals({
+    renaming,
+    erased,
+    left,
+  });
 
   const valueRows = useMemo<MemberSheetValueRow[]>(() => {
     if (body !== "detail") {
@@ -204,12 +248,7 @@ export function useMemberSheet({
     resetLeave();
   }, [resetRole, resetLeave]);
 
-  const refused: MemberDialogKind | null =
-    leaveCode === "has_future_assignments"
-      ? "blocked"
-      : leaveCode === "last_admin" || errorCodeOf(roleError) === "last_admin"
-        ? "last-admin"
-        : null;
+  const refused = refusalOf(leaveCode, errorCodeOf(roleError));
 
   const failed = [nameError, roleError, leaveError, undoError].some(
     isUnexpectedWriteError,
@@ -230,12 +269,7 @@ export function useMemberSheet({
     body,
     footer,
     valueRows,
-    menuLabel:
-      renaming || erased
-        ? null
-        : left
-          ? MEMBER_SHEET_COPY.undoLeave
-          : MEMBER_SHEET_COPY.markLeave,
+    menuLabel,
     menuOpen,
     draft,
     sending: savingName,

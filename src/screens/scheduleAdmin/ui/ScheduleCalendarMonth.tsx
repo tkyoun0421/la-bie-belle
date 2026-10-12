@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Card } from "@/shared/ui/Card";
 import { ListRow } from "@/shared/ui/ListRow";
 import { MonthCalendar } from "@/shared/ui/MonthCalendar";
@@ -9,18 +10,30 @@ export type ScheduleCalendarMonthProps = {
   screen: ScheduleAdminScreenController;
 };
 
+function noteOf(screen: ScheduleAdminScreenController): ReactNode {
+  if (screen.picking) {
+    return (
+      <Text size="xs" tone="subtle">
+        {SCHEDULE_ADMIN_COPY.pickingHint}
+      </Text>
+    );
+  }
+
+  if (screen.noticeLine === null) {
+    return null;
+  }
+
+  return (
+    <Text size="xs" tone="subtle" numeric>
+      {screen.noticeLine}
+    </Text>
+  );
+}
+
 export function ScheduleCalendarMonth({ screen }: ScheduleCalendarMonthProps) {
   return (
     <>
-      {screen.picking ? (
-        <Text size="xs" tone="subtle">
-          {SCHEDULE_ADMIN_COPY.pickingHint}
-        </Text>
-      ) : screen.noticeLine === null ? null : (
-        <Text size="xs" tone="subtle" numeric>
-          {screen.noticeLine}
-        </Text>
-      )}
+      {noteOf(screen)}
 
       {screen.showAllClosedHint ? (
         <Text size="sm" tone="muted">

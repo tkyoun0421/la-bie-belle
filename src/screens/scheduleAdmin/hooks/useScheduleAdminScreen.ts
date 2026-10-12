@@ -343,17 +343,24 @@ export function useScheduleAdminScreen({
       ? { state: "empty" }
       : { state: "ready" };
 
-  const noticeLine =
-    listState.state !== "ready" || picking
-      ? null
-      : confirmed
-        ? confirmedLine({
-            confirmedAt: schedule.confirmedAt ?? now,
-            notifiedCount,
-          })
-        : deadline === null
-          ? null
-          : deadlineLine({ applicationDeadline: deadline, now });
+  const noticeLine = ((): string | null => {
+    if (listState.state !== "ready" || picking) {
+      return null;
+    }
+
+    if (confirmed) {
+      return confirmedLine({
+        confirmedAt: schedule?.confirmedAt ?? now,
+        notifiedCount,
+      });
+    }
+
+    if (deadline === null) {
+      return null;
+    }
+
+    return deadlineLine({ applicationDeadline: deadline, now });
+  })();
 
   const sheet = ((): ScheduleAdminSheet | null => {
     if (day !== null) {

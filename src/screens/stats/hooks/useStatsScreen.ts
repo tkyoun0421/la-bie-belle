@@ -111,12 +111,16 @@ export function useStatsScreen(): StatsScreenController {
     tab === "payroll" ? months : NO_MONTHS,
   );
 
-  const sources: readonly { isLoading: boolean; error: Error | null }[] =
-    tab === "attendance"
-      ? [attendance]
-      : tab === "position"
-        ? [work]
-        : [work, payroll, rehearsal];
+  const sourcesOf: Record<
+    StatsTab,
+    readonly { isLoading: boolean; error: Error | null }[]
+  > = {
+    attendance: [attendance],
+    position: [work],
+    payroll: [work, payroll, rehearsal],
+  };
+
+  const sources = sourcesOf[tab];
 
   const loading = profileLoading || sources.some((one) => one.isLoading);
   const failure = sources.find((one) => one.error !== null)?.error ?? null;
@@ -170,11 +174,14 @@ export function useStatsScreen(): StatsScreenController {
       return new Map<string, number>();
     }
 
-    return tab === "attendance"
-      ? myAttendanceValues(attendance.data, profileId, now)
-      : tab === "position"
-        ? myWorkValues(work.data, profileId)
-        : myPayrollValues(payrollLoaded, profileId, now, rehearsal.data ?? []);
+    const valuesOf: Record<StatsTab, () => Map<string, number>> = {
+      attendance: () => myAttendanceValues(attendance.data, profileId, now),
+      position: () => myWorkValues(work.data, profileId),
+      payroll: () =>
+        myPayrollValues(payrollLoaded, profileId, now, rehearsal.data ?? []),
+    };
+
+    return valuesOf[tab]();
   }, [
     tab,
     profileId,

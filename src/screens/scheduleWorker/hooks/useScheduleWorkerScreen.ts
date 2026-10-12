@@ -253,43 +253,59 @@ export function useScheduleWorkerScreen({
     setCancelling(asCancel);
   };
 
-  const sheet: ScheduleWorkerSheet | null =
-    openRequest !== null
-      ? { kind: "request", request: openRequest }
-      : openDay === null
-        ? null
-        : cancelling && myShift !== null
-          ? {
-              kind: "cancel",
-              assignmentId: myShift.id,
-              workDate: openDay.workDate,
-              position: myShift.position,
-            }
-          : {
-              kind: "roster",
-              workDate: openDay.workDate,
-              myProfileId,
-              cancelRequested: cancelAsking,
-            };
+  const sheet = ((): ScheduleWorkerSheet | null => {
+    if (openRequest !== null) {
+      return { kind: "request", request: openRequest };
+    }
+
+    if (openDay === null) {
+      return null;
+    }
+
+    if (cancelling && myShift !== null) {
+      return {
+        kind: "cancel",
+        assignmentId: myShift.id,
+        workDate: openDay.workDate,
+        position: myShift.position,
+      };
+    }
+
+    return {
+      kind: "roster",
+      workDate: openDay.workDate,
+      myProfileId,
+      cancelRequested: cancelAsking,
+    };
+  })();
+
+  const bodyOf: Record<MonthState, ScheduleWorkerBody> = {
+    not_created: "picker",
+    collecting: "picker",
+    closed_awaiting_confirmation: "picker",
+    confirmed: "confirmed",
+  };
+
+  const noticeOf: Record<MonthState, string | null> = {
+    not_created: spellNotOpen(month),
+    collecting: null,
+    closed_awaiting_confirmation: SCHEDULE_WORKER_COPY.awaitingConfirmation,
+    confirmed: null,
+  };
 
   return {
     month,
     monthTitle: spellMonth(month),
     unread: (unreadCount.data ?? 0) > 0,
     bodyState: loading ? "loading" : state,
-    body: loading ? "loading" : state === "confirmed" ? "confirmed" : "picker",
+    body: loading ? "loading" : bodyOf[state],
     view,
     showMineOnly,
     deadlineLine:
       loading || confirmed || deadline === null
         ? null
         : spellDeadline(deadline, today),
-    notice:
-      state === "not_created"
-        ? spellNotOpen(month)
-        : state === "closed_awaiting_confirmation"
-          ? SCHEDULE_WORKER_COPY.awaitingConfirmation
-          : null,
+    notice: noticeOf[state],
     calendarNote:
       claimed ??
       (anyIncoming

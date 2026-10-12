@@ -94,6 +94,22 @@ export function useWagesScreen(): WagesScreenController {
         ? { state: "empty" }
         : { state: "ready" };
 
+  const sheet = ((): WagesScreenController["sheet"] => {
+    if (target === null) {
+      return null;
+    }
+
+    if (target.kind === "default") {
+      return "default";
+    }
+
+    if (chosen === null) {
+      return null;
+    }
+
+    return "member";
+  })();
+
   const goBack = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
@@ -112,14 +128,7 @@ export function useWagesScreen(): WagesScreenController {
     hasDefaultWage,
     defaultWage,
     followerCount,
-    sheet:
-      target === null
-        ? null
-        : target.kind === "default"
-          ? "default"
-          : chosen === null
-            ? null
-            : "member",
+    sheet,
     member:
       chosen === null
         ? null

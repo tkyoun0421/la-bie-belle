@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BottomCTA } from "@/shared/ui/BottomCTA";
@@ -12,6 +13,38 @@ import { PendingSummary } from "@/screens/pending/ui/PendingSummary";
 export type PendingFormProps = {
   screen: PendingScreenController;
 };
+
+const BOTTOM_NOTE: Record<"failed" | "hint" | "none", ReactNode> = {
+  failed: (
+    <Text size="xs" tone="critical" className="text-center">
+      {PROFILE_FORM_COPY.submitFailed}
+    </Text>
+  ),
+  hint: (
+    <Text size="xs" tone="subtle" className="text-center">
+      {PROFILE_FORM_COPY.submitHint}
+    </Text>
+  ),
+  none: null,
+};
+
+function bottomNoteOf({
+  submitFailed,
+  canSubmit,
+}: {
+  submitFailed: boolean;
+  canSubmit: boolean;
+}): keyof typeof BOTTOM_NOTE {
+  if (submitFailed) {
+    return "failed";
+  }
+
+  if (!canSubmit) {
+    return "hint";
+  }
+
+  return "none";
+}
 
 export function PendingForm({ screen }: PendingFormProps) {
   return (
@@ -66,19 +99,7 @@ export function PendingForm({ screen }: PendingFormProps) {
           ) : null}
         </View>
 
-        <BottomCTA
-          note={
-            screen.submitFailed ? (
-              <Text size="xs" tone="critical" className="text-center">
-                {PROFILE_FORM_COPY.submitFailed}
-              </Text>
-            ) : screen.canSubmit ? null : (
-              <Text size="xs" tone="subtle" className="text-center">
-                {PROFILE_FORM_COPY.submitHint}
-              </Text>
-            )
-          }
-        >
+        <BottomCTA note={BOTTOM_NOTE[bottomNoteOf(screen)]}>
           <Button
             variant="primary"
             disabled={!screen.canSubmit}
