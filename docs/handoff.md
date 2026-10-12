@@ -6,38 +6,28 @@
 
 ## 다음 작업
 
-**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 둘이 닫혔고 셋째가 계획까지 섰다.** `src`·`scripts`·`supabase/functions`의 818 파일을 TypeScript AST로 전수 훑어 명령형 꼴 여덟을 셌다.
+**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯 가운데 다섯이 닫혔고 마지막 하나가 실패 테스트까지 섰다.** `declarative-accumulation`·`list-state-follows-fragments`·`as-assertions-to-guards`([PR #537](https://github.com/tkyoun0421/la-bie-belle/pull/537))·`guard-chains-to-policies`([PR #539](https://github.com/tkyoun0421/la-bie-belle/pull/539))가 `done`이다. 전체 suite 플레이크는 벽시계 경합으로 밝혀져 `asyncUtilTimeout`을 5초로 올렸다([PR #540](https://github.com/tkyoun0421/la-bie-belle/pull/540) · [관찰 069](observations/069-query-service-tests-flake-under-full-suite.md)).
 
-**`declarative-accumulation`이 `done`이다**([PR #533](https://github.com/tkyoun0421/la-bie-belle/pull/533) · [#535](https://github.com/tkyoun0421/la-bie-belle/pull/535)). 35자리를 열어 스물둘을 바꾸고 아홉을 안 바꿨다. 공용 손 둘이 `shared/utils/collect.ts`에 섰고(`groupBy` · `countBy`), 계산 다섯이 `hooks`와 `ui`에서 제 층으로 내려갔다. **`Map.groupBy`를 안 쓴다** — `tsconfig`가 `ESNext`를 줘서 타입 검사는 통과하는데 Hermes v0.17.0에 폴리필이 없다([관찰 068](observations/068-type-lib-is-wider-than-hermes.md)).
+**다음 수는 [`effect-derived-values`](3-build/plans/effect-derived-values.md)다** — `modern-react-hooks`와 `flat-state-unions-remainder`를 한 PR로 묶었다. 같은 파일을 건드려서다. 브랜치 `feat/effect-derived-values`에 작성자 넷이 실패 테스트를 세웠다 — reducer 넷의 전이, 콜백 identity가 바뀌어도 한 번만 불리는 것(hook 일곱 + 타이머 둘 + 리스너 하나), 규칙 45가 글자 union alias를 무는 것, `resolveNotificationsPaging`과 `ScheduleWorkerBody` 판별 union. **구현자를 띄우는 것이 다음 손이다.** 구현자에게 줄 사실:
 
-**다음 수는 [`list-state-follows-fragments`](3-build/plans/list-state-follows-fragments.md)다** — 계획이 섰고 아직 실패 테스트가 없다.
+- `react-hooks/exhaustive-deps`가 이 저장소에 **없다** — `eslint --print-config`에 `react-hooks/` 규칙이 0이다. 의존 배열은 lint가 아니라 AST로 센다
+- 규칙 45(`eslint-rules/fragmentStateContract.mjs`)는 `*Controller`·`*ListState`·`*Body`만 보고 **글자 union 그 자체는 안 건다** — 「가지가 전부 `TSLiteralType`이면 `flat`」 한 조건이 빈 자리고 지금 `src`에서 걸리는 것은 `NotificationsListState`·`ScheduleWorkerBody` 둘뿐이다
+- `useHardwareBack.test.ts`의 「손이 바뀌면 떼고 새로 건다」는 옛 계약이라 지운다 — 새 계약은 「구독은 한 번, 최신 손을 부른다」
+- `usePendingEditor`는 effect 안에서 `reset()`을 같이 불러 지금도 두 번 안 불린다 — 그물이 없고 AC-02(콜백이 의존 배열에 0건)만 적용된다. `onSuccess`로 가면 `reset()`도 같이 간다
+- `useConfirmSheet`의 `RESULT_STAY_MS`(1650)가 export되지 않아 테스트가 같은 수를 따로 든다
+- `FloatingToast`는 `message`가 바뀌면 타이머를 다시 세우는 것이 의도된 동작이다 — `message`는 의존 배열에 남는다
 
-**이것이 `fragment-triple-one-hand`의 남은 절반이다.** 그 task가 조각 controller 열아홉을 `fragmentOf`와 `FragmentView`로 옮기고 **화면과 `entities`의 목록 상태는 안 건드렸다.** 그래서 `.tsx`에 그 task가 지운 꼴이 그대로 남아 있다.
+**그 뒤가 [`post-refactor-audit`](backlog.md)다** — 묶음이 다 닫히면 저장소 전체를 다시 감사한다. 셈은 스크립트가 한다.
 
-```tsx
-if (screen.listState === "loading") { … }
-if (screen.listState === "failed")  { … }
-if (screen.listState === "empty")   { … }
-```
+**정본과 코드가 어긋난 자리 스물여섯을 [제안](proposals/canon-and-code-divergence.md)이 들었다**([PR #541](https://github.com/tkyoun0421/la-bie-belle/pull/541)). 판정 일곱이 총괄 몫이고 추천은 `backlog.md`의 `canon-and-code-divergence-fixes` 행에 있다. 검사가 전부 초록인 채로 거짓인 자리들이라 산문 속 백틱 경로를 보는 검사(규칙 48)가 그 뒤에 선다.
 
-`*ListState`와 `*Body` **여덟**이 평평한 글자 union이고 **상태 이름 자리에 준비됐을 때의 데이터가 올라와 있다** — `StatsListState`가 탭 셋을 거기 둬서 여섯 갈래고 `NotificationsListState`는 일곱이다. ADR-016:108이 그것을 이미 다스린다: 「가지를 늘리고 싶은 것은 대개 상태가 아니라 그 가지의 데이터다」. **ADR-016의 적용 범위를 「어느 그림을 그릴지 고르는 controller 상태」로 넓혀 적었다.**
-
-읽는 자리 31 · 짝 테스트 단언 30이라 **묶음 1(19자리)과 비슷한 크기다.**
-
-**깊은 삼항 넷이 그 task로 사라진다.** 5갈래 평평 union을 만들려니 4겹 삼항이 필요했던 것이다 — `usePayrollScreen:74`이 그 꼴이고, `useStatsScreen:225`는 **`tab`을 `ready` 밖에서 읽을 수 있어서** 생긴 자리라 union으로 가두면 없어진다.
-
-**규칙 45가 그 여덟을 한 번도 안 봤다.** `eslint-rules/fragmentStateContract.mjs:8`이 `endsWith("Controller")`로 걸러서다. **범위를 접미사 셋(`Controller`·`ListState`·`Body`)으로 넓히면 여덟이 걸리고 거짓 양성이 0이다.** 어휘로 거르면 안 된다 — 읽기 상태 어휘를 쓰는 별칭 열여섯 가운데 **아홉이 거짓 양성**이고 `AttendanceStatus`·`MemberKind`의 `pending`은 「승인 대기」라는 도메인 상태다.
-
-- [`guard-chains-to-policies`](backlog.md) — 중첩 삼항의 나머지다. AST로 세니 **스물아홉**(4겹 1 · 3겹 7 · 2겹 21)이고 **깊이가 축이 아니라 묻는 질문이 축이다.** 꼴이 다섯으로 갈려 「표로 바꾼다」는 일부만 맞는다 — 가드 사슬은 이른 `return`, 태그 붙은 값 만들기는 `.policy.ts`, 판정은 `model`이고 **첫 일치가 이기는 꼴만 표가 맞는다**
-- [`as-assertions-to-guards`](backlog.md) — `as` 단언 **서른넷**이다(열셋으로 센 것은 `grep` 한 줄 출력에 걸린 셈이었다). 가장 나쁜 자리는 `shared/utils/theme.utils.ts:5`(한 줄에 둘)와 `shared/ui/Illustration.tsx`의 `as unknown as`다. **고차 함수가 이 문제를 푼다** — 글자 union을 `includes`로 좁히면 가드 안에서 `as`가 다시 필요해지는데, `memberOf(THEMES)` 하나가 그 `as`를 **한 자리에 가두면** 열세 자리에 흩어지지 않는다
-- [`effect-derived-values`](backlog.md) · [`modern-react-hooks`](backlog.md) — **둘을 붙여 간다.** 건드릴 파일이 같아서다. `useEffectEvent`가 걷는 것이 의존 배열이고 `effect-derived-values`가 걷는 것이 그 배열에 매달린 `setState`다. **`react`가 19.2.3이라** `useEffectEvent`·`use`·`useOptimistic`·`useActionState`를 쓸 수 있는데 **맞는 것이 셋**이다 — `useActionState`·`useFormStatus`는 웹 `<form>` action용이고, `useOptimistic`은 TanStack Query가 이미 mutation 상태를 들어 되돌리기가 두 체계에 걸치고, `useDeferredValue`는 **느리다는 측정이 없다**
-- [`post-refactor-audit`](backlog.md) — **묶음이 다 닫히면 저장소 전체를 다시 감사한다.** 셈은 스크립트가 한다 — 앞선 두 감사에서 LLM이 센 수가 틀렸고 AST로 다시 세서야 맞았다
-- [`day-sheet-missing-day-is-not-failure`](backlog.md) — `useDaySheet`가 「질의 실패」와 「그 달에 그 날 없음」을 `failed` 하나로 접어 공용 손이 못 갔다. **`day === null`이 실패인가 빈 것인가가 판정이고** 사용자가 보는 것이 바뀐다
-- [`payroll-screen-duplicates-fragment-state`](backlog.md) — `usePayrollScreen:65`가 자식 조각과 똑같은 질의를 똑같은 인자로 부른다. 캐시 키가 같아 통신은 한 번인데 상태를 두 겹으로 센다
+- [`rule-15-blocked-functions-to-model`](backlog.md) — 규칙 15가 막아 제 자리로 못 간 함수 일곱. `unit-test-writer`가 먼저다
+- [`tests-read-the-real-clock`](backlog.md) — 진짜 시계를 읽는 테스트 열. `useMyPayrollViewDaysQuery`가 2026-10-12에 터져 [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542)가 `nowWithOffset`을 고정했고 같은 꼴이 열 더 있다
+- [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 앞 묶음들이 찾고 안 건드린 셋
 
 ### 상시 주의
 
-**전체 suite를 한꺼번에 돌리면 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다.** 따로 돌리면 통과하고 CI는 초록이다. 이 회차에 subagent 둘이 각자 「내 변경과 무관해 보인다」고 보고했다 — **그 판단을 매번 다시 하는 것이 마찰이라** [관찰 069](observations/069-query-service-tests-flake-under-full-suite.md)에 적었다. 원인은 안 봤다.
+**전체 suite를 한꺼번에 돌릴 때 나던 `waitFor` 타임아웃은 벽시계 경합이었다** — `asyncUtilTimeout` 1초가 워커 경합에서 모자랐고 [PR #540](https://github.com/tkyoun0421/la-bie-belle/pull/540)이 `tests/setup/asyncUtilTimeout.ts`로 5초를 준다. 다시 보이면 [관찰 069](observations/069-query-service-tests-flake-under-full-suite.md)가 측정과 원인을 든다. **날짜를 박은 픽스처에 `useServerNow`를 안 고정한 테스트는 날이 지나면 깨진다** — [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542) 꼴로 `serverClock.policy`의 `nowWithOffset`을 고정한다.
 
 **받은 실패 테스트의 `await import` + `@ts-expect-error`는 대상이 서면 걷어야 한다.** 미사용 directive가 되어 `TS2578`로 typecheck를 죽이고, ESM이라 `jest` 전역도 안 들어온다. 이 회차에 두 번 밟았다 — 정적 import와 `import { jest } from "@jest/globals"`로 고친다. **단언은 안 건드린다.**
 
