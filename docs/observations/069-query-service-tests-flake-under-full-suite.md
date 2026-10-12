@@ -1,7 +1,8 @@
 ---
-status: open
+status: actioned
 target: docs/4-test/execution.md
 date: 2026-10-11
+resolved: 2026-10-12
 ---
 
 # 전체 suite를 한꺼번에 돌리면 query 테스트가 간헐적으로 타임아웃한다
