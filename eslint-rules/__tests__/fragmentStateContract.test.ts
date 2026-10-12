@@ -140,6 +140,35 @@ describe("house/fragment-state-contract — 목록 상태와 몸통도 본다", 
   });
 });
 
+describe("house/fragment-state-contract — 글자 union 별칭도 본다", () => {
+  it("글자 union인 ListState가 걸린다", async () => {
+    const ruleIds = await ruleIdsOf(
+      `export type FixtureListState = "loading" | "error" | "ready";\n`,
+      "src/screens/fixture/hooks/useFixtureScreen.ts",
+    );
+
+    expect(ruleIds).toContain(RULE_ID);
+  });
+
+  it("글자 union인 몸통이 걸린다", async () => {
+    const ruleIds = await ruleIdsOf(
+      `export type FixtureBody = "loading" | "confirmed" | "picker";\n`,
+      "src/screens/fixture/hooks/useFixtureScreen.ts",
+    );
+
+    expect(ruleIds).toContain(RULE_ID);
+  });
+
+  it("접미사가 감시 밖인 글자 union은 안 걸린다", async () => {
+    const ruleIds = await ruleIdsOf(
+      `export type MonthState = "a" | "b";\n`,
+      "src/screens/fixture/hooks/useFixtureScreen.ts",
+    );
+
+    expect(ruleIds).not.toContain(RULE_ID);
+  });
+});
+
 describe("house/fragment-state-contract — 읽기 상태 어휘를 쓰는 다른 별칭은 안 문다", () => {
   it("승인 대기는 도메인 상태다", async () => {
     const attendance = await ruleIdsOf(

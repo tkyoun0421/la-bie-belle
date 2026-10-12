@@ -164,3 +164,32 @@ describe("useCancelShiftSheet — 실패 문안을 controller가 완성해 내�
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useCancelShiftSheet — 완료 콜백이 바뀌어도", () => {
+  it("완료 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSent }: { onSent: () => void }) =>
+        useCancelShiftSheet({
+          assignmentId: "a1",
+          workDate: "2026-10-17",
+          position: "안내",
+          onSent,
+        }),
+      { wrapper, initialProps: { onSent: first } },
+    );
+
+    act(() => result.current.writeReason("몸이 아파요"));
+    act(() => result.current.send());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSent: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

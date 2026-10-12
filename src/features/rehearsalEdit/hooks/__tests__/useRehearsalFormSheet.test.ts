@@ -230,3 +230,33 @@ describe("useRehearsalFormSheet — 넘어진 까닭이 폼 안에 선다", () =
     expect(result.current.wrongKindNotice).not.toBeNull();
   });
 });
+
+describe("useRehearsalFormSheet — 완료 콜백이 바뀌어도", () => {
+  it("완료 콜백의 identity가 바뀌어도 한 번만 불린다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onSaved }: { onSaved: () => void }) =>
+        useRehearsalFormSheet({
+          target: ADD_TIME,
+          dateLabel: "10월 5일 월요일",
+          onSaved,
+        }),
+      { wrapper, initialProps: { onSaved: first } },
+    );
+
+    act(() =>
+      result.current.change({ startsAt: "14:00", endsAt: "16:00", count: "" }),
+    );
+    act(() => result.current.submit());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onSaved: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});
