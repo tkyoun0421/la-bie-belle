@@ -70,3 +70,4 @@ status: proposed
 - [시안·디자인 시스템·콘텐츠 개선](design-sian-improvements.md) — 서체·터치 영역·홈 정보 위계, 공통 상태와 미리보기, 근무 변경·급여 근거·첫 출근 안내의 대안과 채택 기준
 - [중복과 책임 과적의 묶음과 순서](codebase-refactor-triage.md) — 어긋난 값 다섯, mutation 뒤처리 세 꼴, 중복 116 집단, `screens`에 남은 계산 쉰넷의 거처, controller 넷의 무게
 - [문서가 거짓이 된 자리](canon-and-code-divergence.md) — 사라진 대상을 가리키는 정본 아홉, 어긋난 수 아홉, 문서끼리의 충돌 넷, 기계가 셀 수 있는데 검사가 없는 구멍 넷
+- [리팩터 뒤 전체 감사](post-refactor-audit.md) — 로그아웃이 안 지우는 push 토큰, 실패를 안 읽는 controller 아홉, 짝이 안 부르는 export 쉰여섯, 죽은 가지·층 건넘·검사 카탈로그의 빈 자리 열셋
