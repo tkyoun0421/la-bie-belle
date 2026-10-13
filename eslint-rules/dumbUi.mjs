@@ -1,5 +1,8 @@
 import { QUERY_HOOKS, QUERY_PACKAGE } from "./queryHooks.mjs";
 import {
+  API_SEGMENT,
+  HOOKS_SEGMENT,
+  SERVICES_SEGMENT,
   fileLocation,
   importEdges,
   isTypeOnly,
@@ -10,7 +13,7 @@ const SUPABASE = /^@supabase\//;
 const GLOBALS = new Set(["window", "globalThis", "global", "self"]);
 const REACT_PACKAGE = "react";
 const STATE_HOOKS = new Set(["useState", "useEffect", "useReducer"]);
-const LOGIC_SEGMENTS = new Set(["api", "services", "hooks"]);
+const LOGIC_SEGMENTS = new Set([API_SEGMENT, SERVICES_SEGMENT, HOOKS_SEGMENT]);
 const ROUTE_LAYER = "app";
 
 const dumbUi = {

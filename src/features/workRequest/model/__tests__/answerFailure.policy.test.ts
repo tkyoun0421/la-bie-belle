@@ -1,4 +1,4 @@
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { answerFailure } =
   await import("@/features/workRequest/model/answerFailure.policy");
 

@@ -1,5 +1,5 @@
 import type { Database } from "@/shared/api/database";
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { openDay } from "@/features/scheduleDay/api/openDay.api";
 import {
   createAdminUser,

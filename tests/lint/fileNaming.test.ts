@@ -452,10 +452,7 @@ describe("저장소 실물", () => {
 
 describe("접미사가 제 세그먼트에 산다", () => {
   async function suffixViolationFilesOf(files: string[]) {
-    const {
-      // @ts-expect-error 대상 export가 아직 없다
-      suffixViolations,
-    } = await import("@tests/lint/fileNaming");
+    const { suffixViolations } = await import("@tests/lint/fileNaming");
 
     return suffixViolations(
       files.map((file) => ({ file, source: PLAIN_SOURCE })),
@@ -536,10 +533,7 @@ describe("접미사가 제 세그먼트에 산다", () => {
   });
 
   it("저장소 실물에 어긋난 자리가 없다", async () => {
-    const {
-      // @ts-expect-error 대상 export가 아직 없다
-      suffixViolations,
-    } = await import("@tests/lint/fileNaming");
+    const { suffixViolations } = await import("@tests/lint/fileNaming");
 
     expect(
       suffixViolations(repositoryCodeFiles()).map(

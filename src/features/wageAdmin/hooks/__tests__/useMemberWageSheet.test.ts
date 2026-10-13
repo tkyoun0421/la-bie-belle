@@ -31,7 +31,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { WAGE_SHEET_COPY, WAGE_SAVE_FAILED_TITLE } =
   await import("@/features/wageAdmin/consts/wageAdmin.const");
 const { useMemberWageSheet } =

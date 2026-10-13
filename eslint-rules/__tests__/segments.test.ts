@@ -26,10 +26,7 @@ const SEGMENT_NAME_ARRAY = new RegExp(
 
 describe("세그먼트 목록 하나", () => {
   it("`SEGMENTS`가 ADR-015 순서대로 열 개를 낸다", async () => {
-    const {
-      // @ts-expect-error 대상 export가 아직 없다
-      SEGMENTS,
-    } = await import("../segments.mjs");
+    const { SEGMENTS } = await import("../segments.mjs");
 
     expect([...SEGMENTS]).toEqual(ADR_ORDER);
   });

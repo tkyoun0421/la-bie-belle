@@ -42,7 +42,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { MEMBER_SHEET_COPY, MEMBER_SHEET_TOAST } =
   await import("@/features/memberAdmin/consts/memberAdmin.const");
 const { useMemberSheet } =

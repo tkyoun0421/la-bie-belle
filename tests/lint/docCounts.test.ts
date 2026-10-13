@@ -30,10 +30,8 @@ const ENFORCEMENT_FIXTURE = `# 문서
 `;
 
 async function loadCounts() {
-  const { enforcementRowCount, koreanNumber, statedCheckCount } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@tests/lint/docCounts"
-  );
+  const { enforcementRowCount, koreanNumber, statedCheckCount } =
+    await import("@tests/lint/docCounts");
 
   return { enforcementRowCount, koreanNumber, statedCheckCount };
 }

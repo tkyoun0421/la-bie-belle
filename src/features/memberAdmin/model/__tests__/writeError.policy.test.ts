@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { isUnexpectedWriteError } from "@/features/memberAdmin/model/writeError.policy";
 
 describe("isUnexpectedWriteError — 다룬 코드 셋이 아니면 「보내지 못했어요」다", () => {
