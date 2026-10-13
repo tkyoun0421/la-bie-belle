@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import {
   cancelApprovalConfirmBody,
   cancelApprovalDetail,
@@ -34,25 +33,9 @@ export function useApprovalDetailSheet({
   const [chosen, setChosen] = useState<string | null>(null);
   const [written, setWritten] = useState("");
   const [confirming, setConfirming] = useState(false);
-  const [sent, setSent] = useState<CancelDecision | null>(null);
 
-  const { mutate, isPending, isSuccess, isError, reset } =
+  const { mutate, isPending, isError, reset } =
     useDecideCancelRequestMutation(supabase);
-
-  useEffect(() => {
-    if (!isSuccess || sent === null) {
-      return;
-    }
-
-    setSent(null);
-
-    if (sent === "approved") {
-      onApproved();
-      return;
-    }
-
-    onRejected();
-  }, [isSuccess, sent, onApproved, onRejected]);
 
   const names = {
     displayName: approval.name ?? "",
@@ -65,18 +48,22 @@ export function useApprovalDetailSheet({
       return;
     }
 
-    setSent("rejected");
-    mutate({
-      cancelRequestId: approval.id,
-      decision: "rejected",
-      reason: rejectReasonText(chosen, written),
-    });
-  }, [approval.id, chosen, written, mutate]);
+    mutate(
+      {
+        cancelRequestId: approval.id,
+        decision: "rejected",
+        reason: rejectReasonText(chosen, written),
+      },
+      { onSuccess: onRejected },
+    );
+  }, [approval.id, chosen, written, mutate, onRejected]);
 
   const approve = useCallback(() => {
-    setSent("approved");
-    mutate({ cancelRequestId: approval.id, decision: "approved" });
-  }, [approval.id, mutate]);
+    mutate(
+      { cancelRequestId: approval.id, decision: "approved" },
+      { onSuccess: onApproved },
+    );
+  }, [approval.id, mutate, onApproved]);
 
   const cancelApprove = useCallback(() => {
     setConfirming(false);

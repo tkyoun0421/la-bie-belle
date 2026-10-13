@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { setDisplayName } from "@/features/memberAdmin/api/setDisplayName.api";
 
 export type SetDisplayNameInput = {
@@ -10,7 +11,7 @@ export type SetDisplayNameInput = {
 };
 
 export type SetDisplayNameResult = {
-  mutate: (input: SetDisplayNameInput) => void;
+  mutate: (input: SetDisplayNameInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -33,9 +34,9 @@ export function useSetDisplayNameMutation(client: DB): SetDisplayNameResult {
   });
 
   const save = useCallback(
-    (input: SetDisplayNameInput) => {
+    (input: SetDisplayNameInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

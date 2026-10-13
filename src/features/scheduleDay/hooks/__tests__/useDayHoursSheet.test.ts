@@ -178,3 +178,31 @@ describe("useDayHoursSheet — 시트는 무효화가 다 끝난 뒤에 닫힌�
     await waitFor(() => expect(onDone).toHaveBeenCalled());
   });
 });
+
+describe("useDayHoursSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("저장이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onDone }: { onDone: () => void }) =>
+        useDayHoursSheet({
+          workDate: "2026-10-10",
+          startsAt: "10:00:00",
+          endsAt: "18:00:00",
+          onDone,
+        }),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    act(() => result.current.save());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

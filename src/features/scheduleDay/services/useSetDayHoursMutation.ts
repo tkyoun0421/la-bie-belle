@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { setDayHours } from "@/features/scheduleDay/api/setDayHours.api";
 
 export type SetDayHoursInput = {
@@ -11,7 +12,7 @@ export type SetDayHoursInput = {
 };
 
 export type SetDayHoursResult = {
-  mutate: (input: SetDayHoursInput) => void;
+  mutate: (input: SetDayHoursInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -34,9 +35,9 @@ export function useSetDayHoursMutation(client: DB): SetDayHoursResult {
   });
 
   const send = useCallback(
-    (input: SetDayHoursInput) => {
+    (input: SetDayHoursInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

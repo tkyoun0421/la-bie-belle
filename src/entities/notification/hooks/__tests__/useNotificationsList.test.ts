@@ -458,3 +458,32 @@ describe("useNotificationsList — 상태와 스크롤 판정을 조각이 든�
     await waitFor(() => expect(getNotificationsMock).toHaveBeenCalledTimes(2));
   });
 });
+
+describe("useNotificationsList — 공지를 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("알린 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    getNotificationsMock.mockResolvedValue([
+      rowAt("notice", "2026-10-03T01:00:00.000Z", { kind: "admin_notice" }),
+    ]);
+
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { rerender } = renderHook(
+      ({ onUnreadNotices }: Pick<Input, "onUnreadNotices">) =>
+        useNotificationsList({
+          now: FIXED_NOW,
+          onPressRow: jest.fn(),
+          onUnreadNotices,
+        }),
+      { wrapper, initialProps: { onUnreadNotices: first } },
+    );
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onUnreadNotices: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

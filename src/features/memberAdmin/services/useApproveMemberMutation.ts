@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { approveMember } from "@/features/memberAdmin/api/approveMember.api";
 
 export type ApproveMemberInput = {
@@ -9,7 +10,7 @@ export type ApproveMemberInput = {
 };
 
 export type ApproveMemberResult = {
-  mutate: (input: ApproveMemberInput) => void;
+  mutate: (input: ApproveMemberInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -28,9 +29,9 @@ export function useApproveMemberMutation(client: DB): ApproveMemberResult {
   });
 
   const send = useCallback(
-    (input: ApproveMemberInput) => {
+    (input: ApproveMemberInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

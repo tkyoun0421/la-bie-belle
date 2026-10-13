@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import {
   WAGE_CAP_HINT,
@@ -43,15 +43,8 @@ export function useDefaultWageSheet({
   const {
     mutate: saveDefaultWage,
     isPending,
-    isSuccess,
     error,
   } = useSetDefaultWageMutation(supabase);
-
-  useEffect(() => {
-    if (isSuccess) {
-      onDone(WAGE_SHEET_COPY.defaultChanged);
-    }
-  }, [isSuccess, onDone]);
 
   const write = useCallback(
     (typed: string) => setDigits((kept) => nextAmountDigits(kept, typed)),
@@ -60,9 +53,11 @@ export function useDefaultWageSheet({
 
   const save = useCallback(() => {
     if (canSaveWage(digits, defaultWage)) {
-      saveDefaultWage(Number(digits));
+      saveDefaultWage(Number(digits), {
+        onSuccess: () => onDone(WAGE_SHEET_COPY.defaultChanged),
+      });
     }
-  }, [digits, defaultWage, saveDefaultWage]);
+  }, [digits, defaultWage, saveDefaultWage, onDone]);
 
   return {
     followerLine: spellFollowerChangeLine(followerCount),

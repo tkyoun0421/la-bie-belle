@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { useToast } from "@/shared/hooks/useToast";
 import {
   extraMinutes,
@@ -163,20 +170,22 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
 
   const staleDay = failure !== null && failure.refetch;
 
-  useEffect(() => {
-    if (!adjusted && !staleDay) {
-      return;
-    }
-
+  const settleAdjust = useEffectEvent((reload: boolean) => {
     setChosen(null);
     setExtra(null);
 
-    if (staleDay) {
+    if (reload) {
       onReloadDay();
     }
 
     onAdjustSettled();
-  }, [adjusted, staleDay, onAdjustSettled, onReloadDay]);
+  });
+
+  useEffect(() => {
+    if (adjusted || staleDay) {
+      settleAdjust(staleDay);
+    }
+  }, [adjusted, staleDay]);
 
   const nameOf = useCallback(
     (profileId: string) =>

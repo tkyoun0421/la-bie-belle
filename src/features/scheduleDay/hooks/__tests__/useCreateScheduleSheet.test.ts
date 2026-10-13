@@ -134,3 +134,27 @@ describe("useCreateScheduleSheet — 조각이 자기 mutation을 부른다", ()
     await waitFor(() => expect(result.current.failedLine).not.toBeNull());
   });
 });
+
+describe("useCreateScheduleSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("만들기가 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onDone }: { onDone: () => void }) =>
+        useCreateScheduleSheet({ month: "2026-10", today: TODAY, onDone }),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    act(() => result.current.writeDeadline("2026-10-20"));
+    act(() => result.current.create());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});
