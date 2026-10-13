@@ -6,7 +6,7 @@ import { Text } from "@/shared/ui/Text";
 import { SCHEDULE_ADMIN_COPY } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import type { DayDetailController } from "@/screens/scheduleAdmin/model/dayDetail.type";
 
-export const SCHEDULE_HOLIDAY_SWITCH_TEST_ID = "schedule-holiday-switch";
+const SCHEDULE_HOLIDAY_SWITCH_TEST_ID = "schedule-holiday-switch";
 
 export type DayDetailCardProps = {
   day: DayDetailController;

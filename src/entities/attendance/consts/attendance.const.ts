@@ -10,8 +10,6 @@ export const EXCUSE_DEADLINE_HOURS = 48;
 
 export const COMMUNICATION_DELAY_MINUTES = 5;
 
-export const EXCUSE_BODY_MAX_LENGTH = 200;
-
 export const TALLIED_STATUSES = [
   "present",
   "late",

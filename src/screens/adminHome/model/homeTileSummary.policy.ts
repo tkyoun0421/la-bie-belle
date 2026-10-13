@@ -1,5 +1,3 @@
-export type HomeTileState = "not_created" | "in_progress" | "confirmed";
-
 export type HomeTileSummaryInput =
   | { state: "not_created"; month: string }
   | {
