@@ -159,4 +159,34 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
 
     expect(getCurrentUserMock).toHaveBeenCalledTimes(1);
   });
+
+  it("getCurrentUser가 던지면 error가 그 오류다", async () => {
+    const failure = new Error("통신 실패");
+    getCurrentUserMock.mockRejectedValue(failure);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // @ts-expect-error 대상 반환에 error가 아직 없다
+    expect(result.current.error).toBe(failure);
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("성공하면 error는 null이다", async () => {
+    getCurrentUserMock.mockResolvedValue(null);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // @ts-expect-error 대상 반환에 error가 아직 없다
+    expect(result.current.error).toBeNull();
+  });
 });

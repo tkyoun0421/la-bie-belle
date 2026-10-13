@@ -1,3 +1,4 @@
+import { RETRY_PATH } from "@/shared/consts/navigation.const";
 import { resolveRehearsalGuard } from "@/shared/model/rehearsalGuard.policy";
 
 describe("resolveRehearsalGuard — 자격 조회가 끝나기 전에는 기다린다", () => {
@@ -49,5 +50,40 @@ describe("resolveRehearsalGuard — 자격 없는 근무자는 /me로 돌려보�
         isLoading: false,
       }),
     ).toBe("redirect-me");
+  });
+});
+
+describe("resolveRehearsalGuard — 데이터 없는 실패는 /retry로 보낸다", () => {
+  it("failed가 참이면 자격이 없어도 /me가 아니라 RETRY_PATH다", () => {
+    expect(
+      resolveRehearsalGuard({
+        isAdmin: false,
+        hasGrant: false,
+        isLoading: false,
+        // @ts-expect-error 대상 인자가 아직 없다
+        failed: true,
+      }),
+    ).toBe(RETRY_PATH);
+  });
+
+  it("failed가 거짓이면 지금과 같은 판정이다", () => {
+    expect(
+      resolveRehearsalGuard({
+        isAdmin: false,
+        hasGrant: false,
+        isLoading: false,
+        // @ts-expect-error 대상 인자가 아직 없다
+        failed: false,
+      }),
+    ).toBe("redirect-me");
+    expect(
+      resolveRehearsalGuard({
+        isAdmin: true,
+        hasGrant: false,
+        isLoading: false,
+        // @ts-expect-error 대상 인자가 아직 없다
+        failed: false,
+      }),
+    ).toBe("allow");
   });
 });
