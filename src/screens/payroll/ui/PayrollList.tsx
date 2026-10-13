@@ -1,8 +1,9 @@
 import { FragmentView } from "@/shared/ui/FragmentView";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
+import { PAYROLL_VIEW_SKELETON_ROWS } from "@/features/payrollCompute/consts/payrollCompute.const";
 import { PayrollHistoryRows } from "@/features/payrollCompute/ui/PayrollHistoryRows";
 import { PayrollMonthRows } from "@/features/payrollCompute/ui/PayrollMonthRows";
 import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
-import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 import type { PayrollScreenController } from "@/screens/payroll/hooks/usePayrollScreen";
 import { PayrollEmpty } from "@/screens/payroll/ui/PayrollEmpty";
 import { PayrollFailed } from "@/screens/payroll/ui/PayrollFailed";
@@ -25,14 +26,18 @@ export function PayrollList({ screen }: PayrollListProps) {
           <PayrollMonthRows
             span={screen.span}
             onOpenMonth={screen.openMonth}
-            pending={<PayrollViewLoading />}
+            pending={
+              <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />
+            }
             failed={(retry) => <PayrollViewFailed onRetry={retry} />}
             empty={<PayrollEmpty />}
           />
         ) : (
           <PayrollHistoryRows
             span={screen.span}
-            pending={<PayrollViewLoading />}
+            pending={
+              <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />
+            }
             failed={(retry) => <PayrollViewFailed onRetry={retry} />}
             empty={<PayrollEmpty />}
           />

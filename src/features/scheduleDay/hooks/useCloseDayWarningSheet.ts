@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { formatBareDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
+import { formatBareDate } from "@/shared/utils/kstDate";
 import { SCHEDULE_DAY_COPY } from "@/features/scheduleDay/consts/scheduleDay.const";
 import type {
   CloseDayWarningSheetController,

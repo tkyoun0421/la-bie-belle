@@ -1,7 +1,6 @@
 import {
   confirmedLine,
   formatScheduleDate,
-  formatBareDate,
   formatMonthName,
   formatMonthTitle,
 } from "@/entities/schedule/utils/formatScheduleDate.utils";
@@ -29,12 +28,6 @@ describe("confirmedLine — 확정한 날과 알림 받은 인원 수를 말한�
     });
 
     expect(line).toBe("10월 3일에 확정했어요 · 14명에게 알림을 보냈어요");
-  });
-});
-
-describe("formatBareDate — 요일 없이 월 일만 적는다", () => {
-  it("앞 영을 뗀다", () => {
-    expect(formatBareDate("2026-10-05")).toBe("10월 5일");
   });
 });
 

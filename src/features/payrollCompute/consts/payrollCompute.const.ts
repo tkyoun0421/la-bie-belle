@@ -5,7 +5,7 @@ export const NO_AMOUNT = NO_VALUE;
 
 export const ABSENT: PayrollDayKind = "absent";
 
-export const SKELETON_ROWS = [0, 1, 2] as const;
+export const PAYROLL_VIEW_SKELETON_ROWS = [0, 1, 2] as const;
 
 export const PAYROLL_VIEW_COPY = {
   estimateNote: "예상치예요. 실제 지급액과 다를 수 있어요",

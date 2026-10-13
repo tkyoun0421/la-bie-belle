@@ -1,8 +1,10 @@
 import {
   clockOf,
+  formatBareDate,
   kstClockOf,
   kstDateOf,
   lastDateOfMonth,
+  minutesOfClock,
   monthOf,
   shiftMonth,
   spellDate,
@@ -30,6 +32,16 @@ describe("clockOf — 칸에 들어가는 시각은 초를 떼고 분까지다",
 
   it("이미 분까지인 시각은 그대로 둔다", () => {
     expect(clockOf("18:30")).toBe("18:30");
+  });
+});
+
+describe("minutesOfClock — 시각을 자정부터 지난 분으로 바꾼다", () => {
+  it("10:30은 630분이다", () => {
+    expect(minutesOfClock("10:30")).toBe(630);
+  });
+
+  it("초가 붙은 시각은 초를 버리고 분까지만 센다", () => {
+    expect(minutesOfClock("18:30:45")).toBe(1110);
   });
 });
 
@@ -70,6 +82,12 @@ describe("lastDateOfMonth — 그 달의 마지막 날이다", () => {
 
   it("윤년 2월은 29일이다", () => {
     expect(lastDateOfMonth("2028-02")).toBe("2028-02-29");
+  });
+});
+
+describe("formatBareDate — 요일 없이 월 일만 적는다", () => {
+  it("앞 영을 뗀다", () => {
+    expect(formatBareDate("2026-10-05")).toBe("10월 5일");
   });
 });
 

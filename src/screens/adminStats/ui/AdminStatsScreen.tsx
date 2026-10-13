@@ -3,17 +3,18 @@ import { AppBar } from "@/shared/ui/AppBar";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
 import { TrendChart } from "@/shared/ui/TrendChart";
 import { StatsMonthNav } from "@/features/stats/ui/StatsMonthNav";
 import { WorkDaysSheet } from "@/features/stats/ui/WorkDaysSheet";
 import {
   ADMIN_STATS_COPY,
   TAB_OPTIONS,
+  SKELETON_ROWS,
 } from "@/screens/adminStats/consts/adminStats.const";
 import { useAdminStatsScreen } from "@/screens/adminStats/hooks/useAdminStatsScreen";
 import { AdminStatsBody } from "@/screens/adminStats/ui/AdminStatsBody";
 import { AdminStatsFailed } from "@/screens/adminStats/ui/AdminStatsFailed";
-import { AdminStatsLoading } from "@/screens/adminStats/ui/AdminStatsLoading";
 
 export function AdminStatsScreen() {
   const screen = useAdminStatsScreen();
@@ -56,7 +57,7 @@ export function AdminStatsScreen() {
           <WorkDaysSheet
             month={screen.month}
             profileId={screen.openPerson}
-            pending={<AdminStatsLoading />}
+            pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
             failed={<AdminStatsFailed onRetry={screen.retry} />}
           />
         </SheetLayer>

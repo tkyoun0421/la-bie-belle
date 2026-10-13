@@ -8,10 +8,13 @@ import { Button } from "@/shared/ui/Button";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
 import { Screen } from "@/shared/ui/Screen";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
 import { Text } from "@/shared/ui/Text";
-import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
+import {
+  SCHEDULE_WORKER_COPY,
+  SKELETON_ROWS,
+} from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 import { useScheduleWorkerScreen } from "@/screens/scheduleWorker/hooks/useScheduleWorkerScreen";
-import { ScheduleWorkerLoading } from "@/screens/scheduleWorker/ui/ScheduleWorkerLoading";
 import { ScheduleWorkerPicker } from "@/screens/scheduleWorker/ui/ScheduleWorkerPicker";
 import { ScheduleWorkerRoster } from "@/screens/scheduleWorker/ui/ScheduleWorkerRoster";
 import { ScheduleWorkerSheets } from "@/screens/scheduleWorker/ui/ScheduleWorkerSheets";
@@ -68,7 +71,9 @@ export function ScheduleWorkerScreen({
 
       <ScrollView>
         <View className="gap-3 px-5 pb-5">
-          {screen.body.state === "pending" ? <ScheduleWorkerLoading /> : null}
+          {screen.body.state === "pending" ? (
+            <SkeletonRows rows={SKELETON_ROWS} frame="card" />
+          ) : null}
 
           {screen.body.state === "ready" && screen.body.kind === "confirmed" ? (
             <ScheduleWorkerRoster screen={screen} />

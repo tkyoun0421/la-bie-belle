@@ -1,13 +1,16 @@
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Screen } from "@/shared/ui/Screen";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
 import { Tabs } from "@/shared/ui/Tabs";
 import { ApplicationsDeadlineBar } from "@/entities/availability/ui/ApplicationsDeadlineBar";
 import { ApplicationsList } from "@/entities/availability/ui/ApplicationsList";
-import { TAB_OPTIONS } from "@/screens/applications/consts/applications.const";
+import {
+  TAB_OPTIONS,
+  SKELETON_ROWS,
+} from "@/screens/applications/consts/applications.const";
 import { useApplicationsScreen } from "@/screens/applications/hooks/useApplicationsScreen";
 import { ApplicationsEmpty } from "@/screens/applications/ui/ApplicationsEmpty";
-import { ApplicationsLoading } from "@/screens/applications/ui/ApplicationsLoading";
 import { ApplicationsSheets } from "@/screens/applications/ui/ApplicationsSheets";
 
 export type ApplicationsScreenProps = {
@@ -39,7 +42,7 @@ export function ApplicationsScreen({ month }: ApplicationsScreenProps) {
           <ApplicationsList
             month={screen.month}
             tab={screen.tab}
-            pending={<ApplicationsLoading />}
+            pending={<SkeletonRows rows={SKELETON_ROWS} frame="card" />}
             empty={
               <ApplicationsEmpty deadlineLine={screen.emptyDeadlineLine} />
             }

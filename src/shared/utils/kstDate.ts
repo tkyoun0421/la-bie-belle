@@ -1,4 +1,4 @@
-import { CLOCK_LENGTH } from "@/shared/consts/time.const";
+import { CLOCK_LENGTH, MINUTES_PER_HOUR } from "@/shared/consts/time.const";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -30,6 +30,12 @@ export function clockOf(clock: string): string {
   return clock.slice(0, CLOCK_LENGTH);
 }
 
+export function minutesOfClock(clock: string): number {
+  const [hour, minute] = clock.split(":").map(Number);
+
+  return hour * MINUTES_PER_HOUR + minute;
+}
+
 export function monthOf(date: string): string {
   return date.slice(0, 7);
 }
@@ -56,6 +62,12 @@ export function lastDateOfMonth(month: string): string {
     String(last.getUTCMonth() + 1).padStart(2, "0"),
     String(last.getUTCDate()).padStart(2, "0"),
   ].join("-");
+}
+
+export function formatBareDate(workDate: string): string {
+  const [, month, day] = workDate.split("-").map(Number);
+
+  return `${month}월 ${day}일`;
 }
 
 export function spellDate(date: string): string {

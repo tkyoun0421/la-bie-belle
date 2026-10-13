@@ -5,14 +5,14 @@ import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
-  adminAttendanceLine,
-  adminAttendanceShares,
-  type AdminAttendanceShare,
-} from "@/features/stats/utils/attendanceLine.utils";
-import {
   attendanceRowValue,
   buildAttendanceTab,
 } from "@/features/stats/utils/attendanceRows.utils";
+import {
+  attendanceRatioShares,
+  type AttendanceShare,
+} from "@/features/stats/utils/attendanceShares.utils";
+import { monthAttendanceLine } from "@/features/stats/utils/monthAttendanceLine.utils";
 
 export type AdminStatsAttendanceRow = {
   key: string;
@@ -27,7 +27,7 @@ export type AdminStatsAttendanceController =
   | {
       state: "ready";
       line: string;
-      shares: AdminAttendanceShare[];
+      shares: AttendanceShare[];
       rows: AdminStatsAttendanceRow[];
     };
 
@@ -55,8 +55,8 @@ export function useAdminStatsAttendance(
   return fragmentOf(attendance, {
     empty: () => tab.rows.length === 0,
     ready: () => ({
-      line: adminAttendanceLine(tab.tally),
-      shares: adminAttendanceShares(tab.tally),
+      line: monthAttendanceLine(tab.tally),
+      shares: attendanceRatioShares(tab.tally),
       rows: tab.rows.map((row) => ({
         key: row.profileId,
         displayName: row.displayName,

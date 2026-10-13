@@ -41,3 +41,5 @@ export const DISCARD_DROP_ID = "discard";
 export const CLOSED_DAY_DETAIL_PICKER: DayDetailPickerState = {
   kind: "closed",
 };
+
+export const SKELETON_ROWS = [0, 1, 2];

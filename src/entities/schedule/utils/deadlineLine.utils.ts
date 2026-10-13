@@ -1,9 +1,6 @@
 import { DAY_MS } from "@/shared/consts/time.const";
-import { kstDateOf } from "@/shared/utils/kstDate";
-import {
-  formatBareDate,
-  formatScheduleDate,
-} from "@/entities/schedule/utils/formatScheduleDate.utils";
+import { formatBareDate, kstDateOf } from "@/shared/utils/kstDate";
+import { formatScheduleDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 export type DeadlineLineInput = {
   applicationDeadline: string;
