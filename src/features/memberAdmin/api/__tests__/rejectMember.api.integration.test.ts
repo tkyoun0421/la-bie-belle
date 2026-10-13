@@ -1,3 +1,4 @@
+import { rejectMember } from "@/features/memberAdmin/api/rejectMember.api";
 import {
   createAdminUser,
   createApprovedUser,
@@ -79,5 +80,33 @@ describe("reject_member", () => {
     });
 
     expect(error?.message).toBe("not_allowed");
+  });
+});
+
+describe("rejectMember — 거절 호출을 보낸다", () => {
+  it("관리자가 부르면 신청자에게 rejected_at이 찍힌다", async () => {
+    const admin = await createAdminUser();
+    const applicant = await createSubmittedUser();
+
+    await expect(
+      rejectMember(admin.client, applicant.profileId),
+    ).resolves.toBeUndefined();
+
+    const { data } = await admin.client
+      .from("profiles")
+      .select("rejected_at")
+      .eq("id", applicant.profileId)
+      .single<{ rejected_at: string | null }>();
+
+    expect(data?.rejected_at).not.toBeNull();
+  });
+
+  it("이미 승인된 사람이면 already_decided 업무 오류로 던진다", async () => {
+    const admin = await createAdminUser();
+    const approved = await createApprovedUser();
+
+    await expect(
+      rejectMember(admin.client, approved.profileId),
+    ).rejects.toMatchObject({ code: "already_decided" });
   });
 });

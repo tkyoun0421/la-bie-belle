@@ -8,6 +8,8 @@ import {
   periodStartDate,
   periodUnitOf,
   shiftPeriod,
+  periodAnchor,
+  anchorOfDate,
 } from "@/features/payrollCompute/model/period.policy";
 
 describe("periodLabel — 주가 한 달 안에 있으면 날짜만 쓴다", () => {
@@ -321,5 +323,30 @@ describe("periodSpan — isInPeriod가 참인 날과 같은 날을 담는다", (
     ]) {
       expect(isInSpan(span, date)).toBe(isInPeriod(period, date));
     }
+  });
+});
+
+describe("periodAnchor — 기간을 대표하는 글자를 돌려준다", () => {
+  it("주는 시작 월요일 날짜다", () => {
+    expect(periodAnchor({ unit: "week", weekStart: "2026-10-12" })).toBe(
+      "2026-10-12",
+    );
+  });
+
+  it("월은 연-월이고 해는 연이다", () => {
+    expect(periodAnchor({ unit: "month", month: "2026-10" })).toBe("2026-10");
+    expect(periodAnchor({ unit: "year", year: "2026" })).toBe("2026");
+  });
+});
+
+describe("anchorOfDate — 날짜가 속한 기간의 대표 글자를 돌려준다", () => {
+  it("주는 그 주 월요일이다", () => {
+    expect(anchorOfDate("2026-10-14", "week")).toBe("2026-10-12");
+    expect(anchorOfDate("2026-10-18", "week")).toBe("2026-10-12");
+  });
+
+  it("월은 연-월이고 해는 연이다", () => {
+    expect(anchorOfDate("2026-10-14", "month")).toBe("2026-10");
+    expect(anchorOfDate("2026-10-14", "year")).toBe("2026");
   });
 });

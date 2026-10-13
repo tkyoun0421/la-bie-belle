@@ -1,6 +1,7 @@
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
+  openDaysFailureToast,
 } from "@/screens/scheduleAdmin/model/openModeSelection.policy";
 
 describe("isSelectableForOpening — 이미 연 날은 지난 날짜 여부와 무관하게 못 고른다", () => {
@@ -58,5 +59,23 @@ describe("openDaysButtonLabel — 0개면 고르라는 안내가 버튼에 선�
 describe("openDaysButtonLabel — n개면 그 수를 센다", () => {
   it("3개면 「3일 열기」다", () => {
     expect(openDaysButtonLabel(3)).toBe("3일 열기");
+  });
+});
+
+describe("openDaysFailureToast — 못 연 날을 한 줄로 알린다", () => {
+  it("실패가 없으면 null이다", () => {
+    expect(openDaysFailureToast([])).toBeNull();
+  });
+
+  it("하루면 그 날짜만 적는다", () => {
+    expect(openDaysFailureToast(["2026-10-10"])).toBe(
+      "10월 10일은 열지 못했어요",
+    );
+  });
+
+  it("여럿이면 가장 이른 날짜 외 나머지 일수를 적는다", () => {
+    expect(
+      openDaysFailureToast(["2026-10-12", "2026-10-10", "2026-10-11"]),
+    ).toBe("10월 10일 외 2일은 열지 못했어요");
   });
 });

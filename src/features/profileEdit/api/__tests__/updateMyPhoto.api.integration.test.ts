@@ -1,3 +1,4 @@
+import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
 import { createAdminUser } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 
@@ -35,5 +36,23 @@ describe("update_my_photo", () => {
       .single<{ photo_url: string | null }>();
 
     expect(data?.photo_url).toBeNull();
+  });
+});
+
+describe("updateMyPhoto — 내 사진 주소를 바꾸는 호출을 보낸다", () => {
+  it("본인의 photo_url이 바뀐다", async () => {
+    const user = await createSignedInUser();
+
+    await expect(
+      updateMyPhoto(user.client, "https://example.com/c.png"),
+    ).resolves.toBeUndefined();
+
+    const { data } = await user.client
+      .from("profiles")
+      .select("photo_url")
+      .eq("id", user.profileId)
+      .single<{ photo_url: string | null }>();
+
+    expect(data?.photo_url).toBe("https://example.com/c.png");
   });
 });

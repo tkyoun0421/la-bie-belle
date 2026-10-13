@@ -1,4 +1,7 @@
-import { confirmAffordance } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
+import {
+  confirmAffordance,
+  confirmUnlockLine,
+} from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
 
 const DEADLINE = "2026-10-02";
 
@@ -57,5 +60,19 @@ describe("confirmAffordance — 마감 한참 전이면 locked다", () => {
     });
 
     expect(affordance).toBe("locked");
+  });
+});
+
+describe("confirmUnlockLine — 마감 다음 날부터 확정할 수 있다고 적는다", () => {
+  it("마감 다음 날의 월 일을 적는다", () => {
+    expect(confirmUnlockLine("2026-10-02")).toBe(
+      "10월 3일부터 확정할 수 있어요",
+    );
+  });
+
+  it("월말 마감이면 다음 달 1일이다", () => {
+    expect(confirmUnlockLine("2026-10-31")).toBe(
+      "11월 1일부터 확정할 수 있어요",
+    );
   });
 });

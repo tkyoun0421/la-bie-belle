@@ -2,6 +2,7 @@ import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import {
   countOpenSlotsByDate,
   summarizeOpenSlots,
+  openSlotLine,
 } from "@/entities/schedule/utils/groupOpenSlots.utils";
 
 function row(workDate: string, positions: string[] = ["스캔"]): OpenSlot {
@@ -80,5 +81,13 @@ describe("summarizeOpenSlots — 넷까지는 그대로, 넘치면 「외 n개�
     expect(summary.totalCount).toBe(0);
     expect(summary.items).toEqual([]);
     expect(summary.overflowCount).toBe(0);
+  });
+});
+
+describe("openSlotLine — 빈 자리를 날짜와 포지션 한 줄로 적는다", () => {
+  it("요일 붙은 날짜와 포지션을 가운뎃점으로 잇는다", () => {
+    expect(openSlotLine({ workDate: "2026-10-10", position: "메인" })).toBe(
+      "10월 10일(토) · 메인",
+    );
   });
 });

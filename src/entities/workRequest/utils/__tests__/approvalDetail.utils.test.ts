@@ -1,4 +1,8 @@
-import { cancelApprovalDetail } from "@/entities/workRequest/utils/approvalDetail.utils";
+import {
+  cancelApprovalDetail,
+  cancelApprovalRowTitle,
+  cancelApprovalConfirmBody,
+} from "@/entities/workRequest/utils/approvalDetail.utils";
 
 const INPUT = {
   displayName: "이준호",
@@ -39,5 +43,29 @@ describe("cancelApprovalDetail — 사유는 받은 글 그대로다", () => {
     const view = cancelApprovalDetail(INPUT);
 
     expect(view.reason).toBe("그날 대신 나올 사람을 못 구했어요");
+  });
+});
+
+describe("cancelApprovalRowTitle — 취소 승인 줄의 제목", () => {
+  it("이름 · 월 일 포지션 꼴이다", () => {
+    expect(
+      cancelApprovalRowTitle({
+        displayName: "이준호",
+        workDate: "2026-10-05",
+        position: "메인",
+      }),
+    ).toBe("이준호 · 10월 5일 메인");
+  });
+});
+
+describe("cancelApprovalConfirmBody — 승인 확인 문안", () => {
+  it("자리가 비고 알림이 간다고 적는다", () => {
+    expect(
+      cancelApprovalConfirmBody({
+        displayName: "이준호",
+        workDate: "2026-10-05",
+        position: "메인",
+      }),
+    ).toBe("10월 5일 메인 자리가 비고 이준호님에게 알림이 가요");
   });
 });

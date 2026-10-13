@@ -1,3 +1,4 @@
+import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
 import { createAdminUser } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 
@@ -102,5 +103,38 @@ describe("submit_profile", () => {
     });
 
     expect(error?.message).toBe("invalid_gender");
+  });
+});
+
+describe("submitProfile — 프로필 제출 호출을 보낸다", () => {
+  const input = {
+    displayName: "다희",
+    phone: "010-0000-0011",
+    birthDate: "1990-01-01",
+    gender: "female",
+  };
+
+  it("제출하면 이름과 제출 시각이 찬다", async () => {
+    const user = await createSignedInUser();
+
+    await expect(submitProfile(user.client, input)).resolves.toBeUndefined();
+
+    const { data } = await user.client
+      .from("profiles")
+      .select("display_name, submitted_at")
+      .eq("id", user.profileId)
+      .single<{ display_name: string | null; submitted_at: string | null }>();
+
+    expect(data?.display_name).toBe("다희");
+    expect(data?.submitted_at).not.toBeNull();
+  });
+
+  it("두 번째 제출은 already_submitted 업무 오류로 던진다", async () => {
+    const user = await createSignedInUser();
+    await submitProfile(user.client, input);
+
+    await expect(submitProfile(user.client, input)).rejects.toMatchObject({
+      code: "already_submitted",
+    });
   });
 });

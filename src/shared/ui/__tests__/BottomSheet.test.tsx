@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react-native";
-import { BottomSheet } from "@/shared/ui/BottomSheet";
+import { BottomSheet, Scrim } from "@/shared/ui/BottomSheet";
 
 function flatten(style: unknown): Record<string, unknown> {
   return Object.assign({}, ...(Array.isArray(style) ? style : [style]));
@@ -28,5 +28,21 @@ describe("BottomSheet — 판정값을 못 받으면 이동 모션이 안 빠진
     const style = flatten(getByTestId("bottom-sheet").props.style);
 
     expect(style.transform).toEqual([{ translateY: 40 }]);
+  });
+});
+
+describe("Scrim — 시트 뒤를 덮는 막이다", () => {
+  it("받은 속성을 그대로 달고 선다", () => {
+    const { getByTestId } = render(<Scrim testID="scrim" />);
+
+    expect(getByTestId("scrim")).toBeTruthy();
+  });
+
+  it("className을 합쳐 받는다", () => {
+    const { getByTestId } = render(
+      <Scrim testID="scrim" className="opacity-50" />,
+    );
+
+    expect(getByTestId("scrim").props.className).toContain("opacity-50");
   });
 });

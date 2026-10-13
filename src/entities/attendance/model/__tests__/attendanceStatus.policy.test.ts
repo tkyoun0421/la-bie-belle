@@ -2,7 +2,11 @@ import type {
   AttendanceStatusInput,
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
-import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
+import {
+  getAttendanceStatus,
+  checkInWindowOpensAt,
+  excuseDeadlineAt,
+} from "@/entities/attendance/model/attendanceStatus.policy";
 
 const WORK_DATE = "2026-09-10";
 const STARTS_AT = "10:00:00";
@@ -178,5 +182,21 @@ describe("getAttendanceStatus — 저장하지 않는 상태 여섯을 그때 �
     );
 
     expect(status).toBe("pending");
+  });
+});
+
+describe("checkInWindowOpensAt — 인증 창은 시작 한 시간 전에 열린다", () => {
+  it("한국 시각 10시 시작이면 UTC 00시에 열린다", () => {
+    expect(new Date(checkInWindowOpensAt(buildInput())).toISOString()).toBe(
+      WINDOW_START,
+    );
+  });
+});
+
+describe("excuseDeadlineAt — 사유 마감은 끝나고 마흔여덟 시간 뒤다", () => {
+  it("한국 시각 19시 종료면 이틀 뒤 같은 시각이 마감이다", () => {
+    expect(new Date(excuseDeadlineAt(buildInput())).toISOString()).toBe(
+      EXCUSE_DEADLINE,
+    );
   });
 });

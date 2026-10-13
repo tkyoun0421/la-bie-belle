@@ -1,3 +1,4 @@
+import { approveMember } from "@/features/memberAdmin/api/approveMember.api";
 import {
   createAdminUser,
   createApprovedUser,
@@ -79,5 +80,33 @@ describe("approve_member", () => {
     });
 
     expect(error?.message).toBe("not_allowed");
+  });
+});
+
+describe("approveMember — 승인 호출을 보낸다", () => {
+  it("관리자가 부르면 신청자에게 approved_at이 찍힌다", async () => {
+    const admin = await createAdminUser();
+    const applicant = await createSubmittedUser();
+
+    await expect(
+      approveMember(admin.client, applicant.profileId),
+    ).resolves.toBeUndefined();
+
+    const { data } = await admin.client
+      .from("profiles")
+      .select("approved_at")
+      .eq("id", applicant.profileId)
+      .single<{ approved_at: string | null }>();
+
+    expect(data?.approved_at).not.toBeNull();
+  });
+
+  it("이미 승인된 사람이면 already_decided 업무 오류로 던진다", async () => {
+    const admin = await createAdminUser();
+    const approved = await createApprovedUser();
+
+    await expect(
+      approveMember(admin.client, approved.profileId),
+    ).rejects.toMatchObject({ code: "already_decided" });
   });
 });

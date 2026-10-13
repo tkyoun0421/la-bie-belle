@@ -1,6 +1,9 @@
 import {
   confirmedLine,
   formatScheduleDate,
+  formatBareDate,
+  formatMonthName,
+  formatMonthTitle,
 } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 describe("formatScheduleDate — 「N월 N일(요일)」 꼴이다", () => {
@@ -26,5 +29,23 @@ describe("confirmedLine — 확정한 날과 알림 받은 인원 수를 말한�
     });
 
     expect(line).toBe("10월 3일에 확정했어요 · 14명에게 알림을 보냈어요");
+  });
+});
+
+describe("formatBareDate — 요일 없이 월 일만 적는다", () => {
+  it("앞 영을 뗀다", () => {
+    expect(formatBareDate("2026-10-05")).toBe("10월 5일");
+  });
+});
+
+describe("formatMonthName — 월 이름만 적는다", () => {
+  it("앞 영을 떼고 월을 붙인다", () => {
+    expect(formatMonthName("2026-03")).toBe("3월");
+  });
+});
+
+describe("formatMonthTitle — 연과 월을 적는다", () => {
+  it("연 월 꼴이다", () => {
+    expect(formatMonthTitle("2026-03")).toBe("2026년 3월");
   });
 });

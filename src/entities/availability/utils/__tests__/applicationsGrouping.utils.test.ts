@@ -2,6 +2,10 @@ import {
   applicationsByDate,
   groupApplicationsByDate,
   groupApplicationsByPerson,
+  spellApplicationDate,
+  applicationsTitle,
+  applicationsDeadlineLine,
+  applicationsEmptyDeadlineLine,
 } from "@/entities/availability/utils/applicationsGrouping.utils";
 
 const ROWS = [
@@ -70,5 +74,63 @@ describe("groupApplicationsByPerson — 사람마다 신청한 날짜들을 묶�
 
   it("신청이 없으면 빈 배열이다", () => {
     expect(groupApplicationsByPerson([])).toEqual([]);
+  });
+});
+
+describe("spellApplicationDate — 신청 날짜를 요일과 함께 적는다", () => {
+  it("월 일 요일 꼴이다", () => {
+    expect(spellApplicationDate("2026-10-10")).toBe("10월 10일(토)");
+  });
+});
+
+describe("applicationsTitle — 신청 화면 제목은 월을 든다", () => {
+  it("앞 영을 떼고 월 근무 신청이라 적는다", () => {
+    expect(applicationsTitle("2026-03")).toBe("3월 근무 신청");
+  });
+});
+
+describe("applicationsDeadlineLine — 마감까지 남은 날을 한 줄로 적는다", () => {
+  it("남은 날이 있으면 마감 날짜와 남은 일수를 적는다", () => {
+    expect(
+      applicationsDeadlineLine({
+        applicationDeadline: "2026-10-10",
+        now: "2026-10-07T03:00:00Z",
+      }),
+    ).toBe("마감 10월 10일(토) · 3일 남았어요");
+  });
+
+  it("마감 당일이면 오늘까지라고 적는다", () => {
+    expect(
+      applicationsDeadlineLine({
+        applicationDeadline: "2026-10-10",
+        now: "2026-10-10T03:00:00Z",
+      }),
+    ).toBe("마감 10월 10일(토) · 오늘까지예요");
+  });
+
+  it("마감이 지났으면 마감됐다고 적는다", () => {
+    expect(
+      applicationsDeadlineLine({
+        applicationDeadline: "2026-10-10",
+        now: "2026-10-11T03:00:00Z",
+      }),
+    ).toBe("10월 10일에 마감됐어요");
+  });
+
+  it("한국 날짜로 센다 — UTC로는 전날인 이른 아침도 한국 날짜다", () => {
+    expect(
+      applicationsDeadlineLine({
+        applicationDeadline: "2026-10-10",
+        now: "2026-10-09T16:00:00Z",
+      }),
+    ).toBe("마감 10월 10일(토) · 오늘까지예요");
+  });
+});
+
+describe("applicationsEmptyDeadlineLine — 신청이 없을 때 마감일만 적는다", () => {
+  it("월 일을 적는다", () => {
+    expect(applicationsEmptyDeadlineLine("2026-10-05")).toBe(
+      "마감은 10월 5일이에요",
+    );
   });
 });

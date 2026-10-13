@@ -1,6 +1,8 @@
 import {
   listActiveMembers,
   listLeftMembers,
+  listPendingMembers,
+  listBlockedMembers,
 } from "@/entities/member/api/listMembers.api";
 import type { Member } from "@/entities/member/model/member.type";
 import {
@@ -159,5 +161,55 @@ describe("퇴사 구획에는 알림 갈래가 안 붙는다(AC-08)", () => {
     expect(row).toBeDefined();
     expect(row?.notificationsEnabled).toBeUndefined();
     expect(row?.hasDevice).toBeUndefined();
+  });
+});
+
+describe("listPendingMembers — 대기 목록을 도메인 모양으로 읽는다", () => {
+  it("제출만 하고 결정이 안 난 사람만 제출 시각 오름차순으로 낸다", async () => {
+    const admin = await createAdminUser();
+    const first = await createSubmittedUser();
+    setSubmittedAt(first.userId, "2026-01-01T00:00:00+09:00");
+    const second = await createSubmittedUser();
+    setSubmittedAt(second.userId, "2026-01-02T00:00:00+09:00");
+    const approved = await createApprovedUser();
+    const rejected = await createRejectedUser();
+    const blocked = await createBlockedUser();
+    const wanted = new Set([
+      first.profileId,
+      second.profileId,
+      approved.profileId,
+      rejected.profileId,
+      blocked.profileId,
+    ]);
+
+    const rows = await listPendingMembers(admin.client);
+
+    expect(
+      rows.filter((row) => wanted.has(row.id)).map((row) => row.id),
+    ).toEqual([first.profileId, second.profileId]);
+  });
+});
+
+describe("listBlockedMembers — 차단 목록을 도메인 모양으로 읽는다", () => {
+  it("차단된 사람은 들고 승인만 된 사람은 안 든다", async () => {
+    const admin = await createAdminUser();
+    const blocked = await createBlockedUser();
+    const approved = await createApprovedUser();
+
+    const rows = await listBlockedMembers(admin.client);
+    const ids = rows.map((row) => row.id);
+
+    expect(ids).toContain(blocked.profileId);
+    expect(ids).not.toContain(approved.profileId);
+  });
+
+  it("차단 시각이 찍혀 있다", async () => {
+    const admin = await createAdminUser();
+    const blocked = await createBlockedUser();
+
+    const rows = await listBlockedMembers(admin.client);
+    const row = rows.find((entry) => entry.id === blocked.profileId);
+
+    expect(row?.blockedAt).not.toBeNull();
   });
 });

@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import {
+  getMyRehearsals,
+  monthRange,
+} from "@/entities/rehearsal/api/getMyRehearsals.api";
 import {
   createApprovedUser,
   execSql,
@@ -103,5 +106,28 @@ describe("getMyRehearsals dal(plan AC-05) — 본인 행을 그 달 범위로 �
     expect(countRow?.count).toBe(3);
     expect(countRow?.startsAt).toBeNull();
     expect(countRow?.endsAt).toBeNull();
+  });
+});
+
+describe("monthRange — 달의 첫날과 마지막 날을 돌려준다", () => {
+  it("서른한 날 달", () => {
+    expect(monthRange("2026-10")).toEqual({
+      from: "2026-10-01",
+      to: "2026-10-31",
+    });
+  });
+
+  it("윤년 이월은 스물아홉 날까지다", () => {
+    expect(monthRange("2028-02")).toEqual({
+      from: "2028-02-01",
+      to: "2028-02-29",
+    });
+  });
+
+  it("평년 이월은 스물여덟 날까지다", () => {
+    expect(monthRange("2026-02")).toEqual({
+      from: "2026-02-01",
+      to: "2026-02-28",
+    });
   });
 });
