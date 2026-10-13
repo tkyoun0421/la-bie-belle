@@ -8,7 +8,7 @@
 
 **[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯이 전부 닫혔다.**
 
-**[`post-refactor-audit`](backlog.md)의 묶음 여덟 가운데 판정이 필요 없는 것이 전부 닫혔다.** `signout-removes-push-token`(#553) · `session-error-is-swallowed`(#555) · `pair-tests-name-every-export`(#557) · `loading-fragments-share-one-body`(#560) · `api-exports-only-transport`와 `domain-types-leave-services`(#562) · `dead-exports-pruned`(#566) · `audit-checks-into-catalog`(진행 중). 그 곁에 `rule-15-blocked-functions-to-model`(#564)과 `callbacks-in-effect-deps-remainder`(#568)이 닫혔고 `tests-read-the-real-clock`은 폭탄 0으로 닫혔다.
+**[`post-refactor-audit`](backlog.md)의 묶음 여덟 가운데 판정이 필요 없는 것이 전부 닫혔다.** `signout-removes-push-token`(#553) · `session-error-is-swallowed`(#555) · `pair-tests-name-every-export`(#557) · `loading-fragments-share-one-body`(#560) · `api-exports-only-transport`와 `domain-types-leave-services`(#562) · `dead-exports-pruned`(#566) · `audit-checks-into-catalog`(#569). 그 곁에 `rule-15-blocked-functions-to-model`(#564)과 `callbacks-in-effect-deps-remainder`(#568)이 닫혔고 `tests-read-the-real-clock`은 폭탄 0으로 닫혔다.
 
 남은 것은 전부 **사람의 판정**을 기다린다.
 
