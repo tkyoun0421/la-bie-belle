@@ -551,6 +551,8 @@ code {
   margin-top: 16px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs);
   color: var(--fg-neutral-subtle);
 }
+/* 실패 줄 — 안내 문구의 자리에 서서 안내와 같은 두 줄 높이를 지킨다(login.md 로그인 모션 「실패 줄은 안내 문구의 자리에 선다」) */
+.gnote.fail { color: var(--fg-critical); min-height: calc(var(--lh-xs) * 2); }
 
 /* ── 02 프로필 작성 ── */
 .appbar {
@@ -855,6 +857,46 @@ code {
           <p class="cap-body" style="margin-top:8px">등장은 마크·이름·설명·버튼·안내 순으로 <code>--duration-slower</code>에 <code>--stagger-step</code>이다. 버튼을 눌러 보면 <code>--duration-fast</code>로 <code>scale(0.97)</code>까지 줄어든다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>구글 버튼은 자산 통째로다 — 이 SVG는 대역이다.</strong> 구현은 <code>signin-assets.zip</code>의 직사각형 자산을 그대로 넣는다. 문안이 「Google 계정으로 로그인」이 아니라 <strong>「Sign in with Google」</strong>인 것은 서체 규정(영문 Google Sans Medium·한글 Roboto Medium)이 우리 서체를 허용하는지 확인할 길이 없어서 — 심사가 보는 자리는 구글이 만든 것을 그대로 둔다.</p>
           <p class="cap-body" style="margin-top:8px">높이 48px 고정, 너비는 자산 종횡비(189:40)대로 ≈227px다 — 화면 폭을 안 채운다. 면·테두리·글자 색(<code>--google-fill</code>·<code>--google-stroke</code>·<code>--google-text</code>)은 구글 자산의 값이라 이 파일 안 상수다, tokens.md 어디에도 없다. 라이트 화면엔 Dark 자산(어두운 면), 다크 화면엔 Light 자산(흰 면)이 선다 — 오른쪽 위 토글로 확인한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="brandmark rise" style="--i:0">라</div>
+              <div class="svcname rise" style="--i:1">라비에벨</div>
+              <div class="svcsub rise" style="--i:2">근무표와 급여를 한곳에서 봐요</div>
+            </div>
+            <div class="sp"></div>
+            <div class="bottomblock">
+              <button class="gbtn rise" style="--i:3" type="button" aria-label="Sign in with Google">
+                <svg width="226.8" height="48" viewBox="0 0 189 40" role="img" aria-hidden="true">
+                  <rect x="0.5" y="0.5" width="188" height="39" rx="4" fill="var(--google-fill)" stroke="var(--google-stroke)"/>
+                  <g transform="translate(12,11)">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+                    <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+                  </g>
+                  <text x="108" y="25" text-anchor="middle" font-family="'Roboto', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="500" fill="var(--google-text)">Sign in with Google</text>
+                </svg>
+              </button>
+              <div class="gnote fail rise" style="--i:4" role="alert">로그인하지 못했어요. 다시 눌러 주세요</div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">LOGIN · 실패</div>
+          <div class="cap-name">로그인 — 실패</div>
+          <p class="cap-body">코드가 없거나 교환이 실패했을 때다. 정상과 같은 화면에서 <strong>버튼 아래 안내 문구의 자리에 실패 줄</strong>이 선다 — <code>text-xs</code> <code>fg.critical</code>이고, 안내와 같은 두 줄 높이를 잡아 버튼이 안 움직인다. 다시 누르면 사라진다.</p>
+          <p class="cap-body" style="margin-top:8px">문안 「로그인하지 못했어요. 다시 눌러 주세요」는 login.md 문안 표의 「제안」이다. 「고르는 중」은 구글 창이 뜬 상태라 안 그리고, 「돌아온 뒤」는 정상과 생김새가 같아 안 그린다.</p>
         </figcaption>
       </figure>
 
