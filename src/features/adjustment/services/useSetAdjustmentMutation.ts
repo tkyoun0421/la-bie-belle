@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  setAdjustment,
-  type SetAdjustmentInput,
-} from "@/features/adjustment/api/setAdjustment.api";
+import { setAdjustment } from "@/features/adjustment/api/setAdjustment.api";
+import type { SetAdjustmentInput } from "@/features/adjustment/model/adjustment.type";
 
 export type SetAdjustmentResult = {
   mutate: (input: SetAdjustmentInput) => void;

@@ -1,6 +1,7 @@
 import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { spellWon } from "@/shared/utils/spellNumber";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import { useMyPayrollViewDaysQuery } from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
@@ -18,7 +19,8 @@ export type StatsPayrollController =
     };
 
 export function useStatsPayroll(span: DateSpan): StatsPayrollController {
-  const read = useMyPayrollViewDaysQuery(supabase, span);
+  const nowMs = useServerNow();
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
 
   return fragmentOf(read, {
     failed: () => ({ retry: read.refetch }),

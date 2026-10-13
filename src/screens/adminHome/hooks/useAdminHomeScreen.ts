@@ -21,7 +21,7 @@ import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
+import { liveAssignmentCount } from "@/entities/schedule/model/liveAssignmentCount.policy";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";

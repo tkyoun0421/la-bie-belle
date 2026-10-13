@@ -46,7 +46,6 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: jest.fn(),
-    liveAssignmentCount: () => 0,
   }),
 );
 
@@ -69,13 +68,13 @@ jest.unstable_mockModule(
   () => ({ getFirstScheduleMonth: getFirstScheduleMonthMock }),
 );
 
-const chartValues = await import("@/screens/stats/utils/chartValues.utils");
+const chartValues = await import("@/screens/stats/utils/myChartValues.utils");
 
 const attendanceValuesSpy = jest.fn(chartValues.myAttendanceValues);
 const workValuesSpy = jest.fn(chartValues.myWorkValues);
 const payrollValuesSpy = jest.fn(chartValues.myPayrollValues);
 
-jest.unstable_mockModule("@/screens/stats/utils/chartValues.utils", () => ({
+jest.unstable_mockModule("@/screens/stats/utils/myChartValues.utils", () => ({
   ...chartValues,
   myAttendanceValues: attendanceValuesSpy,
   myWorkValues: workValuesSpy,

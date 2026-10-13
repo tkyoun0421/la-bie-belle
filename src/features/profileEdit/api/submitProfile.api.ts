@@ -1,12 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type SubmitProfileInput = {
-  displayName: string;
-  phone: string;
-  birthDate: string;
-  gender: string;
-};
+import type { SubmitProfileInput } from "@/features/profileEdit/model/profileEdit.type";
 
 export async function submitProfile(
   client: DB,

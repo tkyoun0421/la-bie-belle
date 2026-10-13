@@ -3,11 +3,11 @@ import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.ut
 import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
-import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
+import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
 import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
 import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
+import type { AttendanceMonth } from "@/features/stats/model/stats.type";
 import { workInputsOf } from "@/features/stats/model/workTotals.policy";
-import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { myAttendanceTally } from "@/features/stats/utils/attendanceTally.utils";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";

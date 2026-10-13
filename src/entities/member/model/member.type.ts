@@ -26,3 +26,5 @@ export type ActiveMember = Member & {
   notificationsEnabled: boolean;
   hasDevice: boolean;
 };
+
+export type MemberKind = "active" | "left" | "pending" | "blocked";

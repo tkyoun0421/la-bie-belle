@@ -3,13 +3,7 @@ import { useCallback, useState } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { setNotificationsEnabled } from "@/features/pushSwitch/api/setNotificationsEnabled.api";
-
-export type NotificationSwitch = {
-  enabled: boolean;
-  isPending: boolean;
-  turnOn: () => void;
-  turnOff: () => void;
-};
+import type { NotificationSwitch } from "@/features/pushSwitch/model/pushSwitch.type";
 
 export function useNotificationSwitchMutation(
   client: DB,

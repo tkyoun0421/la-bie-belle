@@ -5,7 +5,8 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_MEMBERS_BLOCKED_PATH,
 } from "@/shared/consts/navigation.const";
-import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useToast } from "@/shared/hooks/useToast";
+import type { ToastState } from "@/shared/model/toast.type";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";

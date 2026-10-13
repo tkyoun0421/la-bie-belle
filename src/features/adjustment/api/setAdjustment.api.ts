@@ -1,12 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type SetAdjustmentInput = {
-  dayId: string;
-  profileId: string;
-  minutes: number;
-  reason: string;
-};
+import type { SetAdjustmentInput } from "@/features/adjustment/model/adjustment.type";
 
 export async function setAdjustment(
   client: DB,

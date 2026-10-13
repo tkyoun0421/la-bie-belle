@@ -1,10 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type SetHolidayInput = {
-  date: string;
-  on: boolean;
-};
+import type { SetHolidayInput } from "@/features/holiday/model/holiday.type";
 
 export async function setHoliday(
   client: DB,

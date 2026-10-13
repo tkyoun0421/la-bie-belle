@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
-import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useToast } from "@/shared/hooks/useToast";
+import type { ToastState } from "@/shared/model/toast.type";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
 import { PERMISSION_OF_OTHERS } from "@/entities/notification/consts/notification.const";

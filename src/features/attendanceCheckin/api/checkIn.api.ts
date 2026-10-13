@@ -1,22 +1,7 @@
-import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 import { DomainError } from "@/shared/model/error.type";
-
-export type CheckInMethod = "location" | "qr";
-
-export type CheckInParams = {
-  dayId: string;
-  reportedAt: string;
-  method: CheckInMethod;
-  lat?: number | null;
-  lng?: number | null;
-  qrCode?: string | null;
-};
-
-export type CheckInDeps = {
-  client: DB;
-  wait?: (ms: number) => Promise<void>;
-};
+import type { CheckInDeps } from "@/features/attendanceCheckin/api/attendanceCheckin.dto";
+import type { CheckInParams } from "@/features/attendanceCheckin/model/attendanceCheckin.type";
 
 const RETRY_DELAYS_MS = [2000, 4000, 8000, 16000, 32000];
 

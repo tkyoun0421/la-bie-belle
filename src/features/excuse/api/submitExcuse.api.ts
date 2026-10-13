@@ -1,10 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type SubmitExcuseParams = {
-  dayId: string;
-  body: string;
-};
+import type { SubmitExcuseParams } from "@/features/excuse/model/excuse.type";
 
 export async function submitExcuse(
   client: DB,

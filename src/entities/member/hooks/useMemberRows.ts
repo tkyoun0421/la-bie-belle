@@ -1,8 +1,8 @@
 import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
+import { isLeftOverAYear } from "@/entities/member/model/leftOverAYear.policy";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
-import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 import { spellLeftAt } from "@/entities/member/utils/spellLeftAt.utils";

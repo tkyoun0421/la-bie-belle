@@ -1,11 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type DecideExcuseParams = {
-  excuseId: string;
-  approved: boolean;
-  reason: string | null;
-};
+import type { DecideExcuseParams } from "@/features/excuse/model/excuse.type";
 
 export async function decideExcuse(
   client: DB,

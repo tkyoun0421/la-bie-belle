@@ -60,8 +60,3 @@ export async function getMonthWindow(
 
   return data === null ? null : toMonthWindow(data);
 }
-
-export function liveAssignmentCount(day: ScheduleDay): number {
-  return day.assignments.filter((assignment) => assignment.endedAt === null)
-    .length;
-}

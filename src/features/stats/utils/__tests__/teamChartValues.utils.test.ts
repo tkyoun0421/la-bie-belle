@@ -1,12 +1,12 @@
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
-import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
+import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
 import type { AttendanceTab } from "@/features/stats/model/attendanceTab.type";
-import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
+import type { AttendanceMonth } from "@/features/stats/model/stats.type";
 import {
   attendanceValues,
   percentLabel,
   workValues,
-} from "@/features/stats/utils/chartValues.utils";
+} from "@/features/stats/utils/teamChartValues.utils";
 
 function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {

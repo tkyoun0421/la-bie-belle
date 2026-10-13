@@ -12,8 +12,7 @@ import type {
   Member,
   MemberSummary,
 } from "@/entities/member/model/member.type";
-
-export type MemberKind = "active" | "left" | "pending" | "blocked";
+import type { MemberKind } from "@/entities/member/model/member.type";
 
 type RowOf = {
   active: ActiveMember;
