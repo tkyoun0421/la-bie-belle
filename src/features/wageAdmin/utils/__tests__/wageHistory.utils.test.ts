@@ -2,6 +2,7 @@ import type { WageRate } from "@/entities/payroll/model/payroll.type";
 import {
   buildWageHistory,
   prefillWageAmount,
+  spellWageDate,
 } from "@/features/wageAdmin/utils/wageHistory.utils";
 
 describe("buildWageHistory — 0줄이면 안 그린다", () => {
@@ -76,5 +77,11 @@ describe("prefillWageAmount — kstToday()로 받은 today 인자를 그대로 �
 
     expect(prefillWageAmount(rates, "2026-03-01")).toBe(10000);
     expect(prefillWageAmount(rates, "2026-07-01")).toBe(12000);
+  });
+});
+
+describe("spellWageDate — 시급 적용일을 연 월 일로 적는다", () => {
+  it("앞 영을 뗀다", () => {
+    expect(spellWageDate("2026-03-05")).toBe("2026년 3월 5일");
   });
 });

@@ -1,4 +1,7 @@
-import { absenceMinutes } from "@/features/payrollCompute/utils/absenceMinutes.utils";
+import {
+  absenceMinutes,
+  assignedMinutes,
+} from "@/features/payrollCompute/utils/absenceMinutes.utils";
 
 describe("absenceMinutes — 그날 배정 시간만큼의 음수다", () => {
   it("9시간 배정이면 -540분이다", () => {
@@ -11,5 +14,15 @@ describe("absenceMinutes — 그날 배정 시간만큼의 음수다", () => {
 
   it("10시간 배정이면 -600분이다", () => {
     expect(absenceMinutes({ startsAt: "09:00", endsAt: "19:00" })).toBe(-600);
+  });
+});
+
+describe("assignedMinutes — 그날 배정 시간의 분이다", () => {
+  it("10시부터 19시면 540분이다", () => {
+    expect(assignedMinutes({ startsAt: "10:00", endsAt: "19:00" })).toBe(540);
+  });
+
+  it("끝이 시작과 같으면 0분이다", () => {
+    expect(assignedMinutes({ startsAt: "10:00", endsAt: "10:00" })).toBe(0);
   });
 });

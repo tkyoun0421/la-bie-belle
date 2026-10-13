@@ -2,6 +2,7 @@ import {
   amountTotal,
   monthTotal,
   weekTotals,
+  weekStartOf,
 } from "@/features/payrollCompute/utils/payrollTotal.utils";
 
 function payrollDay(date: string, amount: number, minutes = 480) {
@@ -97,5 +98,23 @@ describe("amountTotal — 받은 날의 금액을 그대로 더한다", () => {
         payrollDay("2026-10-01", 20000),
       ]),
     ).toBe(30000);
+  });
+});
+
+describe("weekStartOf — 날짜가 속한 주의 월요일을 돌려준다", () => {
+  it("월요일은 자기 자신이다", () => {
+    expect(weekStartOf("2026-10-12")).toBe("2026-10-12");
+  });
+
+  it("수요일은 그 주 월요일이다", () => {
+    expect(weekStartOf("2026-10-14")).toBe("2026-10-12");
+  });
+
+  it("일요일은 그 주 월요일이다", () => {
+    expect(weekStartOf("2026-10-18")).toBe("2026-10-12");
+  });
+
+  it("월을 넘어가는 주도 월요일을 찾는다", () => {
+    expect(weekStartOf("2026-11-01")).toBe("2026-10-26");
   });
 });

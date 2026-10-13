@@ -1,4 +1,7 @@
-import { adjustSheetRows } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
+import {
+  adjustSheetRows,
+  adjustSheetHead,
+} from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
 const DAY = { startsAt: "10:00", endsAt: "19:00" };
 
@@ -189,5 +192,17 @@ describe("adjustSheetRows — 리허설 줄 문구, 시각 갈래", () => {
     });
 
     expect(rows[0]?.rehearsalLine).toBe("리허설 14:00–16:00 · 2시간");
+  });
+});
+
+describe("adjustSheetHead — 시트 머리에 근무 시간대와 길이를 적는다", () => {
+  it("시작–끝 · 시간 꼴이다", () => {
+    expect(adjustSheetHead(DAY)).toBe("10:00–19:00 · 9시간");
+  });
+
+  it("분이 남으면 시간과 분을 같이 적는다", () => {
+    expect(adjustSheetHead({ startsAt: "10:00", endsAt: "18:30" })).toBe(
+      "10:00–18:30 · 8시간 30분",
+    );
   });
 });

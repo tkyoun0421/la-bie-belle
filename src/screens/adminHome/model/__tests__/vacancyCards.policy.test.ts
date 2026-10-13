@@ -2,6 +2,7 @@ import {
   vacancyCards,
   vacancyDaysLeftLine,
   vacancyDaysOf,
+  vacancyCardTitle,
 } from "@/screens/adminHome/model/vacancyCards.policy";
 
 const TODAY = "2026-10-08T00:00:00Z";
@@ -79,5 +80,13 @@ describe("vacancyDaysLeftLine — 남은 날을 말하고 당일이면 다른 �
 
   it("당일(0)이면 「오늘이에요」다", () => {
     expect(vacancyDaysLeftLine(0)).toBe("오늘이에요");
+  });
+});
+
+describe("vacancyCardTitle — 카드 제목에 날짜와 빈 자리 수를 적는다", () => {
+  it("요일 붙은 날짜와 빈 자리 수를 적는다", () => {
+    expect(vacancyCardTitle({ workDate: "2026-10-10", vacancyCount: 2 })).toBe(
+      "10월 10일(토) 예식에 빈 자리 2",
+    );
   });
 });

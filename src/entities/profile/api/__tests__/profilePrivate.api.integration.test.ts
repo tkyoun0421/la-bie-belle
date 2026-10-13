@@ -1,3 +1,4 @@
+import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
 import { createAdminUser } from "@tests/integration/postgres";
 import {
   createSignedInUser,
@@ -107,5 +108,39 @@ describe("profile_private 접근 권한", () => {
       .eq("profile_id", other.profileId);
 
     expect(data).toEqual([{ phone: "010-0000-0007" }]);
+  });
+});
+
+describe("getProfilePrivate — 본인의 비공개 칸을 도메인 모양으로 읽는다", () => {
+  it("제출한 연락처와 생일과 성별과 이메일을 camelCase로 낸다", async () => {
+    const user = await createSignedInUser();
+    await submitProfile(user, "010-0000-0009");
+
+    const result = await getProfilePrivate(user.client, user.profileId);
+
+    expect(result).toEqual({
+      email: user.email,
+      phone: "010-0000-0009",
+      birthDate: "1990-01-01",
+      gender: "female",
+    });
+  });
+
+  it("행이 없으면 null이다", async () => {
+    const user = await createSignedInUser();
+
+    await expect(
+      getProfilePrivate(user.client, user.profileId),
+    ).resolves.toBeNull();
+  });
+
+  it("남의 행은 보이지 않아 null이다", async () => {
+    const other = await createSignedInUser();
+    await submitProfile(other, "010-0000-0010");
+    const reader = await createSignedInUser();
+
+    await expect(
+      getProfilePrivate(reader.client, other.profileId),
+    ).resolves.toBeNull();
   });
 });

@@ -1,4 +1,8 @@
-import { validateProfileForm } from "@/entities/profile/model/profile.schema";
+import {
+  validateProfileForm,
+  isProfileGender,
+  isValidPhone,
+} from "@/entities/profile/model/profile.schema";
 
 describe("validateProfileForm — 프로필 다섯 칸 중 값의 꼴이 있는 넷을 본다", () => {
   describe("이름은 공백만으로 안 된다 (ACC-002)", () => {
@@ -139,5 +143,37 @@ describe("validateProfileForm — 프로필 다섯 칸 중 값의 꼴이 있는 
 
       expect(typeof errors.gender).toBe("string");
     });
+  });
+});
+
+describe("isProfileGender — 성별 글자만 참이다", () => {
+  it("female과 male은 참이다", () => {
+    expect(isProfileGender("female")).toBe(true);
+    expect(isProfileGender("male")).toBe(true);
+  });
+
+  it("모르는 글자와 비문자는 거짓이다", () => {
+    expect(isProfileGender("other")).toBe(false);
+    expect(isProfileGender(null)).toBe(false);
+    expect(isProfileGender(undefined)).toBe(false);
+  });
+});
+
+describe("isValidPhone — 010으로 시작하는 열한 자리 숫자만 참이다", () => {
+  it("010으로 시작하는 열한 자리는 참이다", () => {
+    expect(isValidPhone("01000000001")).toBe(true);
+  });
+
+  it("하이픈이 있으면 거짓이다", () => {
+    expect(isValidPhone("010-0000-0001")).toBe(false);
+  });
+
+  it("열 자리나 열두 자리는 거짓이다", () => {
+    expect(isValidPhone("0100000001")).toBe(false);
+    expect(isValidPhone("010000000012")).toBe(false);
+  });
+
+  it("010이 아닌 접두는 거짓이다", () => {
+    expect(isValidPhone("01100000001")).toBe(false);
   });
 });

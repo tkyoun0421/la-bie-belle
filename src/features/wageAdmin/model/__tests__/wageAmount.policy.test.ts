@@ -2,6 +2,7 @@ import {
   canSaveWage,
   formatAmountDisplay,
   nextAmountDigits,
+  atWageCap,
 } from "@/features/wageAdmin/model/wageAmount.policy";
 
 describe("nextAmountDigits — 상한 100,000원을 넘는 타이핑은 안 들어간다", () => {
@@ -51,5 +52,19 @@ describe("formatAmountDisplay — 세 자리마다 쉼표를 찍는다", () => {
 
   it("빈 칸은 빈 칸 그대로다", () => {
     expect(formatAmountDisplay("")).toBe("");
+  });
+});
+
+describe("atWageCap — 상한에 닿았는지 본다", () => {
+  it("100000이면 참이다", () => {
+    expect(atWageCap("100000")).toBe(true);
+  });
+
+  it("상한 미만이면 거짓이다", () => {
+    expect(atWageCap("99999")).toBe(false);
+  });
+
+  it("비었으면 거짓이다", () => {
+    expect(atWageCap("")).toBe(false);
   });
 });

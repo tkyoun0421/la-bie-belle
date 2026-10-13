@@ -1,4 +1,7 @@
-import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
+import {
+  paidMinutes,
+  adjustedMinutes,
+} from "@/features/payrollCompute/model/paidMinutes.policy";
 
 const NINE_HOUR_DAY = { startsAt: "10:00:00", endsAt: "19:00:00" };
 
@@ -58,5 +61,21 @@ describe("paidMinutes — 배정·조정·리허설이 셋 다 없으면 0분이
     });
 
     expect(minutes).toBe(0);
+  });
+});
+
+describe("adjustedMinutes — 조정은 가장 늦게 한 것 하나만 쓴다", () => {
+  it("조정이 없으면 0이다", () => {
+    expect(adjustedMinutes([])).toBe(0);
+  });
+
+  it("입력 순서와 무관하게 조정 시각이 가장 늦은 분을 쓴다", () => {
+    expect(
+      adjustedMinutes([
+        { minutes: 30, adjustedAt: "2026-10-02T00:00:00Z" },
+        { minutes: -60, adjustedAt: "2026-10-03T00:00:00Z" },
+        { minutes: 15, adjustedAt: "2026-10-01T00:00:00Z" },
+      ]),
+    ).toBe(-60);
   });
 });

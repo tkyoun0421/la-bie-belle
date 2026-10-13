@@ -1,4 +1,7 @@
-import { isDayHoursSaveEnabled } from "@/features/scheduleDay/model/dayHoursForm.policy";
+import {
+  isDayHoursSaveEnabled,
+  dayHoursLine,
+} from "@/features/scheduleDay/model/dayHoursForm.policy";
 
 describe("isDayHoursSaveEnabled — 끝이 시작보다 늦으면 저장할 수 있다", () => {
   it("10:00~19:00이면 true다", () => {
@@ -18,6 +21,14 @@ describe("isDayHoursSaveEnabled — 끝이 시작과 같거나 이르면 저장�
   it("끝이 시작보다 이르면 false다", () => {
     expect(isDayHoursSaveEnabled({ starts: "22:00", ends: "10:00" })).toBe(
       false,
+    );
+  });
+});
+
+describe("dayHoursLine — 근무 시간을 한 줄로 적는다", () => {
+  it("분까지만 자른 시작과 끝을 잇는다", () => {
+    expect(dayHoursLine("10:00:00", "19:00:00")).toBe(
+      "근무 시간 · 10:00–19:00",
     );
   });
 });
