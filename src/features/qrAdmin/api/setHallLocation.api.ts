@@ -1,11 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type HallLocation = {
-  lat: number;
-  lng: number;
-  radiusM: number;
-};
+import type { HallLocation } from "@/features/qrAdmin/model/qrAdmin.type";
 
 export async function setHallLocation(
   client: DB,

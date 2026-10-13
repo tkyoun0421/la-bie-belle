@@ -2,6 +2,7 @@ import "react-native-get-random-values";
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 import { AVATARS_BUCKET } from "@/features/profileEdit/consts/profileEdit.const";
+import type { UploadAvatarInput } from "@/features/profileEdit/model/profileEdit.type";
 
 const NAME_BYTES = 16;
 
@@ -13,13 +14,6 @@ function randomFileName(extension: string): string {
 
   return `${hex}.${extension}`;
 }
-
-export type UploadAvatarInput = {
-  userId: string;
-  uri: string;
-  contentType: string;
-  extension: string;
-};
 
 export async function uploadAvatar(
   client: DB,

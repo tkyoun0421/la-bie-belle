@@ -32,13 +32,6 @@ jest.unstable_mockModule(
 
 const FIXED_NOW_MS = Date.parse("2026-10-01T12:00:00+09:00");
 
-const clockPolicy = await import("@/entities/clock/model/serverClock.policy");
-
-jest.unstable_mockModule("@/entities/clock/model/serverClock.policy", () => ({
-  ...clockPolicy,
-  nowWithOffset: () => FIXED_NOW_MS,
-}));
-
 const FAKE_CLIENT = {} as never;
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
@@ -126,9 +119,12 @@ const OCTOBER = { from: "2026-10-01", to: "2026-10-31" };
 
 async function mounted(span: { from: string; to: string } = OCTOBER) {
   const { wrapper } = createWrapper();
-  const hook = renderHook(() => useMyPayrollViewDaysQuery(FAKE_CLIENT, span), {
-    wrapper,
-  });
+  const hook = renderHook(
+    () => useMyPayrollViewDaysQuery(FAKE_CLIENT, span, FIXED_NOW_MS),
+    {
+      wrapper,
+    },
+  );
 
   await waitFor(() => expect(hook.result.current.isLoading).toBe(false));
 
@@ -181,7 +177,7 @@ describe("useMyPayrollViewDaysQuery — 다 오기 전에는 값을 안 낸다",
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
       { wrapper },
     );
 
@@ -196,7 +192,7 @@ describe("useMyPayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", 
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
       { wrapper },
     );
 
@@ -211,7 +207,7 @@ describe("useMyPayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", 
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
       { wrapper },
     );
 

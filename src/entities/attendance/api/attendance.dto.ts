@@ -15,3 +15,21 @@ export type ExcuseStatusRow = {
   decided_at: string | null;
   decision: string | null;
 };
+
+export const CHECK_IN_COLUMNS = [
+  "id",
+  "day_id",
+  "profile_id",
+  "checked_at",
+  "reported_at",
+  "received_at",
+  "method",
+].join(", ");
+
+export const EXCUSE_STATUS_COLUMNS = [
+  "day_id",
+  "profile_id",
+  "submitted_at",
+  "decided_at",
+  "decision",
+].join(", ");

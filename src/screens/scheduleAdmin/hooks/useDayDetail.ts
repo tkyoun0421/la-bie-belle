@@ -22,12 +22,12 @@ import {
   assignedMinutes,
 } from "@/features/payrollCompute/utils/absenceMinutes.utils";
 import { adjustmentCountLine } from "@/features/payrollCompute/utils/adjustmentCount.utils";
-import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import { pickerEntries } from "@/features/scheduleAssign/model/pickerEntries.policy";
 import type {
   PickerEntry,
   PickerTarget,
 } from "@/features/scheduleAssign/model/pickerEntry.type";
+import type { AddAssignmentInput } from "@/features/scheduleAssign/model/scheduleAssign.type";
 import { canNotifyMember } from "@/features/scheduleConfirm/model/notifyReach.policy";
 import { dayHoursLine } from "@/features/scheduleDay/model/dayHoursForm.policy";
 import {

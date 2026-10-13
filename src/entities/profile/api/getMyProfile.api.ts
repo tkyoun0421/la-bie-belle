@@ -1,5 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import { takeProfileReadFailure } from "@/shared/utils/devDoor";
+import { takeProfileReadFailure } from "@/shared/lib/devDoor.lib";
 import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
 import type { Profile } from "@/entities/profile/model/profile.type";
 import { toProfile } from "@/entities/profile/utils/profile.mapper";

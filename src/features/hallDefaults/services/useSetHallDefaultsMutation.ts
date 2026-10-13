@@ -3,10 +3,8 @@ import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
-import {
-  setHallDefaults,
-  type HallDefaultsInput,
-} from "@/features/hallDefaults/api/setHallDefaults.api";
+import { setHallDefaults } from "@/features/hallDefaults/api/setHallDefaults.api";
+import type { HallDefaultsInput } from "@/features/hallDefaults/model/hallDefaults.type";
 
 export type SetHallDefaultsResult = {
   mutate: (input: HallDefaultsInput, callbacks?: MutationCallbacks) => void;

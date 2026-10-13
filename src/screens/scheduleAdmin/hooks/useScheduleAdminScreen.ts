@@ -10,12 +10,13 @@ import {
 } from "@/shared/consts/navigation.const";
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
-import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useToast } from "@/shared/hooks/useToast";
 import {
   adminCalendarDayState,
   confirmedVacancyCount,
 } from "@/shared/model/adminCalendarDayState.policy";
 import { isMonthFullyPast } from "@/shared/model/monthEmptyState.policy";
+import type { ToastState } from "@/shared/model/toast.type";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
@@ -27,8 +28,8 @@ import { useQualificationsQuery } from "@/entities/member/services/useQualificat
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
-import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
 import { dayConfirmGate } from "@/entities/schedule/model/confirmGate.policy";
+import { liveAssignmentCount } from "@/entities/schedule/model/liveAssignmentCount.policy";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
@@ -47,7 +48,7 @@ import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availa
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
 import { useSetHolidayMutation } from "@/features/holiday/services/useSetHolidayMutation";
 import { useGrantPositionMutation } from "@/features/qualificationGrant/services/useGrantPositionMutation";
-import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
+import type { AddAssignmentInput } from "@/features/scheduleAssign/model/scheduleAssign.type";
 import { useAddAssignmentMutation } from "@/features/scheduleAssign/services/useAddAssignmentMutation";
 import { useRemoveAssignmentMutation } from "@/features/scheduleAssign/services/useRemoveAssignmentMutation";
 import { useForceChangeMutation } from "@/features/scheduleConfirm/services/useForceChangeMutation";

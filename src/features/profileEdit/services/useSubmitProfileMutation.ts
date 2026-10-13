@@ -3,10 +3,8 @@ import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
-import {
-  submitProfile,
-  type SubmitProfileInput,
-} from "@/features/profileEdit/api/submitProfile.api";
+import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
+import type { SubmitProfileInput } from "@/features/profileEdit/model/profileEdit.type";
 
 export type SubmitProfileResult = {
   mutate: (input: SubmitProfileInput, callbacks?: MutationCallbacks) => void;

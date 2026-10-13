@@ -5,7 +5,8 @@ import {
   ADMIN_SCHEDULE_PATH,
   ORIGIN_APPROVALS,
 } from "@/shared/consts/navigation.const";
-import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useToast } from "@/shared/hooks/useToast";
+import type { ToastState } from "@/shared/model/toast.type";
 import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
 

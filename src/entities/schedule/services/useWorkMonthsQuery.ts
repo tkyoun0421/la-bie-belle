@@ -3,12 +3,7 @@ import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
-import { type ScheduleDay } from "@/entities/schedule/model/schedule.type";
-
-export type WorkMonth = {
-  month: string;
-  days: ScheduleDay[];
-};
+import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
 
 export function useWorkMonthsQuery(
   client: DB,

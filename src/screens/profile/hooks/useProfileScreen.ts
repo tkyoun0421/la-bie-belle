@@ -9,7 +9,8 @@ import {
   STATS_PATH,
 } from "@/shared/consts/navigation.const";
 import { THEME_LABEL } from "@/shared/consts/theme.const";
-import { useToast, type ToastState } from "@/shared/hooks/useToast";
+import { useToast } from "@/shared/hooks/useToast";
+import type { ToastState } from "@/shared/model/toast.type";
 import { useTheme } from "@/shared/stores/theme.store";
 import { hasRehearsalGrant } from "@/entities/member/model/hasRehearsalGrant.policy";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";

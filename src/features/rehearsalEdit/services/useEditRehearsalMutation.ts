@@ -3,10 +3,8 @@ import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
 import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
-import {
-  editRehearsal,
-  type EditRehearsalInput,
-} from "@/features/rehearsalEdit/api/editRehearsal.api";
+import { editRehearsal } from "@/features/rehearsalEdit/api/editRehearsal.api";
+import type { EditRehearsalInput } from "@/features/rehearsalEdit/model/rehearsalEdit.type";
 
 export type EditRehearsalResult = {
   mutate: (input: EditRehearsalInput, callbacks?: MutationCallbacks) => void;

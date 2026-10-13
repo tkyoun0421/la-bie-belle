@@ -1,13 +1,11 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
-import type {
-  CheckInRow,
-  ExcuseStatusRow,
-} from "@/entities/attendance/api/attendance.dto";
 import {
   CHECK_IN_COLUMNS,
   EXCUSE_STATUS_COLUMNS,
-} from "@/entities/attendance/api/getDayAttendance.api";
+  type CheckInRow,
+  type ExcuseStatusRow,
+} from "@/entities/attendance/api/attendance.dto";
 import type { Attendance } from "@/entities/attendance/model/attendance.type";
 import {
   toCheckIn,

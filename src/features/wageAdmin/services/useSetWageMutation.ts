@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  setWage,
-  type SetWageInput,
-} from "@/features/wageAdmin/api/setWage.api";
+import { setWage } from "@/features/wageAdmin/api/setWage.api";
+import type { SetWageInput } from "@/features/wageAdmin/model/wageAdmin.type";
 
 export type SetWageResult = {
   mutate: (input: SetWageInput) => void;

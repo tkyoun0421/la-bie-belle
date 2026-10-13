@@ -2,15 +2,15 @@ import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
-import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
+import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
+import type { AttendanceMonth } from "@/features/stats/model/stats.type";
 import {
   joinPayrollByMonth,
   myAttendanceValues,
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/utils/chartValues.utils";
+} from "@/screens/stats/utils/myChartValues.utils";
 
 const PROFILE_ID = "profile-1";
 

@@ -1,3 +1,4 @@
+import type { Attendance } from "@/entities/attendance/model/attendance.type";
 import type {
   ScheduleAssignment,
   ScheduleDay,
@@ -45,4 +46,10 @@ export type MyWorkTotals = {
   totalMinutes: number;
   totalCount: number;
   byPosition: PositionTotal[];
+};
+
+export type AttendanceMonth = {
+  month: string;
+  days: ScheduleDay[];
+  attendance: Attendance;
 };

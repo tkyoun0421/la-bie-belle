@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import {
-  addAssignment,
-  type AddAssignmentInput,
-} from "@/features/scheduleAssign/api/addAssignment.api";
+import { addAssignment } from "@/features/scheduleAssign/api/addAssignment.api";
+import type { AddAssignmentInput } from "@/features/scheduleAssign/model/scheduleAssign.type";
 
 export type AddAssignmentResult = {
   mutate: (input: AddAssignmentInput) => void;

@@ -1,7 +1,7 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { armProfileReadFailure, isDevDoorOpen } from "@/shared/utils/devDoor";
+import { armProfileReadFailure, isDevDoorOpen } from "@/shared/lib/devDoor.lib";
 import { decideEntry } from "@/features/auth/lib/decideEntry.lib";
 
 const READ_FAILURE = "read_failure";

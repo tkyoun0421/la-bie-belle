@@ -1,12 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import type { HallSlot } from "@/entities/hall/model/hall.type";
-
-export type HallDefaultsInput = {
-  slots: HallSlot[];
-  starts: string;
-  ends: string;
-};
+import type { HallDefaultsInput } from "@/features/hallDefaults/model/hallDefaults.type";
 
 export async function setHallDefaults(
   client: DB,
