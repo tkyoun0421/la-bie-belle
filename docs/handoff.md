@@ -45,7 +45,7 @@
 
 **`as`는 `memberOf`가 만든 가드 한 자리로 모인다.** 실행 코드의 `as`는 셋(Expo Router `Href` 둘과 동작이 바뀌어 안 건드린 하나)이다. 가드를 만들어 돌려주는 고차 함수는 반환 타입이 함수 타입이라 규칙 47의 밖이고, 이름 없는 인라인 가드도 밖이다.
 
-**규칙 15가 새 함수마다 짝 테스트를 먼저 요구해서 구현자가 자리를 못 옮긴다.** 구현자는 테스트를 안 쓰니 모으지 않고 리턴에 적는다 — 일곱이 `rule-15-blocked-functions-to-model`에 쌓였다. 새 폴더를 `src/` 아래 두면 `scripts/syncEdgeShared.mts`의 `FOLDERS`를 먼저 본다.
+**규칙 15가 새 함수마다 짝 테스트를 먼저 요구한다.** 구현자는 테스트를 못 쓰니 막힌 자리는 리턴에 적고, 작성자가 짝을 먼저 세운 뒤에 옮긴다 — 일곱이 그렇게 `model`로 갔다(#564). 새 폴더를 `src/` 아래 두면 `scripts/syncEdgeShared.mts`의 `FOLDERS`를 먼저 본다.
 
 **규칙 45는 읽기 상태 어휘로 문다.** 글자 하나라도 어휘에 들면 `flat`이다. 묶음 여섯이 닫힌 지금 중첩 삼항의 남은 셋은 `fragmentOf`가 `failed` 가지를 강제한 손으로 세운 판별 union이라 맞는 자리다.
 
@@ -73,11 +73,17 @@
 
 **경로 글자는 `shared/consts/navigation.const.ts` 한 집이다.** `house/no-route-path-literal`(44)이 `src/app/` 밖의 경로꼴 리터럴을 막는다. `"/"` 하나는 경로인지 구분자인지 AST로 못 갈라 기계가 못 막는다 — `resolveAdminGuard.policy.ts`의 `AdminGuardMove`가 그 자리고 사람이 본다.
 
-**검사 번호가 47까지다(줄은 마흔여섯)** — 47(`house/type-guard-name`)은 반환 타입이 서술어인 함수의 이름이 `is`로 시작하게 문다. **하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
+**검사 번호가 50까지다(줄은 마흔아홉)** — 48(`type-file-no-runtime`)은 `.type.ts`·`.dto.ts`의 런타임 선언을, 49(`services-no-hooks-import`)는 services가 hooks를 당기는 것을, 50(`hooks-export-use-only`)은 `hooks/`의 `use*`가 아닌 export를 문다. 접미사가 제 세그먼트에 사는지(`fileNaming`)와 문서의 검사 수(`docCounts`)는 `tests/lint/`가 센다. 47(`house/type-guard-name`)은 반환 타입이 서술어인 함수의 이름이 `is`로 시작하게 문다. **하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
 
 **CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조가 `database-types.ts`(없는 경로)를 보던 죽은 게이트였던 것을 고쳐 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사는 `ci`와 `impact` 둘이다** — 영향 확인 절이 없는 PR은 merge되지 않는다.
 
 **`grep` 한 줄로 셀 때 여러 줄 import·여러 줄 타입 선언 안의 이름이 안 보인다.** 이번 회차에 다섯 번 틀렸다. 경유지·이름으로 파일을 먼저 찾고(`grep -rl`) 그 파일을 열어 세는 쪽이 맞다.
+
+**죽은 export는 `tests/lint/deadExports`가 센다.** 테스트만 당기는 `src` 파일은 열린 backlog 행이나 열린 관찰의 이름을 단 면제 표에 있어야 하고, 행이 닫히면 면제가 빨개진다. **빈 `.catch` 여섯은 검사가 없다** — `query-failure-reaches-the-screen`의 판정이 서야 켠다.
+
+**`.api.ts`는 통신 함수와 `DB`만 내고 service는 도메인 타입을 안 든다.** 도메인 타입은 `model/<슬라이스>.type.ts`, 통신이 받는 의존성은 `.dto.ts`에 산다. 에러 클래스는 `shared/model/errors.ts`에 산다.
+
+**로그아웃은 권한을 요청하지 않고 토큰을 읽어 지운다.** 세션 읽기 실패는 `/retry`로 가고 캐시가 있는 실패는 옛 값으로 판정한다(`failed`가 `error !== null && profile === undefined`).
 
 **본보기 셋.** 쓰기 조각은 `features/memberAdmin/{ui/MemberSheet.tsx, hooks/useMemberSheet.ts}`. 읽기 조각은 `entities/payroll/hooks/useWageRows.ts`(상태 이름)와 `features/stats/hooks/useStatsAttendance.ts`(판별 union). 경계는 `shared/ui/QueryBoundary.tsx`다.
 
@@ -93,6 +99,6 @@
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e·Suspense), NCP 대표 계정과 지도 키, 3D 석 장, 로컬 Supabase 구글 프로바이더.
 
-회차 기록은 [docs/log/2026-10-12.md](log/2026-10-12.md)다 — 선언형 묶음 여섯이 닫히고 구현자 시간을 재 개발 과정을 고쳤고 감사 둘이 제안 둘을 냈다(#537~#549). 그 앞은 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)와 [docs/log/2026-10-09-2.md](log/2026-10-09-2.md)(쓰기 조각, #514)다. 선언형 묶음 일부(#530~#536)는 따로 로그가 없다.
+회차 기록은 [docs/log/2026-10-13.md](log/2026-10-13.md)다 — 감사 묶음 가운데 판정이 필요 없는 여덟이 닫히고 발견 둘이 남았다(#551~#570). 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
