@@ -292,7 +292,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 집행
 
-검사 스물셋을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
+검사 스물둘을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
@@ -318,7 +318,6 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `.type.ts`·`.dto.ts`에 클래스·변수·함수 선언 금지 | 「런타임에 아무것도 안 한다」는 파일이 값을 내기 | 접미사가 성격을 말한다는 것 | lint 규칙 |
 | `services/`에서 `hooks/` import 금지 | service가 controller를 거꾸로 부르기 | 흐름이 위에서 아래로만 간다는 것 | lint 규칙 |
 | `hooks/`에서 `use*`가 아닌 export 금지 | 훅 아닌 함수가 controller 폴더에 살기 | 세그먼트의 뜻 — 둘째 줄의 역방향 | lint 규칙 |
-| 빈 `.catch(() => {})` 금지 — 실패해도 할 일이 없는 기기 손(`SplashScreen`·`AsyncStorage`)만 허용 | 실패가 어디로도 안 가기 | 실패가 사람에게 닿는다는 것 | lint 규칙 |
 
 **`features/`의 Query를 이름으로 면제하지 않는다.** 앞선 판은 `useAttendanceMonths` 하나를 이름으로 빼줬는데, 이름 면제는 그 파일이 없어진 뒤 아무것도 안 가리키는 구멍이 된 전례가 있다(`dumbUi.mjs`가 사라진 `providers.tsx`를 빼주고 있었다). 조건으로 바꾸면 기계가 import를 세어 판정한다 — `entities` 둘 이상을 읽는 Query는 어느 `entities`에도 못 앉으므로 위층이 받는다.
 
