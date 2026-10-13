@@ -8,6 +8,7 @@ import {
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { kstDateOf } from "@/shared/utils/kstDate";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import {
@@ -68,7 +69,8 @@ export function usePayrollScreen(): PayrollScreenController {
   const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);
   const span = useMemo(() => periodSpan(period), [period]);
 
-  const payroll = useMyPayrollViewDaysQuery(supabase, span);
+  const nowMs = useServerNow();
+  const payroll = useMyPayrollViewDaysQuery(supabase, span, nowMs);
 
   const loading = profileLoading || payroll.isLoading;
 

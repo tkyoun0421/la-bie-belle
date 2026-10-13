@@ -48,3 +48,8 @@ export type OpenSlot = {
   workDate: string;
   positions: string[];
 };
+
+export type WorkMonth = {
+  month: string;
+  days: ScheduleDay[];
+};

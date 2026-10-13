@@ -1,16 +1,11 @@
 import type { DB } from "@/shared/api/database";
-import { lastDateOfMonth } from "@/shared/utils/kstDate";
-import { monthStart } from "@/shared/utils/monthRange";
-import type { RehearsalRow } from "@/entities/rehearsal/api/rehearsal.dto";
+import {
+  REHEARSAL_COLUMNS,
+  type RehearsalRow,
+} from "@/entities/rehearsal/api/rehearsal.dto";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { toRehearsal } from "@/entities/rehearsal/utils/rehearsal.mapper";
-
-export const REHEARSAL_COLUMNS =
-  "id, profile_id, work_date, starts_at, ends_at, count";
-
-export function monthRange(month: string): { from: string; to: string } {
-  return { from: monthStart(month), to: lastDateOfMonth(month) };
-}
+import { monthRange } from "@/entities/rehearsal/utils/rehearsalMonthRange.utils";
 
 export async function getMyRehearsals(
   client: DB,

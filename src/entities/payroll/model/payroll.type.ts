@@ -45,3 +45,8 @@ export type PayrollMonth = {
   excuseStatus: ExcuseStatus[];
   holidays: Holiday[];
 };
+
+export type PayrollByMonth = {
+  month: string;
+  payroll: PayrollMonth;
+};

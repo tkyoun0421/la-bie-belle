@@ -10,3 +10,6 @@ export type RehearsalRow = {
 export type NamedRehearsalRow = RehearsalRow & {
   profiles: { display_name: string | null } | null;
 };
+
+export const REHEARSAL_COLUMNS =
+  "id, profile_id, work_date, starts_at, ends_at, count";

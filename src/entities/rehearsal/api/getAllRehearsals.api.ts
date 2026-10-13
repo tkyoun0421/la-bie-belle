@@ -1,11 +1,11 @@
 import type { DB } from "@/shared/api/database";
 import {
-  monthRange,
   REHEARSAL_COLUMNS,
-} from "@/entities/rehearsal/api/getMyRehearsals.api";
-import type { NamedRehearsalRow } from "@/entities/rehearsal/api/rehearsal.dto";
+  type NamedRehearsalRow,
+} from "@/entities/rehearsal/api/rehearsal.dto";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { toNamedRehearsal } from "@/entities/rehearsal/utils/rehearsal.mapper";
+import { monthRange } from "@/entities/rehearsal/utils/rehearsalMonthRange.utils";
 
 export async function getAllRehearsals(
   client: DB,

@@ -1,12 +1,12 @@
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
-import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
+import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
 import type { AttendanceTab } from "@/features/stats/model/attendanceTab.type";
+import type { AttendanceMonth } from "@/features/stats/model/stats.type";
 import {
   computeWorkTotals,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
-import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 
 export function workValues(
   loaded: WorkMonth[] | undefined,

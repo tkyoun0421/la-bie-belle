@@ -1,14 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type AddAssignmentInput = {
-  profileId: string;
-  kind: string;
-  slotId?: string;
-  dayId?: string;
-  position?: string;
-  skipQualification?: boolean;
-};
+import type { AddAssignmentInput } from "@/features/scheduleAssign/model/scheduleAssign.type";
 
 export async function addAssignment(
   client: DB,

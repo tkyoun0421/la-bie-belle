@@ -124,6 +124,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
     expect(useMyPayrollViewDaysQueryMock).toHaveBeenCalledWith(
       expect.anything(),
       SPAN,
+      expect.any(Number),
     );
   });
 });

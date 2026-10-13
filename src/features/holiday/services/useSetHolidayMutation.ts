@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  setHoliday,
-  type SetHolidayInput,
-} from "@/features/holiday/api/setHoliday.api";
+import { setHoliday } from "@/features/holiday/api/setHoliday.api";
+import type { SetHolidayInput } from "@/features/holiday/model/holiday.type";
 
 export type SetHolidayResult = {
   mutate: (input: SetHolidayInput) => void;

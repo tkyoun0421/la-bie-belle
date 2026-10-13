@@ -3,12 +3,7 @@ import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
-import type { Attendance } from "@/entities/attendance/model/attendance.type";
-
-export type AttendanceByMonth = {
-  month: string;
-  attendance: Attendance;
-};
+import type { AttendanceByMonth } from "@/entities/attendance/model/attendance.type";
 
 export function useMonthsAttendanceQuery(
   client: DB,

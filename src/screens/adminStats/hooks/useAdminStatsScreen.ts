@@ -22,7 +22,7 @@ import {
   attendanceValues,
   percentLabel,
   workValues,
-} from "@/features/stats/utils/chartValues.utils";
+} from "@/features/stats/utils/teamChartValues.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import {
   ADMIN_STATS_TABS,

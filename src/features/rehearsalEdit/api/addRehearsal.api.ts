@@ -1,12 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-
-export type AddRehearsalInput = {
-  workDate: string;
-  startsAt?: string;
-  endsAt?: string;
-  count?: number;
-};
+import type { AddRehearsalInput } from "@/features/rehearsalEdit/model/rehearsalEdit.type";
 
 export async function addRehearsal(
   client: DB,

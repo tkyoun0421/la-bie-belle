@@ -1,4 +1,4 @@
-import type { ToastState } from "@/shared/hooks/useToast";
+import type { ToastState } from "@/shared/model/toast.type";
 import type {
   ActiveMember,
   Qualification,
@@ -14,8 +14,8 @@ import type {
 } from "@/entities/schedule/model/schedule.type";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import type { AdjustSheetRow } from "@/features/adjustment/model/adjustSheetRow.type";
-import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import type { PickerEntry } from "@/features/scheduleAssign/model/pickerEntry.type";
+import type { AddAssignmentInput } from "@/features/scheduleAssign/model/scheduleAssign.type";
 import type { ForceChangeCopyInput } from "@/features/scheduleConfirm/utils/forceChangeCopy.utils";
 import type {
   AdjustSheetAdjustment,

@@ -1,5 +1,6 @@
 import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
+import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { PAYROLL_VIEW_COPY } from "@/features/payrollCompute/consts/payrollCompute.const";
 import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
@@ -52,7 +53,8 @@ export function usePayrollMonthRows({
   span,
   onOpenMonth,
 }: PayrollMonthRowsSource): PayrollMonthRowsController {
-  const read = useMyPayrollViewDaysQuery(supabase, span);
+  const nowMs = useServerNow();
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
 
   return fragmentOf(read, {
     empty: (days) => yearRows(monthRowsOfDays(days)).length === 0,

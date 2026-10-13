@@ -35,7 +35,7 @@ import {
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/utils/chartValues.utils";
+} from "@/screens/stats/utils/myChartValues.utils";
 
 export type StatsTab = (typeof STATS_TABS)[number];
 

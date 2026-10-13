@@ -25,7 +25,6 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: jest.fn(),
-    liveAssignmentCount: () => 0,
   }),
 );
 

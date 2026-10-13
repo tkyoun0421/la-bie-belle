@@ -2,11 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
-import {
-  uploadAvatar,
-  type UploadAvatarInput,
-} from "@/features/profileEdit/api/avatarsBucket.api";
+import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
 import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
+import type { UploadAvatarInput } from "@/features/profileEdit/model/profileEdit.type";
 
 export type UpdatePhotoInput = UploadAvatarInput | { photoUrl: string };
 

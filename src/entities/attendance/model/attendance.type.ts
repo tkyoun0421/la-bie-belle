@@ -51,3 +51,8 @@ export type TalliedStatus = (typeof TALLIED_STATUSES)[number];
 export type MonthlyAttendanceTally = Record<TalliedStatus, number>;
 
 export type AttendanceSummary = Partial<Record<AttendanceStatus, number>>;
+
+export type AttendanceByMonth = {
+  month: string;
+  attendance: Attendance;
+};

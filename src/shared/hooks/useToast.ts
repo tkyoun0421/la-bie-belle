@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
+import type { ToastState } from "@/shared/model/toast.type";
 import type { ToastKind } from "@/shared/ui/Toast";
-
-export type ToastState = { kind: ToastKind; message: string };
 
 export type ToastController = {
   toast: ToastState | null;

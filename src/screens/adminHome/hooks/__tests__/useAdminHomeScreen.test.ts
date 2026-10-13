@@ -34,8 +34,6 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: getMonthWindowMock,
-    liveAssignmentCount: (day: { assignments: { endedAt: string | null }[] }) =>
-      day.assignments.filter((one) => one.endedAt === null).length,
   }),
 );
 

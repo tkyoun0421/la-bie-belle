@@ -11,10 +11,6 @@ import type {
   MemberSummary,
 } from "@/entities/member/model/member.type";
 import {
-  sortActiveMembers,
-  sortLeftMembers,
-} from "@/entities/member/model/sortMembers.policy";
-import {
   filterBlockedMembers,
   filterPendingMembers,
 } from "@/entities/member/utils/filterMembers.utils";
@@ -23,6 +19,10 @@ import {
   toMember,
   toMemberSummary,
 } from "@/entities/member/utils/member.mapper";
+import {
+  sortActiveMembers,
+  sortLeftMembers,
+} from "@/entities/member/utils/sortMembers.utils";
 
 const COLUMNS = [
   "id",
