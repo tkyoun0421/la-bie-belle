@@ -6,15 +6,16 @@
 
 ## 다음 작업
 
-**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯이 전부 닫혔다.** 마지막 [`effect-derived-values`](3-build/plans/effect-derived-values.md)가 [PR #546](https://github.com/tkyoun0421/la-bie-belle/pull/546)이다 — reducer 넷이 `screens/*/model`에 서고, mutation 완료 콜백 여덟이 `onSuccess`/`onError`의 호출별 콜백(`shared/model/mutationCallbacks.type.ts`)으로, 타이머 둘과 리스너 하나가 `useEffectEvent`로, `NotificationsListState` 일곱 글자가 더 불러오기 축 `resolveNotificationsPaging` 넷으로, `bodyState`·`body` 둘이 `ScheduleWorkerBody` 판별 union 하나로 갔다. 구현자가 **804초**에 끝냈고 되돌림 세 꼴이 0회다([관찰 071](observations/071-implementer-time-goes-to-knowable-rework.md) 둘째 측정).
+**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯이 전부 닫혔다.**
 
-**[`post-refactor-audit`](backlog.md)가 끝났고 묶음 여덟이 backlog 행으로 섰다.** 첫 행 `signout-removes-push-token`이 닫혔다([PR #553](https://github.com/tkyoun0421/la-bie-belle/pull/553)) — 로그아웃이 권한 창 없이 토큰을 읽어 `remove_push_token`을 먼저 부르고 시각 오프셋을 지운다. 둘째 `query-failure-reaches-the-screen`은 조사하니 둘로 갈렸다 — 정본이 있는 세션 실패는 `session-error-is-swallowed`로 닫혔고([PR #555](https://github.com/tkyoun0421/la-bie-belle/pull/555), 뿌리는 `getCurrentUser`가 모든 오류를 `null`로 접던 것), **나머지는 화면마다 읽기 실패의 정본이 없어 설계 결정을 기다린다** — adminHome·profile·wages·membersPending·blocked·left·종 점. wages는 실패하면 스켈레톤이 끝없이 돌고, membersPending·profile은 조각이 `failed`를 아는데 화면이 슬롯을 안 넘긴다. 셋째 `pair-tests-name-every-export`가 진행 중이다.
+**[`post-refactor-audit`](backlog.md)의 묶음 여덟 가운데 판정이 필요 없는 것이 전부 닫혔다.** `signout-removes-push-token`(#553) · `session-error-is-swallowed`(#555) · `pair-tests-name-every-export`(#557) · `loading-fragments-share-one-body`(#560) · `api-exports-only-transport`와 `domain-types-leave-services`(#562) · `dead-exports-pruned`(#566) · `audit-checks-into-catalog`(#569). 그 곁에 `rule-15-blocked-functions-to-model`(#564)과 `callbacks-in-effect-deps-remainder`(#568)이 닫혔고 `tests-read-the-real-clock`은 폭탄 0으로 닫혔다.
 
-- [`callbacks-in-effect-deps-remainder`](backlog.md) — 콜백이 `useEffect` 의존 배열에 든 자리 **열여덟**이 남았다. 계획이 grep으로 「여덟 + 셋」이라 센 것을 AST가 스물아홉으로 냈고 그물이 선 열하나만 갔다. `unit-test-writer`가 먼저다 — #546의 일곱 `it`이 꼴이다
-- [`canon-and-code-divergence-fixes`](backlog.md) — [제안](proposals/canon-and-code-divergence.md)([PR #541](https://github.com/tkyoun0421/la-bie-belle/pull/541))의 **판정 일곱**이 총괄 몫이다. 추천은 행에 있다. 그 뒤 산문 속 백틱 경로를 보는 검사(규칙 48)
-- [`rule-15-blocked-functions-to-model`](backlog.md) — 규칙 15가 막아 제 자리로 못 간 함수 일곱. `unit-test-writer`가 먼저다
-- [`tests-read-the-real-clock`](backlog.md) — 진짜 시계를 읽는 테스트 열. [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542)가 꼴이다
-- [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 앞 묶음들이 찾고 안 건드린 셋
+남은 것은 전부 **사람의 판정**을 기다린다.
+
+- [`login-screen-native`](backlog.md) — **Expo 앱의 로그인 화면이 없다.** `src/app/login.tsx`가 `NotBuiltYet`이고 `login-screens`의 done은 웹 시절이다. 정본과 시안은 있다
+- [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
+- [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
+- [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
 
 **규칙 45는 어휘로 문다.** `*Controller`·`*ListState`·`*Body` alias가 글자 union이고 읽기 상태 어휘(`pending`·`failed`·`empty`·`ready`·`sending`·`loading`·`error`)가 들면 `flat`이다. 「글자면 전부」는 `MemberSheetBody`(`detail`·`rename`·`none`)를 물어 안 된다 — 그것은 몸이 어느 그림인지 고르는 데이터다.
 
