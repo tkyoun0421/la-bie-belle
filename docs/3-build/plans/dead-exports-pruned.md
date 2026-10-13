@@ -4,9 +4,9 @@
 
 ## 판정 — 묻지 말고 이 꼴로 쓴다
 
-**지운다.** `Position`(`entities/schedule/model/schedule.type.ts`) · `HomeTileState`(`screens/adminHome/model/homeTileSummary.policy.ts`). 자기 파일에서도 안 쓰는 타입이다.
+**지운다.** `Position`(`entities/schedule/model/schedule.type.ts`) · `HomeTileState`(`screens/adminHome/model/homeTileSummary.policy.ts`)는 자기 파일에서도 안 쓰는 타입이다. `EXCUSE_BODY_MAX_LENGTH`는 사유 화면이 설 때 그 화면 문서의 값으로 다시 선다 — 이름 하나를 면제하려고 검사에 이름 단위 칸을 세우지 않는다. `getDayAttendance.api.ts`와 integration 짝은 드는 행이 없다 — 달 단위 읽기가 그 일을 한다.
 
-**export만 뗀다.** 자기 파일에서만 쓰는 넷 — `attendanceStatus.policy.ts`의 `excuseDeadlineAt` · `AdjustChoiceSheet.tsx`·`DayDetailCard.tsx`의 `*_TEST_ID` · `Text.tsx`의 `MAX_FONT_SIZE_MULTIPLIER`. 테스트가 그 이름을 당기면 테스트가 내부를 재는 것이다 — 단언을 바꾸지 말고 리턴에 적는다.
+**export만 뗀다.** 자기 파일에서만 쓰는 셋 — `AdjustChoiceSheet.tsx`·`DayDetailCard.tsx`의 `*_TEST_ID` · `Text.tsx`의 `MAX_FONT_SIZE_MULTIPLIER`. `excuseDeadlineAt`은 짝 테스트가 당겨 재므로 export를 둔다.
 
 **기다린다.** 막힌 task가 쓸 코드는 프로덕션에 둔다. 지우면 그 task가 다시 쓴다.
 
@@ -15,10 +15,10 @@
 | `checkIn.api.ts` | `attendance-checkin` |
 | excuse 여섯과 `EXCUSE_BODY_MAX_LENGTH` | `attendance-excuse` |
 | `setHallLocation.api.ts` | `hall-location` |
-| `handleAuthCallback.lib.ts` · `authRedirect.utils.ts` | 로그인 화면을 드는 행 — 작성자가 backlog에서 찾는다 |
-| `DraggableSheet.tsx` | 관찰 028이 판정을 든다. 면제 키는 그 관찰 파일 이름이다 |
+| `handleAuthCallback.lib.ts` · `authRedirect.utils.ts` | `login-screen-native` |
+| `DraggableSheet.tsx` | 관찰 028이 판정을 든다. 면제 키는 그 관찰 파일 이름이다. 아무도 안 당기는 파일이라 면제 표에 든 동안은 죽은 export 셈에서도 빠진다 |
 
-**드는 행이 없는 것은 지운다.** `getPushReachable.api.ts`와 짝, `reduceMotion.lib.ts`의 `motionDistance`. 작성자가 backlog·`docs/2-design`에서 그 이름을 찾아 드는 행이 있으면 지우지 않고 그 행 이름을 단다.
+**드는 행이 없는 것은 지운다.** `getPushReachable.api.ts`와 짝, `reduceMotion.lib.ts`(`motionDistance` 하나뿐이다)와 짝.
 
 **파일은 살았는데 함수만 아무도 안 부르는 열셋은 이 task 밖이다.** 감사가 판정을 안 했고, 같은 꼴이 `audit-checks-into-catalog`의 검사 목록에 든다.
 
