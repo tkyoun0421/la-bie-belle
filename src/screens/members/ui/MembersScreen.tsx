@@ -7,14 +7,17 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Input } from "@/shared/ui/Input";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
 import { Text } from "@/shared/ui/Text";
 import type { MemberRowsEmptyReason } from "@/entities/member/hooks/useMemberRows";
 import { MemberRows } from "@/entities/member/ui/MemberRows";
 import { MemberSheet } from "@/features/memberAdmin/ui/MemberSheet";
-import { MEMBERS_COPY } from "@/screens/members/consts/members.const";
+import {
+  MEMBERS_COPY,
+  SKELETON_ROWS,
+} from "@/screens/members/consts/members.const";
 import { useMembersScreen } from "@/screens/members/hooks/useMembersScreen";
 import { MembersEmpty } from "@/screens/members/ui/MembersEmpty";
-import { MembersLoading } from "@/screens/members/ui/MembersLoading";
 
 const EMPTY_VIEW: Record<MemberRowsEmptyReason, ReactNode> = {
   noMembers: <MembersEmpty />,
@@ -45,7 +48,7 @@ export function MembersScreen() {
             noteOf={screen.noteOf}
             onPress={screen.openMember}
             className="mt-4 py-0"
-            pending={<MembersLoading />}
+            pending={<SkeletonRows rows={SKELETON_ROWS} frame="card" />}
             empty={(reason) => EMPTY_VIEW[reason]}
             before={
               <Input

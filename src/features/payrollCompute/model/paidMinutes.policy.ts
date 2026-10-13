@@ -1,4 +1,4 @@
-import { MINUTES_PER_HOUR } from "@/shared/consts/time.const";
+import { minutesOfClock } from "@/shared/utils/kstDate";
 import type { Adjustment } from "@/entities/payroll/model/payroll.type";
 import {
   rehearsalHours,
@@ -18,12 +18,6 @@ export type PaidMinutesInput = {
   adjustments: readonly TimedAdjustment[];
   rehearsals: readonly RehearsalClock[];
 };
-
-function minutesOfClock(clock: string): number {
-  const [hour, minute] = clock.split(":").map(Number);
-
-  return hour * MINUTES_PER_HOUR + minute;
-}
 
 function assignedMinutes(input: PaidMinutesInput): number {
   if (input.assignments.length === 0 || input.day === null) {

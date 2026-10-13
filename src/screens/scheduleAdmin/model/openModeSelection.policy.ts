@@ -1,5 +1,4 @@
-import { kstDateOf } from "@/shared/utils/kstDate";
-import { formatBareDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
+import { formatBareDate, kstDateOf } from "@/shared/utils/kstDate";
 
 export type SelectableInput = {
   workDate: string;

@@ -57,3 +57,14 @@ describe("attendanceRatioShares — 몫이 0이어도 자리 자체는 남는다
     expect(shares.every((share) => share.value === 0)).toBe(true);
   });
 });
+
+describe("attendanceRatioShares — 순서가 곧 색이다", () => {
+  it("출근·인정·지각·결근 순서로 넷이 선다", () => {
+    expect(attendanceRatioShares(TALLY)).toEqual([
+      { key: "present", label: "출근", value: 41 },
+      { key: "excused", label: "인정", value: 2 },
+      { key: "late", label: "지각", value: 4 },
+      { key: "absent", label: "결근", value: 1 },
+    ]);
+  });
+});

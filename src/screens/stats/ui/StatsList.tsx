@@ -1,13 +1,14 @@
 import { FragmentView } from "@/shared/ui/FragmentView";
+import { SkeletonRows } from "@/shared/ui/SkeletonRows";
+import { PAYROLL_VIEW_SKELETON_ROWS } from "@/features/payrollCompute/consts/payrollCompute.const";
 import { PayrollViewFailed } from "@/features/payrollCompute/ui/PayrollViewFailed";
-import { PayrollViewLoading } from "@/features/payrollCompute/ui/PayrollViewLoading";
 import { StatsPayroll } from "@/features/payrollCompute/ui/StatsPayroll";
 import { StatsAttendance } from "@/features/stats/ui/StatsAttendance";
 import { StatsPositions } from "@/features/stats/ui/StatsPositions";
+import { SKELETON_ROWS } from "@/screens/stats/consts/stats.const";
 import type { StatsScreenController } from "@/screens/stats/hooks/useStatsScreen";
 import { StatsEmpty } from "@/screens/stats/ui/StatsEmpty";
 import { StatsFailed } from "@/screens/stats/ui/StatsFailed";
-import { StatsLoading } from "@/screens/stats/ui/StatsLoading";
 
 export type StatsListProps = {
   screen: StatsScreenController;
@@ -18,7 +19,7 @@ export function StatsList({ screen }: StatsListProps) {
     return (
       <StatsAttendance
         month={screen.month}
-        pending={<StatsLoading />}
+        pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
       />
@@ -29,7 +30,7 @@ export function StatsList({ screen }: StatsListProps) {
     return (
       <StatsPositions
         month={screen.month}
-        pending={<StatsLoading />}
+        pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
       />
@@ -39,7 +40,7 @@ export function StatsList({ screen }: StatsListProps) {
   return (
     <FragmentView
       fragment={screen.listState}
-      pending={<StatsLoading />}
+      pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
       failed={<StatsFailed onRetry={screen.retry} />}
       empty={<StatsEmpty />}
     >
@@ -47,7 +48,9 @@ export function StatsList({ screen }: StatsListProps) {
         <StatsPayroll
           span={screen.payrollSpan}
           onOpenHistory={screen.openPayrollHistory}
-          pending={<PayrollViewLoading />}
+          pending={
+            <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />
+          }
           failed={(retry) => <PayrollViewFailed onRetry={retry} />}
         />
       )}

@@ -1,5 +1,6 @@
 import {
   clockOf,
+  formatBareDate,
   kstClockOf,
   kstDateOf,
   spellDate,
@@ -22,18 +23,12 @@ export type CancelApprovalDetail = {
   reason: string;
 };
 
-function bareDate(workDate: string): string {
-  const [, month, day] = workDate.split("-").map(Number);
-
-  return `${month}월 ${day}일`;
-}
-
 export function cancelApprovalRowTitle(row: {
   displayName: string;
   workDate: string;
   position: string;
 }): string {
-  return `${row.displayName} · ${bareDate(row.workDate)} ${row.position}`;
+  return `${row.displayName} · ${formatBareDate(row.workDate)} ${row.position}`;
 }
 
 export function cancelApprovalConfirmBody(row: {
@@ -41,7 +36,7 @@ export function cancelApprovalConfirmBody(row: {
   workDate: string;
   position: string;
 }): string {
-  return `${bareDate(row.workDate)} ${row.position} 자리가 비고 ${row.displayName}님에게 알림이 가요`;
+  return `${formatBareDate(row.workDate)} ${row.position} 자리가 비고 ${row.displayName}님에게 알림이 가요`;
 }
 
 export function cancelApprovalDetail(
@@ -52,7 +47,7 @@ export function cancelApprovalDetail(
   return {
     title: `${input.displayName} · ${spellDate(input.workDate)} ${input.position}`,
     subtitle: `${clockOf(input.startsAt)}–${clockOf(input.endsAt)}`,
-    sentAtLine: `${bareDate(kstDateOf(sent))} ${kstClockOf(sent)}에 보냈어요`,
+    sentAtLine: `${formatBareDate(kstDateOf(sent))} ${kstClockOf(sent)}에 보냈어요`,
     reason: input.reason,
   };
 }
