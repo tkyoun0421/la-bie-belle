@@ -1,7 +1,4 @@
-const { sheetOpenedOn } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/scheduleWorker/model/scheduleWorkerSheet.policy"
-);
+import { sheetOpenedOn } from "@/screens/scheduleWorker/model/scheduleWorkerSheet.policy";
 
 describe("sheetOpenedOn — 들어올 때 시트가 어떤 모습인지", () => {
   it("날짜 없이 들어오면 시트가 닫혀 있다", () => {

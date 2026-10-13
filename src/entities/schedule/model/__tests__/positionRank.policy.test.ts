@@ -1,9 +1,5 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
-
-const { positionRank } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/entities/schedule/model/positionRank.policy"
-);
+import { positionRank } from "@/entities/schedule/model/positionRank.policy";
 
 describe("positionRank — 포지션의 몇째 자리인지", () => {
   it("정본 순서의 아홉 포지션은 그 순서대로 0부터 아홉째까지다", () => {

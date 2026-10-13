@@ -28,3 +28,7 @@ export type ActiveMember = Member & {
 };
 
 export type MemberKind = "active" | "left" | "pending" | "blocked";
+
+export type MemberRowsKind = "active" | "left";
+
+export type MemberRowsEmptyReason = "noMembers" | "noMatch" | "noRows";

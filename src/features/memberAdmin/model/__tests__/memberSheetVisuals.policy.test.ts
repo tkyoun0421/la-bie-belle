@@ -1,9 +1,5 @@
 import { MEMBER_SHEET_COPY } from "@/features/memberAdmin/consts/memberAdmin.const";
-
-const { memberSheetVisuals } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/memberAdmin/model/memberSheetVisuals.policy"
-);
+import { memberSheetVisuals } from "@/features/memberAdmin/model/memberSheetVisuals.policy";
 
 describe("memberSheetVisuals — 시트의 면마다 몸과 바닥과 더보기", () => {
   it("재직 회원의 상세 면은 몸·바닥이 상세고 더보기가 퇴사 처리다", () => {

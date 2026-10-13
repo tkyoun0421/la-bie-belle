@@ -1,7 +1,4 @@
-const { memberRowsEmptyReason } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/entities/member/model/memberRowsEmpty.policy"
-);
+import { memberRowsEmptyReason } from "@/entities/member/model/memberRowsEmpty.policy";
 
 describe("memberRowsEmptyReason — 목록이 비었을 때 까닭", () => {
   it("재직 쪽에 회원이 아무도 없으면 noMembers다", () => {

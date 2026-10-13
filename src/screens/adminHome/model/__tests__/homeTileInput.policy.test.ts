@@ -1,7 +1,4 @@
-const { homeTileInputOf } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/adminHome/model/homeTileInput.policy"
-);
+import { homeTileInputOf } from "@/screens/adminHome/model/homeTileInput.policy";
 
 describe("homeTileInputOf — 타일이 말할 달의 상태", () => {
   it("그 달 창이 없으면 아직 안 만든 달이다", () => {

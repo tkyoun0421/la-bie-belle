@@ -1,7 +1,4 @@
-const { refusalDialogOf } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/memberAdmin/model/memberRefusal.policy"
-);
+import { refusalDialogOf } from "@/features/memberAdmin/model/memberRefusal.policy";
 
 describe("refusalDialogOf — 거절당한 까닭이 세울 확인창", () => {
   it("퇴사가 앞으로 배정이 남아 거절되면 blocked다", () => {

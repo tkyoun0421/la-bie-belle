@@ -1,7 +1,4 @@
-const { formTargetOf } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/rehearsal/model/rehearsalForm.policy"
-);
+import { formTargetOf } from "@/screens/rehearsal/model/rehearsalForm.policy";
 
 const EDITING = {
   id: "a",
