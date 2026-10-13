@@ -17,10 +17,8 @@ jest.unstable_mockModule("@react-native-async-storage/async-storage", () => ({
 
 const { SERVER_CLOCK_STORAGE_KEY } =
   await import("@/entities/clock/consts/clock.const");
-const clockStorage = await import("@/entities/clock/lib/clockStorage.lib");
-const { readStoredOffset } = clockStorage;
-// @ts-expect-error 대상 함수가 아직 없다
-const clearStoredOffset: () => Promise<void> = clockStorage.clearStoredOffset;
+const { readStoredOffset, clearStoredOffset } =
+  await import("@/entities/clock/lib/clockStorage.lib");
 
 beforeEach(() => {
   store.clear();

@@ -8,12 +8,9 @@ async function loadWith(expoConfig: ExpoConfig | null) {
     default: { expoConfig },
   }));
 
-  const { readPushProjectId } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/shared/config/push.config"
-  );
+  const { readPushProjectId } = await import("@/shared/config/push.config");
 
-  return readPushProjectId as () => string | null;
+  return readPushProjectId;
 }
 
 describe("readPushProjectId — EAS 프로젝트 id를 읽는다", () => {

@@ -14,3 +14,7 @@ export function writeStoredOffset(offset: number): void {
     () => {},
   );
 }
+
+export async function clearStoredOffset(): Promise<void> {
+  await AsyncStorage.removeItem(SERVER_CLOCK_STORAGE_KEY).catch(() => {});
+}

@@ -8,10 +8,8 @@ type Deps = {
   }>;
 };
 
-const { readGrantedPushToken } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/auth/lib/devicePushToken.lib"
-);
+const { readGrantedPushToken } =
+  await import("@/features/auth/lib/devicePushToken.lib");
 
 function depsWith(overrides: Partial<Deps> = {}) {
   const getExpoPushTokenAsync = jest.fn<Deps["getExpoPushTokenAsync"]>(

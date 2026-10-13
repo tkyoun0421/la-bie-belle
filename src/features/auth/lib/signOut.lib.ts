@@ -11,8 +11,3 @@ export async function signOut(deps: SignOutDeps): Promise<void> {
   deps.clearQueryClient();
   await deps.clearPersistedState();
 }
-
-export const DEVICE_CLEANUP_NOT_WIRED_YET = {
-  removePushToken: async (): Promise<void> => {},
-  clearPersistedState: async (): Promise<void> => {},
-};

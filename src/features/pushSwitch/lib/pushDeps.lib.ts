@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
-import { readPushProjectId } from "@/features/pushSwitch/config/pushSwitch.config";
+import { readPushProjectId } from "@/shared/config/push.config";
 import {
   PUSH_CHANNEL_ID,
   PUSH_CHANNEL_NAME,

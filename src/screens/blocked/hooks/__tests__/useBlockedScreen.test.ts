@@ -22,10 +22,6 @@ jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
 
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
   signOut: signOutMock,
-  DEVICE_CLEANUP_NOT_WIRED_YET: {
-    removePushToken: async (): Promise<void> => {},
-    clearPersistedState: async (): Promise<void> => {},
-  },
 }));
 
 const { renderHook, waitFor, act } =
