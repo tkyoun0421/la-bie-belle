@@ -6,8 +6,7 @@ import { Text } from "@/shared/ui/Text";
 import { useAdjustChoiceSheet } from "@/features/adjustment/hooks/useAdjustChoiceSheet";
 import type { AdjustChoiceSheetInput } from "@/features/adjustment/model/adjustChoiceSheet.type";
 
-export const ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID =
-  "adjustment-extra-minutes-input";
+const ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID = "adjustment-extra-minutes-input";
 
 const EXTRA_LABEL = "몇 분 더 일했나요?";
 

@@ -1,7 +1,7 @@
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
 import { cn } from "@/shared/utils/cn";
 
-export const MAX_FONT_SIZE_MULTIPLIER = 1.3;
+const MAX_FONT_SIZE_MULTIPLIER = 1.3;
 
 export type TextSize =
   "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl";

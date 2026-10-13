@@ -50,6 +50,8 @@ export const EXEMPT_TEST_ONLY_FILES: Record<string, string> = {
   "src/entities/attendance/utils/summarizeAttendanceStatuses.utils.ts":
     "attendance-excuse",
   "src/features/qrAdmin/api/setHallLocation.api.ts": "hall-location",
+  "src/features/auth/lib/handleAuthCallback.lib.ts": "login-screen-native",
+  "src/features/auth/utils/authRedirect.utils.ts": "login-screen-native",
   "src/shared/ui/DraggableSheet.tsx":
     "observations/028-sheet-handle-doc-and-piece-disagree",
 };
