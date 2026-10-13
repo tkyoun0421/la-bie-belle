@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { setHallLocation } from "@/features/qrAdmin/api/setHallLocation.api";
 import {
   createAdminUser,

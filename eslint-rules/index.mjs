@@ -6,6 +6,7 @@ import entitiesReadOnly from "./entitiesReadOnly.mjs";
 import envInConfig from "./envInConfig.mjs";
 import featuresQueryComposes from "./featuresQueryComposes.mjs";
 import fragmentStateContract from "./fragmentStateContract.mjs";
+import hooksExportUseOnly from "./hooksExportUseOnly.mjs";
 import mutationSettleShape from "./mutationSettleShape.mjs";
 import nativeSdkSegment from "./nativeSdkSegment.mjs";
 import noApiImportInUi from "./noApiImportInUi.mjs";
@@ -26,8 +27,10 @@ import noVisualUtilityClass from "./noVisualUtilityClass.mjs";
 import purePolicy from "./purePolicy.mjs";
 import queryHookInServices from "./queryHookInServices.mjs";
 import queryKeyFactory from "./queryKeyFactory.mjs";
+import servicesNoHooksImport from "./servicesNoHooksImport.mjs";
 import storeFactoryInStores from "./storeFactoryInStores.mjs";
 import supabasePackageInApi from "./supabasePackageInApi.mjs";
+import typeFileNoRuntime from "./typeFileNoRuntime.mjs";
 import typeGuardName from "./typeGuardName.mjs";
 import uiNoRouter from "./uiNoRouter.mjs";
 import uiValueImport from "./uiValueImport.mjs";
@@ -44,6 +47,7 @@ const house = {
     "env-in-config": envInConfig,
     "features-query-composes": featuresQueryComposes,
     "fragment-state-contract": fragmentStateContract,
+    "hooks-export-use-only": hooksExportUseOnly,
     "mutation-settle-shape": mutationSettleShape,
     "native-sdk-segment": nativeSdkSegment,
     "no-api-import-in-ui": noApiImportInUi,
@@ -64,8 +68,10 @@ const house = {
     "pure-policy": purePolicy,
     "query-hook-in-services": queryHookInServices,
     "query-key-factory": queryKeyFactory,
+    "services-no-hooks-import": servicesNoHooksImport,
     "store-factory-in-stores": storeFactoryInStores,
     "supabase-package-in-api": supabasePackageInApi,
+    "type-file-no-runtime": typeFileNoRuntime,
     "type-guard-name": typeGuardName,
     "ui-no-router": uiNoRouter,
     "ui-value-import": uiValueImport,

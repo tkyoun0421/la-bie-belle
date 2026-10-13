@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 47;
+export const DOCUMENTED_LINT_RULE_COUNT = 50;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -379,6 +379,30 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/type-guard-name",
     enforcedBy: null,
     test: "eslint-rules/__tests__/typeGuardName.test.ts",
+  },
+  {
+    no: 48,
+    name: "타입 파일의 런타임 선언",
+    mechanism: "house",
+    ruleId: "house/type-file-no-runtime",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/typeFileNoRuntime.test.ts",
+  },
+  {
+    no: 49,
+    name: "services/의 hooks/ import",
+    mechanism: "house",
+    ruleId: "house/services-no-hooks-import",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/servicesNoHooksImport.test.ts",
+  },
+  {
+    no: 50,
+    name: "hooks/의 use*가 아닌 export",
+    mechanism: "house",
+    ruleId: "house/hooks-export-use-only",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/hooksExportUseOnly.test.ts",
   },
 ];
 

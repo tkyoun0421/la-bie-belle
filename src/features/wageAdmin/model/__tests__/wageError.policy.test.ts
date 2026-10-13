@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { isNoDefaultWage } from "@/features/wageAdmin/model/wageError.policy";
 
 describe("isNoDefaultWage — 되돌리기가 기본 시급이 없어 거절당했나", () => {

@@ -1,5 +1,5 @@
-import { DomainError, TransportError } from "@/shared/model/error.type";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
+import { DomainError, TransportError } from "@/shared/model/errors";
 
 describe("errorCodeOf — 업무가 거절한 것만 코드를 준다", () => {
   it("업무가 거절하면 그 코드다", () => {

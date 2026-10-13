@@ -6,9 +6,29 @@ const SLICED_LAYERS = new Set(["entities", "features", "screens"]);
 
 export const SUPABASE_INSTANCE_MODULE = "@/shared/api/supabase";
 
-export const API_SEGMENT = "api";
 export const UI_SEGMENT = "ui";
+export const HOOKS_SEGMENT = "hooks";
 export const SERVICES_SEGMENT = "services";
+export const STORES_SEGMENT = "stores";
+export const API_SEGMENT = "api";
+export const MODEL_SEGMENT = "model";
+export const CONSTS_SEGMENT = "consts";
+export const CONFIG_SEGMENT = "config";
+export const LIB_SEGMENT = "lib";
+export const UTILS_SEGMENT = "utils";
+
+export const SEGMENTS = Object.freeze([
+  UI_SEGMENT,
+  HOOKS_SEGMENT,
+  SERVICES_SEGMENT,
+  STORES_SEGMENT,
+  API_SEGMENT,
+  MODEL_SEGMENT,
+  CONSTS_SEGMENT,
+  CONFIG_SEGMENT,
+  LIB_SEGMENT,
+  UTILS_SEGMENT,
+]);
 
 function locationOf(parts) {
   const [layer, ...rest] = parts;
@@ -51,6 +71,34 @@ export function specifierLocation(specifier) {
   }
 
   return locationOf(specifier.slice(ALIAS.length).split("/"));
+}
+
+function isRelative(specifier) {
+  return specifier.startsWith("./") || specifier.startsWith("../");
+}
+
+export function importedLocation(context, specifier) {
+  if (typeof specifier !== "string") {
+    return null;
+  }
+
+  if (!isRelative(specifier)) {
+    return specifierLocation(specifier);
+  }
+
+  const resolved = path
+    .relative(
+      context.cwd,
+      path.resolve(path.dirname(context.filename), specifier),
+    )
+    .split(path.sep)
+    .join("/");
+
+  if (!resolved.startsWith(SOURCE_ROOT)) {
+    return null;
+  }
+
+  return locationOf(resolved.slice(SOURCE_ROOT.length).split("/"));
 }
 
 export function importEdges(visit) {

@@ -33,7 +33,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { MEMBER_DECISION_COPY } =
   await import("@/entities/member/consts/member.const");
 const { BLOCKED_COPY } =

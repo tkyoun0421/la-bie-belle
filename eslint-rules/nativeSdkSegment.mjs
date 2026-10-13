@@ -1,8 +1,15 @@
-import { fileLocation, importEdges, isTypeOnly } from "./segments.mjs";
+import {
+  CONFIG_SEGMENT,
+  HOOKS_SEGMENT,
+  LIB_SEGMENT,
+  UI_SEGMENT,
+  fileLocation,
+  importEdges,
+  isTypeOnly,
+} from "./segments.mjs";
 
 const APP_LAYER = "app";
-const DEVICE_SEGMENTS = new Set(["lib", "ui", "hooks"]);
-const ENVIRONMENT_SEGMENT = "config";
+const DEVICE_SEGMENTS = new Set([LIB_SEGMENT, UI_SEGMENT, HOOKS_SEGMENT]);
 const NATIVE_PACKAGE = "react-native";
 const EXPO_PACKAGE = "expo";
 const EXPO_SCOPE = "expo-";
@@ -39,7 +46,7 @@ const nativeSdkSegment = {
       !here ||
       here.layer === APP_LAYER ||
       here.segment === null ||
-      here.segment === ENVIRONMENT_SEGMENT ||
+      here.segment === CONFIG_SEGMENT ||
       DEVICE_SEGMENTS.has(here.segment)
     ) {
       return {};

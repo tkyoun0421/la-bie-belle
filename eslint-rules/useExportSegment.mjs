@@ -1,7 +1,12 @@
-import { fileLocation } from "./segments.mjs";
+import {
+  HOOKS_SEGMENT,
+  SERVICES_SEGMENT,
+  STORES_SEGMENT,
+  fileLocation,
+} from "./segments.mjs";
 
 const APP_LAYER = "app";
-const HOOK_HOMES = new Set(["hooks", "services", "stores"]);
+const HOOK_HOMES = new Set([HOOKS_SEGMENT, SERVICES_SEGMENT, STORES_SEGMENT]);
 const HOOK_NAME = /^use[A-Z]/;
 const FUNCTION_DECLARATIONS = new Set([
   "FunctionDeclaration",

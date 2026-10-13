@@ -1,14 +1,15 @@
 import {
+  MODEL_SEGMENT,
   UI_SEGMENT,
+  UTILS_SEGMENT,
   fileLocation,
   importEdges,
   isTypeOnly,
   specifierLocation,
 } from "./segments.mjs";
 
-const MAKING_SEGMENTS = new Set(["model", "utils"]);
+const MAKING_SEGMENTS = new Set([MODEL_SEGMENT, UTILS_SEGMENT]);
 const DOMAINLESS_LAYER = "shared";
-const UTILS_SEGMENT = "utils";
 
 const uiValueImport = {
   meta: {

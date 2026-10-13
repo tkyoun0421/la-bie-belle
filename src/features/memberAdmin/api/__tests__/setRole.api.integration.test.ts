@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { setRole } from "@/features/memberAdmin/api/setRole.api";
 import {
   createAdminUser,

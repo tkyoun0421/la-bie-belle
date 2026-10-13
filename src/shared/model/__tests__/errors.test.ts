@@ -1,4 +1,4 @@
-import { DomainError, TransportError } from "@/shared/model/error.type";
+import { DomainError, TransportError } from "@/shared/model/errors";
 
 describe("DomainError — 업무 규칙이 막은 오류", () => {
   it("코드를 필드와 메시지로 든다", () => {

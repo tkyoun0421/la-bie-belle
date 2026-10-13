@@ -1,5 +1,5 @@
 import { toApiError } from "@/shared/api/errors";
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import type { CheckInDeps } from "@/features/attendanceCheckin/api/attendanceCheckin.dto";
 import type { CheckInParams } from "@/features/attendanceCheckin/model/attendanceCheckin.type";
 

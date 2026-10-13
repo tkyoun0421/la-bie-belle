@@ -1,7 +1,11 @@
 import path from "node:path";
-import { fileLocation, importEdges, isTypeOnly } from "./segments.mjs";
+import {
+  CONFIG_SEGMENT,
+  fileLocation,
+  importEdges,
+  isTypeOnly,
+} from "./segments.mjs";
 
-const CONFIG_SEGMENT = "config";
 const ROUTE_LAYER = "app";
 const TESTS_FOLDER = "__tests__";
 

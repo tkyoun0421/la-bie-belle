@@ -1,5 +1,5 @@
 import { adjustmentFailureAction } from "@/shared/model/adjustmentFailure.policy";
-import { DomainError, TransportError } from "@/shared/model/error.type";
+import { DomainError, TransportError } from "@/shared/model/errors";
 
 describe("adjustmentFailureAction — not_allowed는 시트를 다시 읽는다", () => {
   it("refetch가 true고 띄울 문구가 없다", () => {

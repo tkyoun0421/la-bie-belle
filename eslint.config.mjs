@@ -180,6 +180,9 @@ const eslintConfig = defineConfig([
       "house/fragment-state-contract": "error",
       "house/controller-type-not-generic": "error",
       "house/type-guard-name": "error",
+      "house/type-file-no-runtime": "error",
+      "house/services-no-hooks-import": "error",
+      "house/hooks-export-use-only": "error",
     },
   },
 

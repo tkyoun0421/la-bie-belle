@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { removeSlot } from "@/features/scheduleSlot/api/removeSlot.api";
 import {
   backdateDeadline,
