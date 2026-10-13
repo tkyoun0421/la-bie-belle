@@ -281,3 +281,75 @@ describe("useMemberDetailSheet — 조각이 판정 셋을 든다", () => {
     expect(onDone).not.toHaveBeenCalled();
   });
 });
+
+describe("useMemberDetailSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  function swappableSheet() {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const hook = renderHook(
+      ({ onDone }: { onDone: MemberDetailSheetInput["onDone"] }) =>
+        useMemberDetailSheet(inputFor({ onDone })),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    return { ...hook, first, second };
+  }
+
+  it("승인이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.approve());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("거절이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.showFace("reject"));
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("차단이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.showFace("block"));
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("이미 처리됐다는 안내를 알린 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    approveMemberMock.mockRejectedValue(new DomainError("already_decided"));
+
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.approve());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

@@ -259,3 +259,55 @@ describe("useMemberWageSheet — 실패 문안을 controller가 완성해 내려
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useMemberWageSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  function swappableSheet() {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const hook = renderHook(
+      ({ onDone }: { onDone: (message: string) => void }) =>
+        useMemberWageSheet({
+          profileId: "p2",
+          name: "박수진",
+          photoUrl: null,
+          rates: OWN_RATES,
+          hasDefaultWage: true,
+          defaultWage: 11000,
+          onDone,
+        }),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    return { ...hook, first, second };
+  }
+
+  it("저장이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.write("16000"));
+    act(() => result.current.save());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("기본 시급으로 되돌린 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.askReset());
+    act(() => result.current.confirmReset());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

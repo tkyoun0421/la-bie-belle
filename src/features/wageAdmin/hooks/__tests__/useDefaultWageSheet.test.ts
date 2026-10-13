@@ -155,3 +155,27 @@ describe("useDefaultWageSheet — 실패 문안을 controller가 완성해 내�
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useDefaultWageSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("저장이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onDone }: { onDone: (message: string) => void }) =>
+        useDefaultWageSheet({ defaultWage: 11000, followerCount: 1, onDone }),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    act(() => result.current.write("12000"));
+    act(() => result.current.save());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

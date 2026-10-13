@@ -454,3 +454,94 @@ describe("useMemberSheet — 조각이 쓰기 넷을 든다", () => {
     expect(result.current.dialog).toBeNull();
   });
 });
+
+describe("useMemberSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  function swappableSheet(overrides: Partial<MemberSheetInput> = {}) {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const hook = renderHook(
+      ({ onDone }: { onDone: MemberSheetInput["onDone"] }) =>
+        useMemberSheet(inputFor({ ...overrides, onDone })),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    return { ...hook, first, second };
+  }
+
+  it("이름 저장이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.showFace("rename"));
+    act(() => result.current.writeDraft("김보라나"));
+    act(() => result.current.saveName());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("역할 변경이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.askRole());
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("퇴사 처리가 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.pressMenu());
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("퇴사 되돌리기가 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet({
+      member: { ...MEMBER, leftAt: "2026-09-30" },
+    });
+
+    act(() => result.current.pressMenu());
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("이미 처리됐다는 안내를 알린 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    markLeaveMock.mockRejectedValue(new DomainError("already_decided"));
+
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.pressMenu());
+    act(() => result.current.confirm());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});

@@ -92,3 +92,30 @@ describe("useCloseDayWarningSheet — 조각이 자기 mutation을 부른다", (
     await waitFor(() => expect(onDone).toHaveBeenCalled());
   });
 });
+
+describe("useCloseDayWarningSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("닫기가 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { wrapper } = createWrapper();
+    const first = jest.fn();
+    const second = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ onDone }: { onDone: () => void }) =>
+        useCloseDayWarningSheet({
+          workDate: "2026-10-10",
+          assignmentCount: 3,
+          onDone,
+        }),
+      { wrapper, initialProps: { onDone: first } },
+    );
+
+    act(() => result.current.close());
+
+    await waitFor(() => expect(first).toHaveBeenCalledTimes(1));
+
+    rerender({ onDone: second });
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+});
