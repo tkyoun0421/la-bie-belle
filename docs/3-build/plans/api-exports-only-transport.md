@@ -12,9 +12,9 @@
 | --- | --- | --- |
 | `entities/schedule/api/getMonthSchedule.api.ts`의 `liveAssignmentCount` | `entities/schedule/model/liveAssignmentCount.policy.ts` | 판정이다. `screens` hooks 둘이 당긴다 |
 | `entities/rehearsal/api/getMyRehearsals.api.ts`의 `monthRange` | `shared/utils/monthRange.ts`에 같은 일을 하는 것이 있으면 그것으로 합치고, 꼴이 다르면 `entities/rehearsal/utils/rehearsalMonthRange.utils.ts` | 이름이 같은 둘이 다른 일을 하면 안 된다 — 구현자가 두 몸을 대조하고 리턴에 적는다 |
-| `entities/member/api/listMembers.api.ts`의 `sortActiveMembers`·`sortLeftMembers` 호출 | 그 함수를 부르는 service가 정렬한다 | repository는 판정을 안 부른다(ADR-015 집행 표의 「`api` → `model` 0」) |
+| `entities/member/api/listMembers.api.ts`의 `sortActiveMembers`·`sortLeftMembers` 호출 | `entities/member/utils/sortMembers.utils.ts` — 정렬은 판정이 아니라 도구다. api가 이미 `filterMembers.utils`를 부르는 꼴과 같다 | repository는 판정을 안 부른다(ADR-015 집행 표의 「`api` → `model` 0」). service가 정렬하면 api를 대역하는 테스트의 순서 단언이 바뀐다 |
 | `shared/utils/devDoor.ts` | `shared/lib/devDoor.lib.ts` | 모듈 변수를 바꾸는 부작용이다. 부르는 자리(`getMyProfile.api.ts`)는 그대로 — 테스트 문은 `__DEV__` 라우트만 연다 |
-| `.api.ts` 열다섯의 `*Input`·`*Params`·`CheckInDeps`·`HallLocation` 타입 | 서버로 가는 꼴이면 같은 슬라이스 `.dto.ts`, 도메인 꼴이면 `model/<도메인>.type.ts` | 규칙 37이 `.dto.ts`만 본다 — `.api.ts`는 함수만 낸다 |
+| `.api.ts` 열다섯의 `*Input`·`*Params`·`CheckInDeps`·`HallLocation` 타입 | 서버로 가는 꼴이면 같은 슬라이스 `.dto.ts`, 도메인 꼴이면 `model/<도메인>.type.ts` | 의존을 받는 꼴(`CheckInDeps`)은 `DB`를 들어 `.dto.ts`에 둔다. 규칙 37이 `.dto.ts`만 본다 — `.api.ts`는 함수만 낸다 |
 | `services` 여섯의 도메인 타입(`WorkMonth`·`AttendanceMonth`·`AttendanceByMonth`·`PayrollByMonth`·`MemberKind`·`NotificationSwitch`) | 같은 슬라이스 `model/<도메인>.type.ts` | `utils`가 `services`를 보는 화살이 사라진다 |
 | `shared/hooks/useToast.ts`의 `ToastState` | `shared/model/toast.type.ts` | `model`이 `hooks`를 보는 화살이 사라진다 |
 | `features/payrollCompute/services/useMyPayrollViewDaysQuery.ts`가 부르는 `useServerNow` | 시각을 인자 `nowMs`로 받는다. 부르는 controller가 `useServerNow()`를 넘긴다 | `services` → `hooks` 화살이 사라지고 테스트가 시계를 mock할 일이 없어진다 |
