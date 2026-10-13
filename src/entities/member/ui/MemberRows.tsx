@@ -6,9 +6,9 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { MEMBER_LIST_COPY } from "@/entities/member/consts/member.const";
 import {
   useMemberRows,
-  type MemberRowsEmptyReason,
   type MemberRowsInput,
 } from "@/entities/member/hooks/useMemberRows";
+import type { MemberRowsEmptyReason } from "@/entities/member/model/member.type";
 
 export type MemberRowsProps = MemberRowsInput & {
   pending?: ReactNode;
