@@ -2,10 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { resetWageToDefault } from "@/features/wageAdmin/api/resetWageToDefault.api";
 
 export type ResetWageToDefaultResult = {
-  mutate: (profileId: string) => void;
+  mutate: (profileId: string, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -25,9 +26,9 @@ export function useResetWageToDefaultMutation(
   });
 
   const send = useCallback(
-    (profileId: string) => {
+    (profileId: string, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(profileId);
+        mutate(profileId, callbacks);
       }
     },
     [isPending, mutate],

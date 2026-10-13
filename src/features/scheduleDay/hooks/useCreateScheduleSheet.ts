@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { formatMonthName } from "@/entities/schedule/utils/formatScheduleDate.utils";
 import { SCHEDULE_DAY_COPY } from "@/features/scheduleDay/consts/scheduleDay.const";
@@ -17,12 +17,6 @@ export function useCreateScheduleSheet({
   const create = useCreateScheduleMutation(supabase);
   const monthName = formatMonthName(month);
 
-  useEffect(() => {
-    if (create.isSuccess) {
-      onDone();
-    }
-  }, [create.isSuccess, onDone]);
-
   return {
     title: `${monthName}${SCHEDULE_DAY_COPY.createTitleSuffix}`,
     noticeLine: `${SCHEDULE_DAY_COPY.createNoticePrefix}${monthName}${SCHEDULE_DAY_COPY.createNoticeSuffix}`,
@@ -31,6 +25,6 @@ export function useCreateScheduleSheet({
     canSave: deadline >= today,
     sending: create.isPending,
     writeDeadline: setDeadline,
-    create: () => create.mutate({ month, deadline }),
+    create: () => create.mutate({ month, deadline }, { onSuccess: onDone }),
   };
 }

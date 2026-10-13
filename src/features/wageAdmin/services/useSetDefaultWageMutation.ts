@@ -2,10 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { setDefaultWage } from "@/features/wageAdmin/api/setDefaultWage.api";
 
 export type SetDefaultWageResult = {
-  mutate: (amount: number) => void;
+  mutate: (amount: number, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -23,9 +24,9 @@ export function useSetDefaultWageMutation(client: DB): SetDefaultWageResult {
   });
 
   const save = useCallback(
-    (amount: number) => {
+    (amount: number, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(amount);
+        mutate(amount, callbacks);
       }
     },
     [isPending, mutate],

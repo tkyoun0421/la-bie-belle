@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { blockMember } from "@/features/memberAdmin/api/blockMember.api";
 
 export type BlockMemberInput = {
@@ -9,7 +10,7 @@ export type BlockMemberInput = {
 };
 
 export type BlockMemberResult = {
-  mutate: (input: BlockMemberInput) => void;
+  mutate: (input: BlockMemberInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -28,9 +29,9 @@ export function useBlockMemberMutation(client: DB): BlockMemberResult {
   });
 
   const send = useCallback(
-    (input: BlockMemberInput) => {
+    (input: BlockMemberInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

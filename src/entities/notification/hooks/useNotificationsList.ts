@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useEffectEvent } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { supabase } from "@/shared/api/supabase";
 import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
@@ -75,11 +75,13 @@ export function useNotificationsList({
 
   const noticeIds = unreadAdminNoticeIds(rows).join(",");
 
+  const announceNotices = useEffectEvent(onUnreadNotices);
+
   useEffect(() => {
     if (noticeIds !== "") {
-      onUnreadNotices(noticeIds.split(","));
+      announceNotices(noticeIds.split(","));
     }
-  }, [noticeIds, onUnreadNotices]);
+  }, [noticeIds]);
 
   const groups = groupNotificationsByDate(rows).map((group) => ({
     date: group.date,

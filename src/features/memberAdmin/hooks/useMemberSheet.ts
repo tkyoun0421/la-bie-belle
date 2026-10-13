@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { openPhone } from "@/shared/lib/openPhone.lib";
 import type { ErrorCode } from "@/shared/model/error.type";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { spellLeftAt } from "@/entities/member/utils/spellLeftAt.utils";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
@@ -92,68 +93,36 @@ export function useMemberSheet({
   const {
     mutate: saveDisplayName,
     isPending: savingName,
-    isSuccess: nameSaved,
     error: nameError,
   } = useSetDisplayNameMutation(supabase);
 
   const {
     mutate: saveRole,
-    isSuccess: roleSaved,
     error: roleError,
     reset: resetRole,
   } = useSetRoleMutation(supabase);
 
   const {
     mutate: sendLeave,
-    isSuccess: leaveDone,
     error: leaveError,
     reset: resetLeave,
   } = useMarkLeaveMutation(supabase);
 
-  const {
-    mutate: sendUndo,
-    isSuccess: undoDone,
-    error: undoError,
-  } = useUndoLeaveMutation(supabase);
-
-  useEffect(() => {
-    if (nameSaved) {
-      onDone({ kind: "success", message: MEMBER_SHEET_TOAST.nameChanged });
-    }
-  }, [nameSaved, onDone]);
-
-  useEffect(() => {
-    if (roleSaved) {
-      onDone({
-        kind: "success",
-        message:
-          asked === "demote"
-            ? MEMBER_SHEET_TOAST.demoted
-            : MEMBER_SHEET_TOAST.promoted,
-      });
-    }
-  }, [roleSaved, asked, onDone]);
-
-  useEffect(() => {
-    if (leaveDone) {
-      onDone({ kind: "success", message: MEMBER_SHEET_TOAST.leaveDone });
-    }
-  }, [leaveDone, onDone]);
-
-  useEffect(() => {
-    if (undoDone) {
-      onDone({ kind: "success", message: MEMBER_SHEET_TOAST.undoDone });
-    }
-  }, [undoDone, onDone]);
+  const { mutate: sendUndo, error: undoError } = useUndoLeaveMutation(supabase);
 
   const leaveCode = errorCodeOf(leaveError);
-  const undoCode = errorCodeOf(undoError);
 
-  useEffect(() => {
-    if (leaveCode === "already_decided" || undoCode === "already_decided") {
-      onDone({ kind: "info", message: MEMBER_SHEET_TOAST.alreadyDecided });
-    }
-  }, [leaveCode, undoCode, onDone]);
+  const doneWith = useCallback(
+    (message: string): MutationCallbacks => ({
+      onSuccess: () => onDone({ kind: "success", message }),
+      onError: (error) => {
+        if (errorCodeOf(error) === "already_decided") {
+          onDone({ kind: "info", message: MEMBER_SHEET_TOAST.alreadyDecided });
+        }
+      },
+    }),
+    [onDone],
+  );
 
   const name = member.displayName ?? "";
   const left = member.leftAt !== null;
@@ -216,27 +185,48 @@ export function useMemberSheet({
   );
 
   const saveName = useCallback(() => {
-    saveDisplayName({ profileId: member.id, name: draft });
-  }, [saveDisplayName, member.id, draft]);
+    saveDisplayName(
+      { profileId: member.id, name: draft },
+      {
+        onSuccess: () =>
+          onDone({ kind: "success", message: MEMBER_SHEET_TOAST.nameChanged }),
+      },
+    );
+  }, [saveDisplayName, member.id, draft, onDone]);
 
   const confirm = useCallback(() => {
     if (asked === "promote" || asked === "demote") {
-      saveRole({
-        profileId: member.id,
-        role: asked === "promote" ? "admin" : "member",
-      });
+      saveRole(
+        {
+          profileId: member.id,
+          role: asked === "promote" ? "admin" : "member",
+        },
+        {
+          onSuccess: () =>
+            onDone({
+              kind: "success",
+              message:
+                asked === "demote"
+                  ? MEMBER_SHEET_TOAST.demoted
+                  : MEMBER_SHEET_TOAST.promoted,
+            }),
+        },
+      );
       return;
     }
 
     if (asked === "leave") {
-      sendLeave({ profileId: member.id });
+      sendLeave(
+        { profileId: member.id },
+        doneWith(MEMBER_SHEET_TOAST.leaveDone),
+      );
       return;
     }
 
     if (asked === "undo") {
-      sendUndo({ profileId: member.id });
+      sendUndo({ profileId: member.id }, doneWith(MEMBER_SHEET_TOAST.undoDone));
     }
-  }, [asked, member.id, saveRole, sendLeave, sendUndo]);
+  }, [asked, member.id, saveRole, sendLeave, sendUndo, onDone, doneWith]);
 
   const askRole = useCallback(() => {
     setAsked(admin ? "demote" : "promote");
