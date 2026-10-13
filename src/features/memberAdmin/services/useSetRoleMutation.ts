@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { setRole } from "@/features/memberAdmin/api/setRole.api";
 
 export type SetRoleInput = {
@@ -10,7 +11,7 @@ export type SetRoleInput = {
 };
 
 export type SetRoleResult = {
-  mutate: (input: SetRoleInput) => void;
+  mutate: (input: SetRoleInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -29,9 +30,9 @@ export function useSetRoleMutation(client: DB): SetRoleResult {
   });
 
   const send = useCallback(
-    (input: SetRoleInput) => {
+    (input: SetRoleInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

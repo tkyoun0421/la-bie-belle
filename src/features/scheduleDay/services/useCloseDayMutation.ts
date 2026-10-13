@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { closeDay } from "@/features/scheduleDay/api/closeDay.api";
 
 export type CloseDayInput = {
@@ -9,7 +10,7 @@ export type CloseDayInput = {
 };
 
 export type CloseDayResult = {
-  mutate: (input: CloseDayInput) => void;
+  mutate: (input: CloseDayInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -31,9 +32,9 @@ export function useCloseDayMutation(client: DB): CloseDayResult {
   });
 
   const send = useCallback(
-    (input: CloseDayInput) => {
+    (input: CloseDayInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

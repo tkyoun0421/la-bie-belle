@@ -1,5 +1,5 @@
 import { TRANSPORT_ERROR_COPY } from "@/shared/consts/error.const";
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 
 const NOT_ALLOWED = "not_allowed";
 

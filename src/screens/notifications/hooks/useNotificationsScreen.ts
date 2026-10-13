@@ -5,7 +5,7 @@ import { WORKER_HOME_PATH } from "@/shared/consts/navigation.const";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import type { NotificationPick } from "@/entities/notification/hooks/useNotificationsList";
 import { useMarkNotificationsReadMutation } from "@/features/notificationRead/services/useMarkNotificationsReadMutation";
-import { pressNotification } from "@/screens/notifications/hooks/pressNotification";
+import { pressNotification } from "@/screens/notifications/lib/pressNotification.lib";
 
 export type NotificationsScreenController = {
   now: Date;

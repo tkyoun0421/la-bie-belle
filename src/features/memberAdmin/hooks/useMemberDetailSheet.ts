@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import {
@@ -34,59 +35,35 @@ export function useMemberDetailSheet({
   const {
     mutate: sendApprove,
     isPending: approving,
-    isSuccess: approved,
     error: approveError,
   } = useApproveMemberMutation(supabase);
 
   const {
     mutate: sendReject,
     isPending: rejecting,
-    isSuccess: rejected,
     error: rejectError,
   } = useRejectMemberMutation(supabase);
 
   const {
     mutate: sendBlock,
     isPending: blocking,
-    isSuccess: blocked,
     error: blockError,
   } = useBlockMemberMutation(supabase);
 
-  useEffect(() => {
-    if (approved) {
-      onDone({
-        kind: "success",
-        message: `${name}${DETAIL_SHEET_TOAST.approvedSuffix}`,
-      });
-    }
-  }, [approved, name, onDone]);
-
-  useEffect(() => {
-    if (rejected) {
-      onDone({
-        kind: "success",
-        message: `${name}${DETAIL_SHEET_TOAST.rejectedSuffix}`,
-      });
-    }
-  }, [rejected, name, onDone]);
-
-  useEffect(() => {
-    if (blocked) {
-      onDone({
-        kind: "success",
-        message: `${name}${DETAIL_SHEET_TOAST.blockedSuffix}`,
-      });
-    }
-  }, [blocked, name, onDone]);
+  const callbacksFor = useCallback(
+    (doneSuffix: string): MutationCallbacks => ({
+      onSuccess: () =>
+        onDone({ kind: "success", message: `${name}${doneSuffix}` }),
+      onError: (error) => {
+        if (errorCodeOf(error) === "already_decided") {
+          onDone({ kind: "info", message: DETAIL_SHEET_TOAST.alreadyDecided });
+        }
+      },
+    }),
+    [name, onDone],
+  );
 
   const errors = [approveError, rejectError, blockError];
-  const decided = errors.map(errorCodeOf).includes("already_decided");
-
-  useEffect(() => {
-    if (decided) {
-      onDone({ kind: "info", message: DETAIL_SHEET_TOAST.alreadyDecided });
-    }
-  }, [decided, onDone]);
 
   const failed = errors.some(
     (error) => error !== null && errorCodeOf(error) !== "already_decided",
@@ -148,18 +125,24 @@ export function useMemberDetailSheet({
   }, []);
 
   const approve = useCallback(() => {
-    sendApprove({ profileId });
-  }, [sendApprove, profileId]);
+    sendApprove({ profileId }, callbacksFor(DETAIL_SHEET_TOAST.approvedSuffix));
+  }, [sendApprove, profileId, callbacksFor]);
 
   const confirm = useCallback(() => {
     if (face === "detail") {
       return;
     }
 
-    const send = face === "reject" ? sendReject : sendBlock;
+    if (face === "reject") {
+      sendReject(
+        { profileId },
+        callbacksFor(DETAIL_SHEET_TOAST.rejectedSuffix),
+      );
+      return;
+    }
 
-    send({ profileId });
-  }, [face, profileId, sendReject, sendBlock]);
+    sendBlock({ profileId }, callbacksFor(DETAIL_SHEET_TOAST.blockedSuffix));
+  }, [face, profileId, sendReject, sendBlock, callbacksFor]);
 
   return {
     name,

@@ -1,8 +1,11 @@
 import path from "node:path";
-import { API_SEGMENT, fileLocation } from "./segments.mjs";
+import {
+  API_SEGMENT,
+  CONSTS_SEGMENT,
+  LIB_SEGMENT,
+  fileLocation,
+} from "./segments.mjs";
 
-const CONSTS_SEGMENT = "consts";
-const LIB_SEGMENT = "lib";
 const TESTS_FOLDER = "__tests__";
 
 const SETTLED_NAME = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$/;

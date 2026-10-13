@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { DomainError, TransportError } from "@/shared/model/error.type";
+import { DomainError, TransportError } from "@/shared/model/errors";
 
 const CHECK_VIOLATION = "23514";
 

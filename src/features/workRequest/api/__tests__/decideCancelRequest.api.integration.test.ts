@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { decideCancelRequest } from "@/features/workRequest/api/decideCancelRequest.api";
 import {
   createAdminUser,

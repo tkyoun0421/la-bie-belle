@@ -292,7 +292,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 집행
 
-검사 열일곱을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
+검사 스물둘을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
@@ -315,6 +315,9 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `.dto.ts`를 `api/` 밖에서 import 금지 | DB 열 이름이 화면까지 닿기 | DTO가 통신의 계약이라는 것 | lint 규칙 |
 | `api/` 밖에서 snake_case 필드 선언 금지 | DTO 꼴을 import 없이 베끼기 | 같은 축 — 규칙이 import만 보면 못 보는 길 | lint 규칙 |
 | `ui/`에서 `model`·`utils`를 **값으로** import 금지 | presentation이 값을 만들기 | 「`.tsx`는 조립만 한다」 절 | lint 규칙 |
+| `.type.ts`·`.dto.ts`에 클래스·변수·함수 선언 금지 | 「런타임에 아무것도 안 한다」는 파일이 값을 내기 | 접미사가 성격을 말한다는 것 | lint 규칙 |
+| `services/`에서 `hooks/` import 금지 | service가 controller를 거꾸로 부르기 | 흐름이 위에서 아래로만 간다는 것 | lint 규칙 |
+| `hooks/`에서 `use*`가 아닌 export 금지 | 훅 아닌 함수가 controller 폴더에 살기 | 세그먼트의 뜻 — 둘째 줄의 역방향 | lint 규칙 |
 
 **`features/`의 Query를 이름으로 면제하지 않는다.** 앞선 판은 `useAttendanceMonths` 하나를 이름으로 빼줬는데, 이름 면제는 그 파일이 없어진 뒤 아무것도 안 가리키는 구멍이 된 전례가 있다(`dumbUi.mjs`가 사라진 `providers.tsx`를 빼주고 있었다). 조건으로 바꾸면 기계가 import를 세어 판정한다 — `entities` 둘 이상을 읽는 Query는 어느 `entities`에도 못 앉으므로 위층이 받는다.
 

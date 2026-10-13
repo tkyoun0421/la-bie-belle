@@ -3,7 +3,7 @@ import { jest } from "@jest/globals";
 const { renderHook, act } = await import("@testing-library/react-native");
 const { dayConfirmGate } =
   await import("@/entities/schedule/model/confirmGate.policy");
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { DISCARD_DROP_ID } =
   await import("@/screens/scheduleAdmin/consts/scheduleAdmin.const");
 const { positionDragId, slotDragId } =
@@ -608,5 +608,49 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
     act(() => result.current.sheets[1].dismiss());
 
     expect(result.current.sheets.map((one) => one.kind)).toEqual(["picker"]);
+  });
+});
+
+describe("useDayDetail — 조정이 끝났다고 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  it("조정이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", () => {
+    const { result, input, rerender } = mounted();
+
+    act(() => result.current.openAdjust());
+    act(() => result.current.adjust?.pickPerson("p1"));
+
+    rerender(inputOf({ ...input, adjusted: true }));
+
+    expect(input.onAdjustSettled).toHaveBeenCalledTimes(1);
+
+    const next = handlers();
+
+    rerender(inputOf({ ...input, adjusted: true, ...next }));
+
+    expect(input.onAdjustSettled).toHaveBeenCalledTimes(1);
+    expect(next.onAdjustSettled).not.toHaveBeenCalled();
+    expect(next.onReloadDay).not.toHaveBeenCalled();
+  });
+
+  it("목록을 다시 읽으라는 실패 뒤 손이 바뀌어도 새 손은 불리지 않는다", () => {
+    const { result, input, rerender } = mounted();
+
+    act(() => result.current.openAdjust());
+    act(() => result.current.adjust?.pickPerson("p1"));
+
+    const adjustError = new DomainError("not_allowed");
+
+    rerender(inputOf({ ...input, adjustError }));
+
+    expect(input.onReloadDay).toHaveBeenCalledTimes(1);
+    expect(input.onAdjustSettled).toHaveBeenCalledTimes(1);
+
+    const next = handlers();
+
+    rerender(inputOf({ ...input, adjustError, ...next }));
+
+    expect(input.onReloadDay).toHaveBeenCalledTimes(1);
+    expect(input.onAdjustSettled).toHaveBeenCalledTimes(1);
+    expect(next.onReloadDay).not.toHaveBeenCalled();
+    expect(next.onAdjustSettled).not.toHaveBeenCalled();
   });
 });

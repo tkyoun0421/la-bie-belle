@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 
 export type UndoLeaveInput = {
@@ -9,7 +10,7 @@ export type UndoLeaveInput = {
 };
 
 export type UndoLeaveResult = {
-  mutate: (input: UndoLeaveInput) => void;
+  mutate: (input: UndoLeaveInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -27,9 +28,9 @@ export function useUndoLeaveMutation(client: DB): UndoLeaveResult {
   });
 
   const send = useCallback(
-    (input: UndoLeaveInput) => {
+    (input: UndoLeaveInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

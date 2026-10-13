@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { removeAssignment } from "@/features/scheduleAssign/api/removeAssignment.api";
 import {
   createAdminUser,

@@ -449,3 +449,96 @@ describe("저장소 실물", () => {
     ]);
   });
 });
+
+describe("접미사가 제 세그먼트에 산다", () => {
+  async function suffixViolationFilesOf(files: string[]) {
+    const { suffixViolations } = await import("@tests/lint/fileNaming");
+
+    return suffixViolations(
+      files.map((file) => ({ file, source: PLAIN_SOURCE })),
+    ).map((violation: { file: string }) => violation.file);
+  }
+
+  it.each([
+    ["src/entities/profile/model/profile.type.ts"],
+    ["src/entities/profile/model/profile.schema.ts"],
+    ["src/entities/profile/model/canSave.policy.ts"],
+    ["src/entities/profile/model/addSheet.reducer.ts"],
+    ["src/shared/stores/theme.store.ts"],
+    ["src/shared/stores/drag.context.ts"],
+    ["src/entities/attendance/consts/attendance.const.ts"],
+    ["src/shared/config/supabase.config.ts"],
+    ["src/entities/profile/utils/formatBirthDate.utils.ts"],
+    ["src/shared/lib/themeStorage.lib.ts"],
+    ["src/entities/profile/api/profile.dto.ts"],
+    ["src/entities/profile/utils/profile.mapper.ts"],
+    ["src/entities/profile/api/getProfile.api.ts"],
+    ["src/entities/profile/services/useProfileQuery.ts"],
+    ["src/features/auth/services/useSignOutMutation.ts"],
+  ])("%s는 제 자리라 통과한다", async (file) => {
+    expect(await suffixViolationFilesOf([file])).toEqual([]);
+  });
+
+  it.each([
+    ["src/entities/profile/api/canSave.policy.ts"],
+    ["src/entities/profile/utils/profile.type.ts"],
+    ["src/entities/profile/model/profile.dto.ts"],
+    ["src/entities/profile/model/getProfile.api.ts"],
+    ["src/entities/profile/model/theme.store.ts"],
+    ["src/shared/model/themeStorage.lib.ts"],
+    ["src/shared/stores/profile.mapper.ts"],
+    ["src/entities/profile/model/attendance.const.ts"],
+    ["src/shared/model/supabase.config.ts"],
+    ["src/entities/profile/model/formatBirthDate.utils.ts"],
+  ])("%s는 어긋난 자리라 잡는다", async (file) => {
+    expect(await suffixViolationFilesOf([file])).toEqual([file]);
+  });
+
+  it("`Query`·`Mutation` 훅이 `hooks/`에 있으면 잡는다", async () => {
+    expect(
+      await suffixViolationFilesOf([
+        "src/screens/pending/hooks/usePendingQuery.ts",
+        "src/screens/pending/hooks/useApproveMutation.ts",
+      ]),
+    ).toEqual([
+      "src/screens/pending/hooks/usePendingQuery.ts",
+      "src/screens/pending/hooks/useApproveMutation.ts",
+    ]);
+  });
+
+  it("세그먼트 없이 슬라이스 루트에 사는 접미사 파일도 잡는다", async () => {
+    expect(
+      await suffixViolationFilesOf(["src/entities/profile/canSave.policy.ts"]),
+    ).toEqual(["src/entities/profile/canSave.policy.ts"]);
+  });
+
+  it("접미사가 없는 파일은 어느 세그먼트에 있어도 안 본다", async () => {
+    expect(
+      await suffixViolationFilesOf([
+        "src/shared/api/queryKeys.ts",
+        "src/shared/model/errors.ts",
+        "src/shared/utils/palette.ts",
+      ]),
+    ).toEqual([]);
+  });
+
+  it("`.tsx`와 `src/app/`과 `__tests__`는 안 본다", async () => {
+    expect(
+      await suffixViolationFilesOf([
+        "src/shared/ui/Button.tsx",
+        "src/app/fixture.policy.ts",
+        "src/entities/profile/api/__tests__/canSave.policy.test.ts",
+      ]),
+    ).toEqual([]);
+  });
+
+  it("저장소 실물에 어긋난 자리가 없다", async () => {
+    const { suffixViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      suffixViolations(repositoryCodeFiles()).map(
+        (violation: { file: string }) => violation.file,
+      ),
+    ).toEqual([]);
+  });
+});

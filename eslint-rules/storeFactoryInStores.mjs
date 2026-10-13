@@ -1,7 +1,11 @@
-import { fileLocation, importEdges, isTypeOnly } from "./segments.mjs";
+import {
+  STORES_SEGMENT,
+  fileLocation,
+  importEdges,
+  isTypeOnly,
+} from "./segments.mjs";
 
 const APP_LAYER = "app";
-const STORES_SEGMENT = "stores";
 const FACTORIES = new Map([
   ["zustand", "create"],
   ["react", "createContext"],

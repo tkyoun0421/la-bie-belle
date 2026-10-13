@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { markLeave } from "@/features/memberAdmin/api/markLeave.api";
 
 export type MarkLeaveInput = {
@@ -9,7 +10,7 @@ export type MarkLeaveInput = {
 };
 
 export type MarkLeaveResult = {
-  mutate: (input: MarkLeaveInput) => void;
+  mutate: (input: MarkLeaveInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -27,9 +28,9 @@ export function useMarkLeaveMutation(client: DB): MarkLeaveResult {
   });
 
   const send = useCallback(
-    (input: MarkLeaveInput) => {
+    (input: MarkLeaveInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

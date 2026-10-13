@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import { rotateQr } from "@/features/qrAdmin/api/rotateQr.api";
 import {
   createAdminUser,

@@ -233,3 +233,52 @@ describe("useApprovalDetailSheet — 실패 문안을 controller가 완성해 �
     expect(result.current.failedLine).toBeTruthy();
   });
 });
+
+describe("useApprovalDetailSheet — 알리는 손이 바뀌어도 한 번만 알린다", () => {
+  type Hands = { onRejected: () => void; onApproved: () => void };
+
+  function swappableSheet() {
+    const { wrapper } = createWrapper();
+    const first = { onRejected: jest.fn(), onApproved: jest.fn() };
+    const second = { onRejected: jest.fn(), onApproved: jest.fn() };
+
+    const hook = renderHook(
+      (hands: Hands) =>
+        useApprovalDetailSheet({ approval: APPROVAL, ...hands }),
+      { wrapper, initialProps: first },
+    );
+
+    return { ...hook, first, second };
+  }
+
+  it("거절이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.showFace("reject"));
+    act(() => result.current.choose("no_replacement"));
+    act(() => result.current.reject());
+
+    await waitFor(() => expect(first.onRejected).toHaveBeenCalledTimes(1));
+
+    rerender(second);
+
+    expect(first.onRejected).toHaveBeenCalledTimes(1);
+    expect(second.onRejected).not.toHaveBeenCalled();
+    expect(second.onApproved).not.toHaveBeenCalled();
+  });
+
+  it("승인이 끝난 뒤 손이 바뀌어도 새 손은 불리지 않는다", async () => {
+    const { result, rerender, first, second } = swappableSheet();
+
+    act(() => result.current.askApprove());
+    act(() => result.current.approve());
+
+    await waitFor(() => expect(first.onApproved).toHaveBeenCalledTimes(1));
+
+    rerender(second);
+
+    expect(first.onApproved).toHaveBeenCalledTimes(1);
+    expect(second.onApproved).not.toHaveBeenCalled();
+    expect(second.onRejected).not.toHaveBeenCalled();
+  });
+});

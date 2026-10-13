@@ -1,5 +1,5 @@
 import { ERROR_CODES } from "@/shared/consts/error.const";
-import { DomainError, TransportError } from "@/shared/model/error.type";
+import { DomainError, TransportError } from "@/shared/model/errors";
 import { memberOf } from "@/shared/model/memberOf.policy";
 
 const isErrorCode = memberOf(ERROR_CODES);

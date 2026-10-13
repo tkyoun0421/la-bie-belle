@@ -72,9 +72,17 @@ export function toStyle(stem: string, style: NameStyle): string {
   return pascal[0].toLowerCase() + pascal.slice(1);
 }
 
+export type SuffixViolation = {
+  type: "suffix";
+  file: string;
+  suffix: string;
+  home: string;
+};
+
 export type FileNamingViolation =
   | { type: "style"; file: string; style: NameStyle; suggestion: string }
   | { type: "folder"; folder: string; suggestion: string }
+  | SuffixViolation
   | { type: "case-collision"; files: string[] };
 
 export type CodeFile = { file: string; source: string };
@@ -182,6 +190,72 @@ export function folderViolations(files: CodeFile[]): FileNamingViolation[] {
     }));
 }
 
+const SOURCE_ROOT = "src/";
+
+const SLICED_LAYERS = ["entities", "features", "screens"];
+
+const SUFFIX_HOMES: Record<string, string> = {
+  type: "model",
+  schema: "model",
+  policy: "model",
+  reducer: "model",
+  store: "stores",
+  context: "stores",
+  const: "consts",
+  config: "config",
+  utils: "utils",
+  lib: "lib",
+  dto: "api",
+  mapper: "utils",
+  api: "api",
+};
+
+const SERVICE_HOOK = /^use[A-Z][a-zA-Z0-9]*(Query|Mutation)$/;
+
+function segmentOf(file: string): string | null {
+  const [layer, ...rest] = file.slice(SOURCE_ROOT.length).split("/");
+  const depth = SLICED_LAYERS.includes(layer) ? 1 : 0;
+
+  return rest.length >= depth + 2 ? rest[depth] : null;
+}
+
+function claimedSuffix(base: string): { suffix: string; home: string } | null {
+  const [stem, suffix, extension, ...more] = base.split(".");
+
+  if (extension === undefined) {
+    const service = SERVICE_HOOK.exec(stem);
+
+    return service ? { suffix: service[1], home: "services" } : null;
+  }
+
+  const home = SUFFIX_HOMES[suffix];
+
+  return more.length === 0 && home ? { suffix, home } : null;
+}
+
+function isSuffixSubject(file: string): boolean {
+  return (
+    file.startsWith(SOURCE_ROOT) &&
+    file.endsWith(".ts") &&
+    !EXCLUDED_PREFIXES.some((prefix) => file.startsWith(prefix)) &&
+    !file.split("/").includes(PAIR_DIRECTORY)
+  );
+}
+
+export function suffixViolations(files: CodeFile[]): SuffixViolation[] {
+  return files
+    .filter(({ file }) => isSuffixSubject(file))
+    .flatMap(({ file }) => {
+      const claimed = claimedSuffix(path.posix.basename(file));
+
+      if (claimed === null || segmentOf(file) === claimed.home) {
+        return [];
+      }
+
+      return [{ type: "suffix" as const, file, ...claimed }];
+    });
+}
+
 export function caseCollisions(files: CodeFile[]): FileNamingViolation[] {
   const byLowered = new Map<string, string[]>();
 
@@ -200,6 +274,7 @@ export function fileNamingViolations(files: CodeFile[]): FileNamingViolation[] {
   return [
     ...styleViolations(files),
     ...folderViolations(files),
+    ...suffixViolations(files),
     ...caseCollisions(files),
   ];
 }
@@ -215,6 +290,10 @@ export function describeFileNamingViolation(
 ): string {
   if (violation.type === "case-collision") {
     return `${violation.files.join("과 ")}가 케이스만 다르다 — macOS와 윈도우에서 한 파일이 돼 체크아웃이 깨진다.`;
+  }
+
+  if (violation.type === "suffix") {
+    return `${violation.file}의 \`${violation.suffix}\`는 \`${violation.home}/\`에 산다 — 그 세그먼트로 옮겨라.`;
   }
 
   if (violation.type === "folder") {

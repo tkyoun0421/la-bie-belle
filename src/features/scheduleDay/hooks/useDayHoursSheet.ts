@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { clockOf } from "@/shared/utils/kstDate";
 import { SCHEDULE_DAY_COPY } from "@/features/scheduleDay/consts/scheduleDay.const";
@@ -19,12 +19,6 @@ export function useDayHoursSheet({
   const [ends, setEnds] = useState(() => clockOf(endsAt));
   const setHours = useSetDayHoursMutation(supabase);
 
-  useEffect(() => {
-    if (setHours.isSuccess) {
-      onDone();
-    }
-  }, [setHours.isSuccess, onDone]);
-
   return {
     starts,
     ends,
@@ -33,6 +27,7 @@ export function useDayHoursSheet({
     failedLine: setHours.isError ? SCHEDULE_DAY_COPY.saveFailed : null,
     writeStarts: setStarts,
     writeEnds: setEnds,
-    save: () => setHours.mutate({ workDate, starts, ends }),
+    save: () =>
+      setHours.mutate({ workDate, starts, ends }, { onSuccess: onDone }),
   };
 }

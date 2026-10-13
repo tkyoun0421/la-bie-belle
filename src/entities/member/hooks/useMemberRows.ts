@@ -2,14 +2,16 @@ import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 import { isLeftOverAYear } from "@/entities/member/model/leftOverAYear.policy";
-import type { ActiveMember, Member } from "@/entities/member/model/member.type";
+import type {
+  ActiveMember,
+  Member,
+  MemberRowsEmptyReason,
+  MemberRowsKind,
+} from "@/entities/member/model/member.type";
+import { memberRowsEmptyReason } from "@/entities/member/model/memberRowsEmpty.policy";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 import { spellLeftAt } from "@/entities/member/utils/spellLeftAt.utils";
-
-export type MemberRowsKind = "active" | "left";
-
-export type MemberRowsEmptyReason = "noMembers" | "noMatch" | "noRows";
 
 export type MemberRow = {
   key: string;
@@ -38,30 +40,6 @@ export type MemberRowsController =
 
 function detailOf(parts: readonly string[]): string {
   return parts.filter((part) => part !== "").join(" ");
-}
-
-function emptyReasonOf({
-  kind,
-  memberCount,
-  foundCount,
-}: {
-  kind: MemberRowsKind;
-  memberCount: number;
-  foundCount: number;
-}): MemberRowsEmptyReason {
-  if (kind !== "active") {
-    return "noRows";
-  }
-
-  if (memberCount === 0) {
-    return "noMembers";
-  }
-
-  if (foundCount === 0) {
-    return "noMatch";
-  }
-
-  return "noRows";
 }
 
 export function useMemberRows({
@@ -116,7 +94,7 @@ export function useMemberRows({
 
   const canExpand = !searching && !expanded && folded.length > 0;
 
-  const reason = emptyReasonOf({
+  const reason = memberRowsEmptyReason({
     kind,
     memberCount: actives.length + lefts.length,
     foundCount: foundActive.length + foundLeft.length,

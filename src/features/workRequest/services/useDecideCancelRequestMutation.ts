@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { type CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { decideCancelRequest } from "@/features/workRequest/api/decideCancelRequest.api";
 
@@ -12,7 +13,10 @@ export type DecideCancelRequestInput = {
 };
 
 export type DecideCancelRequestResult = {
-  mutate: (input: DecideCancelRequestInput) => void;
+  mutate: (
+    input: DecideCancelRequestInput,
+    callbacks?: MutationCallbacks,
+  ) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -41,9 +45,9 @@ export function useDecideCancelRequestMutation(
   });
 
   const send = useCallback(
-    (input: DecideCancelRequestInput) => {
+    (input: DecideCancelRequestInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],

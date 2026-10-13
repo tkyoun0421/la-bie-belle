@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellWon } from "@/shared/utils/spellNumber";
@@ -80,28 +80,14 @@ export function useMemberWageSheet({
   const {
     mutate: saveWage,
     isPending,
-    isSuccess: wageSaved,
     error: wageError,
   } = useSetWageMutation(supabase);
 
   const {
     mutate: sendReset,
-    isSuccess: resetDone,
     error: resetError,
     reset: resetResetSend,
   } = useResetWageToDefaultMutation(supabase);
-
-  useEffect(() => {
-    if (wageSaved) {
-      onDone(WAGE_SHEET_COPY.wageChanged);
-    }
-  }, [wageSaved, onDone]);
-
-  useEffect(() => {
-    if (resetDone) {
-      onDone(WAGE_SHEET_COPY.resetDone);
-    }
-  }, [resetDone, onDone]);
 
   const history = buildWageHistory(rates, expanded);
 
@@ -116,14 +102,19 @@ export function useMemberWageSheet({
   }, [resetResetSend]);
 
   const confirmReset = useCallback(() => {
-    sendReset(profileId);
-  }, [sendReset, profileId]);
+    sendReset(profileId, {
+      onSuccess: () => onDone(WAGE_SHEET_COPY.resetDone),
+    });
+  }, [sendReset, profileId, onDone]);
 
   const save = useCallback(() => {
     if (canSaveWage(digits, current)) {
-      saveWage({ profileId, amount: Number(digits) });
+      saveWage(
+        { profileId, amount: Number(digits) },
+        { onSuccess: () => onDone(WAGE_SHEET_COPY.wageChanged) },
+      );
     }
-  }, [digits, current, saveWage, profileId]);
+  }, [digits, current, saveWage, profileId, onDone]);
 
   return {
     name,

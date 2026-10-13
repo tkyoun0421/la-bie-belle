@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
-import { DomainError, TransportError } from "@/shared/model/error.type";
+import { DomainError, TransportError } from "@/shared/model/errors";
 import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
 type FakeError = { code?: string; message: string } | null;

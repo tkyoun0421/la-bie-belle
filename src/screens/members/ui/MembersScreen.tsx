@@ -9,7 +9,7 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonRows } from "@/shared/ui/SkeletonRows";
 import { Text } from "@/shared/ui/Text";
-import type { MemberRowsEmptyReason } from "@/entities/member/hooks/useMemberRows";
+import type { MemberRowsEmptyReason } from "@/entities/member/model/member.type";
 import { MemberRows } from "@/entities/member/ui/MemberRows";
 import { MemberSheet } from "@/features/memberAdmin/ui/MemberSheet";
 import {

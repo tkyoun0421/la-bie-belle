@@ -12,7 +12,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/model/error.type");
+const { DomainError } = await import("@/shared/model/errors");
 const { useSetDefaultWageMutation } =
   await import("@/features/wageAdmin/services/useSetDefaultWageMutation");
 

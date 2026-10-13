@@ -1,5 +1,5 @@
 import { CLOCK_LENGTH } from "@/shared/consts/time.const";
-import { DomainError } from "@/shared/model/error.type";
+import { DomainError } from "@/shared/model/errors";
 import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
 import {
   EMPTY_ADD_SHEET_VALUES,

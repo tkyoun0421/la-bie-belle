@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { formatBareDate } from "@/shared/utils/kstDate";
 import { SCHEDULE_DAY_COPY } from "@/features/scheduleDay/consts/scheduleDay.const";
@@ -16,16 +15,10 @@ export function useCloseDayWarningSheet({
 }: CloseDayWarningSheetInput): CloseDayWarningSheetController {
   const close = useCloseDayMutation(supabase);
 
-  useEffect(() => {
-    if (close.isSuccess) {
-      onDone();
-    }
-  }, [close.isSuccess, onDone]);
-
   return {
     title: `${formatBareDate(workDate)}${SCHEDULE_DAY_COPY.closeDayTitleSuffix}`,
     warningLine: closeDayWarningLine(assignmentCount),
     sending: close.isPending,
-    close: () => close.mutate({ workDate }),
+    close: () => close.mutate({ workDate }, { onSuccess: onDone }),
   };
 }

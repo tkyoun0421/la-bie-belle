@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
+import type { MutationCallbacks } from "@/shared/model/mutationCallbacks.type";
 import { createSchedule } from "@/features/scheduleDay/api/createSchedule.api";
 
 export type CreateScheduleInput = {
@@ -10,7 +11,7 @@ export type CreateScheduleInput = {
 };
 
 export type CreateScheduleResult = {
-  mutate: (input: CreateScheduleInput) => void;
+  mutate: (input: CreateScheduleInput, callbacks?: MutationCallbacks) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -33,9 +34,9 @@ export function useCreateScheduleMutation(client: DB): CreateScheduleResult {
   });
 
   const send = useCallback(
-    (input: CreateScheduleInput) => {
+    (input: CreateScheduleInput, callbacks?: MutationCallbacks) => {
       if (!isPending) {
-        mutate(input);
+        mutate(input, callbacks);
       }
     },
     [isPending, mutate],
