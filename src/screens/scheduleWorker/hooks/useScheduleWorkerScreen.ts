@@ -28,14 +28,9 @@ import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotReq
 import { groupRequestsByDate } from "@/entities/workRequest/utils/requestGrouping.utils";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
-import {
-  CLOSED_SCHEDULE_WORKER_SHEET,
-  SCHEDULE_WORKER_COPY,
-} from "@/screens/scheduleWorker/consts/scheduleWorker.const";
-import {
-  scheduleWorkerSheetReducer,
-  type ScheduleWorkerSheetState,
-} from "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer";
+import { SCHEDULE_WORKER_COPY } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
+import { sheetOpenedOn } from "@/screens/scheduleWorker/model/scheduleWorkerSheet.policy";
+import { scheduleWorkerSheetReducer } from "@/screens/scheduleWorker/model/scheduleWorkerSheet.reducer";
 import {
   spellNotOpen,
   spellSubmitted,
@@ -109,16 +104,6 @@ type SelectionEdits = {
   base: readonly string[] | undefined;
   dates: string[];
 };
-
-function sheetOpenedOn(date: string | undefined): ScheduleWorkerSheetState {
-  return date === undefined
-    ? CLOSED_SCHEDULE_WORKER_SHEET
-    : scheduleWorkerSheetReducer(CLOSED_SCHEDULE_WORKER_SHEET, {
-        type: "open",
-        date,
-        asCancel: false,
-      });
-}
 
 export function useScheduleWorkerScreen({
   month: monthParam,

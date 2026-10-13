@@ -24,6 +24,7 @@ import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import { REHEARSAL_COPY } from "@/screens/rehearsal/consts/rehearsal.const";
+import { formTargetOf } from "@/screens/rehearsal/model/rehearsalForm.policy";
 import {
   initialRehearsalScreenState,
   rehearsalScreenReducer,
@@ -148,21 +149,7 @@ export function useRehearsalScreen(
       ? (openRows.find((row) => row.id === openForm.id) ?? null)
       : null;
 
-  const form = ((): RehearsalFormTarget | null => {
-    if (openForm === null || openDate === null) {
-      return null;
-    }
-
-    if (openForm.mode === "add") {
-      return { mode: "add", workDate: openDate, formKind: openKind };
-    }
-
-    if (editing === null) {
-      return null;
-    }
-
-    return { mode: "edit", rehearsal: editing };
-  })();
+  const form = formTargetOf({ openForm, openDate, openKind, editing });
 
   const openEdit = useCallback(
     (id: string) => {
