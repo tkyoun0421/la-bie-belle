@@ -4,13 +4,15 @@ import { resolveAdminGuard } from "@/entities/session/model/resolveAdminGuard.po
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 
 export default function AdminLayout() {
-  const { profile, isLoading } = useMyStanding(supabase);
+  const { profile, isLoading, error } = useMyStanding(supabase);
 
   if (isLoading) {
     return null;
   }
 
-  const move = resolveAdminGuard(profile ?? null);
+  const move = resolveAdminGuard(profile ?? null, {
+    failed: error !== null && profile === undefined,
+  });
 
   if (move) {
     return <Redirect href={move} />;

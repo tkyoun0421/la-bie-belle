@@ -171,7 +171,6 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    // @ts-expect-error 대상 반환에 error가 아직 없다
     expect(result.current.error).toBe(failure);
     expect(result.current.data).toBeUndefined();
   });
@@ -186,7 +185,6 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    // @ts-expect-error 대상 반환에 error가 아직 없다
     expect(result.current.error).toBeNull();
   });
 });
