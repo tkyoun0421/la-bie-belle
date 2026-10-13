@@ -5,6 +5,7 @@ import type { SessionUser } from "@/entities/session/model/session.type";
 
 type SessionUserResult = {
   data: SessionUser | null | undefined;
+  error: Error | null;
   isLoading: boolean;
 };
 
@@ -55,7 +56,7 @@ const WORKER_PROFILE: Profile = {
 beforeEach(() => {
   useSessionUserQueryMock
     .mockReset()
-    .mockReturnValue({ data: SESSION_USER, isLoading: false });
+    .mockReturnValue({ data: SESSION_USER, error: null, isLoading: false });
   useMyProfileRowQueryMock
     .mockReset()
     .mockReturnValue({ data: WORKER_PROFILE, error: null, isLoading: false });
@@ -138,6 +139,7 @@ describe("useMyStanding — 사용자가 없으면 기다릴 프로필도 없다
   it("세션을 묻는 동안은 기다린다", () => {
     useSessionUserQueryMock.mockReturnValue({
       data: undefined,
+      error: null,
       isLoading: true,
     });
 
@@ -147,7 +149,11 @@ describe("useMyStanding — 사용자가 없으면 기다릴 프로필도 없다
   });
 
   it("세션이 비면 프로필이 안 왔어도 기다리지 않는다", () => {
-    useSessionUserQueryMock.mockReturnValue({ data: null, isLoading: false });
+    useSessionUserQueryMock.mockReturnValue({
+      data: null,
+      error: null,
+      isLoading: false,
+    });
     useMyProfileRowQueryMock.mockReturnValue({
       data: undefined,
       error: null,
@@ -157,5 +163,44 @@ describe("useMyStanding — 사용자가 없으면 기다릴 프로필도 없다
     const { result } = renderHook(() => useMyStanding(FAKE_CLIENT));
 
     expect(result.current.isLoading).toBe(false);
+  });
+});
+
+describe("useMyStanding — 실패는 세션 쪽도 error에 실린다", () => {
+  it("세션 query가 실패하면 error가 세션 오류다", () => {
+    const sessionFailure = new Error("세션 통신 실패");
+    useSessionUserQueryMock.mockReturnValue({
+      data: undefined,
+      error: sessionFailure,
+      isLoading: false,
+    });
+    useMyProfileRowQueryMock.mockReturnValue({
+      data: undefined,
+      error: null,
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useMyStanding(FAKE_CLIENT));
+
+    expect(result.current.error).toBe(sessionFailure);
+  });
+
+  it("세션은 괜찮고 프로필이 실패하면 error가 프로필 오류다", () => {
+    const profileFailure = new Error("프로필 통신 실패");
+    useMyProfileRowQueryMock.mockReturnValue({
+      data: undefined,
+      error: profileFailure,
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useMyStanding(FAKE_CLIENT));
+
+    expect(result.current.error).toBe(profileFailure);
+  });
+
+  it("둘 다 괜찮으면 error는 null이다", () => {
+    const { result } = renderHook(() => useMyStanding(FAKE_CLIENT));
+
+    expect(result.current.error).toBeNull();
   });
 });

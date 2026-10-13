@@ -27,6 +27,6 @@ export function useMyStanding(client: DB): MyStanding {
     role,
     isAdmin: role === "admin",
     isLoading: session.isLoading || (userId !== null && profile.isLoading),
-    error: profile.error,
+    error: session.error ?? profile.error,
   };
 }

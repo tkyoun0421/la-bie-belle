@@ -1,5 +1,6 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/shared/api/supabase";
+import { RETRY_PATH } from "@/shared/consts/navigation.const";
 import { resolveRehearsalGuard } from "@/shared/model/rehearsalGuard.policy";
 import { hasRehearsalGrant } from "@/entities/member/model/hasRehearsalGrant.policy";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
@@ -12,7 +13,8 @@ type RehearsalParams = {
 
 export default function Screen() {
   const { month } = useLocalSearchParams<RehearsalParams>();
-  const { userId, profile, isAdmin, isLoading } = useMyStanding(supabase);
+  const { userId, profile, isAdmin, isLoading, error } =
+    useMyStanding(supabase);
   const { data: grants, isLoading: grantsLoading } =
     useQualificationsQuery(supabase);
 
@@ -20,10 +22,15 @@ export default function Screen() {
     isAdmin,
     hasGrant: hasRehearsalGrant(grants ?? [], profile?.id ?? null),
     isLoading: isLoading || (userId !== null && grantsLoading),
+    failed: error !== null && profile === undefined,
   });
 
   if (standing === "wait") {
     return null;
+  }
+
+  if (standing === RETRY_PATH) {
+    return <Redirect href={RETRY_PATH} />;
   }
 
   if (standing === "redirect-me") {

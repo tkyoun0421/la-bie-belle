@@ -7,9 +7,10 @@ import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
 
 export function useSessionUserQuery(client: DB): {
   data: SessionUser | null | undefined;
+  error: Error | null;
   isLoading: boolean;
 } {
-  const { data, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.session.user(),
     queryFn: async (): Promise<SessionUser | null> => {
       const user = await getCurrentUser(client);
@@ -24,5 +25,5 @@ export function useSessionUserQuery(client: DB): {
     },
   });
 
-  return { data, isLoading };
+  return { data, error, isLoading };
 }
