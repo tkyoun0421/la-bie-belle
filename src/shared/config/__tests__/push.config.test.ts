@@ -1,0 +1,39 @@
+import { jest } from "@jest/globals";
+
+type ExpoConfig = { extra?: { eas?: { projectId?: string } } };
+
+async function loadWith(expoConfig: ExpoConfig | null) {
+  jest.resetModules();
+  jest.unstable_mockModule("expo-constants", () => ({
+    default: { expoConfig },
+  }));
+
+  const { readPushProjectId } = await import(
+    // @ts-expect-error 대상 모듈이 아직 없다
+    "@/shared/config/push.config"
+  );
+
+  return readPushProjectId as () => string | null;
+}
+
+describe("readPushProjectId — EAS 프로젝트 id를 읽는다", () => {
+  it("값이 있으면 그대로 돌려준다", async () => {
+    const readPushProjectId = await loadWith({
+      extra: { eas: { projectId: "0000-0000" } },
+    });
+
+    expect(readPushProjectId()).toBe("0000-0000");
+  });
+
+  it("eas 열쇠가 없으면 널이다 — 던지지 않는다", async () => {
+    const readPushProjectId = await loadWith({ extra: {} });
+
+    expect(readPushProjectId()).toBeNull();
+  });
+
+  it("설정 자체가 없어도 널이다", async () => {
+    const readPushProjectId = await loadWith(null);
+
+    expect(readPushProjectId()).toBeNull();
+  });
+});
