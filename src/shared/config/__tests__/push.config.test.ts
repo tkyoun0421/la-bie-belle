@@ -8,8 +8,7 @@ async function loadWith(expoConfig: ExpoConfig | null) {
     default: { expoConfig },
   }));
 
-  const { readPushProjectId } =
-    await import("@/features/pushSwitch/config/pushSwitch.config");
+  const { readPushProjectId } = await import("@/shared/config/push.config");
 
   return readPushProjectId;
 }

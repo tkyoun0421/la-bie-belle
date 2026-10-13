@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/model/error.type";
-import { removePushToken } from "@/features/pushSwitch/api/removePushToken.api";
-import { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
+import { removePushToken } from "@/features/auth/api/removePushToken.api";
 import {
   createApprovedUser,
   createBlockedUser,
+  seedPushToken,
   type ApprovedUser,
   type BlockedUser,
 } from "@tests/integration/postgres";
@@ -23,8 +23,7 @@ describe("removePushToken dal — remove_push_token을 부르고 오류를 Domai
   });
 
   it("성공하면 본인 push_tokens 행이 실제로 사라진다", async () => {
-    const token = deviceToken();
-    await savePushToken(owner.client, token);
+    const token = seedPushToken(owner.profileId, deviceToken());
 
     await removePushToken(owner.client, token);
 

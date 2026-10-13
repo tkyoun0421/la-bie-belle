@@ -36,10 +36,6 @@ jest.unstable_mockModule(
 );
 
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
-  DEVICE_CLEANUP_NOT_WIRED_YET: {
-    deleteDeviceRow: async () => {},
-    clearDeviceToken: async () => {},
-  },
   signOut: signOutMock,
 }));
 
