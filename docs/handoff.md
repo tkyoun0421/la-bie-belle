@@ -6,42 +6,25 @@
 
 ## 다음 작업
 
-**[선언형 제안](proposals/declarative-refactor-triage.md)의 묶음 여섯이 전부 닫혔다.**
+**Expo 앱의 로그인 화면이 섰다([`login-screen-native`](backlog.md), #573). 시스템 테마도 OS 다크를 따른다([`system-theme-follows-os`](backlog.md), #575).** 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
-**[`post-refactor-audit`](backlog.md)의 묶음 여덟 가운데 판정이 필요 없는 것이 전부 닫혔다.** `signout-removes-push-token`(#553) · `session-error-is-swallowed`(#555) · `pair-tests-name-every-export`(#557) · `loading-fragments-share-one-body`(#560) · `api-exports-only-transport`와 `domain-types-leave-services`(#562) · `dead-exports-pruned`(#566) · `audit-checks-into-catalog`(#569). 그 곁에 `rule-15-blocked-functions-to-model`(#564)과 `callbacks-in-effect-deps-remainder`(#568)이 닫혔고 `tests-read-the-real-clock`은 폭탄 0으로 닫혔다.
+1. **Supabase 원격 프로젝트의 Redirect URLs에 두 줄을 넣는다(사람 손).** `labiebelle://auth/callback`과 `exp://**/--/auth/callback`이다. 빠지면 로그인이 오류 없이 돌아오지 못한다. 로컬 `supabase/config.toml`에는 이미 든다. 자리는 [environments.md](5-deploy/environments.md)다.
+2. **실기기 수동 확인.** 구글 로그인 왕복(새 사람·승인·차단·퇴사), 창 닫기, 안드로이드 복귀 때 not-found가 안 번쩍이는지, 라이트·다크에서 구글 버튼 톤, 시스템 테마인 다크 기기에서 앱이 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지. iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다.
+3. **로컬 DB 정리는 사람이 정한다.** `wage_rates`가 14606행까지 쌓여 integration 두 건(`getPayrollMonth`·`getWageRates`)이 `max_rows = 1000`에 잘린다. `supabase db reset`이 필요해 보이나 로컬 데이터를 지우는 일이다. CI는 깨끗한 DB라 안 겪는다.
+4. **판정 대기는 그대로다.**
+   - [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
+   - [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
+   - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
 
-남은 것은 전부 **사람의 판정**을 기다린다.
-
-- [`login-screen-native`](backlog.md) — **Expo 앱의 로그인 화면이 없다.** `src/app/login.tsx`가 `NotBuiltYet`이고 `login-screens`의 done은 웹 시절이다. 정본과 시안은 있다
-- [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
-- [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
-- [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
-
-**규칙 45는 어휘로 문다.** `*Controller`·`*ListState`·`*Body` alias가 글자 union이고 읽기 상태 어휘(`pending`·`failed`·`empty`·`ready`·`sending`·`loading`·`error`)가 들면 `flat`이다. 「글자면 전부」는 `MemberSheetBody`(`detail`·`rename`·`none`)를 물어 안 된다 — 그것은 몸이 어느 그림인지 고르는 데이터다.
-
-**`react-hooks/exhaustive-deps`가 이 저장소에 없다.** 의존 배열은 lint가 아니라 AST 센서스가 센다 — 구현자 리턴이 그 수를 들고 온다.
-
-### 상시 주의
-
-**전체 suite를 한꺼번에 돌릴 때 나던 `waitFor` 타임아웃은 벽시계 경합이었다** — `asyncUtilTimeout` 1초가 워커 경합에서 모자랐고 [PR #540](https://github.com/tkyoun0421/la-bie-belle/pull/540)이 `tests/setup/asyncUtilTimeout.ts`로 5초를 준다. 다시 보이면 [관찰 069](observations/069-query-service-tests-flake-under-full-suite.md)가 측정과 원인을 든다. **날짜를 박은 픽스처에 `useServerNow`를 안 고정한 테스트는 날이 지나면 깨진다** — [PR #542](https://github.com/tkyoun0421/la-bie-belle/pull/542) 꼴로 `serverClock.policy`의 `nowWithOffset`을 고정한다.
-
-**받은 실패 테스트의 `await import` + `@ts-expect-error`는 대상이 서면 걷어야 한다.** 미사용 directive가 되어 `TS2578`로 typecheck를 죽이고, ESM이라 `jest` 전역도 안 들어온다. 이 회차에 두 번 밟았다 — 정적 import와 `import { jest } from "@jest/globals"`로 고친다. **단언은 안 건드린다.**
-
-**[triage 제안](proposals/codebase-refactor-triage.md)의 묶음 여덟은 전부 닫혔다** — A~H가 `done`이다.
-
-- [`identity-threading-into-features`](backlog.md) — `features/stats`의 둘과 `features/payrollCompute`의 하나가 `useMyStanding`을 못 쓴다. `house/no-cross-slice-import`가 `features/stats` → `features/auth`를 막아서다. 부르는 쪽이 `profileId`를 인자로 심어 준다
-- [`schedule-deadline-line-duplicate`](backlog.md) · [`vacancy-days-of-duplicate`](backlog.md) · [`attendance-column-dead-code`](backlog.md) — `screens-calc-placement`가 찾고 안 건드린 중복·죽은 코드 셋
-
-`session-error-is-swallowed`는 이미 `ready`로 서 있다 — `useSessionUserQuery`가 `useQuery`의 `error`를 버려 세션 실패가 로그아웃과 구별이 안 된다.
-
-**기존에 남아 있던 두 위험도 그대로다.**
-
-- `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 계산 자체는 깨끗하고 입력 타입 하나가 막는다
-- 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다. `TrendChart`를 조각으로 올려야 풀린다
-
-**로컬 전용 실패 하나.** `entities/payroll/api/__tests__/getWageRates.api.integration.test.ts`가 `wage_rates` 이력 셋을 기대하는데 로컬 DB에서는 하나만 온다. `supabase db reset`으로 없어진다 — CI는 매번 새 스택을 띄워 안 겪는다.
+로그인 등장 모션은 [`login-entrance-motion`](backlog.md)이 `candidate`로 든다 — 움직임 줄이기를 읽는 손부터 없다.
 
 ## 재개 맥락
+
+**로그인 흐름은 lib · service · controller 셋이고 취소는 실패 줄을 안 낸다.** `features/auth/lib/signInWithGoogle.lib.ts`가 창을 열고 돌아온 주소에서 코드를 꺼내 `handleAuthCallback`으로 잇고, service가 `decideEntry`까지 가서 `decided`·`cancelled`·`failed`로 알린다. 버튼 톤은 `dark:` 변형으로 둘을 다 그려 하나만 보인다. `auth/callback` 딥링크는 `src/app/+native-intent.ts`가 `/login`으로 돌린다. 문안 「로그인하지 못했어요. 다시 눌러 주세요」는 아직 「제안」이다.
+
+**테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/072-react-native-mock-misses-in-logic-project.md), 열림). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
+
+**기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`·`schedule-deadline-line-duplicate`·`vacancy-days-of-duplicate`·`attendance-column-dead-code`는 backlog에 선다.
 
 **`as`는 `memberOf`가 만든 가드 한 자리로 모인다.** 실행 코드의 `as`는 셋(Expo Router `Href` 둘과 동작이 바뀌어 안 건드린 하나)이다. 가드를 만들어 돌려주는 고차 함수는 반환 타입이 함수 타입이라 규칙 47의 밖이고, 이름 없는 인라인 가드도 밖이다.
 
@@ -99,6 +82,6 @@
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e·Suspense), NCP 대표 계정과 지도 키, 3D 석 장, 로컬 Supabase 구글 프로바이더.
 
-회차 기록은 [docs/log/2026-10-13.md](log/2026-10-13.md)다 — 감사 묶음 가운데 판정이 필요 없는 여덟이 닫히고 발견 둘이 남았다(#551~#570). 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
+회차 기록은 [docs/log/2026-10-14.md](log/2026-10-14.md)다 — 로그인 화면과 구글 흐름이 서고 시스템 테마가 OS 다크를 따르게 됐다(#572~#576). 그 앞은 [docs/log/2026-10-13.md](log/2026-10-13.md)(감사 묶음 여덟과 발견 둘, #551~#570)이고 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).

@@ -8,7 +8,7 @@ status: proposed
 
 **정본이 가리키는 대상이 사라진 자리 아홉, 문서가 적은 수가 지금과 다른 자리 아홉, 문서끼리 어긋난 자리 넷, 기계가 셀 수 있는데 검사가 없는 자리 넷이 나왔다.** 묶음으로 치면 집단 개명 넷이 plan·log 쪽 자리 594개를 설명한다.
 
-**검사는 전부 초록이다.** `pnpm test`의 3,471 테스트 가운데 떨어지는 하나는 [관찰 069](../observations/069-query-service-tests-flake-under-full-suite.md)가 든 그 flake고, 문서 검사(`docLinks`·`docMap`·`sourcesExist`·`legacyDocPaths`)와 규칙 카탈로그는 다 통과한다. 아래 자리는 **검사가 안 보는 자리**라 초록인 채로 거짓이다.
+**검사는 전부 초록이다.** `pnpm test`의 3,471 테스트 가운데 떨어지는 하나는 [관찰 069](../observations/archive/069-query-service-tests-flake-under-full-suite.md)가 든 그 flake고, 문서 검사(`docLinks`·`docMap`·`sourcesExist`·`legacyDocPaths`)와 규칙 카탈로그는 다 통과한다. 아래 자리는 **검사가 안 보는 자리**라 초록인 채로 거짓이다.
 
 ## 축 ① — 문서가 가리키는 코드가 없다
 

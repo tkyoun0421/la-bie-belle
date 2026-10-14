@@ -138,7 +138,7 @@ ESLint 규칙을 건드리면 **한 커밋에 다섯 자리가 같이 간다** �
 
 `pnpm lint` · `pnpm typecheck` · `pnpm test`. 좁혀 돌릴 때는 `pnpm exec jest <경로>`를 쓴다 — `pnpm test -- <경로>`는 pnpm이 플래그를 먹는다. `.tsx`를 렌더하는 테스트는 `--selectProjects components`다.
 
-**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
+**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/archive/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
 
 ## 받은 그물에 대해 알아 둘 것
 

@@ -183,7 +183,7 @@ memberSheetVisuals({ renaming, erased, left }): { body; footer; menuLabel }
 
 `pnpm lint` · `pnpm typecheck` · `pnpm test`. 좁혀 돌릴 때는 `pnpm exec jest <경로>`를 쓴다. `.tsx`를 건드리니 **`components` 프로젝트를 반드시 돌린다** — `Input.tsx`는 거의 모든 폼이 쓴다.
 
-**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
+**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/archive/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
 
 ## 리스크
 
