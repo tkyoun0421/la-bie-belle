@@ -26,16 +26,35 @@ describe("parseStoredTheme — 저장된 값을 테마 셋 중 하나로 좁힌�
   });
 });
 
-describe("toColorScheme — 테마 값을 NativeWind colorScheme 값으로 바꾼다", () => {
-  it("system은 null이다 — null이 기기 추종을 뜻한다", () => {
-    expect(toColorScheme("system")).toBeNull();
+type Os = "light" | "dark" | "unspecified" | null | undefined;
+
+describe("toColorScheme — 테마와 기기 설정에서 적용할 색 구성표를 정한다", () => {
+  it.each<Os>(["light", "dark", null, undefined, "unspecified"])(
+    "light는 기기 설정이 %s여도 light다",
+    (os) => {
+      expect(toColorScheme("light", os)).toBe("light");
+    },
+  );
+
+  it.each<Os>(["light", "dark", null, undefined, "unspecified"])(
+    "dark는 기기 설정이 %s여도 dark다",
+    (os) => {
+      expect(toColorScheme("dark", os)).toBe("dark");
+    },
+  );
+
+  it("system은 기기가 dark면 dark다", () => {
+    expect(toColorScheme("system", "dark")).toBe("dark");
   });
 
-  it("light는 light다", () => {
-    expect(toColorScheme("light")).toBe("light");
+  it("system은 기기가 light면 light다", () => {
+    expect(toColorScheme("system", "light")).toBe("light");
   });
 
-  it("dark는 dark다", () => {
-    expect(toColorScheme("dark")).toBe("dark");
-  });
+  it.each<Os>([null, undefined, "unspecified"])(
+    "system은 기기 설정을 모르면(%s) light다",
+    (os) => {
+      expect(toColorScheme("system", os)).toBe("light");
+    },
+  );
 });
