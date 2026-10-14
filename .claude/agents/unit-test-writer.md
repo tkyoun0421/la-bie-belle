@@ -21,7 +21,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 대상 파일과 같은 레벨의 `__tests__`에 둔다. `src/entities/cart/model/price.ts`면 `src/entities/cart/model/__tests__/price.test.ts`다. 훅이 이 경로를 그대로 본다.
 
-러너는 Jest다. `describe`·`it`·`expect`는 전역이라 import하지 않는다. 대역이 필요하면 `jest.mock()`이 아니라 `jest.unstable_mockModule`과 동적 import다 — 테스트가 ESM으로 돈다. 화면 흐름은 여기서 다루지 않는다.
+러너는 Jest다. `describe`·`it`·`expect`는 전역이라 import하지 않는다. 대역이 필요하면 `jest.mock()`이 아니라 `jest.unstable_mockModule`과 동적 import다 — 테스트가 ESM으로 돈다. 단 `logic` 갈래에서 `react-native`는 그렇게 못 바꾼다 — babel이 구현의 import를 `react-native-web`으로 돌려서 대역이 안 닿는다. 실제 모듈을 import해 `Object.assign`으로 함수를 갈아 끼우거나(`openPhone.lib.test.ts`·`tests/setup/appearance.ts`) 값을 인자로 주입한다. 화면 흐름은 여기서 다루지 않는다.
 
 ## 실패를 확인한다
 

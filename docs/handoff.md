@@ -22,7 +22,7 @@
 
 **로그인 흐름은 lib · service · controller 셋이고 취소는 실패 줄을 안 낸다.** `features/auth/lib/signInWithGoogle.lib.ts`가 창을 열고 돌아온 주소에서 코드를 꺼내 `handleAuthCallback`으로 잇고, service가 `decideEntry`까지 가서 `decided`·`cancelled`·`failed`로 알린다. 버튼 톤은 `dark:` 변형으로 둘을 다 그려 하나만 보인다. `auth/callback` 딥링크는 `src/app/+native-intent.ts`가 `/login`으로 돌린다. 문안 「로그인하지 못했어요. 다시 눌러 주세요」는 아직 「제안」이다.
 
-**테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/072-react-native-mock-misses-in-logic-project.md), 열림). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
+**테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/072-react-native-mock-misses-in-logic-project.md), 정의문과 execution에 반영). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
 
 **기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`·`schedule-deadline-line-duplicate`·`vacancy-days-of-duplicate`·`attendance-column-dead-code`는 backlog에 선다.
 
