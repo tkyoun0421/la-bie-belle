@@ -353,6 +353,18 @@ bg-bg-neutral rounded-xl shadow-card p-5
 
 **사진을 브랜드로 감싸지 않는다.** 테두리도 링도 없다. 사진 자체가 색을 갖고 있어 무엇을 더해도 소음이다.
 
+## 브랜드 마크
+
+`BrandMark` — 둥근 사각형 안에 「라」 한 글자다. 지금 서는 자리는 [로그인](../modules/account/screens/login.md#로그인-짜임)의 맨 위 하나다.
+
+| 자리 | 토큰 |
+| --- | --- |
+| 면 | `bg.brand-solid` |
+| 글자 | `fg.brand-contrast`, `text-lg font-bold` |
+| 크기·모양 | `size-12 rounded-lg` |
+
+화면 파일이 아니라 `shared/ui`에 사는 것은 면과 모서리가 화면의 `.tsx`에서 막히는 시각 유틸이라서다. 헤더에 로고를 두는 화면이 생기면 [color.md](foundation/color.md)의 브랜드 색 경쟁을 그 화면에서 다시 본다.
+
 ## 축하 원
 
 `CelebrationCircle` — 프로필을 보낸 뒤 「반가워요」 한 장의 112px 원과 둘레에서 터지는 조각 여덟이다([login.md](../modules/account/screens/login.md#프로필-작성-모션)). [Avatar](#avatar)가 아니다 — 사람 사진이 커진 것이 아니라 그 순간의 모션 조각이라 Avatar에 그 크기를 더하지 않았다. 3D 그림도 여기 안 선다([illustration.md](illustration.md)).
