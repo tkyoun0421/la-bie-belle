@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Appearance } from "react-native";
 import { colorScheme } from "react-native-css";
 import { THEME_STORAGE_KEY } from "@/shared/consts/theme.const";
 import type { Theme } from "@/shared/model/theme.type";
@@ -17,5 +18,13 @@ export function writeStoredTheme(theme: Theme): void {
 }
 
 export function applyColorScheme(theme: Theme): void {
-  colorScheme.set(toColorScheme(theme));
+  colorScheme.set(toColorScheme(theme, Appearance.getColorScheme()));
+}
+
+export function followOsColorScheme(readTheme: () => Theme): () => void {
+  const subscription = Appearance.addChangeListener(() => {
+    applyColorScheme(readTheme());
+  });
+
+  return () => subscription.remove();
 }

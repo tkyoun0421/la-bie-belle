@@ -9,6 +9,7 @@ import "@/app/globals.css";
 import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { FONT_SOURCES } from "@/shared/consts/font.const";
+import { followOsColorScheme } from "@/shared/lib/themeStorage.lib";
 import { useTheme } from "@/shared/stores/theme.store";
 import {
   shouldDismissSplash,
@@ -35,6 +36,8 @@ export default function RootLayout() {
   useEffect(() => {
     void restoreTheme();
   }, [restoreTheme]);
+
+  useEffect(() => followOsColorScheme(() => useTheme.getState().theme), []);
 
   useEffect(() => {
     const clock = serverClockStore.getState();

@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { stubAppearance } from "@tests/setup/appearance";
 
 const store = new Map<string, string>();
 const setScheme = jest.fn((_scheme: "light" | "dark" | null) => {});
@@ -11,6 +12,8 @@ jest.unstable_mockModule("@react-native-async-storage/async-storage", () => ({
     },
   },
 }));
+
+stubAppearance({ getColorScheme: () => null });
 
 jest.unstable_mockModule("react-native-css", () => ({
   colorScheme: { set: setScheme },

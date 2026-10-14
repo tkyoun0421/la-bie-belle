@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { Appearance } from "react-native";
 
 const store = new Map<string, string>();
 const getItem = jest.fn(async (key: string) => store.get(key) ?? null);
@@ -20,23 +21,19 @@ jest.unstable_mockModule("@react-native-async-storage/async-storage", () => ({
   default: { getItem, setItem },
 }));
 
-jest.unstable_mockModule("react-native", () => ({
-  Appearance: { getColorScheme: getOsScheme, addChangeListener },
-}));
+Object.assign(Appearance, { getColorScheme: getOsScheme, addChangeListener });
 
 jest.unstable_mockModule("react-native-css", () => ({
   colorScheme: { set: setScheme },
 }));
 
 const { THEME_STORAGE_KEY } = await import("@/shared/consts/theme.const");
-const { readStoredTheme, writeStoredTheme, applyColorScheme } =
-  await import("@/shared/lib/themeStorage.lib");
-
-const lib = await import("@/shared/lib/themeStorage.lib");
-// @ts-expect-error 대상 export가 아직 없다
-const followOsColorScheme = lib.followOsColorScheme as (
-  readTheme: () => "system" | "light" | "dark",
-) => () => void;
+const {
+  readStoredTheme,
+  writeStoredTheme,
+  applyColorScheme,
+  followOsColorScheme,
+} = await import("@/shared/lib/themeStorage.lib");
 
 beforeEach(() => {
   store.clear();
