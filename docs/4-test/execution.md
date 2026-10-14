@@ -287,6 +287,8 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - `tests/lint/`를 worktree 여럿에서 동시에 돌리면 첫 테스트가 기본 5초 타임아웃에서 흔들린다(`new ESLint()` 로드 비용). `--testTimeout=60000`.
 - `pnpm test:integration:run`도 기본 5초에서 흔들린다 — 매번 다른 스위트가 `beforeAll`에서 `Exceeded timeout of 5000 ms for a hook`으로 죽고 단독으로 돌리면 통과한다. 로컬 Docker가 느린 날은 `--testTimeout=60000`을 준다.
 - **`react-native`는 대역이 안 먹는다.** `jest.config.js`가 그 이름을 절대경로로 리매핑해서, 테스트 파일이 직접 import할 때는 대역이 서지만 `src/`의 다른 파일이 안에서 `import { AppState } from "react-native"`를 하면 진짜 모듈이 온다(`addEventListener is not a function`). `AppState`·`Linking`처럼 그 네임스페이스에 닿는 것은 대역하지 말고 함수 인자로 주입해라 — 기본값에 실물을 두면 부르는 쪽은 그대로다.
+- **전체 suite를 한꺼번에 돌릴 때 나던 `waitFor` 타임아웃은 벽시계 경합이었다.** `asyncUtilTimeout` 1초가 워커 경합에서 모자랐고 `tests/setup/asyncUtilTimeout.ts`가 5초를 준다. 다시 보이면 [관찰 069](../observations/archive/069-query-service-tests-flake-under-full-suite.md)가 측정과 원인을 든다. 날짜를 박은 픽스처에 `useServerNow`를 안 고정한 테스트는 날이 지나면 깨진다 — `serverClock.policy`의 `nowWithOffset`을 고정한다.
+- **받은 실패 테스트의 `await import` + `@ts-expect-error`는 대상이 서면 걷는다.** 미사용 directive가 되어 `TS2578`로 typecheck를 죽이고, ESM이라 `jest` 전역도 안 들어온다. 정적 import와 `import { jest } from "@jest/globals"`로 고치고 단언은 안 건드린다.
 - **`jest` 객체는 전역이 아니다.** `describe`·`it`·`expect`만 전역이고 `jest.fn()`이나 `jest.unstable_mockModule`을 쓰려면 `@jest/globals`에서 가져와야 한다.
 - 테스트를 ESM으로 돌려서 `NODE_OPTIONS=--experimental-vm-modules`가 스크립트에 박혀 있다. `scripts/generateGlobalsCss.mts`의 최상위 `await`과 `import.meta.url` 때문이고, 그 둘은 `pnpm tokens:css`가 그 파일을 직접 실행할 때 필요한 것이라 러너에 맞춰 걷지 않는다. 같은 이유로 `jest.mock()`이 안 먹는다 — 대역이 필요하면 `jest.unstable_mockModule`과 동적 import다.
 - `babel.config.js`가 없어서 `jest.config.js`가 babel preset을 직접 물고 있다. 그 파일이 생기면 `.mts`를 TypeScript로 보게 하는 override와 `transformImportMeta: false`가 같이 따라가야 한다.

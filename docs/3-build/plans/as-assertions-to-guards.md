@@ -168,7 +168,7 @@ return rate === null ? [] : [[one.month, rate] as [string, number]];
 
 `shared/ui`를 건드리니 **`components` 프로젝트를 반드시 돌린다.** `Icon`과 `SvgPaint`는 거의 모든 화면이 쓴다.
 
-**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
+**전체 실행에서 `services`의 query 테스트가 간헐적으로 `waitFor` 타임아웃을 낸다**([관찰 069](../../observations/archive/069-query-service-tests-flake-under-full-suite.md)). 따로 돌려 가린다.
 
 ## 리스크
 
