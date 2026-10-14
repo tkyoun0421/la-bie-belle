@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: unit-test-writer
 date: 2026-10-14
-resolved:
+resolved: 2026-10-14
 ---
 
 **일**: `system-theme-follows-os`에서 writer가 `themeStorage.lib.test.ts`에 `jest.unstable_mockModule("react-native", …)`로 `Appearance`를 대역으로 두고 「대상이 없어 빨갛다」고 돌려줬다. 구현이 서자 `Appearance.getColorScheme is not a function`으로 죽었다. jest `logic` 프로젝트는 babel에 `platform: "web"`을 넘겨 `babel-plugin-react-native-web`이 구현 쪽 `import { Appearance } from "react-native"`를 `react-native-web/dist/exports/Appearance`로 바꾼다 — 테스트의 `react-native` 대역이 구현의 import에 닿지 않는다. 구현자가 저장소 선례(`openPhone.lib.test.ts`)처럼 실제 모듈을 import해 `Object.assign`으로 함수를 갈아 끼우는 꼴로 준비 코드를 고쳤고, `stores` 폴더는 `react-native` import가 lint로 막혀 `tests/setup/appearance.ts`의 `stubAppearance`를 새로 뒀다.
