@@ -163,9 +163,14 @@ const MOTION_SECTION = `## 6. 모션
 
 const VENDOR_SECTION = `## 9. 바깥이 정한 값
 
+지금은 이 절에 남은 값이 없다.
+`;
+
+const VENDOR_TABLE_SECTION = `## 9. 바깥이 정한 값
+
 | 변수 | 값 | 자리 | Tailwind 유틸 |
 | --- | --- | --- | --- |
-| \`--vendor-google-bg\` | \`#131314\` | 버튼 배경 | \`bg-google-bg\` |
+| \`--vendor-example-bg\` | \`#131314\` | 버튼 배경 | \`bg-example-bg\` |
 `;
 
 type FixtureOverrides = {
@@ -642,8 +647,18 @@ describe("리스크 G — 표마다 다른 컬럼 인덱스를 혼동한다", ()
     expect(declarationValueAnywhere(css, "--stagger-step")).toBe("70ms");
   });
 
-  it("9절 바깥 값 표는 자리 열과 Tailwind 유틸 열의 순서가 모션 표와 반대다", () => {
-    expect(declarationValueAnywhere(css, "--vendor-google-bg")).toBe("#131314");
+  it("9절 바깥 값 표는 자리 열과 Tailwind 유틸 열의 순서가 모션 표와 반대다", async () => {
+    const withVendor = await generateGlobalsCss(
+      tokensMdFixture({ vendor: VENDOR_TABLE_SECTION }),
+    );
+
+    expect(declarationValueAnywhere(withVendor, "--vendor-example-bg")).toBe(
+      "#131314",
+    );
+  });
+
+  it("9절에 표가 없으면 던지지 않고 vendor 선언 없이 만든다", () => {
+    expect(css).not.toContain("--vendor-");
   });
 });
 

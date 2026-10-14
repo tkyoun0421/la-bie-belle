@@ -638,21 +638,7 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
 
 접두어가 `--vendor-`인 것도 그래서다. `--palette-`와 `--role-`은 우리가 정하고 우리가 바꾸지만 `--vendor-`는 출처가 바꿀 때만 바뀐다.
 
-### 구글 로그인 버튼
-
-로그인 화면은 구글이 배포하는 SVG 자산을 통째로 쓴다([login.md](../modules/account/screens/login.md#구글-버튼은-구글이-정한다)) — 색이 파일 안에 있어 토큰이 필요 없다. 아래 셋은 지금 코드가 아직 직접 그린 버튼이라 남아 있는 값이고, 코드가 자산으로 바뀌면 이 절을 지운다. 구글이 배경 테마 셋(밝게·중간·어둡게)을 못 박았고, 아래는 어두운 테마의 값이다.
-
-| 변수 | 값 | 자리 | Tailwind 유틸 |
-| --- | --- | --- | --- |
-| `--vendor-google-bg` | `#131314` | 버튼 배경 | `bg-google-bg` |
-| `--vendor-google-stroke` | `#8E918F` | 버튼 테두리 | `border-google-stroke` |
-| `--vendor-google-fg` | `#E3E3E3` | 버튼 글자 | `text-google-fg` |
-
-oklch가 아니라 hex다. 구글이 hex로 적었고, 옮겨 적으면서 색공간을 바꾸면 반올림이 끼어 원문과 대조할 수 없게 된다. 못 바꾸는 값은 출처가 쓴 표기 그대로 두는 편이 확인하기 쉽다.
-
-대비는 이 표의 대상이 아니다. 구글이 짝지은 조합이고 우리가 고칠 수 없어서 [7절](#7-대비-검증)에 줄을 더하지 않는다.
-
-이 값을 지키는 것은 취향이 아니다. 구글 문서가 app verification에 required라고 적었고 배포할 때 OAuth 앱 심사가 본다. 출처는 [Google Identity — Branding guidelines](https://developers.google.com/identity/branding-guidelines)다.
+지금은 이 절에 남은 값이 없다.
 
 ---
 

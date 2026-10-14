@@ -1,18 +1,20 @@
 # 세션이 없는 차가운 시작이 로그인 화면에 선다.
 #
 # 근거는 navigation.md 「앱을 열면」이다 — 세션이 없으면 `/login`이고, 그 판정은
-# `src/app/_layout.tsx`가 `decide-entry`에 물어서 한다. 지금 그 화면은 골격이
-# 세운 빈 화면이라 경로만 보인다.
+# `src/app/_layout.tsx`가 `decide-entry`에 물어서 한다. 화면의 글자와 구글 버튼
+# 라벨은 login.md 「로그인」 절이 정본이다.
 #
 # `clearState`가 안드로이드의 앱 데이터를 지우고, `clearKeychain`이 iOS 키체인을
 # 지운다 — expo-secure-store가 iOS에서 키체인에 세션을 넣으니 둘 다 필요하다.
 #
-# 텍스트 셀렉터는 정규식이다. 여기 둘은 화면의 글자와 정확히 같아서 그대로 쓴다 —
-# 일부만 맞히려면 `.*`를 붙여야 한다.
+# 텍스트 셀렉터는 정규식이고 전체가 맞아야 한다. 안내 줄은 일부만 맞히니 `.*`를
+# 붙인다. 구글 버튼은 그림이라 접근성 라벨로 찾는다.
 appId: com.labiebelle.app
 ---
 - launchApp:
     clearState: true
     clearKeychain: true
-- assertVisible: "아직 없다"
-- assertVisible: "/login"
+- assertVisible: "라비에벨"
+- assertVisible: "근무표와 급여를 한곳에서 봐요"
+- assertVisible: ".*가입하면 관리자가 확인한 뒤에.*"
+- assertVisible: "Sign in with Google"

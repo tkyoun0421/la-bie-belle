@@ -252,9 +252,7 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
 
   const lightPalette = paletteGroups(markdown, "light");
   const roles = roleGroups(roleRows);
-  const vendor = variableGroup(
-    requireRows(markdown, VENDOR_HEADER, "바깥이 정한 값"),
-  );
+  const vendor = variableGroup(readRows(markdown, VENDOR_HEADER));
 
   const light = renderGroups([
     [themeName("light")],

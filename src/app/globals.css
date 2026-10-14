@@ -264,10 +264,6 @@
   --interval-shimmer: 1.6s;
   --interval-spin: 1s;
   --stagger-step: 70ms;
-
-  --vendor-google-bg: #131314;
-  --vendor-google-stroke: #8e918f;
-  --vendor-google-fg: #e3e3e3;
 }
 
 @theme {
@@ -460,8 +456,4 @@
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-sky: var(--role-stroke-sky);
   --color-stroke-mint: var(--role-stroke-mint);
-
-  --color-google-bg: var(--vendor-google-bg);
-  --color-google-stroke: var(--vendor-google-stroke);
-  --color-google-fg: var(--vendor-google-fg);
 }
