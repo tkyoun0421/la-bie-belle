@@ -18,10 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { RETRY_PATH } = await import("@/shared/consts/navigation.const");
-const { useGoogleSignInMutation } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/auth/services/useGoogleSignInMutation"
-);
+const { useGoogleSignInMutation } =
+  await import("@/features/auth/services/useGoogleSignInMutation");
 
 const FAKE_CLIENT = { name: "client" } as never;
 

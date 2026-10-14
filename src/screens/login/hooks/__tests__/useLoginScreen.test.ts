@@ -27,10 +27,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { RETRY_PATH } = await import("@/shared/consts/navigation.const");
-const { useLoginScreen } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/login/hooks/useLoginScreen"
-);
+const { useLoginScreen } = await import("@/screens/login/hooks/useLoginScreen");
 
 function createWrapper() {
   const queryClient = new QueryClient({

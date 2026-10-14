@@ -1,9 +1,5 @@
 import { LOGIN_PATH } from "@/shared/consts/navigation.const";
-
-const { redirectNativeIntentPath } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/auth/model/nativeIntent.policy"
-);
+import { redirectNativeIntentPath } from "@/features/auth/model/nativeIntent.policy";
 
 describe("redirectNativeIntentPath — 구글이 돌아오는 주소는 로그인으로 돌린다", () => {
   it.each([

@@ -1,9 +1,11 @@
 import { jest } from "@jest/globals";
 
-const { signInWithGoogle } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/auth/lib/signInWithGoogle.lib"
-);
+jest.unstable_mockModule("expo-constants", () => ({
+  default: { executionEnvironment: "standalone" },
+}));
+
+const { signInWithGoogle } =
+  await import("@/features/auth/lib/signInWithGoogle.lib");
 
 const REDIRECT_URI = "labiebelle://auth/callback";
 const OAUTH_URL =

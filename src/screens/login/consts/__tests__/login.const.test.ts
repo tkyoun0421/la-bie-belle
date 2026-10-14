@@ -1,10 +1,6 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-
-const { GOOGLE_BUTTON_ASSETS } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/screens/login/consts/login.const"
-);
+import { GOOGLE_BUTTON_ASSETS } from "@/screens/login/consts/login.const";
 
 const GOOGLE_ASSET_DIR = join(process.cwd(), "assets", "google");
 

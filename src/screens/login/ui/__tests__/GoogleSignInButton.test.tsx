@@ -1,12 +1,8 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import { ActivityIndicator } from "react-native";
+import { GoogleSignInButton } from "@/screens/login/ui/GoogleSignInButton";
 
 async function renderButton(props: { onPress: () => void; busy: boolean }) {
-  const { GoogleSignInButton } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/screens/login/ui/GoogleSignInButton"
-  );
-
   return render(<GoogleSignInButton {...props} />);
 }
 
