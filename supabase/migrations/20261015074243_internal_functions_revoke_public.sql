@@ -1,0 +1,14 @@
+-- `internal` 함수의 EXECUTE를 `PUBLIC`에서 걷는다(data-access.md 「함수 안의 규칙」).
+--
+-- 앞선 마이그레이션마다 붙은 `revoke all on all functions in schema internal from anon,
+-- authenticated`는 헛돈다. 함수 EXECUTE는 만들 때 `PUBLIC`에 붙고, 두 역할은 `PUBLIC`을
+-- 타고 그대로 들어온다. 지금 막는 것은 스키마 USAGE와 PostgREST 노출 목록뿐이다.
+--
+-- 걷어도 끊기는 길이 없다. `internal` 함수를 부르는 자리는 전부 `security definer`인
+-- `public` 함수(소유자 `postgres`), `postgres`가 등록한 cron, `security definer` 함수만
+-- 행을 넣는 `notifications`의 트리거다. 어느 쪽이든 실행 주체가 소유자 `postgres`다.
+--
+-- 앞으로 만들 `internal` 함수는 이 줄이 못 막는다. 그 함수를 만드는 마이그레이션이 같은
+-- 파일에서 `revoke execute on function internal.<이름> from public`을 둔다 — 빠지면
+-- `internalGrants` integration 테스트가 빨개진다.
+revoke execute on all functions in schema internal from public;
