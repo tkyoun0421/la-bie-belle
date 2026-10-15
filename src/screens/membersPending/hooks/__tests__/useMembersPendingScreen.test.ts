@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
 
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
 
 const FAKE_CLIENT = {} as never;
 

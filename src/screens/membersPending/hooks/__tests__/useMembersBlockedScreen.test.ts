@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { unblockMember } from "@/features/memberAdmin/api/unblockMember.api";
 
-const unblockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const unblockMemberMock = jest.fn<typeof unblockMember>();
 
 const FAKE_CLIENT = {} as never;
 

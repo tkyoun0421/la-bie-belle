@@ -1,24 +1,31 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyAvailability } from "@/entities/availability/api/getMyAvailability.api";
+import type { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type {
+  getMonthWindow,
+  getMonthSchedule,
+} from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { getPendingApprovals } from "@/entities/workRequest/api/getPendingApprovals.api";
+import type { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
+import type { submitAvailability } from "@/features/availabilitySubmit/api/submitAvailability.api";
 
 const TODAY = "2026-10-03";
 const MONTH = "2026-10";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyAvailabilityMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getSlotRequestsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPendingApprovalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const submitAvailabilityMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const countUnreadMock = jest.fn<typeof countUnreadNotifications>();
+const getMonthWindowMock = jest.fn<typeof getMonthWindow>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMyAvailabilityMock = jest.fn<typeof getMyAvailability>();
+const getSlotRequestsMock = jest.fn<typeof getSlotRequests>();
+const getPendingApprovalsMock = jest.fn<typeof getPendingApprovals>();
+const submitAvailabilityMock = jest.fn<typeof submitAvailability>();
 const FAKE_CLIENT = {} as never;
 
 const pushMock = jest.fn();
@@ -204,7 +211,10 @@ beforeEach(() => {
   getCurrentUserMock.mockResolvedValue({
     id: "u1",
     email: "a@b.c",
+    app_metadata: {},
     user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
   });
   getMyProfileMock.mockResolvedValue({
     id: "p1",

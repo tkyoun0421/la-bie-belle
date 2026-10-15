@@ -1,9 +1,13 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { decideEntry } from "@/features/auth/lib/decideEntry.lib";
+import type { signOut } from "@/features/auth/lib/signOut.lib";
+import type { EntryDecision } from "@/features/auth/model/auth.type";
 
-const decideEntryMock = jest.fn<(...args: unknown[]) => Promise<string>>();
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const decideEntryMock = jest.fn<typeof decideEntry>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const signOutMock = jest.fn<typeof signOut>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -62,7 +66,10 @@ beforeEach(() => {
   getCurrentUserMock.mockResolvedValue({
     id: "user-1",
     email: "retry@example.com",
+    app_metadata: {},
     user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
   });
   signOutMock.mockResolvedValue(undefined);
 });
@@ -97,12 +104,12 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
   });
 
   it("도는 동안 retrying이 참이고 끝나면 거짓이다", async () => {
-    let release = (destination: string): void => {
+    let release = (destination: EntryDecision): void => {
       void destination;
     };
     decideEntryMock.mockImplementation(
       () =>
-        new Promise<string>((resolve) => {
+        new Promise<EntryDecision>((resolve) => {
           release = (destination) => resolve(destination);
         }),
     );
@@ -122,12 +129,12 @@ describe("useRetryScreen — 「다시 시도」가 진입 판정을 통째로 �
   });
 
   it("도는 동안 또 누르면 판정을 다시 안 돌린다", async () => {
-    let release = (destination: string): void => {
+    let release = (destination: EntryDecision): void => {
       void destination;
     };
     decideEntryMock.mockImplementation(
       () =>
-        new Promise<string>((resolve) => {
+        new Promise<EntryDecision>((resolve) => {
           release = (destination) => resolve(destination);
         }),
     );
