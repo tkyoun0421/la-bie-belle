@@ -1,8 +1,8 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { formatBareDate, spellMonth } from "@/shared/utils/kstDate";
-import { spellDeadline } from "@/entities/schedule/model/monthState.policy";
 import { spellWorkDate } from "@/entities/schedule/utils/agendaRow.utils";
+import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
 import {
   approveProfile,
   backdateDeadline,
@@ -438,7 +438,10 @@ async function seedSubmissionWindow(): Promise<SchedulePayload> {
     return {
       month: openMonth.slice(0, 7),
       monthLabel: spellMonth(openMonth.slice(0, 7)),
-      deadlineLabel: spellDeadline(deadline, today),
+      deadlineLabel: deadlineLine({
+        applicationDeadline: deadline,
+        now: today,
+      }),
     };
   });
 }

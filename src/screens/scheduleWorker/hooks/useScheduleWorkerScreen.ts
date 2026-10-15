@@ -14,13 +14,13 @@ import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAv
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import {
   monthState,
-  spellDeadline,
   type MonthState,
 } from "@/entities/schedule/model/monthState.policy";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { myAssignmentOf } from "@/entities/schedule/utils/agendaRow.utils";
 import { indexDaysByDate } from "@/entities/schedule/utils/dayIndex.utils";
+import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
 import { hasIncomingRequest } from "@/entities/workRequest/model/incomingRequest.policy";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
@@ -317,7 +317,7 @@ export function useScheduleWorkerScreen({
     deadlineLine:
       loading || confirmed || deadline === null
         ? null
-        : spellDeadline(deadline, today),
+        : deadlineLine({ applicationDeadline: deadline, now: today }),
     notice: noticeOf[state],
     calendarNote:
       claimed ??

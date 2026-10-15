@@ -16,7 +16,7 @@ export type OpenSlotSummary = {
 };
 
 export function countOpenSlotsByDate(
-  rows: readonly OpenSlot[],
+  rows: readonly Pick<OpenSlot, "workDate">[],
 ): Record<string, number> {
   return Object.fromEntries(countBy(rows, (row) => row.workDate));
 }
