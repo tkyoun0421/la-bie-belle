@@ -3,6 +3,7 @@ import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
@@ -44,7 +45,7 @@ export function useStatsAttendance(month: string): StatsAttendanceController {
   const serverNowMs = useServerNow();
 
   const profileId = profile.data?.id ?? null;
-  const now = new Date(serverNowMs).toISOString();
+  const now = serverNowIso(serverNowMs);
   const shown = monthIn(attendance.data, month);
 
   const days = useMemo(

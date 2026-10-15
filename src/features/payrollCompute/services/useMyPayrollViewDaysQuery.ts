@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
@@ -68,7 +69,7 @@ export function useMyPayrollViewDaysQuery(
       adjustments: payroll.data.adjustments,
       excuses: payroll.data.excuseStatus,
       rehearsals: rehearsal.data,
-      now: new Date(nowMs).toISOString(),
+      now: serverNowIso(nowMs),
     }).filter((day) => isInSpan({ from, to }, day.date));
   }, [profileId, payroll.data, schedule.data, rehearsal.data, nowMs, from, to]);
 

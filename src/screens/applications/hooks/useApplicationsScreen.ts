@@ -11,6 +11,7 @@ import {
   applicationsTitle,
 } from "@/entities/availability/utils/applicationsGrouping.utils";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { DEADLINE_SHEET_COPY } from "@/features/availabilitySubmit/consts/availabilitySubmit.const";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
@@ -51,7 +52,7 @@ export function useApplicationsScreen(
   const [draft, setDraft] = useState<string | null>(null);
 
   const serverNowMs = useServerNow();
-  const now = new Date(serverNowMs).toISOString();
+  const now = serverNowIso(serverNowMs);
   const today = kstDateOf(now);
   const month = monthParam ?? monthOf(today);
 

@@ -1,3 +1,5 @@
+import { NO_VALUE } from "@/shared/consts/noValue.const";
+import { tenThousandWonLabel } from "@/shared/utils/moneyLabel.utils";
 import { monthIn } from "@/shared/utils/monthIn";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type {
@@ -124,4 +126,22 @@ export function myPayrollDaysOfMonth(
     rehearsals,
     now,
   }).filter((day) => day.date.slice(0, MONTH_LENGTH) === month);
+}
+
+export function myAttendanceLabel(
+  values: ReadonlyMap<string, number>,
+  month: string,
+): string {
+  const rate = values.get(month);
+
+  return rate === undefined ? NO_VALUE : `${rate}%`;
+}
+
+export function myPayrollLabel(
+  values: ReadonlyMap<string, number>,
+  month: string,
+): string {
+  const total = values.get(month);
+
+  return total === undefined ? NO_VALUE : tenThousandWonLabel(total);
 }

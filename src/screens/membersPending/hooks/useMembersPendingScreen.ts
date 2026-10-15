@@ -8,6 +8,7 @@ import {
 import { useToast } from "@/shared/hooks/useToast";
 import type { ToastState } from "@/shared/model/toast.type";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
@@ -44,7 +45,7 @@ export function useMembersPendingScreen(): MembersPendingController {
   const { toast, showToast, dismissToast } = useToast();
 
   const serverNowMs = useServerNow();
-  const today = new Date(serverNowMs).toISOString();
+  const today = serverNowIso(serverNowMs);
 
   const { data: values } = useProfilePrivateQuery(supabase, open?.id ?? null);
 

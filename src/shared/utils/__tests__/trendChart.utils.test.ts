@@ -1,8 +1,11 @@
 import {
   areaPointsOf,
+  isLabelledMonth,
   linePointsOf,
   plot,
   segmentsOf,
+  selectedPointOf,
+  valueLabelBottomOf,
   type PlotPoint,
   type TrendChartPoint,
 } from "@/shared/utils/trendChart.utils";
@@ -130,71 +133,45 @@ describe("areaPointsOf — 선 좌표 뒤에 차트 바닥(y=96)으로 내려가
 const LABEL_POINTS = [point(1, 5), point(2, null), point(3, 9)];
 
 describe("selectedPointOf — 고른 달의 찍힌 점을 낸다", () => {
-  it("값이 있는 달이면 그 점의 인덱스와 좌표를 낸다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { selectedPointOf } = await import("@/shared/utils/trendChart.utils");
-
+  it("값이 있는 달이면 그 점의 인덱스와 좌표를 낸다", () => {
     expect(selectedPointOf(plot(LABEL_POINTS, 300), LABEL_POINTS, 3)).toEqual(
       plotPoint(2, 250, 5),
     );
   });
 
-  it("값이 없는 달이면 undefined다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { selectedPointOf } = await import("@/shared/utils/trendChart.utils");
-
+  it("값이 없는 달이면 undefined다", () => {
     expect(
       selectedPointOf(plot(LABEL_POINTS, 300), LABEL_POINTS, 2),
     ).toBeUndefined();
   });
 
-  it("목록에 없는 달이면 undefined다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { selectedPointOf } = await import("@/shared/utils/trendChart.utils");
-
+  it("목록에 없는 달이면 undefined다", () => {
     expect(
       selectedPointOf(plot(LABEL_POINTS, 300), LABEL_POINTS, 12),
     ).toBeUndefined();
   });
 
-  it("찍힌 점이 하나도 없으면 undefined다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { selectedPointOf } = await import("@/shared/utils/trendChart.utils");
-
+  it("찍힌 점이 하나도 없으면 undefined다", () => {
     expect(selectedPointOf([], LABEL_POINTS, 3)).toBeUndefined();
   });
 });
 
 describe("valueLabelBottomOf — 값 라벨은 점 위로 간격만큼 띄운다", () => {
-  it("y=48이면 56이다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { valueLabelBottomOf } =
-      await import("@/shared/utils/trendChart.utils");
-
+  it("y=48이면 56이다", () => {
     expect(valueLabelBottomOf(48)).toBe(56);
   });
 
-  it("y=5면 99다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { valueLabelBottomOf } =
-      await import("@/shared/utils/trendChart.utils");
-
+  it("y=5면 99다", () => {
     expect(valueLabelBottomOf(5)).toBe(99);
   });
 });
 
 describe("isLabelledMonth — 1·4·7·10월에만 달 이름을 붙인다", () => {
-  it.each([1, 4, 7, 10])("%i월은 붙인다", async (month) => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { isLabelledMonth } = await import("@/shared/utils/trendChart.utils");
-
+  it.each([1, 4, 7, 10])("%i월은 붙인다", (month) => {
     expect(isLabelledMonth(month)).toBe(true);
   });
 
-  it.each([2, 3, 12])("%i월은 안 붙인다", async (month) => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { isLabelledMonth } = await import("@/shared/utils/trendChart.utils");
-
+  it.each([2, 3, 12])("%i월은 안 붙인다", (month) => {
     expect(isLabelledMonth(month)).toBe(false);
   });
 });

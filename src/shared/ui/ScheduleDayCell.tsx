@@ -2,10 +2,12 @@ import { Check, User } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, View, type LayoutChangeEvent } from "react-native";
 import Svg from "react-native-svg";
+import { DASH_STROKE_WIDTH } from "@/shared/consts/dashedOutline.const";
 import { Icon } from "@/shared/ui/Icon";
 import { Rect } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
+import { dashedRectOf } from "@/shared/utils/dashedOutline.utils";
 
 const TODAY_CIRCLE_SIZE = 21;
 
@@ -14,8 +16,6 @@ const ASSIGNED_DOT_SIZE = 4;
 const MARK_ICON_SIZE = 12;
 
 const VACANCY_RING_SIZE = 10;
-
-const DASH_STROKE_WIDTH = 1;
 
 const DASH_PATTERN = [3, 3];
 
@@ -250,10 +250,7 @@ function DashedOutline({
       {box === null ? null : (
         <Svg width={box.width} height={box.height}>
           <Rect
-            x={DASH_STROKE_WIDTH / 2}
-            y={DASH_STROKE_WIDTH / 2}
-            width={Math.max(0, box.width - DASH_STROKE_WIDTH)}
-            height={Math.max(0, box.height - DASH_STROKE_WIDTH)}
+            {...dashedRectOf(box)}
             rx={radius}
             className={cn("fill-none", className)}
             strokeWidth={DASH_STROKE_WIDTH}

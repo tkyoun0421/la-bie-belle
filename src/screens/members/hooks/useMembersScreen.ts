@@ -4,6 +4,7 @@ import { ADMIN_HOME_PATH } from "@/shared/consts/navigation.const";
 import { useToast } from "@/shared/hooks/useToast";
 import type { ToastState } from "@/shared/model/toast.type";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import type { ActiveMember, Member } from "@/entities/member/model/member.type";
 import { PERMISSION_OF_OTHERS } from "@/entities/notification/consts/notification.const";
 import { getReachState } from "@/entities/notification/model/reachState.policy";
@@ -69,7 +70,7 @@ export function useMembersScreen(): MembersScreenController {
   const { toast, showToast, dismissToast } = useToast();
 
   const serverNowMs = useServerNow();
-  const now = new Date(serverNowMs).toISOString();
+  const now = serverNowIso(serverNowMs);
 
   const close = useCallback(() => setOpen(null), []);
 

@@ -22,6 +22,7 @@ import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { applicationsByDate } from "@/entities/availability/utils/applicationsGrouping.utils";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
@@ -168,7 +169,7 @@ export function useScheduleAdminScreen({
   const { toast, showToast, dismissToast } = useToast();
 
   const nowMs = useServerNow();
-  const now = new Date(nowMs).toISOString();
+  const now = serverNowIso(nowMs);
   const today = kstDateOf(now);
 
   const [openDate, setOpenDate] = useState<string | null>(dateParam ?? null);

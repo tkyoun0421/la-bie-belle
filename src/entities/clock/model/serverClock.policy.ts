@@ -16,3 +16,7 @@ export function remainingMs(expiresAt: string, serverNowMs: number): number {
 export function isExpired(expiresAt: string, serverNowMs: number): boolean {
   return serverNowMs >= new Date(expiresAt).getTime();
 }
+
+export function serverNowIso(serverNowMs: number): string {
+  return new Date(serverNowMs).toISOString();
+}

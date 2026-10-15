@@ -6,6 +6,7 @@ import { useToast } from "@/shared/hooks/useToast";
 import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastState } from "@/shared/model/toast.type";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { MEMBER_DECISION_COPY } from "@/entities/member/consts/member.const";
 import type { MemberSummary } from "@/entities/member/model/member.type";
 import { useUnblockMemberMutation } from "@/features/memberAdmin/services/useUnblockMemberMutation";
@@ -35,7 +36,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   const { toast, showToast, dismissToast } = useToast();
 
   const serverNowMs = useServerNow();
-  const now = new Date(serverNowMs).toISOString();
+  const now = serverNowIso(serverNowMs);
 
   const {
     mutate: sendUnblock,

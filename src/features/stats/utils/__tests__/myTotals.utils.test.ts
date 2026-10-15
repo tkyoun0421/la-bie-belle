@@ -7,7 +7,10 @@ import {
   computeWorkTotals,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
-import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
+import {
+  computeMyWorkTotals,
+  myWorkTotalsOfMonth,
+} from "@/features/stats/utils/myTotals.utils";
 
 describe("computeMyWorkTotals — workTotals.ts를 다시 안 짜고 그대로 불러 내 배정으로 좁힌다", () => {
   it("김지우(p1)의 총 시간·건수가 관리자 byPerson의 값과 같다", () => {
@@ -112,22 +115,14 @@ const MONTH_DAY: ScheduleDay = {
 const MONTH: WorkMonth = { month: "2026-10", days: [MONTH_DAY] };
 
 describe("myWorkTotalsOfMonth — 고른 달의 근무표에서 내 합계를 낸다", () => {
-  it("내 배정 하나와 남의 배정 하나면 내 것만 센다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { myWorkTotalsOfMonth } =
-      await import("@/features/stats/utils/myTotals.utils");
-
+  it("내 배정 하나와 남의 배정 하나면 내 것만 센다", () => {
     const totals = myWorkTotalsOfMonth(MONTH, "me");
 
     expect(totals.totalCount).toBe(1);
     expect(totals.totalMinutes).toBe(300);
   });
 
-  it("같은 입력의 computeMyWorkTotals 결과와 같다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { myWorkTotalsOfMonth } =
-      await import("@/features/stats/utils/myTotals.utils");
-
+  it("같은 입력의 computeMyWorkTotals 결과와 같다", () => {
     const inputs = workInputsOf(MONTH.days);
 
     expect(myWorkTotalsOfMonth(MONTH, "me")).toEqual(
@@ -135,11 +130,7 @@ describe("myWorkTotalsOfMonth — 고른 달의 근무표에서 내 합계를 �
     );
   });
 
-  it("프로필이 아직 없으면 0과 빈 목록이다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { myWorkTotalsOfMonth } =
-      await import("@/features/stats/utils/myTotals.utils");
-
+  it("프로필이 아직 없으면 0과 빈 목록이다", () => {
     expect(myWorkTotalsOfMonth(MONTH, null)).toEqual({
       totalMinutes: 0,
       totalCount: 0,
@@ -147,11 +138,7 @@ describe("myWorkTotalsOfMonth — 고른 달의 근무표에서 내 합계를 �
     });
   });
 
-  it("그 달이 아직 안 왔으면 빈 입력으로 센 것과 같다", async () => {
-    // @ts-expect-error 새 export가 아직 없다
-    const { myWorkTotalsOfMonth } =
-      await import("@/features/stats/utils/myTotals.utils");
-
+  it("그 달이 아직 안 왔으면 빈 입력으로 센 것과 같다", () => {
     expect(myWorkTotalsOfMonth(undefined, "me")).toEqual(
       computeMyWorkTotals([], [], "me"),
     );

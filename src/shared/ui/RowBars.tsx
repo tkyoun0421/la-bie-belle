@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { barWidths } from "@/shared/utils/rowBars.utils";
 
 const BAR_HEIGHT = 4;
-
-const FULL = 100;
 
 export type RowBarsItem = {
   key: string;
@@ -17,23 +16,23 @@ export type RowBarsProps = {
 };
 
 export function RowBars({ items, testID }: RowBarsProps) {
-  const highest = Math.max(0, ...items.map((item) => item.value));
+  const widths = barWidths(items.map((item) => item.value));
 
   return (
     <View testID={testID}>
-      {items.map((item) => (
+      {items.map((item, index) => (
         <View key={item.key}>
           {item.row}
-          {item.value > 0 && highest > 0 ? (
+          {widths[index] === null ? null : (
             <View
               testID={testID ? `${testID}-bar-${item.key}` : undefined}
               className="mt-2 rounded-full bg-bg-brand-solid"
               style={{
                 height: BAR_HEIGHT,
-                width: `${(item.value / highest) * FULL}%`,
+                width: widths[index],
               }}
             />
-          ) : null}
+          )}
         </View>
       ))}
     </View>
