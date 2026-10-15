@@ -1,9 +1,6 @@
 import { jest } from "@jest/globals";
 
-const { readAllPages } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/shared/api/readAllPages"
-);
+import { readAllPages } from "@/shared/api/readAllPages";
 
 type Page = { data: number[] | null; error: unknown };
 
