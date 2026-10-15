@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import { readAllPages } from "@/shared/api/readAllPages";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type {
   AdjustmentRow,
@@ -61,11 +62,16 @@ export async function getPayrollMonth(
   const dayIds = await monthDayIds(client, month);
 
   const [wageRates, adjustments, excuseStatus, holidays] = await Promise.all([
-    client
-      .from("wage_rates")
-      .select(WAGE_RATE_COLUMNS)
-      .lt("effective_date", nextMonthStart(month))
-      .returns<MemberWageRateRow[]>(),
+    readAllPages((from, to) =>
+      client
+        .from("wage_rates")
+        .select(WAGE_RATE_COLUMNS)
+        .lt("effective_date", nextMonthStart(month))
+        .order("effective_date")
+        .order("profile_id")
+        .range(from, to)
+        .returns<MemberWageRateRow[]>(),
+    ),
     client
       .from("adjustments")
       .select(ADJUSTMENT_COLUMNS)
@@ -84,9 +90,6 @@ export async function getPayrollMonth(
       .returns<HolidayRow[]>(),
   ]);
 
-  if (wageRates.error) {
-    throw wageRates.error;
-  }
   if (adjustments.error) {
     throw adjustments.error;
   }
@@ -98,7 +101,7 @@ export async function getPayrollMonth(
   }
 
   return {
-    wageRates: (wageRates.data ?? []).map(toMemberWageRate),
+    wageRates: wageRates.map(toMemberWageRate),
     adjustments: (adjustments.data ?? []).map(toAdjustment),
     excuseStatus: (excuseStatus.data ?? []).map(toExcuseStatus),
     holidays: (holidays.data ?? []).map(toHoliday),

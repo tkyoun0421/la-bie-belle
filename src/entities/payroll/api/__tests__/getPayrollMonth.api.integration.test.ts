@@ -142,6 +142,23 @@ function lastDayOfMonthBefore(month: string): string {
   return end.toISOString().slice(0, 10);
 }
 
+const SEEDED_ROWS = 1100;
+
+function seedManyWageRates(profileId: string): void {
+  execSql(
+    "insert into public.wage_rates (profile_id, effective_date, amount, follows_default)\n" +
+      "select :'profile_id', current_date - g, 10000, false\n" +
+      `from generate_series(1, ${SEEDED_ROWS}) as g;\n`,
+    { profile_id: profileId },
+  );
+}
+
+function clearWageRates(profileId: string): void {
+  execSql("delete from public.wage_rates where profile_id = :'profile_id';\n", {
+    profile_id: profileId,
+  });
+}
+
 describe("getPayrollMonth(plan AC-07) — wage_rates·adjustments·excuse_status를 그 달치로 읽는다", () => {
   let admin: AdminUser;
 
@@ -319,5 +336,24 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
     const holidays = holidaysOf(result);
 
     expect(holidays).toEqual([]);
+  });
+
+  it("한 사람의 wage_rates가 천 행을 넘어도 그 달 기준으로 전부 온다", async () => {
+    const worker = await createApprovedUser();
+    seedManyWageRates(worker.profileId);
+
+    try {
+      const result = await getPayrollMonth(
+        admin.client,
+        kstDate(0).slice(0, 7),
+      );
+      const own = result.wageRates.filter(
+        (row) => row.profileId === worker.profileId,
+      );
+
+      expect(own).toHaveLength(SEEDED_ROWS);
+    } finally {
+      clearWageRates(worker.profileId);
+    }
   });
 });

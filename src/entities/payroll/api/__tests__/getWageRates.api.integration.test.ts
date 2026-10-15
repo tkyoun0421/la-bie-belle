@@ -37,6 +37,23 @@ function clearDefaultWageRates(): void {
   execSql("delete from public.default_wage_rates;\n");
 }
 
+const SEEDED_ROWS = 1100;
+
+function seedManyWageRates(profileId: string): void {
+  execSql(
+    "insert into public.wage_rates (profile_id, effective_date, amount, follows_default)\n" +
+      "select :'profile_id', current_date - g, 10000, false\n" +
+      `from generate_series(1, ${SEEDED_ROWS}) as g;\n`,
+    { profile_id: profileId },
+  );
+}
+
+function clearWageRates(profileId: string): void {
+  execSql("delete from public.wage_rates where profile_id = :'profile_id';\n", {
+    profile_id: profileId,
+  });
+}
+
 describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력과 default_wage_rates 현재값을 읽는다", () => {
   let admin: AdminUser;
 
@@ -98,5 +115,21 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
       effectiveDate: newer,
       amount: 13000,
     });
+  });
+
+  it("한 사람의 wage_rates가 천 행을 넘어도 조용히 안 잘리고 전부 온다", async () => {
+    const worker = await createApprovedUser();
+    seedManyWageRates(worker.profileId);
+
+    try {
+      const result = await getWageRates(admin.client);
+      const own = result.wageRates.filter(
+        (row) => row.profileId === worker.profileId,
+      );
+
+      expect(own).toHaveLength(SEEDED_ROWS);
+    } finally {
+      clearWageRates(worker.profileId);
+    }
   });
 });
