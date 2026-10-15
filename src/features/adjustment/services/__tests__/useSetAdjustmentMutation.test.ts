@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setAdjustment } from "@/features/adjustment/api/setAdjustment.api";
 
-const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setAdjustmentMock = jest.fn<typeof setAdjustment>();
 
 jest.unstable_mockModule("@/features/adjustment/api/setAdjustment.api", () => ({
   setAdjustment: setAdjustmentMock,

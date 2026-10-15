@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { listPendingMembers } from "@/entities/member/api/listMembers.api";
+import type { MemberSummary } from "@/entities/member/model/member.type";
 
-const listPendingMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const listPendingMembersMock = jest.fn<typeof listPendingMembers>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -42,18 +43,24 @@ function createWrapper() {
   return { wrapper };
 }
 
-const PENDING = [
+const PENDING: MemberSummary[] = [
   {
     id: "p1",
     displayName: "이준호",
     photoUrl: null,
     submittedAt: "2026-10-01T05:00:00.000Z",
+    approvedAt: null,
+    rejectedAt: null,
+    blockedAt: null,
   },
   {
     id: "p2",
     displayName: "박수진",
     photoUrl: null,
     submittedAt: null,
+    approvedAt: null,
+    rejectedAt: null,
+    blockedAt: null,
   },
 ];
 

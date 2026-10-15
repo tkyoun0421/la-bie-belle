@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { removeAssignment } from "@/features/scheduleAssign/api/removeAssignment.api";
 
-const removeAssignmentMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const removeAssignmentMock = jest.fn<typeof removeAssignment>();
 
 jest.unstable_mockModule(
   "@/features/scheduleAssign/api/removeAssignment.api",

@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getQrCode } from "@/entities/qr/api/getQrCode.api";
 
-const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getQrCodeMock = jest.fn<typeof getQrCode>();
 const FAKE_STALE_TIME = 12345;
 
 jest.unstable_mockModule("@/entities/qr/api/getQrCode.api", () => ({

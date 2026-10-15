@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { editRehearsal } from "@/features/rehearsalEdit/api/editRehearsal.api";
 
-const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const editRehearsalMock = jest.fn<typeof editRehearsal>();
 
 jest.unstable_mockModule(
   "@/features/rehearsalEdit/api/editRehearsal.api",

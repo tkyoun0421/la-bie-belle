@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
+import type { respondRequest } from "@/features/workRequest/api/respondRequest.api";
 
-const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const respondRequestMock = jest.fn<typeof respondRequest>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -83,7 +84,7 @@ beforeEach(() => {
   respondRequestMock.mockReset();
   answered.mockClear();
   seatTaken.mockClear();
-  respondRequestMock.mockResolvedValue(undefined);
+  respondRequestMock.mockResolvedValue(null);
 });
 
 describe("useRequestSheet — 요청 하나가 그릴 값을 완성해 준다", () => {

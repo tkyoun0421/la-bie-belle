@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { markNotificationsRead } from "@/features/notificationRead/api/markNotificationsRead.api";
 
-const markNotificationsReadMock =
-  jest.fn<(...args: unknown[]) => Promise<void>>();
+const markNotificationsReadMock = jest.fn<typeof markNotificationsRead>();
 
 jest.unstable_mockModule(
   "@/features/notificationRead/api/markNotificationsRead.api",

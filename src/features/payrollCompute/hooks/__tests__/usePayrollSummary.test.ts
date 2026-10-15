@@ -1,7 +1,12 @@
 import { jest } from "@jest/globals";
+import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
+import type {
+  PayrollViewDaysResult,
+  useMyPayrollViewDaysQuery,
+} from "@/features/payrollCompute/services/useMyPayrollViewDaysQuery";
 
 const useMyPayrollViewDaysQueryMock =
-  jest.fn<(...args: unknown[]) => unknown>();
+  jest.fn<typeof useMyPayrollViewDaysQuery>();
 
 jest.unstable_mockModule(
   "@/features/payrollCompute/services/useMyPayrollViewDaysQuery",
@@ -20,7 +25,7 @@ const SPAN = { from: "2026-10-01", to: "2026-10-31" };
 
 const refetch = jest.fn();
 
-function day(amount: number) {
+function day(amount: number): PayrollViewDay {
   return {
     date: "2026-10-09",
     minutes: 300,
@@ -36,7 +41,7 @@ function day(amount: number) {
   };
 }
 
-function reads(result: Record<string, unknown>) {
+function reads(result: Partial<PayrollViewDaysResult>) {
   useMyPayrollViewDaysQueryMock.mockReturnValue({
     data: undefined,
     isLoading: false,

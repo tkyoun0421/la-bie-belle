@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
-const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const updateMyContactMock = jest.fn<typeof updateMyContact>();
 
 const FAKE_CLIENT = {} as never;
 

@@ -203,6 +203,11 @@ const eslintConfig = defineConfig([
   },
 
   {
+    files: ["**/*.{ts,tsx,mts}"],
+    rules: { "house/typed-mock-fn": "error" },
+  },
+
+  {
     files: ["src/**/*.tsx"],
     rules: { "house/dumb-ui": "error" },
   },

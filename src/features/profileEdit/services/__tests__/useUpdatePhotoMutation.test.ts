@@ -1,8 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
+import type { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
 
-const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const uploadAvatarMock = jest.fn<typeof uploadAvatar>();
+const updateMyPhotoMock = jest.fn<typeof updateMyPhoto>();
 
 jest.unstable_mockModule(
   "@/features/profileEdit/api/avatarsBucket.api",

@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { decideCancelRequest } from "@/features/workRequest/api/decideCancelRequest.api";
 
-const decideCancelRequestMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const decideCancelRequestMock = jest.fn<typeof decideCancelRequest>();
 
 const FAKE_CLIENT = {} as never;
 

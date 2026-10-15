@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { approveMember } from "@/features/memberAdmin/api/approveMember.api";
 
-const approveMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const approveMemberMock = jest.fn<typeof approveMember>();
 
 jest.unstable_mockModule(
   "@/features/memberAdmin/api/approveMember.api",

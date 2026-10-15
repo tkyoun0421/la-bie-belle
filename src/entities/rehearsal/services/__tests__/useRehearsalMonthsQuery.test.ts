@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 
-const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMyRehearsalsMock = jest.fn<typeof getMyRehearsals>();
 
 jest.unstable_mockModule(
   "@/entities/rehearsal/api/getMyRehearsals.api",
@@ -35,7 +37,7 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-function rowFor(month: string) {
+function rowFor(month: string): Rehearsal {
   return {
     id: `row-${month}`,
     profileId: "profile-1",
@@ -43,6 +45,7 @@ function rowFor(month: string) {
     startsAt: "14:00",
     endsAt: "16:00",
     count: null,
+    name: null,
   };
 }
 
@@ -53,7 +56,7 @@ beforeEach(() => {
 describe("useRehearsalMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => [
-      rowFor(month as string),
+      rowFor(month),
     ]);
     const months = Array.from(
       { length: 12 },
@@ -78,7 +81,7 @@ describe("useRehearsalMonthsQuery — 하나라도 pending이면 로딩이다", 
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
-        return [rowFor(month as string)];
+        return [rowFor(month)];
       }
       return new Promise(() => {});
     });
@@ -102,7 +105,7 @@ describe("useRehearsalMonthsQuery — 하나라도 error면 그 error가 표면�
       if (month === "2026-10") {
         throw failure;
       }
-      return [rowFor(month as string)];
+      return [rowFor(month)];
     });
     const { wrapper } = createWrapper();
 
@@ -120,7 +123,7 @@ describe("useRehearsalMonthsQuery — 하나라도 error면 그 error가 표면�
 describe("useRehearsalMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 리허설이 하나의 배열로 이어진다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => [
-      rowFor(month as string),
+      rowFor(month),
     ]);
     const { wrapper } = createWrapper();
 

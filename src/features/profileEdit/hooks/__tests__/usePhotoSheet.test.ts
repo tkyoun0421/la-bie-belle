@@ -1,10 +1,15 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
+import type { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
+import type {
+  PickedPhoto,
+  pickAndShrinkPhoto,
+} from "@/features/profileEdit/lib/pickPhoto.lib";
 
-const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const pickAndShrinkPhotoMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const updateMyPhotoMock = jest.fn<typeof updateMyPhoto>();
+const uploadAvatarMock = jest.fn<typeof uploadAvatar>();
+const pickAndShrinkPhotoMock = jest.fn<typeof pickAndShrinkPhoto>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -172,7 +177,7 @@ describe("usePhotoSheet — 조각이 자기 쓰기를 삼킨다", () => {
   });
 
   it("고르는 동안과 올리는 동안을 하나로 든다", async () => {
-    let release: (picked: unknown) => void = () => {};
+    let release: (picked: PickedPhoto | null) => void = () => {};
 
     pickAndShrinkPhotoMock.mockImplementation(
       () =>

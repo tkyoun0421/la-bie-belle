@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getNotifications } from "@/entities/notification/api/getNotifications.api";
+import type { Notification } from "@/entities/notification/model/notification.type";
 
-const getNotificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getNotificationsMock = jest.fn<typeof getNotifications>();
 
 jest.unstable_mockModule(
   "@/entities/notification/api/getNotifications.api",
@@ -38,7 +39,7 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-function rowsOfLength(count: number, offset: number) {
+function rowsOfLength(count: number, offset: number): Notification[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `notif-${offset + index}`,
     profileId: "profile-1",

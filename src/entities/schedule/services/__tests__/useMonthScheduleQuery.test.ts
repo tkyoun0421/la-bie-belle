@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -38,29 +39,32 @@ const FAKE_CLIENT = {} as never;
 
 const MONTH = "2026-10";
 
-const MONTH_ROW = [
+const MONTH_ROW: ScheduleDay[] = [
   {
     id: "day-1",
-    work_date: "2026-10-10",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
+    workDate: "2026-10-10",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: "2026-09-20T00:00:00Z",
     slots: [
       {
         id: "slot-1",
         positions: ["팀장"],
-        ended_at: null,
+        endedAt: null,
       },
     ],
     assignments: [
       {
         id: "assignment-1",
+        slotId: "slot-1",
         position: "팀장",
         kind: "regular",
-        profile_id: "profile-1",
-        ended_at: null,
-        profiles: { display_name: "김지수" },
+        profileId: "profile-1",
+        endedAt: null,
+        name: "김지수",
       },
     ],
+    checkIns: [],
   },
 ];
 

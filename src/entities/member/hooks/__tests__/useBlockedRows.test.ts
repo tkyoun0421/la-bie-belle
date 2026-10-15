@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { listBlockedMembers } from "@/entities/member/api/listMembers.api";
+import type { MemberSummary } from "@/entities/member/model/member.type";
 
-const listBlockedMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const listBlockedMembersMock = jest.fn<typeof listBlockedMembers>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -42,17 +43,23 @@ function createWrapper() {
   return { wrapper };
 }
 
-const BLOCKED = [
+const BLOCKED: MemberSummary[] = [
   {
     id: "p9",
     displayName: "한지우",
     photoUrl: null,
+    submittedAt: null,
+    approvedAt: null,
+    rejectedAt: null,
     blockedAt: "2026-10-01T05:00:00.000Z",
   },
   {
     id: "p10",
     displayName: "최민재",
     photoUrl: null,
+    submittedAt: null,
+    approvedAt: null,
+    rejectedAt: null,
     blockedAt: null,
   },
 ];

@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { rotateQr } from "@/features/qrAdmin/api/rotateQr.api";
 
-const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const rotateQrMock = jest.fn<typeof rotateQr>();
 
 jest.unstable_mockModule("@/features/qrAdmin/api/rotateQr.api", () => ({
   rotateQr: rotateQrMock,

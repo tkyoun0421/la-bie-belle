@@ -1,10 +1,12 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
+import type { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
+import type { pickAndShrinkPhoto } from "@/features/profileEdit/lib/pickPhoto.lib";
 
-const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const pickAndShrinkPhotoMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const updateMyPhotoMock = jest.fn<typeof updateMyPhoto>();
+const uploadAvatarMock = jest.fn<typeof uploadAvatar>();
+const pickAndShrinkPhotoMock = jest.fn<typeof pickAndShrinkPhoto>();
 
 const FAKE_CLIENT = {} as never;
 

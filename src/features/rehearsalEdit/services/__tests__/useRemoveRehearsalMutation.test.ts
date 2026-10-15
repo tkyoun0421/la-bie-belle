@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { removeRehearsal } from "@/features/rehearsalEdit/api/removeRehearsal.api";
 
-const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const removeRehearsalMock = jest.fn<typeof removeRehearsal>();
 
 jest.unstable_mockModule(
   "@/features/rehearsalEdit/api/removeRehearsal.api",

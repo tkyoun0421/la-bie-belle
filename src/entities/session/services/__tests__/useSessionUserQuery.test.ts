@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
+import type { User } from "@supabase/supabase-js";
 import type { ReactNode } from "react";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
 
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
   getCurrentUser: getCurrentUserMock,
@@ -32,6 +34,17 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
+function sessionUser(over: Partial<User>): User {
+  return {
+    id: "user-1",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-01-01T00:00:00.000Z",
+    ...over,
+  };
+}
+
 beforeEach(() => {
   getCurrentUserMock.mockReset();
 });
@@ -51,11 +64,13 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
   });
 
   it("id와 이메일과 구글 사진을 든 꼴로 낸다", async () => {
-    getCurrentUserMock.mockResolvedValue({
-      id: "user-1",
-      email: "person@example.com",
-      user_metadata: { avatar_url: "https://photo.example/a.png" },
-    });
+    getCurrentUserMock.mockResolvedValue(
+      sessionUser({
+        id: "user-1",
+        email: "person@example.com",
+        user_metadata: { avatar_url: "https://photo.example/a.png" },
+      }),
+    );
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {
@@ -72,11 +87,13 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
   });
 
   it("이메일이 없으면 빈 글자다 — 아바타가 이 값으로 글자를 짓는다", async () => {
-    getCurrentUserMock.mockResolvedValue({
-      id: "user-1",
-      email: undefined,
-      user_metadata: {},
-    });
+    getCurrentUserMock.mockResolvedValue(
+      sessionUser({
+        id: "user-1",
+        email: undefined,
+        user_metadata: {},
+      }),
+    );
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {
@@ -93,11 +110,13 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
   });
 
   it("사진 열쇠가 없으면 널이다", async () => {
-    getCurrentUserMock.mockResolvedValue({
-      id: "user-1",
-      email: "person@example.com",
-      user_metadata: { name: "이름뿐" },
-    });
+    getCurrentUserMock.mockResolvedValue(
+      sessionUser({
+        id: "user-1",
+        email: "person@example.com",
+        user_metadata: { name: "이름뿐" },
+      }),
+    );
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {
@@ -123,11 +142,13 @@ describe("useSessionUserQuery — 세션의 사람을 화면이 받을 꼴로 �
   });
 
   it("['session','user']에 앉는다 — 열두 자리가 같은 답을 한 번만 묻는다", async () => {
-    getCurrentUserMock.mockResolvedValue({
-      id: "user-1",
-      email: "person@example.com",
-      user_metadata: {},
-    });
+    getCurrentUserMock.mockResolvedValue(
+      sessionUser({
+        id: "user-1",
+        email: "person@example.com",
+        user_metadata: {},
+      }),
+    );
     const { wrapper, queryClient } = createWrapper();
 
     const { result } = renderHook(() => useSessionUserQuery(FAKE_CLIENT), {

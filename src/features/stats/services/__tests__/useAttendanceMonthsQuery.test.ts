@@ -1,8 +1,11 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { CheckIn } from "@/entities/attendance/model/attendance.type";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -11,8 +14,7 @@ jest.unstable_mockModule(
   }),
 );
 
-const getMonthAttendanceMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthAttendanceMock = jest.fn<typeof getMonthAttendance>();
 
 jest.unstable_mockModule(
   "@/entities/attendance/api/getMonthAttendance.api",
@@ -47,13 +49,28 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-function daysFor(count: number) {
+function checkInFor(id: string): CheckIn {
+  return {
+    id,
+    dayId: "day-0",
+    profileId: "profile-1",
+    method: "qr",
+    checkedAt: "2026-08-01T10:00:00Z",
+    reportedAt: "2026-08-01T10:00:00Z",
+    receivedAt: "2026-08-01T10:00:00Z",
+  };
+}
+
+function daysFor(count: number): ScheduleDay[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `day-${index}`,
-    work_date: "2026-09-01",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
+    workDate: "2026-09-01",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: "2026-08-20T00:00:00Z",
+    slots: [],
     assignments: [],
+    checkIns: [],
   }));
 }
 
@@ -96,7 +113,7 @@ describe("useAttendanceMonthsQuery — 결과가 달마다 구분돼 돌아온�
   it("달마다 attendance 값이 따로 붙고 서로 안 섞인다", async () => {
     getMonthScheduleMock.mockImplementation(async () => daysFor(1));
     getMonthAttendanceMock.mockImplementation(async (_client, month) => ({
-      checkIns: month === "2026-08" ? [{ id: "c1" }, { id: "c2" }] : [],
+      checkIns: month === "2026-08" ? [checkInFor("c1"), checkInFor("c2")] : [],
       excuseStatuses: [],
     }));
     const { wrapper } = createWrapper();

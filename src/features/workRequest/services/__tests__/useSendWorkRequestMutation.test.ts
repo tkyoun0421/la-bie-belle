@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { sendWorkRequest } from "@/features/workRequest/api/sendWorkRequest.api";
 
-const sendWorkRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const sendWorkRequestMock = jest.fn<typeof sendWorkRequest>();
 
 jest.unstable_mockModule(
   "@/features/workRequest/api/sendWorkRequest.api",

@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getAllRehearsals } from "@/entities/rehearsal/api/getAllRehearsals.api";
+import type { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
 
-const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getAllRehearsalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMyRehearsalsMock = jest.fn<typeof getMyRehearsals>();
+const getAllRehearsalsMock = jest.fn<typeof getAllRehearsals>();
 
 const FAKE_CLIENT = {} as never;
 

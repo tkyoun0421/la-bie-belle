@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getFirstScheduleMonth } from "@/entities/schedule/api/getFirstScheduleMonth.api";
 
-const getFirstScheduleMonthMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getFirstScheduleMonthMock = jest.fn<typeof getFirstScheduleMonth>();
 
 const TODAY = "2026-10-03";
 

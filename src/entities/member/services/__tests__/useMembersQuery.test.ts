@@ -1,13 +1,17 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type {
+  listActiveMembers,
+  listLeftMembers,
+  listPendingMembers,
+  listBlockedMembers,
+} from "@/entities/member/api/listMembers.api";
+import type { ActiveMember } from "@/entities/member/model/member.type";
 
-const listActiveMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listLeftMembersMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listPendingMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listBlockedMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const listActiveMembersMock = jest.fn<typeof listActiveMembers>();
+const listLeftMembersMock = jest.fn<typeof listLeftMembers>();
+const listPendingMembersMock = jest.fn<typeof listPendingMembers>();
+const listBlockedMembersMock = jest.fn<typeof listBlockedMembers>();
 
 jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: listActiveMembersMock,
@@ -41,7 +45,23 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const ROW = { id: "profile-1", display_name: "박서연" };
+const ROW: ActiveMember = {
+  id: "profile-1",
+  displayName: "박서연",
+  photoUrl: null,
+  submittedAt: "2026-08-01T00:00:00Z",
+  approvedAt: "2026-08-02T00:00:00Z",
+  rejectedAt: null,
+  blockedAt: null,
+  role: "member",
+  leftAt: null,
+  erasedAt: null,
+  phone: "010-0000-0001",
+  birthDate: null,
+  gender: null,
+  notificationsEnabled: true,
+  hasDevice: true,
+};
 
 const MOCK_OF = {
   active: listActiveMembersMock,

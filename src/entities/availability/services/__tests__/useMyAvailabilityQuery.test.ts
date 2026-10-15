@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyAvailability } from "@/entities/availability/api/getMyAvailability.api";
 
-const getMyAvailabilityMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMyAvailabilityMock = jest.fn<typeof getMyAvailability>();
 
 jest.unstable_mockModule(
   "@/entities/availability/api/getMyAvailability.api",

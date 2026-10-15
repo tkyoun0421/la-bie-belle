@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { grantPosition } from "@/features/qualificationGrant/api/grantPosition.api";
 
-const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const grantPositionMock = jest.fn<typeof grantPosition>();
 
 jest.unstable_mockModule(
   "@/features/qualificationGrant/api/grantPosition.api",

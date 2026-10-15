@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setDefaultWage } from "@/features/wageAdmin/api/setDefaultWage.api";
 
-const setDefaultWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setDefaultWageMock = jest.fn<typeof setDefaultWage>();
 
 const FAKE_CLIENT = {} as never;
 

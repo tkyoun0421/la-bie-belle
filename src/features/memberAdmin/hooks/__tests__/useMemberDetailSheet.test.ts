@@ -1,11 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
+import type { approveMember } from "@/features/memberAdmin/api/approveMember.api";
+import type { blockMember } from "@/features/memberAdmin/api/blockMember.api";
+import type { rejectMember } from "@/features/memberAdmin/api/rejectMember.api";
 import type { MemberDetailSheetInput } from "@/features/memberAdmin/model/memberDetailSheet.type";
 
-const approveMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const rejectMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const blockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const approveMemberMock = jest.fn<typeof approveMember>();
+const rejectMemberMock = jest.fn<typeof rejectMember>();
+const blockMemberMock = jest.fn<typeof blockMember>();
 
 const FAKE_CLIENT = {} as never;
 

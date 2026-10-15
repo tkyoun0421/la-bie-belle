@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { markLeave } from "@/features/memberAdmin/api/markLeave.api";
 
-const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const markLeaveMock = jest.fn<typeof markLeave>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/markLeave.api", () => ({
   markLeave: markLeaveMock,

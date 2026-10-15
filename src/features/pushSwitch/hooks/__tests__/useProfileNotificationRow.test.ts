@@ -1,13 +1,16 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
+import type { setNotificationsEnabled } from "@/features/pushSwitch/api/setNotificationsEnabled.api";
+import type {
+  getPushPermission,
+  requestPushPermission,
+} from "@/features/pushSwitch/lib/pushPermission.lib";
 
-const setNotificationsEnabledMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const savePushTokenMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const requestPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setNotificationsEnabledMock = jest.fn<typeof setNotificationsEnabled>();
+const savePushTokenMock = jest.fn<typeof savePushToken>();
+const getPushPermissionMock = jest.fn<typeof getPushPermission>();
+const requestPushPermissionMock = jest.fn<typeof requestPushPermission>();
 
 const FAKE_CLIENT = {} as never;
 

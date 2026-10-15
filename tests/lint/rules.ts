@@ -7,7 +7,7 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 50;
+export const DOCUMENTED_LINT_RULE_COUNT = 51;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -403,6 +403,14 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/hooks-export-use-only",
     enforcedBy: null,
     test: "eslint-rules/__tests__/hooksExportUseOnly.test.ts",
+  },
+  {
+    no: 51,
+    name: "jest.fn 서명의 unknown",
+    mechanism: "house",
+    ruleId: "house/typed-mock-fn",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/typedMockFn.test.ts",
   },
 ];
 

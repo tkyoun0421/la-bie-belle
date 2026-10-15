@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { resetWageToDefault } from "@/features/wageAdmin/api/resetWageToDefault.api";
 
-const resetWageToDefaultMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const resetWageToDefaultMock = jest.fn<typeof resetWageToDefault>();
 
 jest.unstable_mockModule(
   "@/features/wageAdmin/api/resetWageToDefault.api",

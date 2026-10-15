@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { decideEntry } from "@/features/auth/lib/decideEntry.lib";
 
-const decideEntryMock = jest.fn<(...args: unknown[]) => Promise<string>>();
+const decideEntryMock = jest.fn<typeof decideEntry>();
 
 jest.unstable_mockModule("@/features/auth/lib/decideEntry.lib", () => ({
   decideEntry: decideEntryMock,

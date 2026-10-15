@@ -1,10 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthAttendanceMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMonthAttendanceMock = jest.fn<typeof getMonthAttendance>();
 
 const MONTH = "2026-10";
 

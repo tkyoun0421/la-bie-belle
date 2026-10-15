@@ -1,10 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setNotificationsEnabled } from "@/features/pushSwitch/api/setNotificationsEnabled.api";
 
-const setNotificationsEnabledMock =
-  jest.fn<(...args: unknown[]) => Promise<void>>();
-const requestNotificationPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<boolean>>();
+const setNotificationsEnabledMock = jest.fn<typeof setNotificationsEnabled>();
+const requestNotificationPermissionMock = jest.fn<() => Promise<boolean>>();
 
 jest.unstable_mockModule(
   "@/features/pushSwitch/api/setNotificationsEnabled.api",

@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setDisplayName } from "@/features/memberAdmin/api/setDisplayName.api";
 
-const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setDisplayNameMock = jest.fn<typeof setDisplayName>();
 
 jest.unstable_mockModule(
   "@/features/memberAdmin/api/setDisplayName.api",

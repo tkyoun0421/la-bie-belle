@@ -1,9 +1,11 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { Profile } from "@/entities/profile/model/profile.type";
 
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
 
 jest.unstable_mockModule("@/entities/profile/api/getMyProfile.api", () => ({
   getMyProfile: getMyProfileMock,
@@ -38,16 +40,17 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const PROFILE = {
+const PROFILE: Profile = {
   id: "profile-1",
   displayName: "박서연",
   photoUrl: null,
-  role: "worker",
+  role: "member",
   submittedAt: "2026-09-01T00:00:00.000Z",
   approvedAt: "2026-09-02T00:00:00.000Z",
   rejectedAt: null,
   blockedAt: null,
   leftAt: null,
+  notificationsEnabled: true,
 };
 
 const PRIVATE_VALUES = {
