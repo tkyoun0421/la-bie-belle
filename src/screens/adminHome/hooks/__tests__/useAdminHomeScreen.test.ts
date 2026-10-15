@@ -371,3 +371,55 @@ describe("useAdminHomeScreen — 갈 데를 controller가 정한다", () => {
     ]);
   });
 });
+
+const { serverClockStore } =
+  await import("@/entities/clock/stores/clock.store");
+const { vacancyDaysLeftLine } =
+  await import("@/screens/adminHome/model/vacancyCards.policy");
+
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+describe("useAdminHomeScreen — 서버 시계 오프셋이 화면의 지금을 옮긴다", () => {
+  afterEach(() => {
+    serverClockStore.setState({ offset: 0 });
+  });
+
+  it("오프셋이 3일이면 미니뷰의 오늘이 3일 뒤다", async () => {
+    serverClockStore.setState({ offset: THREE_DAYS_MS });
+
+    const { result } = await mounted();
+
+    expect(result.current.miniToday).toEqual(
+      new Date(NOON_OF_TODAY + THREE_DAYS_MS),
+    );
+  });
+
+  it("오프셋이 달라지면 같은 빈 자리의 남은 날 문구가 달라진다", async () => {
+    getMonthWindowMock.mockResolvedValue({
+      month: "2026-10",
+      confirmedAt: `${TODAY}T00:00:00.000Z`,
+    });
+    getOpenSlotsMock.mockResolvedValue([
+      { id: "s1", workDate: "2026-10-06", position: "메인" },
+    ]);
+
+    const plain = await mounted();
+
+    await waitFor(() => expect(plain.result.current.cards).toHaveLength(1));
+
+    expect(plain.result.current.cards[0].daysLeftLine).toBe(
+      vacancyDaysLeftLine(3),
+    );
+
+    plain.unmount();
+    serverClockStore.setState({ offset: THREE_DAYS_MS });
+
+    const shifted = await mounted();
+
+    await waitFor(() => expect(shifted.result.current.cards).toHaveLength(1));
+
+    expect(shifted.result.current.cards[0].daysLeftLine).toBe(
+      vacancyDaysLeftLine(0),
+    );
+  });
+});

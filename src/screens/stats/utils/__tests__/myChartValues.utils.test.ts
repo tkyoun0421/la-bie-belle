@@ -1,3 +1,5 @@
+import { NO_VALUE } from "@/shared/consts/noValue.const";
+import { tenThousandWonLabel } from "@/shared/utils/moneyLabel.utils";
 import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
@@ -515,5 +517,75 @@ describe("myPayrollDaysOfMonth — profileId가 아직 없으면(프로필 로�
     );
 
     expect(days).toEqual([]);
+  });
+});
+
+describe("myAttendanceLabel — 출근율을 못 구한 달은 비율 대신 값 없음을 말한다", () => {
+  it("60이 있으면 60%다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myAttendanceLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myAttendanceLabel(new Map([["2026-10", 60]]), "2026-10")).toBe(
+      "60%",
+    );
+  });
+
+  it("진짜 0이면 0%다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myAttendanceLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myAttendanceLabel(new Map([["2026-10", 0]]), "2026-10")).toBe("0%");
+  });
+
+  it("값이 하나도 없으면 값 없음이다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myAttendanceLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myAttendanceLabel(new Map(), "2026-10")).toBe(NO_VALUE);
+  });
+
+  it("다른 달 값만 있으면 값 없음이다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myAttendanceLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myAttendanceLabel(new Map([["2026-09", 80]]), "2026-10")).toBe(
+      NO_VALUE,
+    );
+  });
+});
+
+describe("myPayrollLabel — 급여가 안 잡힌 달은 0원 대신 값 없음을 말한다", () => {
+  it("값이 있으면 만원 단위 라벨이다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myPayrollLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myPayrollLabel(new Map([["2026-10", 96000]]), "2026-10")).toBe(
+      tenThousandWonLabel(96000),
+    );
+  });
+
+  it("진짜 0원이면 값 없음이 아니라 0원 라벨이다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myPayrollLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myPayrollLabel(new Map([["2026-10", 0]]), "2026-10")).toBe(
+      tenThousandWonLabel(0),
+    );
+  });
+
+  it("그 달 값이 없으면 값 없음이다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { myPayrollLabel } =
+      await import("@/screens/stats/utils/myChartValues.utils");
+
+    expect(myPayrollLabel(new Map([["2026-09", 96000]]), "2026-10")).toBe(
+      NO_VALUE,
+    );
   });
 });

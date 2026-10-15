@@ -76,3 +76,15 @@ describe("isExpired — 만료 시각이 서버 시각과 같거나 지났으면
     expect(isExpired(expiresAt, serverNowMs)).toBe(true);
   });
 });
+
+describe("serverNowIso — 서버 시각 밀리초를 ISO 문자열로 바꾼다", () => {
+  it("2026-10-10 정오(UTC)를 밀리초까지 적힌 ISO로 낸다", async () => {
+    // @ts-expect-error 새 export가 아직 없다
+    const { serverNowIso } =
+      await import("@/entities/clock/model/serverClock.policy");
+
+    expect(serverNowIso(Date.UTC(2026, 9, 10, 12))).toBe(
+      "2026-10-10T12:00:00.000Z",
+    );
+  });
+});
