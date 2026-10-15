@@ -1,16 +1,20 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { getAllRehearsals } from "@/entities/rehearsal/api/getAllRehearsals.api";
+import type { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { removeRehearsal } from "@/features/rehearsalEdit/api/removeRehearsal.api";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getAllRehearsalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const getMyRehearsalsMock = jest.fn<typeof getMyRehearsals>();
+const getAllRehearsalsMock = jest.fn<typeof getAllRehearsals>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const removeRehearsalMock = jest.fn<typeof removeRehearsal>();
 
 const TODAY = "2026-10-03";
 
@@ -101,6 +105,19 @@ function rehearsalAt(id: string, workDate: string) {
   };
 }
 
+const BASE_PROFILE = {
+  id: "me",
+  displayName: null,
+  photoUrl: null,
+  role: "worker",
+  submittedAt: null,
+  approvedAt: null,
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: true,
+};
+
 beforeEach(() => {
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
@@ -110,9 +127,24 @@ beforeEach(() => {
   getMonthScheduleMock.mockReset();
   removeRehearsalMock.mockReset();
 
-  getCurrentUserMock.mockResolvedValue({ id: "user-1", user_metadata: {} });
-  getMyProfileMock.mockResolvedValue({ id: "me", role: "worker" });
-  getProfilePrivateMock.mockResolvedValue({ phone: "010-0000-0001" });
+  getCurrentUserMock.mockResolvedValue({
+    id: "user-1",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
+  });
+  getMyProfileMock.mockResolvedValue({
+    ...BASE_PROFILE,
+    id: "me",
+    role: "worker",
+  });
+  getProfilePrivateMock.mockResolvedValue({
+    email: null,
+    phone: "010-0000-0001",
+    birthDate: null,
+    gender: null,
+  });
   getMyRehearsalsMock.mockResolvedValue([]);
   getAllRehearsalsMock.mockResolvedValue([]);
   getMonthScheduleMock.mockResolvedValue([]);
@@ -163,7 +195,11 @@ describe("useRehearsalScreen — 역할이 읽는 질의를 가르고 시트 둘
   });
 
   it("관리자는 전원 것을 읽고 넣는 길이 없다", async () => {
-    getMyProfileMock.mockResolvedValue({ id: "boss", role: "admin" });
+    getMyProfileMock.mockResolvedValue({
+      ...BASE_PROFILE,
+      id: "boss",
+      role: "admin",
+    });
 
     const { result } = await mounted();
 

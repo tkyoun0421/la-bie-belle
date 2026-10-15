@@ -1,14 +1,18 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getQualifications } from "@/entities/member/api/getQualifications.api";
+import type { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { signOut } from "@/features/auth/lib/signOut.lib";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listQualificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const signOutMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const listQualificationsMock = jest.fn<typeof getQualifications>();
+const countUnreadMock = jest.fn<typeof countUnreadNotifications>();
+const signOutMock = jest.fn<typeof signOut>();
 
 const pushMock = jest.fn();
 const replaceMock = jest.fn();
@@ -91,7 +95,10 @@ function createWrapper() {
 const USER = {
   id: "user-1",
   email: "someone@example.com",
+  app_metadata: {},
   user_metadata: { avatar_url: "https://example.test/google.jpg" },
+  aud: "authenticated",
+  created_at: "2026-10-01T00:00:00.000Z",
 };
 
 const PROFILE = {

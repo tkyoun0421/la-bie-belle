@@ -1,10 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { buildQrSvg } from "@/shared/utils/qrSvg.utils";
+import type { getQrCode } from "@/entities/qr/api/getQrCode.api";
+import type { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
+import type { rotateQr } from "@/features/qrAdmin/api/rotateQr.api";
 
-const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<void>>();
-const buildQrSvgMock = jest.fn<(...args: unknown[]) => Promise<string>>();
-const exportQrPaperMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const getQrCodeMock = jest.fn<typeof getQrCode>();
+const rotateQrMock = jest.fn<typeof rotateQr>();
+const buildQrSvgMock = jest.fn<typeof buildQrSvg>();
+const exportQrPaperMock = jest.fn<typeof exportQrPaper>();
 
 jest.unstable_mockModule("@/entities/qr/api/getQrCode.api", () => ({
   getQrCode: getQrCodeMock,

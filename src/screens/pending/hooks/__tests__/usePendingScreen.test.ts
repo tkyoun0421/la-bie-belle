@@ -1,14 +1,18 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { signOut } from "@/features/auth/lib/signOut.lib";
+import type { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
+import type { requestPushPermission } from "@/features/pushSwitch/lib/pushPermission.lib";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const submitProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const signOutMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const requestPushPermissionMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const submitProfileMock = jest.fn<typeof submitProfile>();
+const signOutMock = jest.fn<typeof signOut>();
+const requestPushPermissionMock = jest.fn<typeof requestPushPermission>();
 
 const replaceMock = jest.fn();
 
@@ -91,7 +95,10 @@ function createWrapper() {
 const USER = {
   id: "user-1",
   email: "someone@example.com",
+  app_metadata: {},
   user_metadata: { avatar_url: "https://example.test/google.jpg" },
+  aud: "authenticated",
+  created_at: "2026-10-01T00:00:00.000Z",
 };
 
 const BLANK_PROFILE = {

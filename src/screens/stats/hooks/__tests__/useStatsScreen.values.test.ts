@@ -1,18 +1,22 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { getFirstScheduleMonth } from "@/entities/schedule/api/getFirstScheduleMonth.api";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthAttendanceMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getFirstScheduleMonthMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMonthAttendanceMock = jest.fn<typeof getMonthAttendance>();
+const getPayrollMonthMock = jest.fn<typeof getPayrollMonth>();
+const getMyRehearsalsMock = jest.fn<typeof getMyRehearsals>();
+const getFirstScheduleMonthMock = jest.fn<typeof getFirstScheduleMonth>();
 
 const TODAY = "2026-10-03";
 
@@ -140,6 +144,19 @@ function scheduleDay(workDate: string) {
   };
 }
 
+const BASE_PROFILE = {
+  id: "me",
+  displayName: null,
+  photoUrl: null,
+  role: "worker",
+  submittedAt: null,
+  approvedAt: null,
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: true,
+};
+
 beforeEach(() => {
   backMock.mockClear();
   pushMock.mockClear();
@@ -155,14 +172,26 @@ beforeEach(() => {
   workValuesSpy.mockClear();
   payrollValuesSpy.mockClear();
 
-  getCurrentUserMock.mockResolvedValue({ id: "user-1", user_metadata: {} });
+  getCurrentUserMock.mockResolvedValue({
+    id: "user-1",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
+  });
   getMyProfileMock.mockResolvedValue({
+    ...BASE_PROFILE,
     id: "me",
     role: "worker",
     approvedAt: "2026-01-02T00:00:00.000Z",
     leftAt: null,
   });
-  getProfilePrivateMock.mockResolvedValue({ phone: "010-0000-0001" });
+  getProfilePrivateMock.mockResolvedValue({
+    email: null,
+    phone: "010-0000-0001",
+    birthDate: null,
+    gender: null,
+  });
   getMonthScheduleMock.mockResolvedValue([]);
   getMonthAttendanceMock.mockResolvedValue(EMPTY_ATTENDANCE);
   getPayrollMonthMock.mockResolvedValue(EMPTY_PAYROLL);

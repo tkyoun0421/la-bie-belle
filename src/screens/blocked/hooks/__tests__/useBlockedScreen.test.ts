@@ -1,8 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { signOut } from "@/features/auth/lib/signOut.lib";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const signOutMock = jest.fn<typeof signOut>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -57,7 +59,10 @@ beforeEach(() => {
   getCurrentUserMock.mockResolvedValue({
     id: "user-1",
     email: "blocked@example.com",
+    app_metadata: {},
     user_metadata: { avatar_url: "https://example.com/photo.png" },
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
   });
   signOutMock.mockResolvedValue(undefined);
 });
