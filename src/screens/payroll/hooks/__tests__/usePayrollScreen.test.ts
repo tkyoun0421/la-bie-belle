@@ -1,15 +1,20 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
+import type { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import type { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getProfilePrivateMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getProfilePrivateMock = jest.fn<typeof getProfilePrivate>();
+const getPayrollMonthMock = jest.fn<typeof getPayrollMonth>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMyRehearsalsMock = jest.fn<typeof getMyRehearsals>();
+const countUnreadMock = jest.fn<typeof countUnreadNotifications>();
 
 const TODAY = "2026-10-03";
 
@@ -120,6 +125,19 @@ function scheduleDay(workDate: string) {
   };
 }
 
+const BASE_PROFILE = {
+  id: "me",
+  displayName: null,
+  photoUrl: null,
+  role: "worker",
+  submittedAt: null,
+  approvedAt: null,
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: true,
+};
+
 beforeEach(() => {
   pushMock.mockClear();
   replaceMock.mockClear();
@@ -131,14 +149,26 @@ beforeEach(() => {
   getMyRehearsalsMock.mockReset();
   countUnreadMock.mockReset();
 
-  getCurrentUserMock.mockResolvedValue({ id: "user-1", user_metadata: {} });
+  getCurrentUserMock.mockResolvedValue({
+    id: "user-1",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    created_at: "2026-10-01T00:00:00.000Z",
+  });
   getMyProfileMock.mockResolvedValue({
+    ...BASE_PROFILE,
     id: "me",
     role: "worker",
     approvedAt: "2026-01-02T00:00:00.000Z",
     leftAt: null,
   });
-  getProfilePrivateMock.mockResolvedValue({ phone: "010-0000-0001" });
+  getProfilePrivateMock.mockResolvedValue({
+    email: null,
+    phone: "010-0000-0001",
+    birthDate: null,
+    gender: null,
+  });
   getPayrollMonthMock.mockResolvedValue(EMPTY_PAYROLL);
   getMonthScheduleMock.mockResolvedValue([]);
   getMyRehearsalsMock.mockResolvedValue([]);
@@ -191,6 +221,7 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
   it("승인 전으로는 못 간다", async () => {
     getMyProfileMock.mockResolvedValue({
+      ...BASE_PROFILE,
       id: "me",
       role: "worker",
       approvedAt: `${TODAY}T00:00:00.000Z`,
@@ -276,6 +307,7 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
   it("퇴사하면 종을 안 그리고 뒤로가 선다", async () => {
     getMyProfileMock.mockResolvedValue({
+      ...BASE_PROFILE,
       id: "me",
       role: "worker",
       approvedAt: "2026-01-02T00:00:00.000Z",
@@ -298,6 +330,7 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
 
   it("퇴사한 날 뒤로는 앞으로 못 간다", async () => {
     getMyProfileMock.mockResolvedValue({
+      ...BASE_PROFILE,
       id: "me",
       role: "worker",
       approvedAt: "2026-01-02T00:00:00.000Z",
@@ -349,6 +382,7 @@ describe("usePayrollScreen — 갈 데를 controller가 정한다", () => {
 
   it("퇴사했으면 뒤로가 퇴사 화면으로 바꿔 넣고 종이 없다", async () => {
     getMyProfileMock.mockResolvedValue({
+      ...BASE_PROFILE,
       id: "me",
       role: "worker",
       approvedAt: "2026-01-02T00:00:00.000Z",

@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { listActiveMembers } from "@/entities/member/api/listMembers.api";
+import type { getWageRates } from "@/entities/payroll/api/getWageRates.api";
 
-const listActiveMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getWageRatesMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const listActiveMembersMock = jest.fn<typeof listActiveMembers>();
+const getWageRatesMock = jest.fn<typeof getWageRates>();
 
 const TODAY = "2026-10-03";
 
@@ -65,10 +66,27 @@ function createWrapper() {
   return { wrapper };
 }
 
-const MEMBERS = [
-  { id: "p1", displayName: "이준호", photoUrl: null },
-  { id: "p2", displayName: "박수진", photoUrl: null },
-];
+function activeMember(id: string, displayName: string) {
+  return {
+    id,
+    displayName,
+    photoUrl: null,
+    submittedAt: "2026-08-01T00:00:00.000Z",
+    approvedAt: "2026-08-02T00:00:00.000Z",
+    rejectedAt: null,
+    blockedAt: null,
+    role: "worker",
+    leftAt: null,
+    erasedAt: null,
+    phone: null,
+    birthDate: null,
+    gender: null,
+    notificationsEnabled: true,
+    hasDevice: true,
+  };
+}
+
+const MEMBERS = [activeMember("p1", "이준호"), activeMember("p2", "박수진")];
 
 function rate(
   profileId: string,
@@ -99,7 +117,7 @@ beforeEach(() => {
       rate("p2", 13000, false, "2026-06-01"),
       rate("p2", 15000, false),
     ],
-    defaultWageRate: { amount: 11000 },
+    defaultWageRate: { effectiveDate: "2026-01-01", amount: 11000 },
   });
 });
 

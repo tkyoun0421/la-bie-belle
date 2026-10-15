@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { markNotificationsRead } from "@/features/notificationRead/api/markNotificationsRead.api";
 
-const markNotificationsReadMock =
-  jest.fn<(...args: unknown[]) => Promise<void>>();
+const markNotificationsReadMock = jest.fn<typeof markNotificationsRead>();
 
 const FIXED_NOW_MS = Date.UTC(2026, 9, 3, 1, 0, 0);
 

@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthWindow } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { setApplicationDeadline } from "@/features/availabilitySubmit/api/setApplicationDeadline.api";
 
-const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setApplicationDeadlineMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthWindowMock = jest.fn<typeof getMonthWindow>();
+const setApplicationDeadlineMock = jest.fn<typeof setApplicationDeadline>();
 
 const FAKE_CLIENT = {} as never;
 

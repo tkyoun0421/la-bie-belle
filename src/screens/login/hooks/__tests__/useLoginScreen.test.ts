@@ -1,9 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { decideEntry } from "@/features/auth/lib/decideEntry.lib";
+import type { signInWithGoogle } from "@/features/auth/lib/signInWithGoogle.lib";
+import type {
+  EntryDecision,
+  GoogleSignInResult,
+} from "@/features/auth/model/auth.type";
 
-const signInWithGoogleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const decideEntryMock = jest.fn<(...args: unknown[]) => Promise<string>>();
+const signInWithGoogleMock = jest.fn<typeof signInWithGoogle>();
+const decideEntryMock = jest.fn<typeof decideEntry>();
 const replaceMock = jest.fn();
 
 const FAKE_CLIENT = { name: "supabase" } as never;
@@ -50,7 +55,7 @@ function renderLogin() {
 }
 
 function holdSignIn() {
-  let release = (result: unknown): void => {
+  let release = (result: GoogleSignInResult): void => {
     void result;
   };
   signInWithGoogleMock.mockImplementation(
@@ -60,7 +65,7 @@ function holdSignIn() {
       }),
   );
 
-  return (result: unknown) => release(result);
+  return (result: GoogleSignInResult) => release(result);
 }
 
 beforeEach(() => {
@@ -72,7 +77,7 @@ beforeEach(() => {
 });
 
 describe("useLoginScreen — 로그인이 끝나면 판정이 낸 자리로 바꿔 넣는다", () => {
-  it.each(["/pending", RETRY_PATH])(
+  it.each<EntryDecision>(["/pending", RETRY_PATH])(
     "%s가 목적지면 거기로 replace한다",
     async (destination) => {
       decideEntryMock.mockResolvedValue(destination);

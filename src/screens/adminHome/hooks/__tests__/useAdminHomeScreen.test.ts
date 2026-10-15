@@ -1,16 +1,22 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getHallDefaults } from "@/entities/hall/api/getHallDefaults.api";
+import type { listPendingMembers } from "@/entities/member/api/listMembers.api";
+import type { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
+import type {
+  getMonthSchedule,
+  getMonthWindow,
+} from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getOpenSlots } from "@/entities/schedule/api/getOpenSlots.api";
+import type { getPendingApprovals } from "@/entities/workRequest/api/getPendingApprovals.api";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getOpenSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listPendingMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPendingApprovalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const countUnreadMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMonthWindowMock = jest.fn<typeof getMonthWindow>();
+const getOpenSlotsMock = jest.fn<typeof getOpenSlots>();
+const getHallDefaultsMock = jest.fn<typeof getHallDefaults>();
+const listPendingMembersMock = jest.fn<typeof listPendingMembers>();
+const getPendingApprovalsMock = jest.fn<typeof getPendingApprovals>();
+const countUnreadMock = jest.fn<typeof countUnreadNotifications>();
 
 const TODAY = "2026-10-03";
 
@@ -91,7 +97,7 @@ function createWrapper() {
 }
 
 const DEFAULTS = {
-  slots: 4,
+  slots: [{ positions: ["메인"], count: 4 }],
   starts: "10:00:00",
   ends: "19:00:00",
 };
@@ -124,7 +130,43 @@ function todayDay() {
         name: null,
       },
     ],
-    checkIns: [{ id: "c1", profileId: "p1", checkedAt: null }],
+    checkIns: [
+      {
+        id: "c1",
+        profileId: "p1",
+        checkedAt: `${TODAY}T00:55:00.000Z`,
+        reportedAt: `${TODAY}T00:55:00.000Z`,
+        receivedAt: `${TODAY}T00:55:01.000Z`,
+      },
+    ],
+  };
+}
+
+function pendingApproval(id: string) {
+  return {
+    id,
+    assignmentId: `assignment-${id}`,
+    reason: "사정이 생겼어요",
+    createdAt: `${TODAY}T00:00:00.000Z`,
+    dayId: "day-today",
+    position: "메인",
+    workDate: TODAY,
+    startsAt: "10:00:00",
+    endsAt: "19:00:00",
+    name: null,
+    photoUrl: null,
+  };
+}
+
+function pendingMember(id: string) {
+  return {
+    id,
+    displayName: null,
+    photoUrl: null,
+    submittedAt: `${TODAY}T00:00:00.000Z`,
+    approvedAt: null,
+    rejectedAt: null,
+    blockedAt: null,
   };
 }
 
@@ -143,7 +185,10 @@ beforeEach(() => {
   countUnreadMock.mockReset();
 
   getMonthScheduleMock.mockResolvedValue([]);
-  getMonthWindowMock.mockResolvedValue({ month: "2026-10", confirmedAt: null });
+  getMonthWindowMock.mockResolvedValue({
+    applicationDeadline: null,
+    confirmedAt: null,
+  });
   getOpenSlotsMock.mockResolvedValue([]);
   getHallDefaultsMock.mockResolvedValue(DEFAULTS);
   listPendingMembersMock.mockResolvedValue([]);
@@ -170,7 +215,7 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
 
   it("확정된 달의 오늘은 배정 수와 안 찍은 수를 말한다", async () => {
     getMonthWindowMock.mockResolvedValue({
-      month: "2026-10",
+      applicationDeadline: null,
       confirmedAt: `${TODAY}T00:00:00.000Z`,
     });
     getMonthScheduleMock.mockResolvedValue([todayDay()]);
@@ -195,7 +240,7 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
     getMonthWindowMock.mockImplementation((_client, month) =>
       Promise.resolve(
         month === "2026-10"
-          ? { month, confirmedAt: `${TODAY}T00:00:00.000Z` }
+          ? { applicationDeadline: null, confirmedAt: `${TODAY}T00:00:00.000Z` }
           : null,
       ),
     );
@@ -209,11 +254,16 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
 
   it("확정된 달의 빈 자리는 카드가 되고 남은 날이 선다", async () => {
     getMonthWindowMock.mockResolvedValue({
-      month: "2026-10",
+      applicationDeadline: null,
       confirmedAt: `${TODAY}T00:00:00.000Z`,
     });
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", workDate: "2026-10-04", position: "메인" },
+      {
+        slotId: "s1",
+        dayId: "day-s1",
+        workDate: "2026-10-04",
+        positions: ["메인"],
+      },
     ]);
 
     const { result } = await mounted();
@@ -227,7 +277,12 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
 
   it("확정 전이면 빈 자리 카드가 없다", async () => {
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", workDate: "2026-10-04", position: "메인" },
+      {
+        slotId: "s1",
+        dayId: "day-s1",
+        workDate: "2026-10-04",
+        positions: ["메인"],
+      },
     ]);
 
     const { result } = await mounted();
@@ -273,8 +328,11 @@ describe("useAdminHomeScreen — 보는 것이 먼저고 하는 것이 뒤다", 
   });
 
   it("승인할 일과 가입 대기가 셈을 글월에 담는다", async () => {
-    getPendingApprovalsMock.mockResolvedValue([{ id: "r1" }, { id: "r2" }]);
-    listPendingMembersMock.mockResolvedValue([{ id: "m1" }]);
+    getPendingApprovalsMock.mockResolvedValue([
+      pendingApproval("r1"),
+      pendingApproval("r2"),
+    ]);
+    listPendingMembersMock.mockResolvedValue([pendingMember("m1")]);
 
     const { result } = await mounted();
 
@@ -319,11 +377,16 @@ describe("useAdminHomeScreen — 갈 데를 controller가 정한다", () => {
 
   it("빈 자리 카드는 그 날을 달고 간다", async () => {
     getMonthWindowMock.mockResolvedValue({
-      month: "2026-10",
+      applicationDeadline: null,
       confirmedAt: `${TODAY}T00:00:00.000Z`,
     });
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", workDate: "2026-10-04", position: "메인" },
+      {
+        slotId: "s1",
+        dayId: "day-s1",
+        workDate: "2026-10-04",
+        positions: ["메인"],
+      },
     ]);
 
     const { result } = await mounted();
@@ -396,11 +459,16 @@ describe("useAdminHomeScreen — 서버 시계 오프셋이 화면의 지금을 
 
   it("오프셋이 달라지면 같은 빈 자리의 남은 날 문구가 달라진다", async () => {
     getMonthWindowMock.mockResolvedValue({
-      month: "2026-10",
+      applicationDeadline: null,
       confirmedAt: `${TODAY}T00:00:00.000Z`,
     });
     getOpenSlotsMock.mockResolvedValue([
-      { id: "s1", workDate: "2026-10-06", position: "메인" },
+      {
+        slotId: "s1",
+        dayId: "day-s1",
+        workDate: "2026-10-06",
+        positions: ["메인"],
+      },
     ]);
 
     const plain = await mounted();

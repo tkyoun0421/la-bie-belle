@@ -1,28 +1,39 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAvailabilities } from "@/entities/availability/api/getMonthAvailabilities.api";
+import type { getQualifications } from "@/entities/member/api/getQualifications.api";
+import type { listActiveMembers } from "@/entities/member/api/listMembers.api";
+import type { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { getAllRehearsals } from "@/entities/rehearsal/api/getAllRehearsals.api";
+import type {
+  getMonthSchedule,
+  getMonthWindow,
+} from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getOpenSlots } from "@/entities/schedule/api/getOpenSlots.api";
+import type { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
+import type { setAdjustment } from "@/features/adjustment/api/setAdjustment.api";
+import type { setApplicationDeadline } from "@/features/availabilitySubmit/api/setApplicationDeadline.api";
+import type { grantPosition } from "@/features/qualificationGrant/api/grantPosition.api";
+import type { addAssignment } from "@/features/scheduleAssign/api/addAssignment.api";
+import type { closeDay } from "@/features/scheduleDay/api/closeDay.api";
+import type { openDay } from "@/features/scheduleDay/api/openDay.api";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getOpenSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthAvailabilitiesMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listActiveMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getQualificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getSlotRequestsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getAllRehearsalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
+const getMonthWindowMock = jest.fn<typeof getMonthWindow>();
+const getOpenSlotsMock = jest.fn<typeof getOpenSlots>();
+const getMonthAvailabilitiesMock = jest.fn<typeof getMonthAvailabilities>();
+const listActiveMembersMock = jest.fn<typeof listActiveMembers>();
+const getQualificationsMock = jest.fn<typeof getQualifications>();
+const getSlotRequestsMock = jest.fn<typeof getSlotRequests>();
+const getPayrollMonthMock = jest.fn<typeof getPayrollMonth>();
+const getAllRehearsalsMock = jest.fn<typeof getAllRehearsals>();
 
-const setApplicationDeadlineMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const openDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const closeDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setApplicationDeadlineMock = jest.fn<typeof setApplicationDeadline>();
+const openDayMock = jest.fn<typeof openDay>();
+const closeDayMock = jest.fn<typeof closeDay>();
+const addAssignmentMock = jest.fn<typeof addAssignment>();
+const grantPositionMock = jest.fn<typeof grantPosition>();
+const setAdjustmentMock = jest.fn<typeof setAdjustment>();
 
 const FIXED_NOW_MS = Date.parse("2026-10-05T03:00:00.000Z");
 
@@ -149,7 +160,6 @@ function createWrapper() {
 }
 
 const WINDOW_OPEN = {
-  month: "2026-10",
   applicationDeadline: "2026-10-10",
   confirmedAt: null,
 };
@@ -206,13 +216,18 @@ beforeEach(() => {
     setAdjustmentMock,
   ]) {
     mock.mockReset();
-    mock.mockResolvedValue(undefined);
   }
 
   backMock.mockReset();
   pushMock.mockReset();
   replaceMock.mockReset();
 
+  setApplicationDeadlineMock.mockResolvedValue(undefined);
+  openDayMock.mockResolvedValue(undefined);
+  closeDayMock.mockResolvedValue(undefined);
+  addAssignmentMock.mockResolvedValue("a-new");
+  grantPositionMock.mockResolvedValue(undefined);
+  setAdjustmentMock.mockResolvedValue(undefined);
   getMonthScheduleMock.mockResolvedValue([DAY]);
   getMonthWindowMock.mockResolvedValue(WINDOW_OPEN);
   getOpenSlotsMock.mockResolvedValue([]);
@@ -625,17 +640,45 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     getPayrollMonthMock.mockResolvedValue({
       ...EMPTY_PAYROLL,
       holidays: [
-        { holidayDate: "2026-10-10", source: "manual" },
-        { holidayDate: "2026-10-11", source: "manual" },
+        { holidayDate: "2026-10-10", source: "manual", name: null },
+        { holidayDate: "2026-10-11", source: "manual", name: null },
       ],
       adjustments: [
-        { dayId: "d1", profileId: "p1", minutes: 30, reason: "연장" },
-        { dayId: "d2", profileId: "p1", minutes: 30, reason: "연장" },
+        {
+          id: "adj-d1",
+          dayId: "d1",
+          profileId: "p1",
+          minutes: 30,
+          adjustedAt: "2026-10-05T00:00:00.000Z",
+        },
+        {
+          id: "adj-d2",
+          dayId: "d2",
+          profileId: "p1",
+          minutes: 30,
+          adjustedAt: "2026-10-05T00:00:00.000Z",
+        },
       ],
     });
     getAllRehearsalsMock.mockResolvedValue([
-      { workDate: "2026-10-10", profileId: "p1", minutes: 60 },
-      { workDate: "2026-10-11", profileId: "p1", minutes: 60 },
+      {
+        id: "r-2026-10-10",
+        profileId: "p1",
+        workDate: "2026-10-10",
+        startsAt: "09:00:00",
+        endsAt: "10:00:00",
+        count: null,
+        name: null,
+      },
+      {
+        id: "r-2026-10-11",
+        profileId: "p1",
+        workDate: "2026-10-11",
+        startsAt: "09:00:00",
+        endsAt: "10:00:00",
+        count: null,
+        name: null,
+      },
     ]);
     getMonthAvailabilitiesMock.mockResolvedValue([
       { workDate: "2026-10-10", profileId: "p1", name: "이준호" },
