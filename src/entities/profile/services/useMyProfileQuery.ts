@@ -1,10 +1,11 @@
+import { skipToken, useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
-import type { MyProfile } from "@/entities/profile/model/profile.type";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { Profile } from "@/entities/profile/model/profile.type";
 
 export type MyProfileResult = {
-  data: MyProfile | undefined;
+  data: Profile | null | undefined;
   error: Error | null;
   isLoading: boolean;
 };
@@ -13,16 +14,10 @@ export function useMyProfileQuery(
   client: DB,
   userId: string | null,
 ): MyProfileResult {
-  const profile = useMyProfileRowQuery(client, userId);
-  const profileId = profile.data?.id ?? null;
-  const contact = useProfilePrivateQuery(client, profileId);
+  const { data, error, isPending } = useQuery({
+    queryKey: queryKeys.profile.all,
+    queryFn: userId === null ? skipToken : () => getMyProfile(client, userId),
+  });
 
-  return {
-    data:
-      profile.data && contact.data
-        ? { ...profile.data, ...contact.data }
-        : undefined,
-    error: profile.error ?? contact.error,
-    isLoading: profile.isLoading || (profileId !== null && contact.isLoading),
-  };
+  return { data, error, isLoading: isPending };
 }

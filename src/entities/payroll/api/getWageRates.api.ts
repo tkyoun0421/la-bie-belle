@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import { readAllPages } from "@/shared/api/readAllPages";
 import type {
   DefaultWageRateRow,
   MemberWageRateRow,
@@ -20,11 +21,15 @@ const DEFAULT_WAGE_COLUMNS = ["effective_date", "amount"].join(", ");
 
 export async function getWageRates(client: DB): Promise<WageRates> {
   const [wageRates, defaultWageRate] = await Promise.all([
-    client
-      .from("wage_rates")
-      .select(MEMBER_WAGE_COLUMNS)
-      .order("effective_date", { ascending: false })
-      .returns<MemberWageRateRow[]>(),
+    readAllPages((from, to) =>
+      client
+        .from("wage_rates")
+        .select(MEMBER_WAGE_COLUMNS)
+        .order("effective_date", { ascending: false })
+        .order("profile_id")
+        .range(from, to)
+        .returns<MemberWageRateRow[]>(),
+    ),
     client
       .from("default_wage_rates")
       .select(DEFAULT_WAGE_COLUMNS)
@@ -33,15 +38,12 @@ export async function getWageRates(client: DB): Promise<WageRates> {
       .maybeSingle<DefaultWageRateRow>(),
   ]);
 
-  if (wageRates.error) {
-    throw wageRates.error;
-  }
   if (defaultWageRate.error) {
     throw defaultWageRate.error;
   }
 
   return {
-    wageRates: (wageRates.data ?? []).map(toMemberWageRate),
+    wageRates: wageRates.map(toMemberWageRate),
     defaultWageRate:
       defaultWageRate.data === null ? null : toWageRate(defaultWageRate.data),
   };

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
+import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { STATS_COPY } from "@/features/stats/consts/stats.const";
@@ -30,7 +30,7 @@ export function useStatsPositions(month: string): StatsPositionsController {
   const months = useMemo(() => [month], [month]);
 
   const { data: me } = useSessionUserQuery(supabase);
-  const profile = useMyProfileRowQuery(supabase, me?.id ?? null);
+  const profile = useMyProfileQuery(supabase, me?.id ?? null);
   const work = useWorkMonthsQuery(supabase, months);
 
   const profileId = profile.data?.id ?? null;

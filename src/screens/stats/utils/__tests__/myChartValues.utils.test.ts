@@ -370,7 +370,7 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
   });
 });
 
-describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollMonthWithDays[]를 만든다", () => {
+describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 MonthWorkAndPay[]를 만든다", () => {
   it("근무표와 급여 재료가 둘 다 있는 달은 days와 payroll이 한 행으로 묶인다", () => {
     const day = scheduleDay({ workDate: "2026-08-10" });
     const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];

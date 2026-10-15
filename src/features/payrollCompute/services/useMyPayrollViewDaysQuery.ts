@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
+import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
@@ -41,7 +41,7 @@ export function useMyPayrollViewDaysQuery(
   const months = useMemo(() => monthKeysOf({ from, to }), [from, to]);
 
   const { data: me } = useSessionUserQuery(client);
-  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
+  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     client,
     me?.id ?? null,
   );

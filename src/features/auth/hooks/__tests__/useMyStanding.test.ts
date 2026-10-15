@@ -9,15 +9,15 @@ type SessionUserResult = {
   isLoading: boolean;
 };
 
-type MyProfileRowResult = {
+type MyProfileResult = {
   data: Profile | null | undefined;
   error: Error | null;
   isLoading: boolean;
 };
 
 const useSessionUserQueryMock = jest.fn<(client: DB) => SessionUserResult>();
-const useMyProfileRowQueryMock =
-  jest.fn<(client: DB, userId: string | null) => MyProfileRowResult>();
+const useMyProfileQueryMock =
+  jest.fn<(client: DB, userId: string | null) => MyProfileResult>();
 
 jest.unstable_mockModule(
   "@/entities/session/services/useSessionUserQuery",
@@ -25,8 +25,8 @@ jest.unstable_mockModule(
 );
 
 jest.unstable_mockModule(
-  "@/entities/profile/services/useMyProfileRowQuery",
-  () => ({ useMyProfileRowQuery: useMyProfileRowQueryMock }),
+  "@/entities/profile/services/useMyProfileQuery",
+  () => ({ useMyProfileQuery: useMyProfileQueryMock }),
 );
 
 const { renderHook } = await import("@testing-library/react-native");
@@ -57,7 +57,7 @@ beforeEach(() => {
   useSessionUserQueryMock
     .mockReset()
     .mockReturnValue({ data: SESSION_USER, error: null, isLoading: false });
-  useMyProfileRowQueryMock
+  useMyProfileQueryMock
     .mockReset()
     .mockReturnValue({ data: WORKER_PROFILE, error: null, isLoading: false });
 });
@@ -73,7 +73,7 @@ describe("useMyStanding — 세션과 프로필 두 겹이 그대로 실린다",
   it("프로필은 세션이 알려준 userId로 읽는다", () => {
     renderHook(() => useMyStanding(FAKE_CLIENT));
 
-    expect(useMyProfileRowQueryMock).toHaveBeenCalledWith(
+    expect(useMyProfileQueryMock).toHaveBeenCalledWith(
       FAKE_CLIENT,
       SESSION_USER.id,
     );
@@ -82,7 +82,7 @@ describe("useMyStanding — 세션과 프로필 두 겹이 그대로 실린다",
 
 describe("useMyStanding — role·isAdmin이 프로필에서 나온다", () => {
   it("관리자를 센다", () => {
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: { ...WORKER_PROFILE, role: "admin" },
       error: null,
       isLoading: false,
@@ -95,7 +95,7 @@ describe("useMyStanding — role·isAdmin이 프로필에서 나온다", () => {
   });
 
   it("근무자를 센다", () => {
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: { ...WORKER_PROFILE, role: "worker" },
       error: null,
       isLoading: false,
@@ -110,7 +110,7 @@ describe("useMyStanding — role·isAdmin이 프로필에서 나온다", () => {
 
 describe("useMyStanding — 행이 없는 것과 아직 안 온 것이 안 접힌다", () => {
   it("프로필 행이 없으면 null이 그대로 실린다", () => {
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: null,
       error: null,
       isLoading: false,
@@ -123,7 +123,7 @@ describe("useMyStanding — 행이 없는 것과 아직 안 온 것이 안 접�
   });
 
   it("프로필이 아직 안 왔으면 undefined가 그대로 실린다", () => {
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: undefined,
       error: null,
       isLoading: true,
@@ -154,7 +154,7 @@ describe("useMyStanding — 사용자가 없으면 기다릴 프로필도 없다
       error: null,
       isLoading: false,
     });
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: undefined,
       error: null,
       isLoading: true,
@@ -174,7 +174,7 @@ describe("useMyStanding — 실패는 세션 쪽도 error에 실린다", () => {
       error: sessionFailure,
       isLoading: false,
     });
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: undefined,
       error: null,
       isLoading: false,
@@ -187,7 +187,7 @@ describe("useMyStanding — 실패는 세션 쪽도 error에 실린다", () => {
 
   it("세션은 괜찮고 프로필이 실패하면 error가 프로필 오류다", () => {
     const profileFailure = new Error("프로필 통신 실패");
-    useMyProfileRowQueryMock.mockReturnValue({
+    useMyProfileQueryMock.mockReturnValue({
       data: undefined,
       error: profileFailure,
       isLoading: false,
