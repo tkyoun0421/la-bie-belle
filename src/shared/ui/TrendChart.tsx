@@ -10,9 +10,12 @@ import { Circle, Polygon, Polyline } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
 import {
   areaPointsOf,
+  isLabelledMonth,
   linePointsOf,
   plot,
   segmentsOf,
+  selectedPointOf,
+  valueLabelBottomOf,
   type TrendChartPoint,
 } from "@/shared/utils/trendChart.utils";
 
@@ -21,10 +24,6 @@ const LINE_WIDTH = 2;
 const TICK_WIDTH = 1;
 
 const TICK_HEIGHT = 4;
-
-const VALUE_LABEL_GAP = 8;
-
-const LABELLED_MONTHS = new Set([1, 4, 7, 10]);
 
 export type TrendChartProps = {
   points: TrendChartPoint[];
@@ -47,9 +46,7 @@ export function TrendChart({
 
   const plotted = plot(points, width);
   const segments = segmentsOf(plotted);
-  const selected = plotted.find(
-    (point) => points[point.index].month === selectedMonth,
-  );
+  const selected = selectedPointOf(plotted, points, selectedMonth);
 
   return (
     <View testID={testID}>
@@ -89,7 +86,7 @@ export function TrendChart({
           <View
             className="absolute inset-x-0 flex-row"
             style={{
-              bottom: CHART_HEIGHT - selected.y + VALUE_LABEL_GAP,
+              bottom: valueLabelBottomOf(selected.y),
               pointerEvents: "none",
             }}
           >
@@ -109,7 +106,7 @@ export function TrendChart({
       <View className="mt-2 flex-row items-center">
         {points.map((point) => (
           <View key={point.month} className="flex-1 items-center">
-            {LABELLED_MONTHS.has(point.month) ? (
+            {isLabelledMonth(point.month) ? (
               <Text className="text-xs text-fg-neutral-subtle tabular-nums">
                 {point.month}월
               </Text>

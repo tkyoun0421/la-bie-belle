@@ -8,9 +8,9 @@ import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthOf } from "@/shared/utils/kstDate";
-import { tenThousandWonLabel } from "@/shared/utils/moneyLabel.utils";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -19,20 +19,18 @@ import {
   monthSpan,
   type DateSpan,
 } from "@/features/payrollCompute/model/dateSpan.policy";
-import type { MyWorkTotals } from "@/features/stats/model/stats.type";
-import {
-  hoursLabel,
-  workInputsOf,
-} from "@/features/stats/model/workTotals.policy";
+import { hoursLabel } from "@/features/stats/model/workTotals.policy";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { buildMyAttendanceDays } from "@/features/stats/utils/attendanceDays.utils";
-import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
+import { myWorkTotalsOfMonth } from "@/features/stats/utils/myTotals.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import { MONTH_LENGTH, STATS_TABS } from "@/screens/stats/consts/stats.const";
 import {
   joinPayrollByMonth,
+  myAttendanceLabel,
   myAttendanceValues,
   myPayrollDaysOfMonth,
+  myPayrollLabel,
   myPayrollValues,
   myWorkValues,
 } from "@/screens/stats/utils/myChartValues.utils";
@@ -91,7 +89,7 @@ export function useStatsScreen(): StatsScreenController {
   const serverNowMs = useServerNow();
 
   const months = useMemo(() => trendMonths(month), [month]);
-  const now = new Date(serverNowMs).toISOString();
+  const now = serverNowIso(serverNowMs);
   const profileId = profile?.id ?? null;
 
   const work = useWorkMonthsQuery(
@@ -142,15 +140,10 @@ export function useStatsScreen(): StatsScreenController {
     [profileId, shownAttendance, now],
   );
 
-  const totals = useMemo<MyWorkTotals>(() => {
-    if (profileId === null) {
-      return { totalMinutes: 0, totalCount: 0, byPosition: [] };
-    }
-
-    const inputs = workInputsOf(shownWork?.days ?? []);
-
-    return computeMyWorkTotals(inputs.assignments, inputs.days, profileId);
-  }, [shownWork, profileId]);
+  const totals = useMemo(
+    () => myWorkTotalsOfMonth(shownWork, profileId),
+    [shownWork, profileId],
+  );
 
   const payrollLoaded = useMemo(
     () => joinPayrollByMonth(work.data, payroll.data),
@@ -216,12 +209,10 @@ export function useStatsScreen(): StatsScreenController {
     },
   );
 
-  const payrollTotal = values.get(month) ?? 0;
-
   const trendLabels: Record<StatsTab, string> = {
-    attendance: `${values.get(month) ?? 0}%`,
+    attendance: myAttendanceLabel(values, month),
     position: hoursLabel(totals.totalMinutes),
-    payroll: tenThousandWonLabel(payrollTotal),
+    payroll: myPayrollLabel(values, month),
   };
 
   const goBack = useCallback(() => router.back(), [router]);

@@ -3,6 +3,7 @@ import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   attendanceRowValue,
@@ -42,7 +43,7 @@ export function useAdminStatsAttendance(
   const shown = monthIn(attendance.data, month);
 
   const tab = useMemo(() => {
-    const now = new Date(serverNowMs).toISOString();
+    const now = serverNowIso(serverNowMs);
 
     return buildAttendanceTab(
       shown?.days ?? [],

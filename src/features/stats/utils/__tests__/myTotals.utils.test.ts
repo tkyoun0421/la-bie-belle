@@ -1,6 +1,16 @@
+import type {
+  ScheduleDay,
+  WorkMonth,
+} from "@/entities/schedule/model/schedule.type";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
-import { computeWorkTotals } from "@/features/stats/model/workTotals.policy";
-import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
+import {
+  computeWorkTotals,
+  workInputsOf,
+} from "@/features/stats/model/workTotals.policy";
+import {
+  computeMyWorkTotals,
+  myWorkTotalsOfMonth,
+} from "@/features/stats/utils/myTotals.utils";
 
 describe("computeMyWorkTotals — workTotals.ts를 다시 안 짜고 그대로 불러 내 배정으로 좁힌다", () => {
   it("김지우(p1)의 총 시간·건수가 관리자 byPerson의 값과 같다", () => {
@@ -69,5 +79,68 @@ describe("computeMyWorkTotals — ended_at이 찬 배정은 내 집계에서도 
     expect(mine.totalMinutes).toBe(0);
     expect(mine.totalCount).toBe(0);
     expect(mine.byPosition).toEqual([]);
+  });
+});
+
+const MONTH_DAY: ScheduleDay = {
+  id: "day-1",
+  workDate: "2026-10-02",
+  startsAt: "18:00:00",
+  endsAt: "23:00:00",
+  openedAt: "2026-10-01T00:00:00.000Z",
+  slots: [],
+  checkIns: [],
+  assignments: [
+    {
+      id: "assign-mine",
+      slotId: null,
+      position: "메인",
+      kind: "regular",
+      profileId: "me",
+      endedAt: null,
+      name: null,
+    },
+    {
+      id: "assign-other",
+      slotId: null,
+      position: "서브",
+      kind: "regular",
+      profileId: "other",
+      endedAt: null,
+      name: null,
+    },
+  ],
+};
+
+const MONTH: WorkMonth = { month: "2026-10", days: [MONTH_DAY] };
+
+describe("myWorkTotalsOfMonth — 고른 달의 근무표에서 내 합계를 낸다", () => {
+  it("내 배정 하나와 남의 배정 하나면 내 것만 센다", () => {
+    const totals = myWorkTotalsOfMonth(MONTH, "me");
+
+    expect(totals.totalCount).toBe(1);
+    expect(totals.totalMinutes).toBe(300);
+  });
+
+  it("같은 입력의 computeMyWorkTotals 결과와 같다", () => {
+    const inputs = workInputsOf(MONTH.days);
+
+    expect(myWorkTotalsOfMonth(MONTH, "me")).toEqual(
+      computeMyWorkTotals(inputs.assignments, inputs.days, "me"),
+    );
+  });
+
+  it("프로필이 아직 없으면 0과 빈 목록이다", () => {
+    expect(myWorkTotalsOfMonth(MONTH, null)).toEqual({
+      totalMinutes: 0,
+      totalCount: 0,
+      byPosition: [],
+    });
+  });
+
+  it("그 달이 아직 안 왔으면 빈 입력으로 센 것과 같다", () => {
+    expect(myWorkTotalsOfMonth(undefined, "me")).toEqual(
+      computeMyWorkTotals([], [], "me"),
+    );
   });
 });

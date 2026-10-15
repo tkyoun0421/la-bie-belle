@@ -1,4 +1,9 @@
-import { CHART_HEIGHT, PLOT_INSET } from "@/shared/consts/trendChart.const";
+import {
+  CHART_HEIGHT,
+  LABELLED_MONTHS,
+  PLOT_INSET,
+  VALUE_LABEL_GAP,
+} from "@/shared/consts/trendChart.const";
 
 export type TrendChartPoint = {
   month: number;
@@ -75,4 +80,20 @@ export function areaPointsOf(segment: readonly PlotPoint[]): string {
   const last = segment[segment.length - 1];
 
   return `${linePointsOf(segment)} ${last.x},${CHART_HEIGHT} ${first.x},${CHART_HEIGHT}`;
+}
+
+export function selectedPointOf(
+  plotted: readonly PlotPoint[],
+  points: readonly TrendChartPoint[],
+  selectedMonth: number,
+): PlotPoint | undefined {
+  return plotted.find((point) => points[point.index].month === selectedMonth);
+}
+
+export function valueLabelBottomOf(y: number): number {
+  return CHART_HEIGHT - y + VALUE_LABEL_GAP;
+}
+
+export function isLabelledMonth(month: number): boolean {
+  return LABELLED_MONTHS.has(month);
 }

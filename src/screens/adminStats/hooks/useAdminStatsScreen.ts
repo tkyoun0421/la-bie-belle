@@ -10,6 +10,7 @@ import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import {
   computeWorkTotals,
@@ -98,7 +99,7 @@ export function useAdminStatsScreen(): AdminStatsScreenController {
   }, [work.data, month]);
 
   const attendanceByMonth = useMemo(() => {
-    const now = new Date(serverNowMs).toISOString();
+    const now = serverNowIso(serverNowMs);
 
     return new Map(
       (attendance.data ?? []).map((one) => [

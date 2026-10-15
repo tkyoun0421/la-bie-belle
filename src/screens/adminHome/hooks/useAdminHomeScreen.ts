@@ -17,6 +17,7 @@ import { miniViewLoads } from "@/shared/model/miniViewDensity.policy";
 import { tileMonth } from "@/shared/model/tileMonth.policy";
 import { clockOf, spellDate } from "@/shared/utils/kstDate";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
@@ -159,7 +160,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
       confirmed
         ? vacancyCards({
             days: vacancyDaysOf(openSlots ?? []),
-            now: new Date(nowMs).toISOString(),
+            now: serverNowIso(nowMs),
           }).map((card) => ({
             workDate: card.workDate,
             title: vacancyCardTitle(card),
