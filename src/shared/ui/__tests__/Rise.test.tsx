@@ -1,6 +1,7 @@
 import { act, render } from "@testing-library/react-native";
 import { Text } from "react-native";
 import { ReduceMotion } from "react-native-reanimated";
+import { Rise } from "@/shared/ui/Rise";
 import type * as ReanimatedCalls from "@tests/setup/reanimatedCalls";
 import {
   animationCalls,
@@ -16,16 +17,12 @@ jest.mock("react-native-reanimated", () =>
     .createReanimatedMock(),
 );
 
-jest.mock(
-  "../../lib/reduceMotion.lib",
-  () => ({
-    REDUCE_MOTION_SOURCE: {
-      isReduceMotionEnabled: () => Promise.resolve(mockSetting.enabled),
-      addEventListener: () => ({ remove: () => {} }),
-    },
-  }),
-  { virtual: true },
-);
+jest.mock("@/shared/lib/reduceMotion.lib", () => ({
+  REDUCE_MOTION_SOURCE: {
+    isReduceMotionEnabled: () => Promise.resolve(mockSetting.enabled),
+    addEventListener: () => ({ remove: () => {} }),
+  },
+}));
 
 type EnteringValues = Record<string, number>;
 type Entering = (values: EnteringValues) => {
@@ -35,10 +32,6 @@ type Entering = (values: EnteringValues) => {
 
 async function renderRise(index: number, reduceMotion: boolean) {
   mockSetting.enabled = reduceMotion;
-  const { Rise } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/shared/ui/Rise"
-  );
   const screen = render(
     <Rise index={index}>
       <Text>등장하는 조각</Text>

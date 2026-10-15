@@ -1,6 +1,7 @@
 import { act, fireEvent, render } from "@testing-library/react-native";
 import { Text } from "react-native";
 import { ReduceMotion } from "react-native-reanimated";
+import { PressScale } from "@/shared/ui/PressScale";
 import type * as ReanimatedCalls from "@tests/setup/reanimatedCalls";
 import {
   animationCalls,
@@ -16,16 +17,12 @@ jest.mock("react-native-reanimated", () =>
     .createReanimatedMock(),
 );
 
-jest.mock(
-  "../../lib/reduceMotion.lib",
-  () => ({
-    REDUCE_MOTION_SOURCE: {
-      isReduceMotionEnabled: () => Promise.resolve(mockSetting.enabled),
-      addEventListener: () => ({ remove: () => {} }),
-    },
-  }),
-  { virtual: true },
-);
+jest.mock("@/shared/lib/reduceMotion.lib", () => ({
+  REDUCE_MOTION_SOURCE: {
+    isReduceMotionEnabled: () => Promise.resolve(mockSetting.enabled),
+    addEventListener: () => ({ remove: () => {} }),
+  },
+}));
 
 type PressProps = {
   disabled?: boolean;
@@ -39,10 +36,6 @@ async function renderPress({
   reduceMotion = false,
 }: PressProps = {}) {
   mockSetting.enabled = reduceMotion;
-  const { PressScale } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/shared/ui/PressScale"
-  );
   const screen = render(
     <PressScale
       accessibilityRole="button"

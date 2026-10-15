@@ -1,7 +1,4 @@
-const { riseTimingOf } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/shared/utils/riseTiming.utils"
-);
+import { riseTimingOf } from "@/shared/utils/riseTiming.utils";
 
 describe("riseTimingOf — 요소마다 70ms씩 어긋나 300ms 동안 8px 올라온다", () => {
   it("첫 요소는 기다리지 않는다", () => {

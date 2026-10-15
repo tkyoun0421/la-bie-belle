@@ -17,24 +17,15 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
 
-jest.mock(
-  "../../../../shared/ui/Rise",
-  () => {
-    const { View } = jest.requireActual<typeof ReactNative>("react-native");
-    const { createElement } = jest.requireActual<typeof React>("react");
+jest.mock("@/shared/ui/Rise", () => {
+  const { View } = jest.requireActual<typeof ReactNative>("react-native");
+  const { createElement } = jest.requireActual<typeof React>("react");
 
-    return {
-      Rise: ({
-        index,
-        children,
-      }: {
-        index: number;
-        children: React.ReactNode;
-      }) => createElement(View, { testID: `rise-${index}` }, children),
-    };
-  },
-  { virtual: true },
-);
+  return {
+    Rise: ({ index, children }: { index: number; children: React.ReactNode }) =>
+      createElement(View, { testID: `rise-${index}` }, children),
+  };
+});
 
 function renderScreen(state: { busy?: boolean; failed?: boolean } = {}) {
   mockController.busy = state.busy ?? false;

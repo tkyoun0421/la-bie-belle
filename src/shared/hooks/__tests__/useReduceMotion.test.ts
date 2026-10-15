@@ -1,10 +1,7 @@
 import { jest } from "@jest/globals";
 
 const { act, renderHook } = await import("@testing-library/react-native");
-const { useReduceMotion } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/shared/hooks/useReduceMotion"
-);
+const { useReduceMotion } = await import("@/shared/hooks/useReduceMotion");
 
 function fakeSource() {
   const listeners: ((enabled: boolean) => void)[] = [];
@@ -121,8 +118,8 @@ describe("useReduceMotion — 화면이 빠지면 정리한다", () => {
 
   it("unmount 뒤에 읽기가 풀려도 경고가 없다", async () => {
     const fake = fakeSource();
-    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const { unmount } = renderHook(() => useReduceMotion(fake.source));
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     unmount();
     await act(async () => fake.resolveRead(false));

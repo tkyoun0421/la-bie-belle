@@ -1,8 +1,8 @@
-const { MOTION_PAIRS, motionTokenViolations, repositoryMotionTokenViolations } =
-  await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@tests/lint/motionTokens"
-  );
+import {
+  MOTION_PAIRS,
+  motionTokenViolations,
+  repositoryMotionTokenViolations,
+} from "@tests/lint/motionTokens";
 
 type ConstantOverrides = Partial<{
   riseDuration: string;
