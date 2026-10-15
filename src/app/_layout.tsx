@@ -9,6 +9,7 @@ import "@/app/globals.css";
 import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { FONT_SOURCES } from "@/shared/consts/font.const";
+import { primeReduceMotion } from "@/shared/lib/reduceMotion.lib";
 import { followOsColorScheme } from "@/shared/lib/themeStorage.lib";
 import { useTheme } from "@/shared/stores/theme.store";
 import {
@@ -64,7 +65,10 @@ export default function RootLayout() {
   useEffect(() => {
     let abandoned = false;
 
-    void decideEntry({ client: supabase }).then((decided) => {
+    void Promise.all([
+      decideEntry({ client: supabase }),
+      primeReduceMotion(),
+    ]).then(([decided]) => {
       if (!abandoned) {
         setDestination(decided);
       }

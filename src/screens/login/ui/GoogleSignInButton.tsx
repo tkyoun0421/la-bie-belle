@@ -1,5 +1,6 @@
-import { Image, Platform, Pressable, View } from "react-native";
+import { Image, Platform, View } from "react-native";
 import { SvgUri } from "react-native-svg";
+import { PressScale } from "@/shared/ui/PressScale";
 import {
   GOOGLE_BUTTON_ASPECT_RATIO,
   GOOGLE_BUTTON_ASSETS,
@@ -40,7 +41,7 @@ export function GoogleSignInButton({ onPress, busy }: GoogleSignInButtonProps) {
   const assets = GOOGLE_BUTTON_ASSETS[platform];
 
   return (
-    <Pressable
+    <PressScale
       accessibilityRole="button"
       accessibilityLabel={LOGIN_COPY.googleLabel}
       disabled={busy}
@@ -54,6 +55,6 @@ export function GoogleSignInButton({ onPress, busy }: GoogleSignInButtonProps) {
       <View className="hidden size-full dark:flex">
         <SvgUri uri={uriOf(assets.dark)} width="100%" height="100%" />
       </View>
-    </Pressable>
+    </PressScale>
   );
 }
