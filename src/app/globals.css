@@ -264,6 +264,7 @@
   --interval-shimmer: 1.6s;
   --interval-spin: 1s;
   --stagger-step: 70ms;
+  --rise-distance: 8px;
 }
 
 @theme {
