@@ -1,6 +1,9 @@
 import { monthIn } from "@/shared/utils/monthIn";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
-import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
+import type {
+  PayrollByMonth,
+  PayrollMonth,
+} from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type { WorkMonth } from "@/entities/schedule/model/schedule.type";
@@ -12,7 +15,7 @@ import { myAttendanceTally } from "@/features/stats/utils/attendanceTally.utils"
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
 
-export type PayrollMonthWithDays = {
+export type MonthWorkAndPay = {
   month: string;
   days: readonly ScheduleDay[];
   payroll: PayrollMonth;
@@ -20,8 +23,8 @@ export type PayrollMonthWithDays = {
 
 export function joinPayrollByMonth(
   work: readonly WorkMonth[] | undefined,
-  payroll: readonly { month: string; payroll: PayrollMonth }[] | undefined,
-): PayrollMonthWithDays[] | undefined {
+  payroll: readonly PayrollByMonth[] | undefined,
+): MonthWorkAndPay[] | undefined {
   if (work === undefined || payroll === undefined) {
     return undefined;
   }
@@ -77,7 +80,7 @@ export function myAttendanceValues(
 }
 
 export function myPayrollValues(
-  loaded: readonly PayrollMonthWithDays[] | undefined,
+  loaded: readonly MonthWorkAndPay[] | undefined,
   profileId: string,
   now: string,
   rehearsals: readonly Rehearsal[],
@@ -100,7 +103,7 @@ export function myPayrollValues(
 }
 
 export function myPayrollDaysOfMonth(
-  loaded: readonly PayrollMonthWithDays[] | undefined,
+  loaded: readonly MonthWorkAndPay[] | undefined,
   month: string,
   profileId: string | null,
   now: string,

@@ -1,7 +1,7 @@
 import { supabase } from "@/shared/api/supabase";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { PROFILE_CARD_COPY } from "@/entities/profile/consts/profile.const";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileWithContactQuery } from "@/entities/profile/services/useMyProfileWithContactQuery";
 import {
   digitsOfBirthDate,
   spellBirthDate,
@@ -28,7 +28,7 @@ export type ProfileCardController =
 export function useProfileCard({
   userId,
 }: ProfileCardInput): ProfileCardController {
-  const read = useMyProfileQuery(supabase, userId);
+  const read = useMyProfileWithContactQuery(supabase, userId);
 
   return fragmentOf(read, {
     ready: (profile) => ({
