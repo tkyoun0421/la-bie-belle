@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { mergeSlots } from "@/features/scheduleSlot/api/mergeSlots.api";
 
-const mergeSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const mergeSlotsMock = jest.fn<typeof mergeSlots>();
 
 jest.unstable_mockModule("@/features/scheduleSlot/api/mergeSlots.api", () => ({
   mergeSlots: mergeSlotsMock,

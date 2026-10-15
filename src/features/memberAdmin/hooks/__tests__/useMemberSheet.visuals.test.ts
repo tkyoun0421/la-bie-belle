@@ -2,13 +2,17 @@ import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 import type { openPhone } from "@/shared/lib/openPhone.lib";
 import type { Member } from "@/entities/member/model/member.type";
+import type { markLeave } from "@/features/memberAdmin/api/markLeave.api";
+import type { setDisplayName } from "@/features/memberAdmin/api/setDisplayName.api";
+import type { setRole } from "@/features/memberAdmin/api/setRole.api";
+import type { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 import type { MemberSheetInput } from "@/features/memberAdmin/model/memberSheet.type";
 
 const openPhoneMock = jest.fn<typeof openPhone>();
-const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setDisplayNameMock = jest.fn<typeof setDisplayName>();
+const setRoleMock = jest.fn<typeof setRole>();
+const markLeaveMock = jest.fn<typeof markLeave>();
+const undoLeaveMock = jest.fn<typeof undoLeave>();
 
 const FAKE_CLIENT = {} as never;
 

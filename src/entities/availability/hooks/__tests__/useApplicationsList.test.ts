@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAvailabilities } from "@/entities/availability/api/getMonthAvailabilities.api";
 
-const getMonthAvailabilitiesMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthAvailabilitiesMock = jest.fn<typeof getMonthAvailabilities>();
 
 const FAKE_CLIENT = {} as never;
 

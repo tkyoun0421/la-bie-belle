@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { createCancelRequest } from "@/features/workRequest/api/createCancelRequest.api";
 
-const createCancelRequestMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const createCancelRequestMock = jest.fn<typeof createCancelRequest>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -61,7 +61,7 @@ function mounted() {
 beforeEach(() => {
   createCancelRequestMock.mockReset();
   sent.mockClear();
-  createCancelRequestMock.mockResolvedValue(undefined);
+  createCancelRequestMock.mockResolvedValue("cancel-request-1");
 });
 
 describe("useCancelShiftSheet — 사유가 여기 산다", () => {

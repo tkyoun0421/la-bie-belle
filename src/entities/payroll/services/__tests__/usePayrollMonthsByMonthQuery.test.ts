@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 
-const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getPayrollMonthMock = jest.fn<typeof getPayrollMonth>();
 
 jest.unstable_mockModule("@/entities/payroll/api/getPayrollMonth.api", () => ({
   getPayrollMonth: getPayrollMonthMock,
@@ -37,11 +39,11 @@ const TWELVE_MONTHS = Array.from(
   (_, index) => `2026-${String(index + 1).padStart(2, "0")}`,
 );
 
-function emptyPayrollMonth() {
+function emptyPayrollMonth(): PayrollMonth {
   return { wageRates: [], adjustments: [], excuseStatus: [], holidays: [] };
 }
 
-function emptyPayrollMonth1WageRate() {
+function emptyPayrollMonth1WageRate(): PayrollMonth {
   return {
     ...emptyPayrollMonth(),
     wageRates: [

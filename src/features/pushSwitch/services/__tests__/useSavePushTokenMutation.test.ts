@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { AppStateStatus } from "react-native";
+import type { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
 
-const savePushTokenMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const savePushTokenMock = jest.fn<typeof savePushToken>();
 
 jest.unstable_mockModule("@/features/pushSwitch/api/savePushToken.api", () => ({
   savePushToken: savePushTokenMock,

@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { openDay } from "@/features/scheduleDay/api/openDay.api";
 
-const openDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const openDayMock = jest.fn<typeof openDay>();
 
 jest.unstable_mockModule("@/features/scheduleDay/api/openDay.api", () => ({
   openDay: openDayMock,

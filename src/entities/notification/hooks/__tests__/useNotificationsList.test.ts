@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getNotifications } from "@/entities/notification/api/getNotifications.api";
+import type { Notification } from "@/entities/notification/model/notification.type";
 
-const getNotificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getNotificationsMock = jest.fn<typeof getNotifications>();
 
 const FIXED_NOW = new Date(Date.UTC(2026, 9, 3, 1, 0, 0));
 
@@ -63,13 +64,22 @@ function createWrapper() {
   return { wrapper };
 }
 
-function rowAt(id: string, createdAt: string, extra = {}) {
+function rowAt(
+  id: string,
+  createdAt: string,
+  extra: Partial<Notification> = {},
+): Notification {
   return {
     id,
-    kind: "shift_confirmed",
+    profileId: "profile-1",
+    kind: "schedule_confirmed",
+    payload: {},
+    subjectId: null,
     createdAt,
     readAt: null,
-    payload: {},
+    claimedAt: null,
+    pushAttempts: 0,
+    pushedAt: null,
     ...extra,
   };
 }

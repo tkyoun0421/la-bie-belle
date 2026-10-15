@@ -1,10 +1,14 @@
 import { jest } from "@jest/globals";
+import type { User } from "@supabase/supabase-js";
 import type { ReactNode } from "react";
+import type { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { Profile } from "@/entities/profile/model/profile.type";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 
-const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getCurrentUserMock = jest.fn<typeof getCurrentUser>();
+const getMyProfileMock = jest.fn<typeof getMyProfile>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
 
 const MONTH = "2026-10";
 
@@ -74,18 +78,34 @@ function scheduleDay(workDate: string) {
   };
 }
 
+const SESSION_USER: User = {
+  id: "user-1",
+  app_metadata: {},
+  user_metadata: {},
+  aud: "authenticated",
+  created_at: "2026-01-01T00:00:00.000Z",
+};
+
+const MY_PROFILE: Profile = {
+  id: "me",
+  displayName: "이준호",
+  photoUrl: null,
+  role: "member",
+  submittedAt: "2026-01-01T00:00:00.000Z",
+  approvedAt: "2026-01-02T00:00:00.000Z",
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
+  notificationsEnabled: true,
+};
+
 beforeEach(() => {
   getCurrentUserMock.mockReset();
   getMyProfileMock.mockReset();
   getMonthScheduleMock.mockReset();
 
-  getCurrentUserMock.mockResolvedValue({ id: "user-1", user_metadata: {} });
-  getMyProfileMock.mockResolvedValue({
-    id: "me",
-    role: "worker",
-    approvedAt: "2026-01-02T00:00:00.000Z",
-    leftAt: null,
-  });
+  getCurrentUserMock.mockResolvedValue(SESSION_USER);
+  getMyProfileMock.mockResolvedValue(MY_PROFILE);
   getMonthScheduleMock.mockResolvedValue([]);
 });
 

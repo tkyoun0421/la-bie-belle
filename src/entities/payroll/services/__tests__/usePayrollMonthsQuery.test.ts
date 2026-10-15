@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 
-const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getPayrollMonthMock = jest.fn<typeof getPayrollMonth>();
 
 jest.unstable_mockModule("@/entities/payroll/api/getPayrollMonth.api", () => ({
   getPayrollMonth: getPayrollMonthMock,
@@ -32,7 +34,7 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-function monthPayload(month: string) {
+function monthPayload(month: string): PayrollMonth {
   return {
     wageRates: [
       {
@@ -77,7 +79,7 @@ beforeEach(() => {
 describe("usePayrollMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) =>
-      monthPayload(month as string),
+      monthPayload(month),
     );
     const months = Array.from(
       { length: 12 },
@@ -104,7 +106,7 @@ describe("usePayrollMonthsQuery — 하나라도 pending이면 로딩이다", ()
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
-        return monthPayload(month as string);
+        return monthPayload(month);
       }
       return new Promise(() => {});
     });
@@ -128,7 +130,7 @@ describe("usePayrollMonthsQuery — 하나라도 error면 그 error가 표면에
       if (month === "2026-10") {
         throw failure;
       }
-      return monthPayload(month as string);
+      return monthPayload(month);
     });
     const { wrapper } = createWrapper();
 
@@ -146,7 +148,7 @@ describe("usePayrollMonthsQuery — 하나라도 error면 그 error가 표면에
 describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 wageRates·adjustments·excuseStatus가 하나로 이어진다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) =>
-      monthPayload(month as string),
+      monthPayload(month),
     );
     const { wrapper } = createWrapper();
 
@@ -165,7 +167,7 @@ describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다"
 
   it("두 달의 holidays가 달 순서를 따라 하나로 합쳐진다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) =>
-      monthPayload(month as string),
+      monthPayload(month),
     );
     const { wrapper } = createWrapper();
 
@@ -185,7 +187,7 @@ describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다"
 
   it("한 달의 holidays가 비어 있어도 나머지 달의 것이 그대로 나온다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) => {
-      const payload = monthPayload(month as string);
+      const payload = monthPayload(month);
       if (month === "2026-09") {
         return { ...payload, holidays: [] };
       }

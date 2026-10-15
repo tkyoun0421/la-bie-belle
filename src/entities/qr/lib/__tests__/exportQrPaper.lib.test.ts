@@ -1,5 +1,8 @@
 import { jest } from "@jest/globals";
-import { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
+import {
+  exportQrPaper,
+  type ExportQrPaperInput,
+} from "@/entities/qr/lib/exportQrPaper.lib";
 
 const HTML = "<html>fake</html>";
 
@@ -9,7 +12,7 @@ describe("exportQrPaper — 인쇄용 종이를 파일로 만들어 공유 판�
       .fn<(args: { html: string }) => Promise<{ uri: string }>>()
       .mockResolvedValue({ uri: "file://paper.pdf" });
     const share = jest
-      .fn<(...args: unknown[]) => Promise<void>>()
+      .fn<ExportQrPaperInput["share"]>()
       .mockResolvedValue(undefined);
 
     await exportQrPaper({ html: HTML, printToFile, share });
@@ -22,7 +25,7 @@ describe("exportQrPaper — 인쇄용 종이를 파일로 만들어 공유 판�
       .fn<(args: { html: string }) => Promise<{ uri: string }>>()
       .mockResolvedValue({ uri: "file://paper.pdf" });
     const share = jest
-      .fn<(...args: unknown[]) => Promise<void>>()
+      .fn<ExportQrPaperInput["share"]>()
       .mockResolvedValue(undefined);
 
     await exportQrPaper({ html: HTML, printToFile, share });
@@ -38,7 +41,7 @@ describe("exportQrPaper — 인쇄용 종이를 파일로 만들어 공유 판�
       .fn<(args: { html: string }) => Promise<{ uri: string }>>()
       .mockResolvedValue({ uri: "file://paper.pdf" });
     const share = jest
-      .fn<(...args: unknown[]) => Promise<void>>()
+      .fn<ExportQrPaperInput["share"]>()
       .mockResolvedValue(undefined);
 
     await exportQrPaper({ html: HTML, printToFile, share });
@@ -55,7 +58,7 @@ describe("exportQrPaper — 인쇄용 종이를 파일로 만들어 공유 판�
       .fn<(args: { html: string }) => Promise<{ uri: string }>>()
       .mockRejectedValue(error);
     const share = jest
-      .fn<(...args: unknown[]) => Promise<void>>()
+      .fn<ExportQrPaperInput["share"]>()
       .mockResolvedValue(undefined);
 
     await expect(
@@ -70,7 +73,7 @@ describe("exportQrPaper — 인쇄용 종이를 파일로 만들어 공유 판�
       .fn<(args: { html: string }) => Promise<{ uri: string }>>()
       .mockResolvedValue({ uri: "file://paper.pdf" });
     const share = jest
-      .fn<(...args: unknown[]) => Promise<void>>()
+      .fn<ExportQrPaperInput["share"]>()
       .mockRejectedValue(error);
 
     await expect(

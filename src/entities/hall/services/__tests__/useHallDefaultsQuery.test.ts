@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getHallDefaults } from "@/entities/hall/api/getHallDefaults.api";
 
-const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getHallDefaultsMock = jest.fn<typeof getHallDefaults>();
 
 jest.unstable_mockModule("@/entities/hall/api/getHallDefaults.api", () => ({
   getHallDefaults: getHallDefaultsMock,

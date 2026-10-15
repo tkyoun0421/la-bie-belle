@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getQualifications } from "@/entities/member/api/getQualifications.api";
+import type { Qualification } from "@/entities/member/model/member.type";
 
-const getQualificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getQualificationsMock = jest.fn<typeof getQualifications>();
 
 jest.unstable_mockModule("@/entities/member/api/getQualifications.api", () => ({
   getQualifications: getQualificationsMock,
@@ -33,9 +34,9 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const ROWS = [
-  { profile_id: "profile-1", position: "스캔" },
-  { profile_id: "profile-2", position: "팀장" },
+const ROWS: Qualification[] = [
+  { profileId: "profile-1", position: "스캔" },
+  { profileId: "profile-2", position: "팀장" },
 ];
 
 beforeEach(() => {

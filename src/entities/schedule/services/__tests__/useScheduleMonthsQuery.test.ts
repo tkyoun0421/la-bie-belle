@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
-const getMonthScheduleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthScheduleMock = jest.fn<typeof getMonthSchedule>();
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
@@ -36,16 +37,16 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-function dayFor(month: string) {
+function dayFor(month: string): ScheduleDay {
   return {
     id: `day-${month}`,
-    work_date: `${month}-10`,
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
-    opened_at: `${month}-01T00:00:00.000Z`,
+    workDate: `${month}-10`,
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: `${month}-01T00:00:00.000Z`,
     slots: [],
     assignments: [],
-    check_ins: [],
+    checkIns: [],
   };
 }
 
@@ -56,7 +57,7 @@ beforeEach(() => {
 describe("useScheduleMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => [
-      dayFor(month as string),
+      dayFor(month),
     ]);
     const months = Array.from(
       { length: 12 },
@@ -81,7 +82,7 @@ describe("useScheduleMonthsQuery — 하나라도 pending이면 로딩이다", (
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
-        return [dayFor(month as string)];
+        return [dayFor(month)];
       }
       return new Promise(() => {});
     });
@@ -105,7 +106,7 @@ describe("useScheduleMonthsQuery — 하나라도 error면 그 error가 표면�
       if (month === "2026-10") {
         throw failure;
       }
-      return [dayFor(month as string)];
+      return [dayFor(month)];
     });
     const { wrapper } = createWrapper();
 
@@ -123,7 +124,7 @@ describe("useScheduleMonthsQuery — 하나라도 error면 그 error가 표면�
 describe("useScheduleMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 날들이 하나의 배열로 이어진다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => [
-      dayFor(month as string),
+      dayFor(month),
     ]);
     const { wrapper } = createWrapper();
 

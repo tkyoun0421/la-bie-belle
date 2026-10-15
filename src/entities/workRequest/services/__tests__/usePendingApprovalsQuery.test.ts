@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getPendingApprovals } from "@/entities/workRequest/api/getPendingApprovals.api";
+import type { PendingApproval } from "@/entities/workRequest/model/workRequest.type";
 
-const getPendingApprovalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getPendingApprovalsMock = jest.fn<typeof getPendingApprovals>();
 
 jest.unstable_mockModule(
   "@/entities/workRequest/api/getPendingApprovals.api",
@@ -36,16 +37,19 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const ROWS = [
+const ROWS: PendingApproval[] = [
   {
     id: "cancel-request-1",
+    assignmentId: "assignment-1",
     reason: "그날 다른 일정이 생겼어요",
-    assignments: {
-      day_id: "day-1",
-      position: "메인",
-      days: { work_date: "2026-10-12" },
-    },
-    profiles: { display_name: "이준호", photo_url: null },
+    createdAt: "2026-10-05T00:00:00Z",
+    dayId: "day-1",
+    position: "메인",
+    workDate: "2026-10-12",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    name: "이준호",
+    photoUrl: null,
   },
 ];
 

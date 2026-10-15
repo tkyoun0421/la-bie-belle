@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { forceChange } from "@/features/scheduleConfirm/api/forceChange.api";
 
-const forceChangeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const forceChangeMock = jest.fn<typeof forceChange>();
 
 jest.unstable_mockModule(
   "@/features/scheduleConfirm/api/forceChange.api",
@@ -49,7 +50,7 @@ beforeEach(() => {
 
 describe("useForceChangeMutation — force_change를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, assignmentId, profileId)로 부르고 세 키를 무효화한다", async () => {
-    forceChangeMock.mockResolvedValue(undefined);
+    forceChangeMock.mockResolvedValue("assignment-2");
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
@@ -109,8 +110,8 @@ describe("useForceChangeMutation — force_change를 부르고 schedule·payroll
     let resolveFirst: (() => void) | undefined;
     forceChangeMock.mockImplementation(
       () =>
-        new Promise<void>((resolve) => {
-          resolveFirst = resolve;
+        new Promise<string>((resolve) => {
+          resolveFirst = () => resolve("assignment-2");
         }),
     );
     const { wrapper } = createWrapper();

@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { CheckIn } from "@/entities/attendance/model/attendance.type";
 
-const getMonthAttendanceMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthAttendanceMock = jest.fn<typeof getMonthAttendance>();
 
 jest.unstable_mockModule(
   "@/entities/attendance/api/getMonthAttendance.api",
@@ -37,6 +38,18 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
+function checkInFor(id: string): CheckIn {
+  return {
+    id,
+    dayId: "day-0",
+    profileId: "profile-1",
+    method: "qr",
+    checkedAt: "2026-08-01T10:00:00Z",
+    reportedAt: "2026-08-01T10:00:00Z",
+    receivedAt: "2026-08-01T10:00:00Z",
+  };
+}
+
 const TWELVE_MONTHS = Array.from(
   { length: 12 },
   (_, index) => `2026-${String(index + 1).padStart(2, "0")}`,
@@ -69,7 +82,7 @@ describe("useMonthsAttendanceQuery — 달마다 getMonthAttendance를 부른다
 describe("useMonthsAttendanceQuery — 달마다 값이 따로 붙고 서로 안 섞인다", () => {
   it("한 달만 체크인이 둘이면 그 달 칸에만 둘이 붙는다", async () => {
     getMonthAttendanceMock.mockImplementation(async (_client, month) => ({
-      checkIns: month === "2026-08" ? [{ id: "c1" }, { id: "c2" }] : [],
+      checkIns: month === "2026-08" ? [checkInFor("c1"), checkInFor("c2")] : [],
       excuseStatuses: [],
     }));
     const { wrapper } = createWrapper();

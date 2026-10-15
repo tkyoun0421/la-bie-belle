@@ -1,9 +1,13 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type {
+  listActiveMembers,
+  listLeftMembers,
+} from "@/entities/member/api/listMembers.api";
+import type { ActiveMember } from "@/entities/member/model/member.type";
 
-const listActiveMembersMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const listLeftMembersMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const listActiveMembersMock = jest.fn<typeof listActiveMembers>();
+const listLeftMembersMock = jest.fn<typeof listLeftMembers>();
 
 const FAKE_CLIENT = {} as never;
 
@@ -44,11 +48,14 @@ function createWrapper() {
   return { wrapper };
 }
 
-function member(over: Record<string, unknown>) {
+function member(over: Partial<ActiveMember>): ActiveMember {
   return {
     id: "p1",
     displayName: "이준호",
     photoUrl: null,
+    submittedAt: "2026-01-01T00:00:00.000Z",
+    approvedAt: "2026-01-02T00:00:00.000Z",
+    rejectedAt: null,
     role: "member",
     leftAt: null,
     blockedAt: null,

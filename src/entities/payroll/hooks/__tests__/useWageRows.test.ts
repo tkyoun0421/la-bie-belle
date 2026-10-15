@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getWageRates } from "@/entities/payroll/api/getWageRates.api";
 
-const getWageRatesMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getWageRatesMock = jest.fn<typeof getWageRates>();
 
 jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: {} as never,
@@ -61,7 +62,7 @@ beforeEach(() => {
       rate("p2", 13000, false, "2026-06-01"),
       rate("p2", 15000, false),
     ],
-    defaultWageRate: { amount: 11000 },
+    defaultWageRate: { effectiveDate: "2026-01-01", amount: 11000 },
   });
 });
 

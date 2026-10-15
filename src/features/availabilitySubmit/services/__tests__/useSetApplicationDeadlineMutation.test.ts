@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setApplicationDeadline } from "@/features/availabilitySubmit/api/setApplicationDeadline.api";
 
-const setApplicationDeadlineMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setApplicationDeadlineMock = jest.fn<typeof setApplicationDeadline>();
 
 jest.unstable_mockModule(
   "@/features/availabilitySubmit/api/setApplicationDeadline.api",

@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { resetWageToDefault } from "@/features/wageAdmin/api/resetWageToDefault.api";
+import type { setWage } from "@/features/wageAdmin/api/setWage.api";
 
-const setWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const resetWageToDefaultMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setWageMock = jest.fn<typeof setWage>();
+const resetWageToDefaultMock = jest.fn<typeof resetWageToDefault>();
 
 const TODAY = "2026-10-03";
 

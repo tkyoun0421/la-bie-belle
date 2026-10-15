@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setRole } from "@/features/memberAdmin/api/setRole.api";
 
-const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setRoleMock = jest.fn<typeof setRole>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/setRole.api", () => ({
   setRole: setRoleMock,

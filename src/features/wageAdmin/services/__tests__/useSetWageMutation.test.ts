@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { setWage } from "@/features/wageAdmin/api/setWage.api";
 
-const setWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const setWageMock = jest.fn<typeof setWage>();
 
 jest.unstable_mockModule("@/features/wageAdmin/api/setWage.api", () => ({
   setWage: setWageMock,

@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 
-const getSlotRequestsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getSlotRequestsMock = jest.fn<typeof getSlotRequests>();
 
 jest.unstable_mockModule(
   "@/entities/workRequest/api/getSlotRequests.api",
@@ -37,18 +39,23 @@ const FAKE_CLIENT = {} as never;
 
 const MONTH = "2026-10";
 
-const ROWS = [
+const ROWS: SlotRequest[] = [
   {
     id: "request-1",
-    slot_id: "slot-1",
-    closed_at: null,
-    request_candidates: [
+    slotId: "slot-1",
+    closedAt: null,
+    expiresAt: "2026-10-12T00:00:00Z",
+    candidates: [
       {
-        profile_id: "profile-1",
+        profileId: "profile-1",
         status: "pending",
-        expires_at: "2026-10-12T00:00:00Z",
+        expiresAt: "2026-10-12T00:00:00Z",
       },
     ],
+    positions: ["메인"],
+    workDate: "2026-10-12",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
   },
 ];
 

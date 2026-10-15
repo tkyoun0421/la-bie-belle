@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { addAssignment } from "@/features/scheduleAssign/api/addAssignment.api";
 
-const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const addAssignmentMock = jest.fn<typeof addAssignment>();
 
 jest.unstable_mockModule(
   "@/features/scheduleAssign/api/addAssignment.api",
@@ -50,7 +51,7 @@ beforeEach(() => {
 
 describe("useAddAssignmentMutation — add_assignment을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("정규 배정 입력(slotId)을 그대로 DAL에 넘긴다", async () => {
-    addAssignmentMock.mockResolvedValue(undefined);
+    addAssignmentMock.mockResolvedValue("assignment-1");
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
@@ -85,7 +86,7 @@ describe("useAddAssignmentMutation — add_assignment을 부르고 schedule·pay
   });
 
   it("교육 배정 입력(dayId·position)을 그대로 DAL에 넘긴다 — slotId를 안 보낸다", async () => {
-    addAssignmentMock.mockResolvedValue(undefined);
+    addAssignmentMock.mockResolvedValue("assignment-1");
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
@@ -112,7 +113,7 @@ describe("useAddAssignmentMutation — add_assignment을 부르고 schedule·pay
   });
 
   it("「이번만 넣기」는 skipQualification: true를 그대로 넘긴다", async () => {
-    addAssignmentMock.mockResolvedValue(undefined);
+    addAssignmentMock.mockResolvedValue("assignment-1");
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
@@ -164,8 +165,8 @@ describe("useAddAssignmentMutation — add_assignment을 부르고 schedule·pay
     let resolveFirst: (() => void) | undefined;
     addAssignmentMock.mockImplementation(
       () =>
-        new Promise<void>((resolve) => {
-          resolveFirst = resolve;
+        new Promise<string>((resolve) => {
+          resolveFirst = () => resolve("assignment-1");
         }),
     );
     const { wrapper } = createWrapper();

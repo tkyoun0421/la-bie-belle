@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { addSlot } from "@/features/scheduleSlot/api/addSlot.api";
 
-const addSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const addSlotMock = jest.fn<typeof addSlot>();
 
 jest.unstable_mockModule("@/features/scheduleSlot/api/addSlot.api", () => ({
   addSlot: addSlotMock,

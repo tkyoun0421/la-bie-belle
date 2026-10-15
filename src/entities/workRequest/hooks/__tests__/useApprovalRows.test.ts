@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getPendingApprovals } from "@/entities/workRequest/api/getPendingApprovals.api";
 
-const getPendingApprovalsMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getPendingApprovalsMock = jest.fn<typeof getPendingApprovals>();
 
 const FAKE_CLIENT = {} as never;
 

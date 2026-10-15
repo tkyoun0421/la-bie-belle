@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getOpenSlots } from "@/entities/schedule/api/getOpenSlots.api";
+import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 
-const getOpenSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getOpenSlotsMock = jest.fn<typeof getOpenSlots>();
 
 jest.unstable_mockModule("@/entities/schedule/api/getOpenSlots.api", () => ({
   getOpenSlots: getOpenSlotsMock,
@@ -34,11 +36,11 @@ const FAKE_CLIENT = {} as never;
 
 const MONTH = "2026-10";
 
-const ROWS = [
+const ROWS: OpenSlot[] = [
   {
-    slot_id: "slot-1",
-    day_id: "day-1",
-    work_date: "2026-10-10",
+    slotId: "slot-1",
+    dayId: "day-1",
+    workDate: "2026-10-10",
     positions: ["스캔"],
   },
 ];

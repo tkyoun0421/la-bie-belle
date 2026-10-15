@@ -1,9 +1,11 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { decideEntry } from "@/features/auth/lib/decideEntry.lib";
+import type { signInWithGoogle } from "@/features/auth/lib/signInWithGoogle.lib";
+import type { GoogleSignInFailure } from "@/features/auth/model/auth.type";
 
-const signInWithGoogleMock =
-  jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const decideEntryMock = jest.fn<(...args: unknown[]) => Promise<string>>();
+const signInWithGoogleMock = jest.fn<typeof signInWithGoogle>();
+const decideEntryMock = jest.fn<typeof decideEntry>();
 
 jest.unstable_mockModule("@/features/auth/lib/signInWithGoogle.lib", () => ({
   signInWithGoogle: signInWithGoogleMock,
@@ -99,17 +101,18 @@ describe("useGoogleSignInMutation — 못 끝난 로그인은 목적지를 묻�
     expect(decideEntryMock).not.toHaveBeenCalled();
   });
 
-  it.each(["missing_code", "exchange_failed", "start_failed"])(
-    "%s는 failed로 알린다",
-    async (reason) => {
-      signInWithGoogleMock.mockResolvedValue({ ok: false, reason });
+  it.each<GoogleSignInFailure>([
+    "missing_code",
+    "exchange_failed",
+    "start_failed",
+  ])("%s는 failed로 알린다", async (reason) => {
+    signInWithGoogleMock.mockResolvedValue({ ok: false, reason });
 
-      const outcome = await signInAndGetOutcome();
+    const outcome = await signInAndGetOutcome();
 
-      expect(outcome).toEqual({ kind: "failed" });
-      expect(decideEntryMock).not.toHaveBeenCalled();
-    },
-  );
+    expect(outcome).toEqual({ kind: "failed" });
+    expect(decideEntryMock).not.toHaveBeenCalled();
+  });
 
   it("signInWithGoogle이 던지면 failed로 알린다", async () => {
     signInWithGoogleMock.mockRejectedValue(new Error("끊겼다"));

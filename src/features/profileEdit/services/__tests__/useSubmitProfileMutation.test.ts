@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
 
-const submitProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const submitProfileMock = jest.fn<typeof submitProfile>();
 
 jest.unstable_mockModule(
   "@/features/profileEdit/api/submitProfile.api",

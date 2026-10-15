@@ -32,6 +32,7 @@ import storeFactoryInStores from "./storeFactoryInStores.mjs";
 import supabasePackageInApi from "./supabasePackageInApi.mjs";
 import typeFileNoRuntime from "./typeFileNoRuntime.mjs";
 import typeGuardName from "./typeGuardName.mjs";
+import typedMockFn from "./typedMockFn.mjs";
 import uiNoRouter from "./uiNoRouter.mjs";
 import uiValueImport from "./uiValueImport.mjs";
 import useExportSegment from "./useExportSegment.mjs";
@@ -73,6 +74,7 @@ const house = {
     "supabase-package-in-api": supabasePackageInApi,
     "type-file-no-runtime": typeFileNoRuntime,
     "type-guard-name": typeGuardName,
+    "typed-mock-fn": typedMockFn,
     "ui-no-router": uiNoRouter,
     "ui-value-import": uiValueImport,
     "use-export-segment": useExportSegment,

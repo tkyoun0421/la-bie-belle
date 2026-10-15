@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { confirmSchedule } from "@/features/scheduleConfirm/api/confirmSchedule.api";
 
-const confirmScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const confirmScheduleMock = jest.fn<typeof confirmSchedule>();
 
 jest.unstable_mockModule(
   "@/features/scheduleConfirm/api/confirmSchedule.api",

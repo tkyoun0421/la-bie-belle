@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
 
-const countUnreadNotificationsMock =
-  jest.fn<(...args: unknown[]) => Promise<number>>();
+const countUnreadNotificationsMock = jest.fn<typeof countUnreadNotifications>();
 
 jest.unstable_mockModule(
   "@/entities/notification/api/countUnreadNotifications.api",

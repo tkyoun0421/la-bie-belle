@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { blockMember } from "@/features/memberAdmin/api/blockMember.api";
 
-const blockMemberMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const blockMemberMock = jest.fn<typeof blockMember>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/blockMember.api", () => ({
   blockMember: blockMemberMock,

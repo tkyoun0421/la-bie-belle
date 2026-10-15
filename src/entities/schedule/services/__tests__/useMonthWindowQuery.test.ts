@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getMonthWindow } from "@/entities/schedule/api/getMonthSchedule.api";
 
-const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getMonthWindowMock = jest.fn<typeof getMonthWindow>();
 
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",

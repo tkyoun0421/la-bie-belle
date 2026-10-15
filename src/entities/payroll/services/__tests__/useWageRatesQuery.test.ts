@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { getWageRates } from "@/entities/payroll/api/getWageRates.api";
+import type { WageRates } from "@/entities/payroll/model/payroll.type";
 
-const getWageRatesMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getWageRatesMock = jest.fn<typeof getWageRates>();
 
 jest.unstable_mockModule("@/entities/payroll/api/getWageRates.api", () => ({
   getWageRates: getWageRatesMock,
@@ -32,7 +34,7 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const WAGE_RATES = {
+const WAGE_RATES: WageRates = {
   wageRates: [
     {
       profileId: "profile-1",
@@ -41,7 +43,7 @@ const WAGE_RATES = {
       followsDefault: true,
     },
   ],
-  defaultWage: 11000,
+  defaultWageRate: { effectiveDate: "2026-01-01", amount: 11000 },
 };
 
 beforeEach(() => {

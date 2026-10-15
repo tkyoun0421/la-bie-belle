@@ -1,15 +1,17 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { removePushToken } from "@/features/auth/api/removePushToken.api";
+import type { readGrantedPushToken } from "@/features/auth/lib/devicePushToken.lib";
+import type { signOut } from "@/features/auth/lib/signOut.lib";
 
-const signOutMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const signOutMock = jest.fn<typeof signOut>();
 
 jest.unstable_mockModule("@/features/auth/lib/signOut.lib", () => ({
   signOut: signOutMock,
 }));
 
-const readGrantedPushTokenMock =
-  jest.fn<(...args: unknown[]) => Promise<string | null>>();
-const removePushTokenApiMock = jest.fn<(...args: unknown[]) => Promise<void>>();
+const readGrantedPushTokenMock = jest.fn<typeof readGrantedPushToken>();
+const removePushTokenApiMock = jest.fn<typeof removePushToken>();
 const clearStoredOffsetMock = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/features/auth/lib/devicePushToken.lib", () => ({

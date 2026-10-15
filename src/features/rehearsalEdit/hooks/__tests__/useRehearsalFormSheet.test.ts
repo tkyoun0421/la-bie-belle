@@ -1,10 +1,12 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
+import type { addRehearsal } from "@/features/rehearsalEdit/api/addRehearsal.api";
+import type { editRehearsal } from "@/features/rehearsalEdit/api/editRehearsal.api";
 import type { RehearsalFormTarget } from "@/features/rehearsalEdit/model/rehearsalFormTarget.policy";
 
-const addRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const addRehearsalMock = jest.fn<typeof addRehearsal>();
+const editRehearsalMock = jest.fn<typeof editRehearsal>();
 
 const FAKE_CLIENT = {} as never;
 

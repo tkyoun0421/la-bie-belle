@@ -1,7 +1,8 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
+import type { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 
-const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const undoLeaveMock = jest.fn<typeof undoLeave>();
 
 jest.unstable_mockModule("@/features/memberAdmin/api/undoLeave.api", () => ({
   undoLeave: undoLeaveMock,
