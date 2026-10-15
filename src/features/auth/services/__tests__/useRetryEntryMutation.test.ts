@@ -54,7 +54,7 @@ describe("useRetryEntryMutation", () => {
   });
 
   it("판정이 낸 자리를 그대로 넘긴다", async () => {
-    decideEntryMock.mockResolvedValue("/admin");
+    decideEntryMock.mockResolvedValue("/pending");
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(() => useRetryEntryMutation(FAKE_CLIENT), {
@@ -65,7 +65,7 @@ describe("useRetryEntryMutation", () => {
 
     act(() => result.current.retry(decided));
 
-    await waitFor(() => expect(decided).toHaveBeenCalledWith("/admin"));
+    await waitFor(() => expect(decided).toHaveBeenCalledWith("/pending"));
   });
 
   it("`/retry`가 나와도 걸러 내지 않는다", async () => {
