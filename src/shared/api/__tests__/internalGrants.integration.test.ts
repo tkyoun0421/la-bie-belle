@@ -14,7 +14,9 @@ describe("internal 스키마 함수는 로그인 여부와 상관없이 부를 �
 
   it("anon 역할은 어떤 internal 함수도 실행할 수 없다", () => {
     expect(
-      internalFunctionsWhere("has_function_privilege('anon', p.oid, 'EXECUTE')"),
+      internalFunctionsWhere(
+        "has_function_privilege('anon', p.oid, 'EXECUTE')",
+      ),
     ).toEqual([]);
   });
 
