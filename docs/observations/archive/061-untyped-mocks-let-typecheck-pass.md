@@ -1,7 +1,8 @@
 ---
-status: open
+status: actioned
 target: src/**/__tests__/*.test.ts
 date: 2026-10-09
+resolved: 2026-10-15
 ---
 
 # 타입 없는 mock 픽스처가 typecheck를 지나친다

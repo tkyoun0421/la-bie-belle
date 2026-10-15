@@ -138,7 +138,7 @@ mutation service 44개 가운데 42개가 `invalidateQueries`로 뒤처리한다
 
 짝 테스트가 없는 `.ts`는 423개 중 89개인데 75개가 `api`고 그중 73개는 integration 짝을 가진다. 정책대로다. 남는 구멍은 둘이다.
 
-**`.mapper.ts` 여섯** — `attendance`·`excuse`·`profile`·`payroll`·`notification`·`hall`. 매퍼 12개 중 절반만 짝이 있다. 매퍼는 DTO를 도메인 타입으로 옮기는 자리라 필드를 잘못 매핑하면 조용히 틀린 값이 화면에 간다. [관찰 061](../observations/061-untyped-mocks-let-typecheck-pass.md)과 겹치면 DTO가 바뀌어도 아무 테스트가 안 깨진다.
+**`.mapper.ts` 여섯** — `attendance`·`excuse`·`profile`·`payroll`·`notification`·`hall`. 매퍼 12개 중 절반만 짝이 있다. 매퍼는 DTO를 도메인 타입으로 옮기는 자리라 필드를 잘못 매핑하면 조용히 틀린 값이 화면에 간다. [관찰 061](../observations/archive/061-untyped-mocks-let-typecheck-pass.md)과 겹치면 DTO가 바뀌어도 아무 테스트가 안 깨진다.
 
 **`shared/ui`의 계산하는 조각 넷** — `TrendChart`(197줄 가운데 79줄이 계산이고 62줄은 React를 하나도 안 쓴다)·`RowBars`·`ScheduleDayCell`·`DashedOutline`. ADR-001이 `shared/ui`를 TDD 훅에서 빼둔 자리다.
 

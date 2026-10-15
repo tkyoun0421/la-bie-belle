@@ -85,7 +85,7 @@ where public.is_admin();
 
 ## 왜 고치나
 
-매퍼는 DB가 준 꼴을 도메인 타입으로 옮기는 자리다. 필드를 잘못 맞추면 아무 데서도 안 터지고 **조용히 틀린 값이 화면에 간다.** [관찰 061](../../observations/061-untyped-mocks-let-typecheck-pass.md)과 겹치면 DTO가 바뀌어도 깨지는 테스트가 없다.
+매퍼는 DB가 준 꼴을 도메인 타입으로 옮기는 자리다. 필드를 잘못 맞추면 아무 데서도 안 터지고 **조용히 틀린 값이 화면에 간다.** [관찰 061](../../observations/archive/061-untyped-mocks-let-typecheck-pass.md)과 겹치면 DTO가 바뀌어도 깨지는 테스트가 없다.
 
 이름이 겹친 자리는 다음 사람이 「이미 있으니 쓰자」로 한쪽을 당긴다. 같은 이름이 꼴 둘을 들면 nullable 쪽을 당긴 코드가 올 수 없는 null을 막는 가지를 또 쓴다.
 

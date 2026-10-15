@@ -6,25 +6,33 @@
 
 ## 다음 작업
 
-**Expo 앱의 로그인 화면이 섰다([`login-screen-native`](backlog.md), #573). 시스템 테마도 OS 다크를 따른다([`system-theme-follows-os`](backlog.md), #575).** 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
+**사람 손이 필요한 것과 판정 대기가 남았다.** 코드로 닫을 수 있는 `candidate` 아홉이 오늘 닫혔고([docs/log/2026-10-15.md](log/2026-10-15.md)) 로그인 등장 모션까지 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
 1. **Supabase 원격 프로젝트의 Redirect URLs에 두 줄을 넣는다(사람 손).** `labiebelle://auth/callback`과 `exp://**/--/auth/callback`이다. 빠지면 로그인이 오류 없이 돌아오지 못한다. 로컬 `supabase/config.toml`에는 이미 든다. 자리는 [environments.md](5-deploy/environments.md)다.
-2. **실기기 수동 확인.** 구글 로그인 왕복(새 사람·승인·차단·퇴사), 창 닫기, 안드로이드 복귀 때 not-found가 안 번쩍이는지, 라이트·다크에서 구글 버튼 톤, 시스템 테마인 다크 기기에서 앱이 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지. iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다.
-3. **로컬 DB 정리는 사람이 정한다.** `wage_rates`가 14606행까지 쌓여 integration 두 건(`getPayrollMonth`·`getWageRates`)이 `max_rows = 1000`에 잘린다. `supabase db reset`이 필요해 보이나 로컬 데이터를 지우는 일이다. CI는 깨끗한 DB라 안 겪는다.
-4. **판정 대기는 그대로다.**
+2. **실기기 확인.** 로그인(구글 왕복의 네 계정 경우, 창 닫기, 안드로이드 복귀 때 not-found, 라이트·다크 버튼 톤), 테마(시스템 테마인 다크 기기가 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지), 차트(통계 화면의 값 라벨 위치와 1·4·7·10월 라벨, 막대 폭, 근무표 칸의 점선 테두리, 출근 기록 없는 달의 출근율이 `–`인지), 등장 모션([`login-entrance-motion`](backlog.md) — 움직임 줄이기를 끈 콜드 스타트에 다섯 요소가 70ms씩 어긋나 8px 아래에서 올라오는지, 켠 콜드 스타트는 이동 없이 밝기만 바뀌는지, 구글 버튼이 눌리는 동안 줄고 `busy`에서는 안 줄어드는지, 실패 줄이 떠도 등장이 다시 안 도는지). iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다.
+3. **판정 대기는 그대로다.**
    - [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
    - [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
    - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
-
-로그인 등장 모션은 [`login-entrance-motion`](backlog.md)이 `candidate`로 든다 — 움직임 줄이기를 읽는 손부터 없다.
+   - [`attendance-checkin`](backlog.md) — 사람 손이 닿는 문(NCP 대표 계정과 지도 키)이 먼저다
 
 ## 재개 맥락
 
 **로그인 흐름은 lib · service · controller 셋이고 취소는 실패 줄을 안 낸다.** `features/auth/lib/signInWithGoogle.lib.ts`가 창을 열고 돌아온 주소에서 코드를 꺼내 `handleAuthCallback`으로 잇고, service가 `decideEntry`까지 가서 `decided`·`cancelled`·`failed`로 알린다. 버튼 톤은 `dark:` 변형으로 둘을 다 그려 하나만 보인다. `auth/callback` 딥링크는 `src/app/+native-intent.ts`가 `/login`으로 돌린다. 문안 「로그인하지 못했어요. 다시 눌러 주세요」는 아직 「제안」이다.
 
-**테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/072-react-native-mock-misses-in-logic-project.md), 정의문과 execution에 반영). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
+**테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/archive/072-react-native-mock-misses-in-logic-project.md), 정의문과 execution에 반영). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
 
-**기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`·`schedule-deadline-line-duplicate`·`vacancy-days-of-duplicate`·`attendance-column-dead-code`는 backlog에 선다.
+**기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`는 backlog에 선다.
+
+**1000행 넘게 쌓이는 표는 `shared/api/readAllPages.ts`로 읽는다.** `getWageRates`와 `getPayrollMonth`가 쓴다. 페이지 사이에 행이 흔들리지 않게 정렬 키를 고정해야 한다. 나머지 범위 없는 읽기(`listMembers` 등)는 아직 안 훑었다 — `unbounded-read-audit`. 로컬 `wage_rates`가 쌓여도 `supabase db reset` 없이 integration이 통과한다.
+
+**움직임 줄이기는 `shared/lib/reduceMotion.lib.ts`가 앱 시작에 한 번 읽어 기억하고 `useReduceMotion`이 그 값으로 시작한다.** 읽기 전과 실패는 줄이기(참)다. 마지막 값은 훅이 마운트된 동안의 이벤트로만 갱신돼, 로그인 화면이 없을 때 OS 설정을 바꾸면 다음 등장 한 번이 예전 값이다(`reduce-motion-app-subscription`). 상수는 `shared/consts/motion.const.ts`에 있고 `tests/lint/motionTokens.ts`가 `tokens.md`와 값으로 대조한다. 이징은 아직 reanimated 기본이다(`motion-easing-ease-out`).
+
+**프로필 질의 이름이 뒤집혔다.** `useMyProfileQuery`는 `Profile`을, 연락처를 합친 `MyProfile`은 `useMyProfileWithContactQuery`가 낸다. 문서에 옛 이름이 남은 자리는 대부분 기록이다.
+
+**테스트 대역은 실물 서명으로 적는다.** 이름 붙은 상수는 `typeof`로도 남는 필드가 안 잡혀서 빌더와 상수에 반환 타입을 달았다. 상수 전체에 표기를 붙일지는 `fixture-constants-typed`가 든다. 계획이 센 수는 grep이면 하한이다(관찰 075).
+
+**통합 테스트는 병렬 워크트리에서 믿기 어렵다.** 공유 로컬 DB에 다른 워크트리의 마이그레이션이 먼저 올라가 있으면 `migration up`이 멈춘다. 그때는 jest만 돌리고 PR에 적는다. watchman이 파일을 다시 수집하면 jest가 조용히 0건을 낸다(`--no-watchman`). 둘 다 `execution-env-pitfalls`가 증축 후보로 든다.
 
 **`as`는 `memberOf`가 만든 가드 한 자리로 모인다.** 실행 코드의 `as`는 셋(Expo Router `Href` 둘과 동작이 바뀌어 안 건드린 하나)이다. 가드를 만들어 돌려주는 고차 함수는 반환 타입이 함수 타입이라 규칙 47의 밖이고, 이름 없는 인라인 가드도 밖이다.
 
@@ -56,7 +64,7 @@
 
 **경로 글자는 `shared/consts/navigation.const.ts` 한 집이다.** `house/no-route-path-literal`(44)이 `src/app/` 밖의 경로꼴 리터럴을 막는다. `"/"` 하나는 경로인지 구분자인지 AST로 못 갈라 기계가 못 막는다 — `resolveAdminGuard.policy.ts`의 `AdminGuardMove`가 그 자리고 사람이 본다.
 
-**검사 번호가 50까지다(줄은 마흔아홉)** — 48(`type-file-no-runtime`)은 `.type.ts`·`.dto.ts`의 런타임 선언을, 49(`services-no-hooks-import`)는 services가 hooks를 당기는 것을, 50(`hooks-export-use-only`)은 `hooks/`의 `use*`가 아닌 export를 문다. 접미사가 제 세그먼트에 사는지(`fileNaming`)와 문서의 검사 수(`docCounts`)는 `tests/lint/`가 센다. 47(`house/type-guard-name`)은 반환 타입이 서술어인 함수의 이름이 `is`로 시작하게 문다. **하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
+**검사 번호가 51까지다** — 51(`house/typed-mock-fn`)은 `jest.fn`의 타입 인자가 함수 타입이고 그 안에 `unknown`이 있으면 문다 — 대역은 `jest.fn<typeof 실물>()`로 적고 실물은 `import type`으로 당긴다. 48(`type-file-no-runtime`)은 `.type.ts`·`.dto.ts`의 런타임 선언을, 49(`services-no-hooks-import`)는 services가 hooks를 당기는 것을, 50(`hooks-export-use-only`)은 `hooks/`의 `use*`가 아닌 export를 문다. 접미사가 제 세그먼트에 사는지(`fileNaming`)와 문서의 검사 수(`docCounts`)는 `tests/lint/`가 센다. 47(`house/type-guard-name`)은 반환 타입이 서술어인 함수의 이름이 `is`로 시작하게 문다. **하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
 
 **CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조가 `database-types.ts`(없는 경로)를 보던 죽은 게이트였던 것을 고쳐 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사는 `ci`와 `impact` 둘이다** — 영향 확인 절이 없는 PR은 merge되지 않는다.
 
@@ -78,10 +86,10 @@
 
 **Edge Function을 타입 검사하는 자리가 없다.** Deno 런타임이라 `tsconfig.json`이 `exclude`하고 CI에 Deno가 없다. `erase-account`·`import-holidays`가 섰고 `send-push`가 셋째다.
 
-**e2e TDD 훅이 Edit·Write만 보고 Bash를 안 본다**(관찰 054는 archive로 갔지만 같은 성격의 재발 가능성은 남는다). `internal` 스키마의 실제 방어는 PostgREST 라우팅과 스키마 USAGE 둘뿐이고 함수 revoke는 안 서 있다 — `internal-grants-public` candidate.
+**e2e TDD 훅이 Edit·Write만 보고 Bash를 안 본다**(관찰 054는 archive로 갔지만 같은 성격의 재발 가능성은 남는다). `internal` 함수는 PostgREST 라우팅과 스키마 USAGE에 더해 `PUBLIC` 실행 권한도 걷혔다(#582). 새 `internal` 함수는 같은 마이그레이션에서 `revoke execute on function internal.<이름> from public`을 두고, 빠지면 `internalGrants` integration이 빨개진다 — 글로 적을지는 `internal-function-revoke-rule`이 든다.
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e·Suspense), NCP 대표 계정과 지도 키, 3D 석 장, 로컬 Supabase 구글 프로바이더.
 
-회차 기록은 [docs/log/2026-10-14.md](log/2026-10-14.md)다 — 로그인 화면과 구글 흐름이 서고 시스템 테마가 OS 다크를 따르게 됐다(#572~#576). 그 앞은 [docs/log/2026-10-13.md](log/2026-10-13.md)(감사 묶음 여덟과 발견 둘, #551~#570)이고 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
+회차 기록은 [docs/log/2026-10-15.md](log/2026-10-15.md)다 — 1000행 상한과 `internal` 권한이 닫히고 로그인 등장 모션이 섰다(#579~#588). 그 앞은 [docs/log/2026-10-14.md](log/2026-10-14.md)다 — 로그인 화면과 구글 흐름이 서고 시스템 테마가 OS 다크를 따르게 됐다(#572~#576). 그 앞은 [docs/log/2026-10-13.md](log/2026-10-13.md)(감사 묶음 여덟과 발견 둘, #551~#570)이고 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
