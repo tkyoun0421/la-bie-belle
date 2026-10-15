@@ -43,8 +43,6 @@ export const EXEMPT_TEST_ONLY_FILES: Record<string, string> = {
   "src/entities/excuse/api/getMyExcuses.api.ts": "attendance-excuse",
   "src/features/excuse/api/decideExcuse.api.ts": "attendance-excuse",
   "src/features/excuse/api/submitExcuse.api.ts": "attendance-excuse",
-  "src/entities/attendance/model/attendanceColumn.policy.ts":
-    "attendance-excuse",
   "src/entities/attendance/model/communicationDelay.policy.ts":
     "attendance-excuse",
   "src/entities/attendance/utils/summarizeAttendanceStatuses.utils.ts":
