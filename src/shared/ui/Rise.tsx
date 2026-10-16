@@ -5,6 +5,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useReduceMotion } from "@/shared/hooks/useReduceMotion";
+import { EASE_OUT } from "@/shared/lib/motionEasing.lib";
 import { riseTimingOf } from "@/shared/utils/riseTiming.utils";
 
 export type RiseProps = {
@@ -26,6 +27,7 @@ export function Rise({ index, className, children }: RiseProps) {
         delayMs,
         withTiming(toValue, {
           duration: durationMs,
+          easing: EASE_OUT,
           reduceMotion: ReduceMotion.Never,
         }),
         ReduceMotion.Never,

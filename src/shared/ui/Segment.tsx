@@ -5,6 +5,8 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
+import { DURATION_FAST_MS } from "@/shared/consts/motion.const";
+import { EASE_OUT } from "@/shared/lib/motionEasing.lib";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
@@ -12,8 +14,6 @@ import { cn } from "@/shared/utils/cn";
 const SELECTED_RADIUS = 10;
 
 const TRACK_PADDING = 4;
-
-const SLIDE_DURATION_MS = 125;
 
 const SEGMENT_ICON_SIZE = 18;
 
@@ -45,7 +45,8 @@ export function Segment({
     transform: [
       {
         translateX: withTiming(Math.max(selectedAt, 0) * faceWidth, {
-          duration: SLIDE_DURATION_MS,
+          duration: DURATION_FAST_MS,
+          easing: EASE_OUT,
         }),
       },
     ],

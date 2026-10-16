@@ -26,7 +26,7 @@ export const MOTION_PAIRS: MotionPair[] = [
     unit: "length",
   },
   {
-    tsExportName: "PRESS_DURATION_MS",
+    tsExportName: "DURATION_FAST_MS",
     tokenRow: "`--duration-fast`",
     unit: "duration",
   },

@@ -1,10 +1,7 @@
 import { styled } from "nativewind";
 import type { ReactNode } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  type PressableProps,
-} from "react-native";
+import { ActivityIndicator } from "react-native";
+import { PressScale, type PressScaleProps } from "@/shared/ui/PressScale";
 import { Text } from "@/shared/ui/Text";
 import { cn } from "@/shared/utils/cn";
 
@@ -19,7 +16,7 @@ export type ButtonVariant =
 
 export type ButtonSize = "compact" | "sm" | "md" | "lg";
 
-export type ButtonProps = Omit<PressableProps, "children"> & {
+export type ButtonProps = Omit<PressScaleProps, "children"> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -138,7 +135,7 @@ export function Button({
   const shape = SIZES[size];
 
   return (
-    <Pressable
+    <PressScale
       accessibilityRole="button"
       disabled={disabled || loading}
       className={cn(
@@ -154,6 +151,6 @@ export function Button({
       {...rest}
     >
       {contentOf(loading, look.label, children)}
-    </Pressable>
+    </PressScale>
   );
 }

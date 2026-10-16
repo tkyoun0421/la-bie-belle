@@ -7,12 +7,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { DURATION_FAST_MS } from "@/shared/consts/motion.const";
+import { EASE_OUT } from "@/shared/lib/motionEasing.lib";
 import { useDrag } from "@/shared/stores/drag.context";
 import { cn } from "@/shared/utils/cn";
 
 const LIFT_DELAY_MS = 300;
-
-const LIFT_DURATION_MS = 125;
 
 const LIFT_SCALE = 1.03;
 
@@ -37,7 +37,8 @@ export function Draggable({ id, disabled = false, children }: DraggableProps) {
         .activateAfterLongPress(LIFT_DELAY_MS)
         .onStart(() => {
           scale.value = withTiming(LIFT_SCALE, {
-            duration: LIFT_DURATION_MS,
+            duration: DURATION_FAST_MS,
+            easing: EASE_OUT,
           });
           runOnJS(begin)(id);
         })
@@ -49,7 +50,10 @@ export function Draggable({ id, disabled = false, children }: DraggableProps) {
         .onFinalize(() => {
           offsetX.value = 0;
           offsetY.value = 0;
-          scale.value = withTiming(1, { duration: LIFT_DURATION_MS });
+          scale.value = withTiming(1, {
+            duration: DURATION_FAST_MS,
+            easing: EASE_OUT,
+          });
           runOnJS(finish)();
         }),
     [begin, disabled, finish, id, move, offsetX, offsetY, scale],

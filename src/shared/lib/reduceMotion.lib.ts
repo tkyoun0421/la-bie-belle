@@ -10,26 +10,33 @@ export type ReduceMotionSource = {
 };
 
 let lastKnown: boolean | undefined;
-
-function remember(enabled: boolean): boolean {
-  lastKnown = enabled;
-
-  return enabled;
-}
+let tracking = false;
+let heardChange = false;
 
 export const REDUCE_MOTION_SOURCE: ReduceMotionSource = {
-  isReduceMotionEnabled: () =>
-    AccessibilityInfo.isReduceMotionEnabled().then(remember),
+  isReduceMotionEnabled: () => AccessibilityInfo.isReduceMotionEnabled(),
   addEventListener: (event, listener) =>
-    AccessibilityInfo.addEventListener(event, (enabled) =>
-      listener(remember(enabled)),
-    ),
+    AccessibilityInfo.addEventListener(event, listener),
   lastKnownReduceMotion: () => lastKnown,
 };
 
-export function primeReduceMotion(): Promise<void> {
-  return REDUCE_MOTION_SOURCE.isReduceMotionEnabled().then(
-    () => {},
+function follow(enabled: boolean): void {
+  heardChange = true;
+  lastKnown = enabled;
+}
+
+export function trackReduceMotion(): Promise<void> {
+  if (!tracking) {
+    tracking = true;
+    AccessibilityInfo.addEventListener("reduceMotionChanged", follow);
+  }
+
+  return AccessibilityInfo.isReduceMotionEnabled().then(
+    (enabled) => {
+      if (!heardChange) {
+        lastKnown = enabled;
+      }
+    },
     () => {},
   );
 }

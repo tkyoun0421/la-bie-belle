@@ -323,13 +323,6 @@ export default function Catalog() {
         <Stack label="카드 덩이 — shimmer">
           <Skeleton testID="catalog-skeleton" className="h-24" />
         </Stack>
-        <Stack label="동작 줄이기 — 덩이만">
-          <Skeleton
-            reduceMotion
-            testID="catalog-skeleton-still"
-            className="h-24"
-          />
-        </Stack>
         <Stack label="글 막대 — 제목 60% · 본문 90%">
           <SkeletonLine className="w-3/5" />
           <SkeletonLine className="w-[90%]" />

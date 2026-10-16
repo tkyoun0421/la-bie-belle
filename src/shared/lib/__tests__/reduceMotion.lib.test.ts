@@ -27,10 +27,8 @@ Object.assign(AccessibilityInfo, {
   addEventListener: subscribe,
 });
 
-const lib = await import("@/shared/lib/reduceMotion.lib");
-const { REDUCE_MOTION_SOURCE } = lib;
-// @ts-expect-error trackReduceMotion이 아직 없다
-const { trackReduceMotion } = lib;
+const { REDUCE_MOTION_SOURCE, trackReduceMotion } =
+  await import("@/shared/lib/reduceMotion.lib");
 
 function lastKnown(): boolean | undefined {
   return REDUCE_MOTION_SOURCE.lastKnownReduceMotion?.();

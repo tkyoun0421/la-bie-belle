@@ -63,7 +63,7 @@ export const EASE_OUT_AT_HALF = cubicBezierAt(0, 0, 0.2, 1, 0.5);
 export function createReanimatedMock() {
   const actual = jest.requireActual("react-native-reanimated");
   const { Easing } = jest.requireActual<{ Easing: unknown }>(
-    "react-native-reanimated/lib/module/Easing",
+    "react-native-reanimated/src/Easing",
   );
 
   return {
