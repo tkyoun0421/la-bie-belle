@@ -6,6 +6,8 @@ import type * as ReanimatedCalls from "@tests/setup/reanimatedCalls";
 import {
   animationCalls,
   clearAnimationCalls,
+  easingAt,
+  EASE_OUT_AT_HALF,
   type TimingConfig,
 } from "@tests/setup/reanimatedCalls";
 
@@ -163,4 +165,23 @@ describe("Rise — 움직임 줄이기가 켜져 있으면 이동만 빼고 밝�
       ),
     ).toBe(true);
   });
+});
+
+describe("Rise — 움직임은 ease-out 곡선을 탄다", () => {
+  it.each([false, true])(
+    "움직임 줄이기가 %s여도 모든 withTiming의 곡선이 ease-out이다",
+    async (reduceMotion) => {
+      const screen = await renderRise(3, reduceMotion);
+
+      runEntering(enteringOf(screen));
+
+      expect(timings().length).toBeGreaterThan(0);
+      timings().forEach((call) => {
+        expect(easingAt((call.config as TimingConfig).easing, 0.5)).toBeCloseTo(
+          EASE_OUT_AT_HALF,
+          3,
+        );
+      });
+    },
+  );
 });

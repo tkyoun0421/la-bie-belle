@@ -6,6 +6,8 @@ import type * as ReanimatedCalls from "@tests/setup/reanimatedCalls";
 import {
   animationCalls,
   clearAnimationCalls,
+  easingAt,
+  EASE_OUT_AT_HALF,
   type TimingConfig,
 } from "@tests/setup/reanimatedCalls";
 
@@ -122,5 +124,32 @@ describe("PressScale — 누르기 계약은 그대로 넘긴다", () => {
     const { getByText } = await renderPress();
 
     expect(getByText("안쪽")).toBeTruthy();
+  });
+});
+
+describe("PressScale — 눌림과 뗌은 ease-out 곡선을 탄다", () => {
+  it("누르면 곡선이 ease-out이다", async () => {
+    const { getByLabelText } = await renderPress();
+
+    fireEvent(getByLabelText("누르는 조각"), "pressIn");
+
+    const last = timings()[timings().length - 1];
+    expect(easingAt((last.config as TimingConfig).easing, 0.5)).toBeCloseTo(
+      EASE_OUT_AT_HALF,
+      3,
+    );
+  });
+
+  it("떼면 곡선이 ease-out이다", async () => {
+    const { getByLabelText } = await renderPress();
+
+    fireEvent(getByLabelText("누르는 조각"), "pressIn");
+    fireEvent(getByLabelText("누르는 조각"), "pressOut");
+
+    const last = timings()[timings().length - 1];
+    expect(easingAt((last.config as TimingConfig).easing, 0.5)).toBeCloseTo(
+      EASE_OUT_AT_HALF,
+      3,
+    );
   });
 });
