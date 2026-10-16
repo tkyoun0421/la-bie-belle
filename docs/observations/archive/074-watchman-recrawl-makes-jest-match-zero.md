@@ -1,5 +1,6 @@
 ---
-status: open
+status: actioned
+resolved: 2026-10-16
 target: docs/4-test/execution.md
 date: 2026-10-15
 ---
