@@ -8,6 +8,7 @@ import {
   kstDate,
   kstMonthEnd,
   kstMonthStart,
+  queryColumn,
   seedAssignment,
   seedCheckIn,
   withFreshMonth,
@@ -199,5 +200,115 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
       },
     ]);
     expect(result.excuseStatuses[0]).not.toHaveProperty("body");
+  });
+});
+
+const BULK_PROFILES = 36;
+const BULK_DAYS = 31;
+const BULK_ROWS = BULK_DAYS * BULK_PROFILES;
+
+function seedBulkProfiles(): string[] {
+  return queryColumn(
+    "with inserted as (\n" +
+      "  insert into public.profiles (display_name)\n" +
+      `  select 'bulk-' || g from generate_series(1, ${BULK_PROFILES}) as g\n` +
+      "  returning id\n" +
+      ")\n" +
+      "select id from inserted;\n",
+  );
+}
+
+function pickThirtyOneDayMonthOffset(): number {
+  for (;;) {
+    const offset = 24 + Math.floor(Math.random() * 90000);
+    if (kstMonthEnd(offset).endsWith("-31")) {
+      return offset;
+    }
+  }
+}
+
+function seedMonthWithShuffledCheckIns(
+  adminProfileId: string,
+  profileIds: readonly string[],
+  monthDate: string,
+  lastDate: string,
+): string {
+  const [scheduleId] = queryColumn(
+    "with inserted as (\n" +
+      "  insert into public.schedules (month, created_by)\n" +
+      "  values (:'month', :'created_by') returning id\n" +
+      ")\n" +
+      "select id from inserted;\n",
+    { month: monthDate, created_by: adminProfileId },
+  );
+  execSql(
+    "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
+      "select :'schedule_id', d::date, '09:00', '18:00', :'opened_by'\n" +
+      "from generate_series(:'first'::date, :'last'::date, interval '1 day') as d;\n" +
+      "insert into public.check_ins (day_id, profile_id, checked_at, reported_at, received_at, method)\n" +
+      "select days.id, p, now(), now(), now(), 'qr'\n" +
+      "from public.days as days\n" +
+      "cross join unnest(:'ids'::uuid[]) as p\n" +
+      "where days.schedule_id = :'schedule_id'\n" +
+      "order by random();\n",
+    {
+      schedule_id: scheduleId,
+      opened_by: adminProfileId,
+      first: monthDate,
+      last: lastDate,
+      ids: `{${profileIds.join(",")}}`,
+    },
+  );
+  return scheduleId;
+}
+
+describe("getMonthAttendance — 천 행을 넘는 달의 check_ins도 잘리지 않고 읽는다", () => {
+  let admin: AdminUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+  });
+
+  it("한 달 출석이 1116행이어도 전부 오고 중복이 없고 날·사람 순이다", async () => {
+    const offset = pickThirtyOneDayMonthOffset();
+    const monthDate = kstMonthStart(offset);
+    const profileIds = seedBulkProfiles();
+    let scheduleId: string | undefined;
+
+    try {
+      scheduleId = seedMonthWithShuffledCheckIns(
+        admin.profileId,
+        profileIds,
+        monthDate,
+        kstMonthEnd(offset),
+      );
+
+      const attendance = await getMonthAttendance(
+        admin.client,
+        monthDate.slice(0, 7),
+      );
+      const keys = attendance.checkIns.map(
+        (row) => `${row.dayId}|${row.profileId}`,
+      );
+
+      expect(attendance.checkIns).toHaveLength(BULK_ROWS);
+      expect(new Set(keys).size).toBe(BULK_ROWS);
+      expect(keys).toEqual([...keys].sort());
+    } finally {
+      if (scheduleId !== undefined) {
+        execSql(
+          "delete from public.days where schedule_id = :'schedule_id';\n",
+          {
+            schedule_id: scheduleId,
+          },
+        );
+        execSql("delete from public.schedules where id = :'schedule_id';\n", {
+          schedule_id: scheduleId,
+        });
+      }
+      execSql("delete from public.profiles where id = any(:'ids'::uuid[]);\n", {
+        ids: `{${profileIds.join(",")}}`,
+      });
+    }
   });
 });

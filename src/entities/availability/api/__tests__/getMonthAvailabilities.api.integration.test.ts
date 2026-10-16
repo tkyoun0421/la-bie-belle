@@ -3,7 +3,9 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  kstMonthEnd,
   kstMonthStart,
+  queryColumn,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
@@ -70,5 +72,83 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
     const rows = await getMonthAvailabilities(workerA.client, month);
 
     expect(rows.map((row) => row.profileId)).toEqual([workerA.profileId]);
+  });
+});
+
+const BULK_PROFILES = 36;
+const BULK_ROWS = 31 * BULK_PROFILES;
+
+function thirtyOneDayMonthOffset(): number {
+  for (;;) {
+    const offset = randomOffset();
+    if (kstMonthEnd(offset).endsWith("-31")) {
+      return offset;
+    }
+  }
+}
+
+function seedBulkProfiles(): string[] {
+  return queryColumn(
+    "with inserted as (\n" +
+      "  insert into public.profiles (display_name)\n" +
+      `  select 'bulk-' || g from generate_series(1, ${BULK_PROFILES}) as g\n` +
+      "  returning id\n" +
+      ")\n" +
+      "select id from inserted;\n",
+  );
+}
+
+function deleteProfiles(profileIds: readonly string[]): void {
+  execSql("delete from public.profiles where id = any(:'ids'::uuid[]);\n", {
+    ids: `{${profileIds.join(",")}}`,
+  });
+}
+
+function seedShuffledAvailabilities(
+  profileIds: readonly string[],
+  monthDate: string,
+  lastDate: string,
+): void {
+  execSql(
+    "insert into public.availabilities (profile_id, work_date)\n" +
+      "select p, d::date\n" +
+      "from unnest(:'ids'::uuid[]) as p\n" +
+      "cross join generate_series(:'first'::date, :'last'::date, interval '1 day') as d\n" +
+      "order by random();\n",
+    {
+      ids: `{${profileIds.join(",")}}`,
+      first: monthDate,
+      last: lastDate,
+    },
+  );
+}
+
+describe("getMonthAvailabilities dal — 천 행을 넘는 달도 잘리지 않고 읽는다", () => {
+  let admin: AdminUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+  });
+
+  it("한 달 신청이 1116행이어도 전부 오고 중복이 없고 날짜·사람 순이다", async () => {
+    const offset = thirtyOneDayMonthOffset();
+    const monthDate = kstMonthStart(offset);
+    const profileIds = seedBulkProfiles();
+
+    try {
+      seedShuffledAvailabilities(profileIds, monthDate, kstMonthEnd(offset));
+
+      const rows = await getMonthAvailabilities(
+        admin.client,
+        monthDate.slice(0, 7),
+      );
+      const keys = rows.map((row) => `${row.workDate}|${row.profileId}`);
+
+      expect(rows).toHaveLength(BULK_ROWS);
+      expect(new Set(keys).size).toBe(BULK_ROWS);
+      expect(keys).toEqual([...keys].sort());
+    } finally {
+      deleteProfiles(profileIds);
+    }
   });
 });

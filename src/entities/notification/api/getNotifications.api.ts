@@ -16,6 +16,7 @@ export async function getNotifications(
     .from("notifications")
     .select(NOTIFICATION_COLUMNS)
     .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
     .range(first, first + NOTIFICATION_PAGE_SIZE - 1)
     .returns<NotificationRow[]>();
 

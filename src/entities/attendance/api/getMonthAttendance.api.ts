@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import { readAllPages } from "@/shared/api/readAllPages";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import {
   CHECK_IN_COLUMNS,
@@ -36,11 +37,16 @@ export async function getMonthAttendance(
   }
 
   const [checkIns, excuseStatuses] = await Promise.all([
-    client
-      .from("check_ins")
-      .select(CHECK_IN_COLUMNS)
-      .in("day_id", dayIds)
-      .returns<CheckInRow[]>(),
+    readAllPages((from, to) =>
+      client
+        .from("check_ins")
+        .select(CHECK_IN_COLUMNS)
+        .in("day_id", dayIds)
+        .order("day_id")
+        .order("profile_id")
+        .range(from, to)
+        .returns<CheckInRow[]>(),
+    ),
     client
       .from("excuse_status")
       .select(EXCUSE_STATUS_COLUMNS)
@@ -48,15 +54,12 @@ export async function getMonthAttendance(
       .returns<ExcuseStatusRow[]>(),
   ]);
 
-  if (checkIns.error) {
-    throw checkIns.error;
-  }
   if (excuseStatuses.error) {
     throw excuseStatuses.error;
   }
 
   return {
-    checkIns: (checkIns.data ?? []).map(toCheckIn),
+    checkIns: checkIns.map(toCheckIn),
     excuseStatuses: (excuseStatuses.data ?? []).map(toExcuseStatus),
   };
 }

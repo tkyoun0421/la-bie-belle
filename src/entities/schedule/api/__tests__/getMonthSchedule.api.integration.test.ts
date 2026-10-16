@@ -9,8 +9,12 @@ import {
   createApprovedUser,
   execSql,
   kstDate,
+  endAssignment,
+  kstMonthEnd,
   kstMonthStart,
+  queryColumn,
   seedAssignment,
+  seedSlot,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -229,5 +233,108 @@ describe("getMonthWindow — 달의 신청 마감과 확정 시각을 읽는다"
     const admin = await createAdminUser();
 
     await expect(getMonthWindow(admin.client, "1999-01")).resolves.toBeNull();
+  });
+});
+
+describe("getMonthSchedule — 끝난 자리와 끝난 배정은 임베딩에 안 온다(runtime.md)", () => {
+  let admin: AdminUser;
+  let liveOwner: ApprovedUser;
+  let endedOwner: ApprovedUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+    liveOwner = await createApprovedUser();
+    endedOwner = await createApprovedUser();
+  });
+
+  it("살아 있는 배정만 오고 닫힌 배정은 안 온다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const liveId = seedAssignment(dayId, liveOwner.profileId, "training");
+    const endedId = seedAssignment(dayId, endedOwner.profileId, "training");
+    endAssignment(endedId);
+
+    const days = await getMonthSchedule(admin.client, month);
+    const day = days.find((row) => row.id === dayId);
+
+    expect(day?.assignments.map((row) => row.id)).toEqual([liveId]);
+  });
+
+  it("살아 있는 자리만 오고 닫힌 자리는 안 온다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const liveId = seedSlot(dayId);
+    const endedId = seedSlot(dayId);
+    execSql("update public.slots set ended_at = now() where id = :'id';\n", {
+      id: endedId,
+    });
+
+    const days = await getMonthSchedule(admin.client, month);
+    const day = days.find((row) => row.id === dayId);
+    const slotIds = day?.slots.map((row) => row.id) ?? [];
+
+    expect(slotIds).toContain(liveId);
+    expect(slotIds).not.toContain(endedId);
+  });
+});
+
+const DAYS_IN_MONTH = 31;
+const TRAINING_PER_DAY = 40;
+
+function pickThirtyOneDayMonthOffset(): number {
+  for (;;) {
+    const offset = 24 + Math.floor(Math.random() * 90000);
+    if (kstMonthEnd(offset).endsWith("-31")) {
+      return offset;
+    }
+  }
+}
+
+describe("getMonthSchedule — 한 달 배정 합이 천을 넘어도 날마다 다 온다", () => {
+  it("31일 모두 교육 배정이 40개씩이면 날마다 40개가 온다", async () => {
+    const admin = await createAdminUser();
+    const owner = await createApprovedUser();
+    const offset = pickThirtyOneDayMonthOffset();
+    const monthDate = kstMonthStart(offset);
+    const [scheduleId] = queryColumn(
+      "with inserted as (\n" +
+        "  insert into public.schedules (month, created_by)\n" +
+        "  values (:'month', :'created_by') returning id\n" +
+        ")\n" +
+        "select id from inserted;\n",
+      { month: monthDate, created_by: admin.profileId },
+    );
+
+    try {
+      execSql(
+        "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
+          "select :'schedule_id', d::date, '09:00', '18:00', :'opened_by'\n" +
+          "from generate_series(:'first'::date, :'last'::date, interval '1 day') as d;\n" +
+          "insert into public.assignments (day_id, slot_id, position, profile_id, kind)\n" +
+          "select days.id, null, '안내', :'profile_id', 'training'\n" +
+          "from public.days as days\n" +
+          `cross join generate_series(1, ${TRAINING_PER_DAY})\n` +
+          "where days.schedule_id = :'schedule_id';\n",
+        {
+          schedule_id: scheduleId,
+          opened_by: admin.profileId,
+          profile_id: owner.profileId,
+          first: monthDate,
+          last: kstMonthEnd(offset),
+        },
+      );
+
+      const days = await getMonthSchedule(admin.client, monthDate.slice(0, 7));
+
+      expect(days).toHaveLength(DAYS_IN_MONTH);
+      expect(days.map((day) => day.assignments.length)).toEqual(
+        Array.from({ length: DAYS_IN_MONTH }, () => TRAINING_PER_DAY),
+      );
+    } finally {
+      execSql("delete from public.days where schedule_id = :'schedule_id';\n", {
+        schedule_id: scheduleId,
+      });
+      execSql("delete from public.schedules where id = :'schedule_id';\n", {
+        schedule_id: scheduleId,
+      });
+    }
   });
 });
