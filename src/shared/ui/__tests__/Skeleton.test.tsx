@@ -1,6 +1,12 @@
-import { act, render } from "@testing-library/react-native";
+import { act, fireEvent, render } from "@testing-library/react-native";
+import { Easing } from "react-native-reanimated";
 import type { ReduceMotionSource } from "@/shared/lib/reduceMotion.lib";
 import { Skeleton, SkeletonLine } from "@/shared/ui/Skeleton";
+import type * as ReanimatedCalls from "@tests/setup/reanimatedCalls";
+import {
+  animationCalls,
+  clearAnimationCalls,
+} from "@tests/setup/reanimatedCalls";
 
 type Listener = (enabled: boolean) => void;
 
@@ -36,6 +42,12 @@ jest.mock("@/shared/lib/reduceMotion.lib", () => ({
     lastKnownReduceMotion: () => mockSource.lastKnownReduceMotion?.(),
   },
 }));
+
+jest.mock("react-native-reanimated", () =>
+  jest
+    .requireActual<typeof ReanimatedCalls>("@tests/setup/reanimatedCalls")
+    .createReanimatedMock(),
+);
 
 const SHAPES = [
   { name: "Skeleton", Shape: Skeleton },
@@ -111,5 +123,84 @@ describe.each(SHAPES)("$name — 설정이 바뀌면 따른다", ({ Shape }) => 
 
     act(() => listeners.forEach((listener) => listener(false)));
     expect(queryByTestId("shape-shimmer")).toBeTruthy();
+  });
+});
+
+const BLOCK_WIDTH = 300;
+
+async function renderMeasured(Shape: typeof Skeleton, read: "reduce" | "full") {
+  clearAnimationCalls();
+  const screen = await renderShape(Shape, { read });
+
+  fireEvent(screen.getByTestId("shape"), "layout", {
+    nativeEvent: { layout: { x: 0, y: 0, width: BLOCK_WIDTH, height: 20 } },
+  });
+  await act(async () => {});
+
+  return screen;
+}
+
+function timingCalls() {
+  return animationCalls.flatMap((call) =>
+    call.fn === "withTiming" ? [call] : [],
+  );
+}
+
+function repeatCalls() {
+  return animationCalls.flatMap((call) =>
+    call.fn === "withRepeat" ? [call] : [],
+  );
+}
+
+describe.each(SHAPES)(
+  "$name — shimmer는 한 줄이 끝없이 지나간다",
+  ({ Shape }) => {
+    it("한 번 지나가는 데 1600ms가 걸린다", async () => {
+      await renderMeasured(Shape, "full");
+
+      expect(timingCalls().map((call) => call.config?.duration)).toEqual([
+        1600,
+      ]);
+    });
+
+    it("이징은 linear다", async () => {
+      await renderMeasured(Shape, "full");
+
+      expect(timingCalls().map((call) => call.config?.easing)).toEqual([
+        Easing.linear,
+      ]);
+    });
+
+    it("끝없이 되풀이하고 되돌아오지 않는다", async () => {
+      await renderMeasured(Shape, "full");
+
+      expect(repeatCalls()).toEqual([
+        { fn: "withRepeat", numberOfReps: -1, reverse: false },
+      ]);
+    });
+
+    it("끝 위치는 덩이의 오른쪽 밖이다", async () => {
+      await renderMeasured(Shape, "full");
+
+      const [timing] = timingCalls();
+
+      expect(timing.toValue).toBeGreaterThanOrEqual(BLOCK_WIDTH);
+    });
+
+    it("동작 줄이기가 켜져 있으면 되풀이도 타이밍도 걸지 않는다", async () => {
+      await renderMeasured(Shape, "reduce");
+
+      expect(repeatCalls()).toHaveLength(0);
+      expect(timingCalls()).toHaveLength(0);
+    });
+  },
+);
+
+describe("shimmer 주기 상수", () => {
+  it("SHIMMER_INTERVAL_MS는 1600이다", async () => {
+    const motion: Record<string, unknown> =
+      await import("@/shared/consts/motion.const");
+
+    expect(motion.SHIMMER_INTERVAL_MS).toBe(1600);
   });
 });
