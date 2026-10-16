@@ -1,5 +1,4 @@
-import { DAY_MS } from "@/shared/consts/time.const";
-import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
+import { daysUntil, kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { countOpenSlotsByDate } from "@/entities/schedule/utils/groupOpenSlots.utils";
 import { WITHIN_DAYS } from "@/screens/adminHome/consts/adminHome.const";
@@ -16,13 +15,6 @@ export type VacancyCardsInput = {
   now: string;
 };
 
-function daysUntil(workDate: string, today: string): number {
-  return Math.round(
-    (Date.parse(`${workDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) /
-      DAY_MS,
-  );
-}
-
 export function vacancyDaysOf(
   slots: readonly Pick<OpenSlot, "workDate">[],
 ): VacancyDay[] {
@@ -35,7 +27,7 @@ export function vacancyCards({ days, now }: VacancyCardsInput): VacancyCard[] {
   const today = kstDateOf(now);
 
   return days
-    .map((day) => ({ ...day, daysLeft: daysUntil(day.workDate, today) }))
+    .map((day) => ({ ...day, daysLeft: daysUntil(today, day.workDate) }))
     .filter(
       (card) =>
         card.vacancyCount > 0 &&

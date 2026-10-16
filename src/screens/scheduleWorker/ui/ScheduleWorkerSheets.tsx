@@ -67,6 +67,7 @@ export function ScheduleWorkerSheets({ screen }: ScheduleWorkerSheetsProps) {
       {sheet.kind === "roster" ? (
         <DaySheet
           workDate={sheet.workDate}
+          today={screen.today}
           myProfileId={sheet.myProfileId}
           cancelRequested={sheet.cancelRequested}
           onCancelShift={screen.askCancel}

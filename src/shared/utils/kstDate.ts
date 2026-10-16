@@ -1,4 +1,8 @@
-import { CLOCK_LENGTH, MINUTES_PER_HOUR } from "@/shared/consts/time.const";
+import {
+  CLOCK_LENGTH,
+  DAY_MS,
+  MINUTES_PER_HOUR,
+} from "@/shared/consts/time.const";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -62,6 +66,13 @@ export function lastDateOfMonth(month: string): string {
     String(last.getUTCMonth() + 1).padStart(2, "0"),
     String(last.getUTCDate()).padStart(2, "0"),
   ].join("-");
+}
+
+export function daysUntil(fromDate: string, toDate: string): number {
+  return Math.round(
+    (Date.parse(`${toDate}T00:00:00Z`) - Date.parse(`${fromDate}T00:00:00Z`)) /
+      DAY_MS,
+  );
 }
 
 export function formatBareDate(workDate: string): string {

@@ -1,10 +1,10 @@
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellMonth } from "@/shared/utils/kstDate";
 import {
   canGoToNextMonth,
   canGoToPreviousMonth,
 } from "@/shared/utils/monthBoundary";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 
 export type StatsMonthNavController = {
@@ -15,7 +15,7 @@ export type StatsMonthNavController = {
 
 export function useStatsMonthNav(month: string): StatsMonthNavController {
   const firstMonth = useFirstScheduleMonthQuery(supabase);
-  const today = kstToday();
+  const today = useServerToday();
 
   return {
     label: spellMonth(month),

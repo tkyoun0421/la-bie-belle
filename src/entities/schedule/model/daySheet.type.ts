@@ -2,6 +2,7 @@ import type { RosterRow } from "@/entities/schedule/model/daySheet.policy";
 
 export type DaySheetInput = {
   workDate: string;
+  today: string;
   myProfileId: string | null;
   cancelRequested: boolean;
   onCancelShift: () => void;

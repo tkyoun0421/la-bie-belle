@@ -1,5 +1,6 @@
 import {
   clockOf,
+  daysUntil,
   formatBareDate,
   kstClockOf,
   kstDateOf,
@@ -108,5 +109,31 @@ describe("kstClockOf — 그 순간을 홀의 시계로 읽는다", () => {
 
   it("Date를 그대로 받는다", () => {
     expect(kstClockOf(new Date("2026-10-02T05:30:00Z"))).toBe("14:30");
+  });
+});
+
+describe("daysUntil — 달력 날짜 사이의 날수를 센다", () => {
+  it("같은 날은 0이다", () => {
+    expect(daysUntil("2026-10-02", "2026-10-02")).toBe(0);
+  });
+
+  it("10월 2일에서 5일까지는 3이다", () => {
+    expect(daysUntil("2026-10-02", "2026-10-05")).toBe(3);
+  });
+
+  it("달이 바뀌어도 하루 차이는 1이다", () => {
+    expect(daysUntil("2026-09-30", "2026-10-01")).toBe(1);
+  });
+
+  it("해가 바뀌어도 하루 차이는 1이다", () => {
+    expect(daysUntil("2026-12-31", "2027-01-01")).toBe(1);
+  });
+
+  it("윤년 2월 말은 2일이 걸린다", () => {
+    expect(daysUntil("2028-02-28", "2028-03-01")).toBe(2);
+  });
+
+  it("지난 날은 음수다", () => {
+    expect(daysUntil("2026-10-05", "2026-10-04")).toBe(-1);
   });
 });

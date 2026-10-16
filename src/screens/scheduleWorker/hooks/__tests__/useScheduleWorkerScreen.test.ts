@@ -41,8 +41,8 @@ jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: FAKE_CLIENT,
 }));
 
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
+jest.unstable_mockModule("@/entities/clock/hooks/useServerToday", () => ({
+  useServerToday: () => TODAY,
 }));
 
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({
@@ -278,6 +278,12 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
     const body: unknown = result.current.body;
 
     expect(body).toEqual({ state: "pending" });
+  });
+
+  it("서버 시계의 오늘을 명단 조각에 넘기려고 내보낸다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.today).toBe(TODAY);
   });
 
   it("확정된 달은 근무표고 앱바가 그 달을 부른다", async () => {

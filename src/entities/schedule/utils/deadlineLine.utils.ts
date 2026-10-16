@@ -1,5 +1,4 @@
-import { DAY_MS } from "@/shared/consts/time.const";
-import { formatBareDate, kstDateOf } from "@/shared/utils/kstDate";
+import { daysUntil, formatBareDate, kstDateOf } from "@/shared/utils/kstDate";
 import { formatScheduleDate } from "@/entities/schedule/utils/formatScheduleDate.utils";
 
 export type DeadlineLineInput = {
@@ -11,11 +10,7 @@ export function deadlineLine({
   applicationDeadline,
   now,
 }: DeadlineLineInput): string {
-  const remaining = Math.round(
-    (Date.parse(`${applicationDeadline}T00:00:00Z`) -
-      Date.parse(`${kstDateOf(now)}T00:00:00Z`)) /
-      DAY_MS,
-  );
+  const remaining = daysUntil(kstDateOf(now), applicationDeadline);
 
   if (remaining < 0) {
     return `스케줄 신청이 ${formatBareDate(applicationDeadline)}에 마감됐어요`;

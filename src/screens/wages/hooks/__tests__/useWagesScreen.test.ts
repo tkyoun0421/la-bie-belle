@@ -6,8 +6,6 @@ import type { getWageRates } from "@/entities/payroll/api/getWageRates.api";
 const listActiveMembersMock = jest.fn<typeof listActiveMembers>();
 const getWageRatesMock = jest.fn<typeof getWageRates>();
 
-const TODAY = "2026-10-03";
-
 const FAKE_CLIENT = {} as never;
 
 const backMock = jest.fn();
@@ -35,10 +33,6 @@ jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
 
 jest.unstable_mockModule("@/entities/payroll/api/getWageRates.api", () => ({
   getWageRates: getWageRatesMock,
-}));
-
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
 }));
 
 const { renderHook, waitFor, act } =

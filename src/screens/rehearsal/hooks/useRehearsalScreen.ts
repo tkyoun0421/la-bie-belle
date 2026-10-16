@@ -3,9 +3,9 @@ import { useCallback, useMemo, useReducer, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { ME_HOME_PATH } from "@/shared/consts/navigation.const";
 import { useCloseSheetOnSuccess } from "@/shared/hooks/useCloseSheetOnSuccess";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { rehearsalDayCell } from "@/shared/model/rehearsalDayCell.policy";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
 import type {
   Rehearsal,
@@ -70,7 +70,7 @@ export function useRehearsalScreen(
   monthParam?: string,
 ): RehearsalScreenController {
   const router = useRouter();
-  const today = kstToday();
+  const today = useServerToday();
 
   const [screen, dispatch] = useReducer(
     rehearsalScreenReducer,

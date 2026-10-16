@@ -3,6 +3,7 @@ import type { RosterRow } from "@/entities/schedule/model/daySheet.policy";
 
 export type ScheduleAgendaInput = {
   month: string;
+  today: string;
   myProfileId: string | null;
   showMineOnly: boolean;
   expanded: string[];

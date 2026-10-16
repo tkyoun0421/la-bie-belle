@@ -76,6 +76,7 @@ export function ScheduleWorkerRoster({ screen }: ScheduleWorkerRosterProps) {
         <Card className="py-0">
           <ScheduleAgenda
             month={screen.month}
+            today={screen.today}
             myProfileId={screen.myProfileId}
             showMineOnly={screen.showMineOnly}
             expanded={screen.expanded}

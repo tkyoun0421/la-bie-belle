@@ -4,13 +4,13 @@ import { supabase } from "@/shared/api/supabase";
 import { NOTIFICATIONS_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
 import { useToast } from "@/shared/hooks/useToast";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { calendarDayState } from "@/shared/model/calendarDayState.policy";
 import type { ToastState } from "@/shared/model/toast.type";
 import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
 import { spellMonth } from "@/shared/utils/kstDate";
 import { toggleSelectedDate } from "@/shared/utils/submissionSelection.utils";
 import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAvailabilityQuery";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import {
   monthState,
@@ -67,6 +67,7 @@ export type ScheduleWorkerSheet =
 
 export type ScheduleWorkerScreenController = {
   month: string;
+  today: string;
   monthTitle: string;
   unread: boolean;
   body: ScheduleWorkerBody;
@@ -111,7 +112,7 @@ export function useScheduleWorkerScreen({
 }: ScheduleWorkerParams): ScheduleWorkerScreenController {
   const router = useRouter();
   const pathname = usePathname();
-  const today = kstToday();
+  const today = useServerToday();
 
   const [view, setView] = useState<ScheduleWorkerView>("calendar");
   const [showMineOnly, setShowMineOnly] = useState(false);
@@ -307,6 +308,7 @@ export function useScheduleWorkerScreen({
 
   return {
     month,
+    today,
     monthTitle: spellMonth(month),
     unread: (unreadCount.data ?? 0) > 0,
     body: loading

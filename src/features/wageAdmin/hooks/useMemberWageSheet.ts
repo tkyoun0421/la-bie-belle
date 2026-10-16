@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { spellWon } from "@/shared/utils/spellNumber";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import {
   WAGE_CAP_HINT,
@@ -71,7 +71,8 @@ export function useMemberWageSheet({
   defaultWage,
   onDone,
 }: MemberWageSheetInput): MemberWageSheetController {
-  const current = prefillWageAmount(rates, kstToday());
+  const today = useServerToday();
+  const current = prefillWageAmount(rates, today);
 
   const [digits, setDigits] = useState(current === null ? "" : String(current));
   const [expanded, setExpanded] = useState(false);

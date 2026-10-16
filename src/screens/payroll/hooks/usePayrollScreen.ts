@@ -5,10 +5,10 @@ import {
   LEFT_PATH,
   NOTIFICATIONS_PATH,
 } from "@/shared/consts/navigation.const";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
 import {
@@ -58,7 +58,7 @@ export type PayrollScreenController = {
 export function usePayrollScreen(): PayrollScreenController {
   const router = useRouter();
   const pathname = usePathname();
-  const today = kstToday();
+  const today = useServerToday();
 
   const [unit, setUnit] = useState<PeriodUnit>("month");
   const [anchorDate, setAnchorDate] = useState(today);

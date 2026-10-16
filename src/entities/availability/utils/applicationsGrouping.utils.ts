@@ -1,6 +1,5 @@
-import { DAY_MS } from "@/shared/consts/time.const";
 import { groupBy } from "@/shared/utils/collect";
-import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
+import { daysUntil, kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import type { Availability } from "@/entities/availability/model/availability.type";
 
 export type DateGroup = {
@@ -77,11 +76,7 @@ export function applicationsDeadlineLine({
   now,
 }: ApplicationsDeadlineInput): string {
   const [, month, day] = applicationDeadline.split("-").map(Number);
-  const remaining = Math.round(
-    (Date.parse(`${applicationDeadline}T00:00:00Z`) -
-      Date.parse(`${kstDateOf(now)}T00:00:00Z`)) /
-      DAY_MS,
-  );
+  const remaining = daysUntil(kstDateOf(now), applicationDeadline);
 
   if (remaining < 0) {
     return `${month}월 ${day}일에 마감됐어요`;

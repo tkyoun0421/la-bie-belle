@@ -12,11 +12,11 @@ import {
   NOTIFICATIONS_PATH,
   WORKER_HOME_PATH,
 } from "@/shared/consts/navigation.const";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { miniViewLoads } from "@/shared/model/miniViewDensity.policy";
 import { tileMonth } from "@/shared/model/tileMonth.policy";
 import { clockOf, spellDate } from "@/shared/utils/kstDate";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
@@ -99,7 +99,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
   const pathname = usePathname();
   const [sheet, setSheet] = useState<AdminHomeSheet | null>(null);
 
-  const today = kstToday();
+  const today = useServerToday();
   const month = today.slice(0, 7);
   const nowMs = useServerNow();
 

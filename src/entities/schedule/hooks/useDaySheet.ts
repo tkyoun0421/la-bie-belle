@@ -1,5 +1,4 @@
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { cancelRequestBadge } from "@/entities/schedule/model/cancelRequestSheet.policy";
 import {
   canShowShiftActions,
@@ -23,6 +22,7 @@ function monthOf(workDate: string): string {
 
 export function useDaySheet({
   workDate,
+  today,
   myProfileId,
   cancelRequested,
   onCancelShift,
@@ -45,7 +45,6 @@ export function useDaySheet({
 
   const rows = rosterOfDay(day);
   const isMyAssignment = myAssignmentOf(day.assignments, myProfileId) !== null;
-  const today = kstToday();
 
   return {
     state: "ready",

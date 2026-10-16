@@ -85,8 +85,8 @@ jest.unstable_mockModule("@/screens/stats/utils/myChartValues.utils", () => ({
   myPayrollValues: payrollValuesSpy,
 }));
 
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
+jest.unstable_mockModule("@/entities/clock/hooks/useServerToday", () => ({
+  useServerToday: () => TODAY,
 }));
 
 const { renderHook, waitFor, act } =

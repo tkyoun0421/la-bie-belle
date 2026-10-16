@@ -1,6 +1,5 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import { kstToday } from "@/shared/lib/kstToday.lib";
-import { formatBareDate, spellMonth } from "@/shared/utils/kstDate";
+import { formatBareDate, kstDateOf, spellMonth } from "@/shared/utils/kstDate";
 import { spellWorkDate } from "@/entities/schedule/utils/agendaRow.utils";
 import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
 import {
@@ -424,7 +423,7 @@ function setDisplayName(profileId: string, displayName: string): void {
 
 async function seedSubmissionWindow(): Promise<SchedulePayload> {
   const admin = await createAdminUser();
-  const today = kstToday();
+  const today = kstDateOf(new Date());
   const deadline = kstDate(3);
 
   return withFreshMonth(async (monthsFromNow) => {
