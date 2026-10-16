@@ -8,7 +8,7 @@ type ConstantOverrides = Partial<{
   riseDuration: string;
   riseStagger: string;
   riseDistance: string;
-  pressDuration: string;
+  fastDuration: string;
   pressScale: string;
 }>;
 
@@ -25,7 +25,7 @@ function constantsSource(overrides: ConstantOverrides = {}): string {
     `export const RISE_DURATION_MS = ${overrides.riseDuration ?? "300"};`,
     `export const RISE_STAGGER_MS = ${overrides.riseStagger ?? "70"};`,
     `export const RISE_DISTANCE = ${overrides.riseDistance ?? "8"};`,
-    `export const PRESS_DURATION_MS = ${overrides.pressDuration ?? "125"};`,
+    `export const DURATION_FAST_MS = ${overrides.fastDuration ?? "125"};`,
     `export const PRESS_SCALE = ${overrides.pressScale ?? "0.97"};`,
   ].join("\n");
 }
@@ -63,7 +63,7 @@ describe("모션 상수와 tokens.md의 대조 목록", () => {
       "RISE_DURATION_MS",
       "RISE_STAGGER_MS",
       "RISE_DISTANCE",
-      "PRESS_DURATION_MS",
+      "DURATION_FAST_MS",
       "PRESS_SCALE",
     ]);
   });
@@ -88,6 +88,22 @@ describe("모션 상수 양방향 대조 — 값으로만 본다", () => {
         kind: "mismatch",
         expected: 320,
         actual: 300,
+      },
+    ]);
+  });
+
+  it("TS 빠른 시간이 130ms면 tokens.md의 125ms와 안 맞아 위반이다", () => {
+    const violations = motionTokenViolations(
+      constantsSource({ fastDuration: "130" }),
+      tokensMarkdown(),
+    );
+
+    expect(violations).toEqual([
+      {
+        tsExportName: "DURATION_FAST_MS",
+        kind: "mismatch",
+        expected: 125,
+        actual: 130,
       },
     ]);
   });

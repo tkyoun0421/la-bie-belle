@@ -423,7 +423,7 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 | `--duration-slow` | 240ms | `duration-240` | 바텀시트, 화면 안 큰 덩이 |
 | `--duration-slower` | 300ms | `duration-300` | 화면 전환 |
 
-easing은 토큰으로 정하지 않았다. 나가는 쪽이 빠르고 들어오는 쪽이 느린 `ease-out` 하나만 쓴다. 곡선을 직접 적는 자리는 없다. 예외는 끝없이 도는 것 둘이다 — 아래 `--interval-spin`과 `--interval-shimmer`는 `linear`다. 도는 것에 가속이 붙으면 멈췄다 가는 것으로 보인다.
+easing은 토큰으로 정하지 않았다. 들어올 때 빠르게 시작해 부드럽게 멈추는 `ease-out` 하나만 쓴다 — Tailwind `ease-out`(`cubic-bezier(0, 0, 0.2, 1)`) 그대로이고 TS는 `shared/lib/motionEasing.lib.ts`가 든다. 예외는 끝없이 도는 것 둘이다 — 아래 `--interval-spin`과 `--interval-shimmer`는 `linear`다. 도는 것에 가속이 붙으면 멈췄다 가는 것으로 보인다.
 
 스케일 값 둘이다.
 

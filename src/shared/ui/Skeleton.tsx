@@ -1,17 +1,14 @@
 import { View, type ViewProps } from "react-native";
+import { useReduceMotion } from "@/shared/hooks/useReduceMotion";
 import { cn } from "@/shared/utils/cn";
 
 export type SkeletonProps = ViewProps & {
-  reduceMotion?: boolean;
   testID?: string;
 };
 
-export function Skeleton({
-  reduceMotion = false,
-  className,
-  testID,
-  ...rest
-}: SkeletonProps) {
+export function Skeleton({ className, testID, ...rest }: SkeletonProps) {
+  const reduceMotion = useReduceMotion();
+
   return (
     <View
       testID={testID}
@@ -28,15 +25,9 @@ export function Skeleton({
   );
 }
 
-export function SkeletonLine({
-  reduceMotion = false,
-  className,
-  testID,
-  ...rest
-}: SkeletonProps) {
+export function SkeletonLine({ className, testID, ...rest }: SkeletonProps) {
   return (
     <Skeleton
-      reduceMotion={reduceMotion}
       testID={testID}
       className={cn("h-5 rounded-sm bg-bg-neutral-weak-pressed", className)}
       {...rest}

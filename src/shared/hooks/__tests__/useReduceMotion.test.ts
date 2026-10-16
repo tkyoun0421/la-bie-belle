@@ -3,7 +3,7 @@ import { jest } from "@jest/globals";
 const { act, renderHook } = await import("@testing-library/react-native");
 const { useReduceMotion } = await import("@/shared/hooks/useReduceMotion");
 
-function fakeSource() {
+function fakeSource(lastKnown?: boolean) {
   const listeners: ((enabled: boolean) => void)[] = [];
   const events: string[] = [];
   const remove = jest.fn();
@@ -34,6 +34,7 @@ function fakeSource() {
 
         return { remove };
       },
+      lastKnownReduceMotion: () => lastKnown,
     },
   };
 }
@@ -70,6 +71,32 @@ describe("useReduceMotion — 설정을 모르는 동안은 움직임 줄이기�
     const { result } = renderHook(() => useReduceMotion(fake.source));
 
     await act(async () => fake.rejectRead());
+
+    expect(result.current).toBe(true);
+  });
+});
+
+describe("useReduceMotion — 앱이 이미 아는 값으로 첫 렌더를 연다", () => {
+  it("마지막으로 안 값이 거짓이면 읽기가 풀리기 전 첫 렌더가 거짓이다", () => {
+    const fake = fakeSource(false);
+
+    const { result } = renderHook(() => useReduceMotion(fake.source));
+
+    expect(result.current).toBe(false);
+  });
+
+  it("마지막으로 안 값이 참이면 읽기가 풀리기 전 첫 렌더가 참이다", () => {
+    const fake = fakeSource(true);
+
+    const { result } = renderHook(() => useReduceMotion(fake.source));
+
+    expect(result.current).toBe(true);
+  });
+
+  it("마지막으로 안 값이 없으면 읽기가 풀리기 전 첫 렌더가 참이다", () => {
+    const fake = fakeSource(undefined);
+
+    const { result } = renderHook(() => useReduceMotion(fake.source));
 
     expect(result.current).toBe(true);
   });
