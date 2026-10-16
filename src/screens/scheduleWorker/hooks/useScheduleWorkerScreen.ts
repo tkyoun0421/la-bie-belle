@@ -319,7 +319,7 @@ export function useScheduleWorkerScreen({
     deadlineLine:
       loading || confirmed || deadline === null
         ? null
-        : deadlineLine({ applicationDeadline: deadline, now: today }),
+        : deadlineLine({ applicationDeadline: deadline, today }),
     notice: noticeOf[state],
     calendarNote:
       claimed ??

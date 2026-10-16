@@ -439,7 +439,7 @@ async function seedSubmissionWindow(): Promise<SchedulePayload> {
       monthLabel: spellMonth(openMonth.slice(0, 7)),
       deadlineLabel: deadlineLine({
         applicationDeadline: deadline,
-        now: today,
+        today,
       }),
     };
   });
