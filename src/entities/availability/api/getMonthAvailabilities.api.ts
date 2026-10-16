@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import { readAllPages } from "@/shared/api/readAllPages";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type { AvailabilityRow } from "@/entities/availability/api/availability.dto";
 import type { Availability } from "@/entities/availability/model/availability.type";
@@ -14,17 +15,17 @@ export async function getMonthAvailabilities(
   client: DB,
   month: string,
 ): Promise<Availability[]> {
-  const { data, error } = await client
-    .from("availabilities")
-    .select(AVAILABILITY_COLUMNS)
-    .gte("work_date", monthStart(month))
-    .lt("work_date", nextMonthStart(month))
-    .order("work_date")
-    .returns<AvailabilityRow[]>();
+  const rows = await readAllPages((from, to) =>
+    client
+      .from("availabilities")
+      .select(AVAILABILITY_COLUMNS)
+      .gte("work_date", monthStart(month))
+      .lt("work_date", nextMonthStart(month))
+      .order("work_date")
+      .order("profile_id")
+      .range(from, to)
+      .returns<AvailabilityRow[]>(),
+  );
 
-  if (error) {
-    throw error;
-  }
-
-  return (data ?? []).map(toAvailability);
+  return rows.map(toAvailability);
 }

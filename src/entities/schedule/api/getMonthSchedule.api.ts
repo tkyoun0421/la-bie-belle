@@ -33,6 +33,8 @@ export async function getMonthSchedule(
     .select(DAY_COLUMNS)
     .gte("work_date", monthStart(month))
     .lt("work_date", nextMonthStart(month))
+    .is("slots.ended_at", null)
+    .is("assignments.ended_at", null)
     .order("work_date")
     .order("created_at", { referencedTable: "slots" })
     .returns<ScheduleDayRow[]>();
