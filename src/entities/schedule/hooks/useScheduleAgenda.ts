@@ -1,5 +1,4 @@
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import {
   canShowShiftActions,
@@ -21,6 +20,7 @@ import {
 function agendaDaysOf(
   days: readonly ScheduleDay[],
   {
+    today,
     myProfileId,
     showMineOnly,
     expanded,
@@ -29,8 +29,6 @@ function agendaDaysOf(
     onRequestSwap,
   }: ScheduleAgendaInput,
 ): ScheduleAgendaDay[] {
-  const today = kstToday();
-
   return days
     .map((day) => ({
       day,

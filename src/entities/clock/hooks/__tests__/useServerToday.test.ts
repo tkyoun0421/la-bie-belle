@@ -3,10 +3,8 @@ import { jest } from "@jest/globals";
 const { renderHook } = await import("@testing-library/react-native");
 const { serverClockStore } =
   await import("@/entities/clock/stores/clock.store");
-const { useServerToday } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/entities/clock/hooks/useServerToday"
-);
+const { useServerToday } =
+  await import("@/entities/clock/hooks/useServerToday");
 
 const TWENTY_MINUTES_MS = 20 * 60 * 1000;
 

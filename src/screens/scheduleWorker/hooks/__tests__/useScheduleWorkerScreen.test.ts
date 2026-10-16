@@ -283,9 +283,7 @@ describe("useScheduleWorkerScreen — 한 화면이 달의 상태를 탄다", ()
   it("서버 시계의 오늘을 명단 조각에 넘기려고 내보낸다", async () => {
     const { result } = await mounted();
 
-    const screen: Record<string, unknown> = result.current;
-
-    expect(screen.today).toBe(TODAY);
+    expect(result.current.today).toBe(TODAY);
   });
 
   it("확정된 달은 근무표고 앱바가 그 달을 부른다", async () => {

@@ -1,5 +1,6 @@
 import {
   clockOf,
+  daysUntil,
   formatBareDate,
   kstClockOf,
   kstDateOf,
@@ -10,8 +11,6 @@ import {
   spellDate,
   spellMonth,
 } from "@/shared/utils/kstDate";
-
-const kstDate = await import("@/shared/utils/kstDate");
 
 describe("kstDateOf — KST 자정 경계로 날짜를 가른다", () => {
   it("UTC 14:59는 아직 전날이다", () => {
@@ -112,10 +111,6 @@ describe("kstClockOf — 그 순간을 홀의 시계로 읽는다", () => {
     expect(kstClockOf(new Date("2026-10-02T05:30:00Z"))).toBe("14:30");
   });
 });
-
-const daysUntil: (fromDate: string, toDate: string) => number =
-  // @ts-expect-error 대상 함수가 아직 없다
-  kstDate.daysUntil;
 
 describe("daysUntil — 달력 날짜 사이의 날수를 센다", () => {
   it("같은 날은 0이다", () => {

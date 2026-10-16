@@ -5,11 +5,11 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
 import { PAYROLL_PATH } from "@/shared/consts/navigation.const";
 import { useMonthCursor } from "@/shared/hooks/useMonthCursor";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthOf } from "@/shared/utils/kstDate";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
+import { useServerToday } from "@/entities/clock/hooks/useServerToday";
 import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
@@ -80,7 +80,7 @@ function tabOf(value: string): StatsTab {
 export function useStatsScreen(): StatsScreenController {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const today = kstToday();
+  const today = useServerToday();
 
   const [tab, setTab] = useState<StatsTab>(STATS_TABS[0]);
   const { month, goPrev, goNext } = useMonthCursor(monthOf(today));
