@@ -10,10 +10,6 @@ jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: {} as never,
 }));
 
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
-}));
-
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
   () => ({
@@ -82,9 +78,10 @@ function createWrapper() {
   return { wrapper };
 }
 
-function inputOf(expanded: string[] = [], showMineOnly = false) {
+function inputOf(expanded: string[] = [], showMineOnly = false, today = TODAY) {
   return {
     month: "2026-10",
+    today,
     myProfileId: "p1",
     showMineOnly,
     expanded,
@@ -94,9 +91,13 @@ function inputOf(expanded: string[] = [], showMineOnly = false) {
   };
 }
 
-async function mounted(expanded: string[] = [], showMineOnly = false) {
+async function mounted(
+  expanded: string[] = [],
+  showMineOnly = false,
+  today = TODAY,
+) {
   const { wrapper } = createWrapper();
-  const input = inputOf(expanded, showMineOnly);
+  const input = inputOf(expanded, showMineOnly, today);
   const hook = renderHook(() => useScheduleAgenda(input), { wrapper });
 
   await waitFor(() => expect(hook.result.current.state).not.toBe("pending"));
@@ -218,6 +219,36 @@ describe("useScheduleAgenda — 하루마다의 글월을 controller가 완성�
     expect(input.onToggle).toHaveBeenCalledWith("2026-10-03");
     expect(input.onCancelShift).toHaveBeenCalledWith("2026-10-03");
     expect(input.onRequestSwap).toHaveBeenCalledWith("2026-10-03");
+  });
+});
+
+describe("useScheduleAgenda — 받은 오늘로 버튼을 가른다", () => {
+  it("오늘 전에 열린 내 근무면 버튼이 보인다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      dayAt("2026-10-10", [mineAt("2026-10-10")]),
+    ]);
+
+    const { result } = await mounted([], false, "2026-10-03");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.days[0].showActions).toBe(true);
+  });
+
+  it("받은 오늘이 근무일이면 내 근무여도 버튼을 보이지 않는다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      dayAt("2026-10-10", [mineAt("2026-10-10")]),
+    ]);
+
+    const { result } = await mounted([], false, "2026-10-10");
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.days[0].showActions).toBe(false);
   });
 });
 

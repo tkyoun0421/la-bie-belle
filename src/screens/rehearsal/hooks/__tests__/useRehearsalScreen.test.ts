@@ -50,8 +50,8 @@ jest.unstable_mockModule(
   () => ({ removeRehearsal: removeRehearsalMock }),
 );
 
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
+jest.unstable_mockModule("@/entities/clock/hooks/useServerToday", () => ({
+  useServerToday: () => TODAY,
 }));
 
 const FAKE_CLIENT = {} as never;

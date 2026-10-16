@@ -10,10 +10,6 @@ jest.unstable_mockModule("@/shared/api/supabase", () => ({
   supabase: {} as never,
 }));
 
-jest.unstable_mockModule("@/shared/lib/kstToday.lib", () => ({
-  kstToday: () => TODAY,
-}));
-
 jest.unstable_mockModule(
   "@/entities/schedule/api/getMonthSchedule.api",
   () => ({
@@ -70,6 +66,7 @@ function createWrapper() {
 function inputOf(extra: Record<string, unknown> = {}) {
   return {
     workDate: "2026-10-17",
+    today: TODAY,
     myProfileId: "p1",
     cancelRequested: false,
     onCancelShift: jest.fn(),
@@ -137,6 +134,40 @@ describe("useDaySheet — 명단 조각이 자기 날을 불러온다", () => {
     expect(result.current.myBadge).toBe("취소 요청 중");
     expect(result.current.showActions).toBe(true);
     expect(result.current.actionsEnabled).toBe(false);
+  });
+
+  it("오늘 전에 열린 내 근무면 버튼이 보인다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      { ...MY_DAY, workDate: "2026-10-10" },
+    ]);
+
+    const { result } = await mounted({
+      workDate: "2026-10-10",
+      today: "2026-10-03",
+    });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.showActions).toBe(true);
+  });
+
+  it("받은 오늘이 근무일이면 내 근무여도 버튼을 보이지 않는다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      { ...MY_DAY, workDate: "2026-10-10" },
+    ]);
+
+    const { result } = await mounted({
+      workDate: "2026-10-10",
+      today: "2026-10-10",
+    });
+
+    if (result.current.state !== "ready") {
+      throw new Error("ready가 아니다");
+    }
+
+    expect(result.current.showActions).toBe(false);
   });
 
   it("남의 근무면 버튼을 보이지 않는다", async () => {
