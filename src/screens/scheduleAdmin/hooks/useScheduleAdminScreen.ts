@@ -361,7 +361,7 @@ export function useScheduleAdminScreen({
       return null;
     }
 
-    return deadlineLine({ applicationDeadline: deadline, now });
+    return deadlineLine({ applicationDeadline: deadline, today });
   })();
 
   const sheet = ((): ScheduleAdminSheet | null => {
