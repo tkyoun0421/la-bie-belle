@@ -31,6 +31,11 @@ export const MOTION_PAIRS: MotionPair[] = [
     unit: "duration",
   },
   { tsExportName: "PRESS_SCALE", tokenRow: "버튼 눌림", unit: "scale" },
+  {
+    tsExportName: "SHIMMER_INTERVAL_MS",
+    tokenRow: "`--interval-shimmer`",
+    unit: "duration",
+  },
 ];
 
 export type MotionTokenViolation =
