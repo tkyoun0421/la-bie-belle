@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-**사람 손이 필요한 것과 판정 대기가 남았다.** 어제 남은 후속 셋이 닫혔고([docs/log/2026-10-17.md](log/2026-10-17.md)) 푸시 대기열 상한과 흐르는 스켈레톤 빛 줄과 날짜를 받는 마감 문장이 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
+**사람 손이 필요한 것과 판정 대기가 남았다.** 어제 남은 후속 다섯이 닫혔고([docs/log/2026-10-17.md](log/2026-10-17.md)) 푸시 대기열 상한과 흐르는 스켈레톤 빛 줄과 날짜를 받는 마감 문장이 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
 1. **Supabase 원격 프로젝트의 Redirect URLs에 두 줄을 넣는다(사람 손).** `labiebelle://auth/callback`과 `exp://**/--/auth/callback`이다. 빠지면 로그인이 오류 없이 돌아오지 못한다. 로컬 `supabase/config.toml`에는 이미 든다. 자리는 [environments.md](5-deploy/environments.md)다.
 2. **실기기 확인.** 로그인(구글 왕복의 네 계정 경우, 창 닫기, 안드로이드 복귀 때 not-found, 라이트·다크 버튼 톤), 테마(시스템 테마인 다크 기기가 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지), 차트(통계 화면의 값 라벨 위치와 1·4·7·10월 라벨, 막대 폭, 근무표 칸의 점선 테두리, 출근 기록 없는 달의 출근율이 `–`인지), 등장 모션(움직임 줄이기를 끈 콜드 스타트에 다섯 요소가 70ms씩 어긋나 8px 아래에서 올라오는지, 켠 콜드 스타트는 이동 없이 밝기만 바뀌는지, 실패 줄이 떠도 등장이 다시 안 도는지)에 더해 오늘 것이 있다.
@@ -21,7 +21,7 @@
    - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
    - [`attendance-checkin`](backlog.md) — 사람 손이 닿는 문(NCP 대표 계정과 지도 키)이 먼저다
 4. **새 판정 후보 넷.** [`requests-closed-30-days`](backlog.md)(문서를 코드의 `closed_at is null`에 맞출지) · [`monthly-assignment-count-canon`](backlog.md)(한 달 배정 수 341·600쯤·천쯤 셋을 하나로) · [`runtime-unbounded-keys-table`](backlog.md)(`runtime.md`의 「전체를 읽는 키는 셋」이 코드와 안 맞는다) · [`my-reads-filter-by-profile`](backlog.md)(관리자가 근무자 화면을 쓰는지 미확인).
-5. **결정 없이 할 수 있는 후보 둘.** [`skeleton-shimmer-reduce-motion-off`](backlog.md)(켜진 채 마운트된 Skeleton이 설정이 꺼져도 안 흐른다 — `SkeletonRows.test.tsx`의 `toEqual` 비교를 지나는 길을 찾아야 한다) · [`claim-notifications-concurrency-test`](backlog.md)(`skip locked`가 동시 호출에서 서로 다른 행을 잡는지 integration에 더한다).
+5. **결정 없이 할 후보는 이제 비었다.** 어제 남은 둘(`skeleton-shimmer-reduce-motion-off`·`claim-notifications-concurrency-test`)이 닫혔다. 남은 일은 위 사람 손과 판정 대기다.
 
 ## 재개 맥락
 
@@ -31,11 +31,11 @@
 
 **기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`는 backlog에 선다.
 
-**1000행 넘게 쌓이는 표는 `shared/api/readAllPages.ts`로 읽는다.** `getWageRates`·`getPayrollMonth`·`getMonthAvailabilities`·`getMonthAttendance`의 `check_ins`가 쓴다. 페이지 사이에 행이 흔들리지 않게 정렬 키를 고정해야 한다. **`max_rows`(1000)는 응답 합이 아니라 맨 위 결과에 한 번, 부모 행 하나의 임베딩 배열에 한 번씩 따로 걸린다** — 근무표 한 달은 임베딩 합이 천을 넘어도 안 잘려 `readAllPages`를 안 쓴다(`runtime.md` 「읽기 범위」). 감사는 읽기 서른넷에서 끝났다. `claim_notifications`는 한 번에 오래된 500행만 잡고, 그 너머는 매분 `retry_push` 회차가 나눠 잡는다.
+**1000행 넘게 쌓이는 표는 `shared/api/readAllPages.ts`로 읽는다.** `getWageRates`·`getPayrollMonth`·`getMonthAvailabilities`·`getMonthAttendance`의 `check_ins`가 쓴다. 페이지 사이에 행이 흔들리지 않게 정렬 키를 고정해야 한다. **`max_rows`(1000)는 응답 합이 아니라 맨 위 결과에 한 번, 부모 행 하나의 임베딩 배열에 한 번씩 따로 걸린다** — 근무표 한 달은 임베딩 합이 천을 넘어도 안 잘려 `readAllPages`를 안 쓴다(`runtime.md` 「읽기 범위」). 감사는 읽기 서른넷에서 끝났다. `claim_notifications`는 한 번에 오래된 500행만 잡고, 그 너머는 매분 `retry_push` 회차가 나눠 잡는다. 동시 호출이 서로 다른 행을 잡는 것은 integration이 연결 둘로 증명한다.
 
 **움직임 줄이기는 `shared/lib/reduceMotion.lib.ts`의 `trackReduceMotion`이 처음 부를 때 `reduceMotionChanged` 구독을 한 번 걸고 떼지 않는다.** `useReduceMotion`이 모듈이 기억한 마지막 값으로 시작하고 읽기 전과 실패는 줄이기(참)다. 이벤트 뒤에 풀린 읽기는 마지막 값을 덮지 않는다. 이징은 `shared/lib/motionEasing.lib.ts`의 `EASE_OUT`(`Easing.bezier(0, 0, 0.2, 1)`) 하나고 125ms는 `shared/consts/motion.const.ts`의 `DURATION_FAST_MS`가 든다. `Rise`·`PressScale`은 `ReduceMotion.Never`고 `Segment`·`Draggable`은 OS 설정이 켜지면 건너뛴다. 상수는 `tests/lint/motionTokens.ts`가 `tokens.md`와 값으로 대조한다.
 
-**`PressScale`은 래퍼 없는 `Animated.createAnimatedComponent(Pressable)` 하나다.** `className`이 눌림 transform을 받는 요소에 그대로 닿는다. `style`은 `StyleProp<ViewStyle>`이라 함수 꼴을 못 받는다. Button이 그 안에 서서 `disabled || loading`이면 줄지 않고, Skeleton은 `reduceMotion` prop 없이 `useReduceMotion()`을 스스로 읽고, 빛 줄은 `shared/hooks/useSkeletonShimmer.ts`가 덩이 폭을 `onLayout`으로 재서 1.6초(`SHIMMER_INTERVAL_MS`) linear로 흘린다. 동작 줄이기가 켜지면 `onLayout`을 안 달아서, 켜진 채 마운트된 뒤 설정이 꺼지면 덩이 크기가 바뀔 때까지 안 흐른다.
+**`PressScale`은 래퍼 없는 `Animated.createAnimatedComponent(Pressable)` 하나다.** `className`이 눌림 transform을 받는 요소에 그대로 닿는다. `style`은 `StyleProp<ViewStyle>`이라 함수 꼴을 못 받는다. Button이 그 안에 서서 `disabled || loading`이면 줄지 않고, Skeleton은 `reduceMotion` prop 없이 `useReduceMotion()`을 스스로 읽고, 빛 줄은 `shared/hooks/useSkeletonShimmer.ts`가 덩이 폭을 `onLayout`으로 재서 1.6초(`SHIMMER_INTERVAL_MS`) linear로 흘린다. `Skeleton`이 덩이에 언제나 `onLayout`을 달아 동작 줄이기가 켜진 채 마운트돼도 폭을 재 두므로 설정이 꺼지면 바로 흐른다.
 
 **reanimated mock의 `Easing`은 가짜라 `tests/setup/reanimatedCalls.ts`가 실물 `react-native-reanimated/src/Easing`을 끼운다.** `lib/module` 경로는 ESM이라 components 갈래가 vm-modules로 돌 때 못 읽는다. 이징을 단언하는 테스트는 이 setup을 지난다.
 
