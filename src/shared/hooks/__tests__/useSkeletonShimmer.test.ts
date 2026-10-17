@@ -70,6 +70,21 @@ describe("useSkeletonShimmer — 동작 줄이기에서는 shimmer를 걸지 않
   });
 });
 
+describe("useSkeletonShimmer — 켜진 채 잰 폭이 꺼진 뒤에 쓰인다", () => {
+  it("켜진 채 폭을 재고 꺼지면 되풀이를 한 번 걸고 끝값이 폭 이상이다", () => {
+    reduceMotionMock.mockReturnValue(true);
+    const { result, rerender } = renderHook(() => useSkeletonShimmer());
+    act(() => result.current.onLayout(layoutOf(BLOCK_WIDTH)));
+
+    reduceMotionMock.mockReturnValue(false);
+    rerender({});
+
+    expect(withRepeatMock).toHaveBeenCalledTimes(1);
+    const [toValue] = withTimingMock.mock.calls[0];
+    expect(toValue).toBeGreaterThanOrEqual(BLOCK_WIDTH);
+  });
+});
+
 describe("useSkeletonShimmer — 움직임이 허용되면 폭을 잰 뒤에 한 줄이 끝없이 지나간다", () => {
   it("동작 줄이기가 꺼져 있으면 showShimmer가 참이다", () => {
     reduceMotionMock.mockReturnValue(false);

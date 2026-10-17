@@ -1,4 +1,5 @@
 import { act, fireEvent, render } from "@testing-library/react-native";
+import type { ViewProps } from "react-native";
 import { Easing } from "react-native-reanimated";
 import type { ReduceMotionSource } from "@/shared/lib/reduceMotion.lib";
 import { Skeleton, SkeletonLine } from "@/shared/ui/Skeleton";
@@ -192,6 +193,48 @@ describe.each(SHAPES)(
 
       expect(repeatCalls()).toHaveLength(0);
       expect(timingCalls()).toHaveLength(0);
+    });
+  },
+);
+
+describe.each(SHAPES)(
+  "$name — 동작 줄이기가 켜진 채 마운트돼도 폭을 잰다",
+  ({ Shape }) => {
+    it("동작 줄이기가 켜져 있어도 덩이에 onLayout이 달린다", async () => {
+      const { getByTestId } = await renderShape(Shape, { read: "reduce" });
+
+      expect(getByTestId("shape").props.onLayout).toEqual(expect.any(Function));
+    });
+
+    it("켜진 채 폭을 재고 꺼지면 한 줄이 끝없이 지나가기 시작한다", async () => {
+      await renderMeasured(Shape, "reduce");
+      expect(repeatCalls()).toHaveLength(0);
+
+      act(() => listeners.forEach((listener) => listener(false)));
+      await act(async () => {});
+
+      expect(repeatCalls()).toHaveLength(1);
+      expect(timingCalls()[0].toValue).toBeGreaterThanOrEqual(BLOCK_WIDTH);
+    });
+
+    it("동작 줄이기가 켜져 있어도 호출자의 onLayout이 불린다", async () => {
+      listeners.length = 0;
+      mockSetting.lastKnown = undefined;
+      mockSetting.read = "reduce";
+      const caller = jest.fn<
+        void,
+        Parameters<NonNullable<ViewProps["onLayout"]>>
+      >();
+      const { getByTestId } = render(
+        <Shape testID="shape" onLayout={caller} />,
+      );
+      await act(async () => {});
+
+      fireEvent(getByTestId("shape"), "layout", {
+        nativeEvent: { layout: { x: 0, y: 0, width: BLOCK_WIDTH, height: 20 } },
+      });
+
+      expect(caller).toHaveBeenCalledTimes(1);
     });
   },
 );
