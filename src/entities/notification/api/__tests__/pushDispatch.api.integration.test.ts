@@ -1,3 +1,8 @@
+import {
+  type ChildProcessWithoutNullStreams,
+  spawn,
+  spawnSync,
+} from "node:child_process";
 import { randomUUID } from "node:crypto";
 import {
   type AdminUser,
@@ -428,6 +433,158 @@ describe("internal.claim_notifications — 한 번에 잡는 상한", () => {
       CLAIM_LIMIT_TOTAL - 2 * CLAIM_LIMIT_BATCH,
     );
   }, 60000);
+});
+
+const CONCURRENT_BASE = "1998-01-01T00:00:00Z";
+const CONCURRENT_TOTAL = 600;
+const CONCURRENT_BATCH = 500;
+const CONCURRENT_KIND = "claim_concurrent_test";
+const BLOCKED_AFTER_MS = 15000;
+
+function dbContainer(): string {
+  const result = spawnSync(
+    "docker",
+    ["ps", "--filter", "name=supabase_db", "--format", "{{.Names}}"],
+    { encoding: "utf8" },
+  );
+  return result.stdout.trim().split("\n")[0];
+}
+
+type OpenPsql = {
+  child: ChildProcessWithoutNullStreams;
+  output: () => string;
+  exited: Promise<number | null>;
+};
+
+function openPsql(): OpenPsql {
+  const child = spawn(
+    "docker",
+    [
+      "exec",
+      "-i",
+      dbContainer(),
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "-t",
+      "-A",
+      "-v",
+      "ON_ERROR_STOP=1",
+    ],
+    { stdio: ["pipe", "pipe", "pipe"] },
+  );
+  let collected = "";
+  child.stdout.on("data", (chunk: Buffer) => {
+    collected += chunk.toString();
+  });
+  const exited = new Promise<number | null>((resolve) => {
+    child.on("close", resolve);
+  });
+  return { child, output: () => collected, exited };
+}
+
+function claimStatement(pNow: string): string {
+  return `select 'claimed|' || id::text from internal.claim_notifications(null, '${pNow}'::timestamptz);\n`;
+}
+
+function claimedIds(output: string): string[] {
+  return output
+    .split("\n")
+    .filter((line) => line.startsWith("claimed|"))
+    .map((line) => line.slice("claimed|".length).trim());
+}
+
+async function waitUntil(
+  condition: () => boolean,
+  timeoutMs: number,
+): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (condition()) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return condition();
+}
+
+function seedConcurrentNotifications(profileId: string): void {
+  execSql(
+    "insert into public.notifications (profile_id, kind, created_at)\n" +
+      "select :'profile_id', :'kind',\n" +
+      "  :'base'::timestamptz + make_interval(secs => n)\n" +
+      `from generate_series(1, ${CONCURRENT_TOTAL}) as n;\n`,
+    { profile_id: profileId, base: CONCURRENT_BASE, kind: CONCURRENT_KIND },
+  );
+}
+
+function ownRowIds(profileId: string): string[] {
+  return queryColumn(
+    "select id::text from public.notifications\n" +
+      "where profile_id = :'profile_id' and kind = :'kind';\n",
+    { profile_id: profileId, kind: CONCURRENT_KIND },
+  );
+}
+
+function ownRowsWithAttempts(profileId: string, attempts: number): number {
+  const rows = queryColumn(
+    "select count(*) from public.notifications\n" +
+      "where profile_id = :'profile_id' and kind = :'kind'\n" +
+      "  and push_attempts = :'attempts'::integer;\n",
+    {
+      profile_id: profileId,
+      kind: CONCURRENT_KIND,
+      attempts: String(attempts),
+    },
+  );
+  return Number(rows[0] ?? "0");
+}
+
+describe("internal.claim_notifications — 동시에 부른 두 연결", () => {
+  it("먼저 잡은 연결이 커밋하기 전에 부른 두 번째 연결은 기다리지 않고 겹치지 않는 행을 잡는다", async () => {
+    const member = await createApprovedUser();
+    trackUser(member.userId);
+    trackProfile(member.profileId);
+    seedConcurrentNotifications(member.profileId);
+    const pNow = new Date().toISOString();
+    const first = openPsql();
+    const second = openPsql();
+
+    try {
+      first.child.stdin.write(`begin;\n${claimStatement(pNow)}`);
+      await waitUntil(() => claimedIds(first.output()).length > 0, 30000);
+
+      second.child.stdin.end(claimStatement(pNow));
+      const secondFinished = await waitUntil(
+        () => second.child.exitCode !== null,
+        BLOCKED_AFTER_MS,
+      );
+      first.child.stdin.end("commit;\n");
+      await Promise.all([first.exited, second.exited]);
+
+      const firstIds = claimedIds(first.output());
+      const secondIds = claimedIds(second.output());
+      const own = new Set(ownRowIds(member.profileId));
+
+      expect(secondFinished).toBe(true);
+      expect(firstIds.filter((id) => own.has(id))).toHaveLength(
+        CONCURRENT_BATCH,
+      );
+      expect(secondIds.filter((id) => own.has(id))).toHaveLength(
+        CONCURRENT_TOTAL - CONCURRENT_BATCH,
+      );
+      expect(firstIds.filter((id) => secondIds.includes(id))).toEqual([]);
+      expect(new Set([...firstIds, ...secondIds]).size).toBe(
+        firstIds.length + secondIds.length,
+      );
+      expect(ownRowsWithAttempts(member.profileId, 1)).toBe(CONCURRENT_TOTAL);
+    } finally {
+      first.child.kill();
+      second.child.kill();
+    }
+  }, 90000);
 });
 
 describe("public.claim_notifications 호출자 검사(plan AC-02)", () => {
