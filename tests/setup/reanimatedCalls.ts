@@ -6,7 +6,8 @@ export type TimingConfig = {
 
 export type AnimationCall =
   | { fn: "withTiming"; toValue: unknown; config: TimingConfig | undefined }
-  | { fn: "withDelay"; delay: number };
+  | { fn: "withDelay"; delay: number }
+  | { fn: "withRepeat"; numberOfReps: number | undefined; reverse: unknown };
 
 export const animationCalls: AnimationCall[] = [];
 
@@ -79,6 +80,15 @@ export function createReanimatedMock() {
       animationCalls.push({ fn: "withDelay", delay });
 
       return next;
+    },
+    withRepeat: (
+      animation: unknown,
+      numberOfReps?: number,
+      reverse?: unknown,
+    ) => {
+      animationCalls.push({ fn: "withRepeat", numberOfReps, reverse });
+
+      return animation;
     },
   };
 }
