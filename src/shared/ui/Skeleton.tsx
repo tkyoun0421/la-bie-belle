@@ -18,7 +18,7 @@ export function Skeleton({
   return (
     <View
       testID={testID}
-      onLayout={shimmer.showShimmer ? shimmer.onLayout : onLayout}
+      onLayout={shimmer.onLayout}
       className={cn("overflow-hidden rounded-xl bg-bg-neutral-weak", className)}
       {...rest}
     >
