@@ -145,6 +145,11 @@ function netRequestCountAfter(cursor: number): number {
 let trackedUserIds: string[] = [];
 let trackedNotificationIds: string[] = [];
 let trackedPushTokens: string[] = [];
+let trackedProfileIds: string[] = [];
+
+function trackProfile(profileId: string): void {
+  trackedProfileIds.push(profileId);
+}
 
 function trackUser(userId: string): void {
   trackedUserIds.push(userId);
@@ -172,6 +177,13 @@ afterEach(() => {
       `delete from public.push_tokens where token = any(array[${tokenList}]::text[]);\n`,
     );
     trackedPushTokens = [];
+  }
+  if (trackedProfileIds.length > 0) {
+    const idList = trackedProfileIds.map((id) => `'${id}'`).join(",");
+    execSql(
+      `delete from public.profiles where id = any(array[${idList}]::uuid[]);\n`,
+    );
+    trackedProfileIds = [];
   }
   if (trackedUserIds.length > 0) {
     const idList = trackedUserIds.map((id) => `'${id}'`).join(",");
@@ -319,11 +331,103 @@ describe("internal.claim_notifications — 잡는 조건(plan AC-02)", () => {
     const pNow = new Date().toISOString();
     const id = seedNotificationRow({ profileId: member.profileId });
     trackNotification(id);
+    execSql(
+      "update public.notifications set created_at = '1999-01-01T00:00:00Z' where id = :'id';\n",
+      { id },
+    );
 
     const claimed = claimNotifications(null, pNow);
 
     expect(claimed.map((row) => row.id)).toContain(id);
   });
+});
+
+const CLAIM_LIMIT_BASE = "2000-01-01T00:00:00Z";
+const CLAIM_LIMIT_TOTAL = 1100;
+const CLAIM_LIMIT_BATCH = 500;
+
+function seedOldNotifications(profileId: string): void {
+  execSql(
+    "insert into public.notifications (profile_id, kind, created_at)\n" +
+      "select :'profile_id', 'claim_limit_test',\n" +
+      "  :'base'::timestamptz + make_interval(secs => n)\n" +
+      `from generate_series(1, ${CLAIM_LIMIT_TOTAL}) as n;\n`,
+    { profile_id: profileId, base: CLAIM_LIMIT_BASE },
+  );
+}
+
+function countClaimLimitRows(profileId: string, condition: string): number {
+  const rows = queryColumn(
+    "select count(*) from public.notifications\n" +
+      "where profile_id = :'profile_id' and kind = 'claim_limit_test'\n" +
+      `  and ${condition};\n`,
+    { profile_id: profileId },
+  );
+  return Number(rows[0] ?? "0");
+}
+
+function oldestSecondsCondition(from: number, to: number): string {
+  return (
+    `created_at > '${CLAIM_LIMIT_BASE}'::timestamptz + interval '${from} seconds' ` +
+    `and created_at <= '${CLAIM_LIMIT_BASE}'::timestamptz + interval '${to} seconds'`
+  );
+}
+
+describe("internal.claim_notifications — 한 번에 잡는 상한", () => {
+  it("p_ids가 널이면 1100행 중 가장 오래된 500행만 잡고 나머지는 손대지 않는다", async () => {
+    const member = await createApprovedUser();
+    trackUser(member.userId);
+    trackProfile(member.profileId);
+    seedOldNotifications(member.profileId);
+    const pNow = new Date().toISOString();
+
+    const claimed = claimNotifications(null, pNow);
+
+    expect(claimed).toHaveLength(CLAIM_LIMIT_BATCH);
+    expect(
+      countClaimLimitRows(member.profileId, "claimed_at is not null"),
+    ).toBe(CLAIM_LIMIT_BATCH);
+    expect(
+      countClaimLimitRows(
+        member.profileId,
+        `claimed_at is not null and ${oldestSecondsCondition(0, CLAIM_LIMIT_BATCH)}`,
+      ),
+    ).toBe(CLAIM_LIMIT_BATCH);
+    expect(countClaimLimitRows(member.profileId, "push_attempts = 1")).toBe(
+      CLAIM_LIMIT_BATCH,
+    );
+    expect(
+      countClaimLimitRows(
+        member.profileId,
+        "claimed_at is null and push_attempts = 0",
+      ),
+    ).toBe(CLAIM_LIMIT_TOTAL - CLAIM_LIMIT_BATCH);
+  }, 60000);
+
+  it("두 번째 호출이 남은 행 중 가장 오래된 500행을 잡고 첫 묶음은 다시 안 잡는다", async () => {
+    const member = await createApprovedUser();
+    trackUser(member.userId);
+    trackProfile(member.profileId);
+    seedOldNotifications(member.profileId);
+    const pNow = new Date().toISOString();
+    claimNotifications(null, pNow);
+
+    const second = claimNotifications(null, pNow);
+
+    expect(second).toHaveLength(CLAIM_LIMIT_BATCH);
+    expect(
+      countClaimLimitRows(
+        member.profileId,
+        `claimed_at is not null and push_attempts = 1 and ${oldestSecondsCondition(CLAIM_LIMIT_BATCH, 2 * CLAIM_LIMIT_BATCH)}`,
+      ),
+    ).toBe(CLAIM_LIMIT_BATCH);
+    expect(countClaimLimitRows(member.profileId, "push_attempts = 1")).toBe(
+      2 * CLAIM_LIMIT_BATCH,
+    );
+    expect(countClaimLimitRows(member.profileId, "push_attempts = 0")).toBe(
+      CLAIM_LIMIT_TOTAL - 2 * CLAIM_LIMIT_BATCH,
+    );
+  }, 60000);
 });
 
 describe("public.claim_notifications 호출자 검사(plan AC-02)", () => {
