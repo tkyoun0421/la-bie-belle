@@ -5,8 +5,8 @@ import {
   execSql,
   kstDate,
   kstMonthStart,
-  seedRequestCandidate,
   seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -115,13 +115,15 @@ describe("getSlotRequests dal — 그 달 살아 있는 근무 요청을 읽는�
     const slotB = await slotIdForPosition(admin, dayId, "안내", 1);
     const slotClosed = await slotIdForPosition(admin, dayId, "매니저", 0);
 
-    const requestA = seedWorkRequest(slotA, admin.profileId);
     const candidateA = await createApprovedUser();
-    seedRequestCandidate(requestA, candidateA.profileId, "pending");
+    const requestA = seedWorkRequestWithCandidates(slotA, admin.profileId, [
+      { profileId: candidateA.profileId },
+    ]);
 
-    const requestB = seedWorkRequest(slotB, admin.profileId);
     const candidateB = await createApprovedUser();
-    seedRequestCandidate(requestB, candidateB.profileId, "pending");
+    const requestB = seedWorkRequestWithCandidates(slotB, admin.profileId, [
+      { profileId: candidateB.profileId },
+    ]);
 
     const closedRequest = seedWorkRequest(slotClosed, admin.profileId);
     execSql(
@@ -147,11 +149,15 @@ describe("getSlotRequests dal — 그 달 살아 있는 근무 요청을 읽는�
     const observer = await createApprovedUser();
     const stranger = await createApprovedUser();
 
-    const myRequest = seedWorkRequest(slotMine, admin.profileId);
-    seedRequestCandidate(myRequest, observer.profileId, "pending");
+    const myRequest = seedWorkRequestWithCandidates(slotMine, admin.profileId, [
+      { profileId: observer.profileId },
+    ]);
 
-    const othersRequest = seedWorkRequest(slotOthers, admin.profileId);
-    seedRequestCandidate(othersRequest, stranger.profileId, "pending");
+    const othersRequest = seedWorkRequestWithCandidates(
+      slotOthers,
+      admin.profileId,
+      [{ profileId: stranger.profileId }],
+    );
 
     const requests = (await getSlotRequests(
       observer.client,
@@ -170,8 +176,11 @@ describe("getSlotRequests dal — 그 달 살아 있는 근무 요청을 읽는�
     const observer = await createApprovedUser();
     const stranger = await createApprovedUser();
 
-    const othersRequest = seedWorkRequest(slotOthers, admin.profileId);
-    seedRequestCandidate(othersRequest, stranger.profileId, "pending");
+    const othersRequest = seedWorkRequestWithCandidates(
+      slotOthers,
+      admin.profileId,
+      [{ profileId: stranger.profileId }],
+    );
 
     const { data, error } = await observer.client
       .from("requests")

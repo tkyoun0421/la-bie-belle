@@ -5,8 +5,7 @@ import {
   kstDate,
   kstMonthStart,
   queryColumn,
-  seedRequestCandidate,
-  seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -150,9 +149,13 @@ describe("internal.expire_requests — 매 분 도는 만료 배치", () => {
   it("지난 pending만 남은 요청은 닫히고 갈래 status는 pending 그대로다", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId, pastIso(1));
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending", pastIso(1));
+    const requestId = seedWorkRequestWithCandidates(
+      slotId,
+      admin.profileId,
+      [{ profileId: candidate.profileId, expiresAt: pastIso(1) }],
+      pastIso(1),
+    );
 
     callExpireRequests();
 
@@ -167,17 +170,13 @@ describe("internal.expire_requests — 매 분 도는 만료 배치", () => {
     const slotId = await slotIdForPosition(admin, dayId, "안내", 1);
     const expiredCandidate = await createApprovedUser();
     const liveCandidate = await createApprovedUser();
-    const requestId = seedWorkRequest(slotId, admin.profileId, futureIso(1));
-    seedRequestCandidate(
-      requestId,
-      expiredCandidate.profileId,
-      "pending",
-      pastIso(1),
-    );
-    seedRequestCandidate(
-      requestId,
-      liveCandidate.profileId,
-      "pending",
+    const requestId = seedWorkRequestWithCandidates(
+      slotId,
+      admin.profileId,
+      [
+        { profileId: expiredCandidate.profileId, expiresAt: pastIso(1) },
+        { profileId: liveCandidate.profileId, expiresAt: futureIso(1) },
+      ],
       futureIso(1),
     );
 
@@ -189,9 +188,13 @@ describe("internal.expire_requests — 매 분 도는 만료 배치", () => {
   it("멱등이다 — 두 번 불러도 오류 없이 같은 결과다", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "매니저", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId, pastIso(1));
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending", pastIso(1));
+    const requestId = seedWorkRequestWithCandidates(
+      slotId,
+      admin.profileId,
+      [{ profileId: candidate.profileId, expiresAt: pastIso(1) }],
+      pastIso(1),
+    );
 
     callExpireRequests();
     const firstClosedAt = await requestClosedAt(admin, requestId);

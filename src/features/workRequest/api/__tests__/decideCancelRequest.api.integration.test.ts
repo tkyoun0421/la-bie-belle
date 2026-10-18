@@ -7,8 +7,7 @@ import {
   kstMonthStart,
   seedAssignment,
   seedCancelRequest,
-  seedWorkRequest,
-  seedRequestCandidate,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -220,9 +219,10 @@ describe("decideCancelRequest dal — decide_cancel_request를 부르고 오류�
 
   it("승인하면 그 자리의 살아 있는 근무 요청도 같이 닫는다", async () => {
     const { cancelRequestId, slotId } = await seedLiveCancelRequest(admin);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     await decideCancelRequest(admin.client, cancelRequestId, "approved");
 
