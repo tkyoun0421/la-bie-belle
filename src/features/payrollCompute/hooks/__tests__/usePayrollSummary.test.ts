@@ -22,6 +22,7 @@ const { usePayrollSummary } =
   await import("@/features/payrollCompute/hooks/usePayrollSummary");
 
 const SPAN = { from: "2026-10-01", to: "2026-10-31" };
+const PROFILE_ID = "me";
 
 const refetch = jest.fn();
 
@@ -60,7 +61,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("불러온 날의 금액을 합쳐 문안으로 낸다", () => {
     reads({ data: [day(50000), day(30000)] });
 
-    const { result } = renderHook(() => usePayrollSummary(SPAN));
+    const { result } = renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("ready");
 
@@ -74,7 +75,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("예상치라는 안내를 같이 든다", () => {
     reads({ data: [day(50000)] });
 
-    const { result } = renderHook(() => usePayrollSummary(SPAN));
+    const { result } = renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     if (result.current.state !== "ready") {
       throw new Error("ready가 아니다");
@@ -86,7 +87,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("근무가 없어도 금액 자리가 빈 채로 선다", () => {
     reads({ data: [] });
 
-    const { result } = renderHook(() => usePayrollSummary(SPAN));
+    const { result } = renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("ready");
 
@@ -100,7 +101,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("읽는 중에는 pending이다", () => {
     reads({ isLoading: true });
 
-    const { result } = renderHook(() => usePayrollSummary(SPAN));
+    const { result } = renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("pending");
   });
@@ -108,7 +109,7 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("읽기가 넘어지면 failed고 다시 시도할 손이 있다", () => {
     reads({ error: new Error("끊겼다") });
 
-    const { result } = renderHook(() => usePayrollSummary(SPAN));
+    const { result } = renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("failed");
 
@@ -124,12 +125,13 @@ describe("usePayrollSummary — 조각이 자기 금액을 완성해 든다", ()
   it("받은 구간을 그대로 service에 넘긴다", () => {
     reads({ data: [] });
 
-    renderHook(() => usePayrollSummary(SPAN));
+    renderHook(() => usePayrollSummary(SPAN, PROFILE_ID));
 
     expect(useMyPayrollViewDaysQueryMock).toHaveBeenCalledWith(
       expect.anything(),
       SPAN,
       expect.any(Number),
+      PROFILE_ID,
     );
   });
 });

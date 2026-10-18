@@ -196,6 +196,12 @@ async function mounted() {
 }
 
 describe("useStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => {
+  it("조각에 심어 줄 내 profileId를 낸다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.profileId).toBe("me");
+  });
+
   it("처음에는 근태 탭이고 이번 달이다", async () => {
     const { result } = await mounted();
 
