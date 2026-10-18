@@ -46,7 +46,10 @@ def verdict(path, read):
     stored = read() if exists(path) else ""
     incoming = read("incoming")
 
-    if not EXECUTABLE_EXPORT.search(stored + "\n" + incoming):
+    if incoming is None:
+        if exists(path) and not EXECUTABLE_EXPORT.search(stored):
+            return None
+    elif not EXECUTABLE_EXPORT.search(stored + "\n" + incoming):
         return None
 
     directory, filename = os.path.split(path)
@@ -64,13 +67,25 @@ def verdict(path, read):
 
     if not pairs:
         listed = "".join(f"  {candidate}\n" for candidate in candidates)
+        if incoming is None:
+            opening = f"TDD 차단: {path} 를 Bash로 쓰는데 테스트가 없다.\n"
+            closing = (
+                "Bash로는 쓰려는 내용을 못 읽어 새 파일이면 짝 테스트를 먼저 요구한다.\n"
+                "타입이나 상수만 담을 파일이면 Write로 써라.\n"
+            )
+        else:
+            opening = f"TDD 차단: {path} 는 실행 코드를 내보내는데 테스트가 없다.\n"
+            closing = "타입이나 상수만 담을 파일이면 실행 코드를 빼라.\n"
         return (
-            f"TDD 차단: {path} 는 실행 코드를 내보내는데 테스트가 없다.\n"
-            "아래 둘 중 하나를 먼저 쓰고, 그 테스트가 실패하는 것을 확인한 뒤 구현해라.\n"
-            f"{listed}"
-            "DB에 붙는 코드는 integration 쪽이다.\n"
-            "타입이나 상수만 담을 파일이면 실행 코드를 빼라.\n"
+            opening
+            + "아래 둘 중 하나를 먼저 쓰고, 그 테스트가 실패하는 것을 확인한 뒤 구현해라.\n"
+            + listed
+            + "DB에 붙는 코드는 integration 쪽이다.\n"
+            + closing
         )
+
+    if incoming is None:
+        return None
 
     # 짝 파일이 있어도 그 안이 이번에 서는 함수를 안 부르면 통과시키지 않는다. 있는 파일에
     # 함수를 얹는 걸음이 파일 단위 검사를 그냥 지나가던 자리다(관찰 027).
