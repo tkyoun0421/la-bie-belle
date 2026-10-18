@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type Server } from "node:http";
 import { formatBareDate, kstDateOf, spellMonth } from "@/shared/utils/kstDate";
 import { spellWorkDate } from "@/entities/schedule/utils/agendaRow.utils";
 import { deadlineLine } from "@/entities/schedule/utils/deadlineLine.utils";
+import { isLoopbackUrl } from "@tests/integration/localTarget";
 import {
   approveProfile,
   backdateDeadline,
@@ -33,8 +34,6 @@ import {
 export const SEED_PORT = 8765;
 
 const SEED_HOST = "127.0.0.1";
-
-const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost"]);
 
 const READ_FAILURE = "read_failure";
 
@@ -188,9 +187,8 @@ type SeedResponse = Partial<SchedulePayload> & {
 
 function assertLocalTarget(): void {
   const target = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
-  const host = URL.canParse(target) ? new URL(target).hostname : "";
 
-  if (!LOCAL_HOSTS.has(host)) {
+  if (!isLoopbackUrl(target)) {
     throw new Error(
       `시드 서버는 로컬에서만 돈다. EXPO_PUBLIC_SUPABASE_URL 이 "${target}" 다 — ` +
         "`supabase status -o env` 의 API_URL 을 넣고 다시 돌려라.",

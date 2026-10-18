@@ -61,6 +61,7 @@ const logic = {
     "<rootDir>/.claude/hooks/__tests__/**/*.test.ts",
     "<rootDir>/eslint-rules/__tests__/**/*.test.ts",
     "<rootDir>/tests/lint/**/*.test.ts",
+    "<rootDir>/tests/integration/__tests__/**/*.test.ts",
     "!**/*.integration.test.ts",
     "!**/src/**/ui/__tests__/**",
   ],

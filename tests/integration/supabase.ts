@@ -2,6 +2,10 @@ import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import type { Database, DB } from "@/shared/api/database";
+import {
+  remoteUrlProblems,
+  throwIfProblems,
+} from "@tests/integration/localTarget";
 
 type LocalSupabase = {
   apiUrl: string;
@@ -31,7 +35,7 @@ function readStatus(): Map<string, string> {
   return new Map(entries);
 }
 
-function localSupabase(): LocalSupabase {
+export function localSupabase(): LocalSupabase {
   if (resolved) {
     return resolved;
   }
@@ -42,6 +46,13 @@ function localSupabase(): LocalSupabase {
   if (!apiUrl || !anonKey) {
     throw new Error("supabase status 가 API_URL 이나 ANON_KEY 를 주지 않았다.");
   }
+
+  throwIfProblems(
+    remoteUrlProblems({
+      API_URL: apiUrl,
+      EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    }),
+  );
 
   resolved = { apiUrl, anonKey };
   return resolved;

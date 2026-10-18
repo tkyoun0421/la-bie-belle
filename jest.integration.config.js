@@ -5,4 +5,5 @@ module.exports = {
   ...logic,
   testMatch: ["<rootDir>/src/**/__tests__/**/*.integration.test.ts"],
   maxWorkers: 1,
+  globalSetup: "<rootDir>/tests/integration/globalSetup.ts",
 };
