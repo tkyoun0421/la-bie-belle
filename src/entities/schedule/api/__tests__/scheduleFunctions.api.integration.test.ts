@@ -4,6 +4,7 @@ import {
   backdateDeadline,
   createAdminUser,
   createApprovedUser,
+  deleteThisRunDay,
   execSql,
   freshMonth,
   kstDate,
@@ -327,14 +328,24 @@ describe("근무표 함수", () => {
         throw createError;
       }
 
-      await admin.client.rpc("open_day", { p_work_date: kstDate() });
-
-      const { data, error } = await admin.client
+      const { data: before } = await admin.client
         .from("days")
         .select("id")
         .eq("work_date", kstDate());
-      expect(error).toBeNull();
-      expect(data).toHaveLength(1);
+      const dayAlreadyOpen = (before ?? []).length > 0;
+
+      try {
+        const { error } = await admin.client.rpc("open_day", {
+          p_work_date: kstDate(),
+        });
+
+        expect(error?.message).not.toBe("date_past");
+        if (!dayAlreadyOpen) {
+          expect(error).toBeNull();
+        }
+      } finally {
+        deleteThisRunDay(kstDate());
+      }
     });
 
     it("같은 날짜를 두 번 열면 already_open", async () => {

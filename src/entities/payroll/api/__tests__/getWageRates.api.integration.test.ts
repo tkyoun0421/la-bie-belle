@@ -4,6 +4,8 @@ import {
   createApprovedUser,
   execSql,
   kstDate,
+  queryColumn,
+  withNoDefaultWageRates,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -33,19 +35,24 @@ function seedDefaultWageRate(effectiveDate: string, amount: number): void {
   );
 }
 
-function clearDefaultWageRates(): void {
-  execSql("delete from public.default_wage_rates;\n");
+function deleteDefaultWageRate(effectiveDate: string): void {
+  execSql(
+    "delete from public.default_wage_rates where effective_date = :'effective_date';\n",
+    { effective_date: effectiveDate },
+  );
 }
 
 const SEEDED_ROWS = 1100;
 
-function seedManyWageRates(profileId: string): void {
-  execSql(
+function seedManyWageRates(profileId: string): string[] {
+  const returned = queryColumn(
     "insert into public.wage_rates (profile_id, effective_date, amount, follows_default)\n" +
       "select :'profile_id', current_date - g, 10000, false\n" +
-      `from generate_series(1, ${SEEDED_ROWS}) as g;\n`,
+      `from generate_series(1, ${SEEDED_ROWS}) as g\n` +
+      "returning effective_date;\n",
     { profile_id: profileId },
   );
+  return returned.filter((line) => /^\d{4}-\d{2}-\d{2}$/.test(line));
 }
 
 function clearWageRates(profileId: string): void {
@@ -95,39 +102,49 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
   });
 
   it("default_wage_rates가 비어 있으면 그 자리가 null이고 던지지 않는다(PAY-012)", async () => {
-    clearDefaultWageRates();
+    await withNoDefaultWageRates(async () => {
+      const result = await getWageRates(admin.client);
 
-    const result = await getWageRates(admin.client);
-
-    expect(result.defaultWageRate).toBeNull();
+      expect(result.defaultWageRate).toBeNull();
+    });
   });
 
   it("default_wage_rates가 여러 행이면 가장 최근 행이 같이 온다", async () => {
-    clearDefaultWageRates();
     const older = kstDate(-20);
     const newer = kstDate(-1);
-    seedDefaultWageRate(older, 11000);
-    seedDefaultWageRate(newer, 13000);
 
-    const result = await getWageRates(admin.client);
+    await withNoDefaultWageRates(async () => {
+      seedDefaultWageRate(older, 11000);
+      seedDefaultWageRate(newer, 13000);
 
-    expect(result.defaultWageRate).toEqual({
-      effectiveDate: newer,
-      amount: 13000,
+      try {
+        const result = await getWageRates(admin.client);
+
+        expect(result.defaultWageRate).toEqual({
+          effectiveDate: newer,
+          amount: 13000,
+        });
+      } finally {
+        deleteDefaultWageRate(older);
+        deleteDefaultWageRate(newer);
+      }
     });
   });
 
   it("한 사람의 wage_rates가 천 행을 넘어도 조용히 안 잘리고 전부 온다", async () => {
     const worker = await createApprovedUser();
-    seedManyWageRates(worker.profileId);
+    const seededDates = seedManyWageRates(worker.profileId);
 
     try {
       const result = await getWageRates(admin.client);
-      const own = result.wageRates.filter(
-        (row) => row.profileId === worker.profileId,
+      const received = new Set(
+        result.wageRates
+          .filter((row) => row.profileId === worker.profileId)
+          .map((row) => row.effectiveDate),
       );
 
-      expect(own).toHaveLength(SEEDED_ROWS);
+      expect(seededDates).toHaveLength(SEEDED_ROWS);
+      expect(seededDates.filter((date) => !received.has(date))).toEqual([]);
     } finally {
       clearWageRates(worker.profileId);
     }

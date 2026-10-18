@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import {
   daysInMonth,
@@ -304,32 +304,126 @@ export function queryColumn(
     .filter((line) => line.length > 0);
 }
 
-export async function withOnlyAdmin<T>(
-  adminProfileId: string,
-  fn: () => Promise<T>,
-): Promise<T> {
-  const otherAdminIds = queryColumn(
-    "select id from public.profiles where role = 'admin' and left_at is null and blocked_at is null and id <> :'admin_id';\n",
-    { admin_id: adminProfileId },
+const LOCK_ACQUIRED = "lock_acquired";
+
+async function acquireDbLock(key: string): Promise<() => void> {
+  const container = localDbContainer();
+  const session = spawn(
+    "docker",
+    [
+      "exec",
+      "-i",
+      container,
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "-t",
+      "-A",
+      "-v",
+      "ON_ERROR_STOP=1",
+    ],
+    { stdio: ["pipe", "pipe", "pipe"] },
   );
 
-  if (otherAdminIds.length > 0) {
-    const idList = otherAdminIds.map((id) => `'${id}'`).join(",");
-    execSql(
-      `update public.profiles set left_at = now() where id = any(array[${idList}]::uuid[]);\n`,
+  await new Promise<void>((resolve, reject) => {
+    let output = "";
+    session.stdout.on("data", (chunk: Buffer) => {
+      output += chunk.toString();
+      if (output.includes(LOCK_ACQUIRED)) {
+        resolve();
+      }
+    });
+    session.once("error", reject);
+    session.once("exit", () =>
+      reject(new Error(`${key} 잠금 세션이 잠금을 잡기 전에 끝났다`)),
     );
-  }
+    session.stdin.write(
+      `select pg_advisory_lock(hashtext('${key}')), '${LOCK_ACQUIRED}';\n`,
+    );
+  });
+
+  session.removeAllListeners("exit");
+
+  return () => {
+    session.stdin.end();
+  };
+}
+
+export async function withDbLock<T>(
+  key: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const release = await acquireDbLock(key);
 
   try {
     return await fn();
   } finally {
+    release();
+  }
+}
+
+export async function withOnlyAdmin<T>(
+  adminProfileId: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  return withDbLock("only_admin", async () => {
+    const otherAdminIds = queryColumn(
+      "select id from public.profiles where role = 'admin' and left_at is null and blocked_at is null and id <> :'admin_id';\n",
+      { admin_id: adminProfileId },
+    );
+
     if (otherAdminIds.length > 0) {
       const idList = otherAdminIds.map((id) => `'${id}'`).join(",");
       execSql(
-        `update public.profiles set left_at = null where id = any(array[${idList}]::uuid[]);\n`,
+        `update public.profiles set left_at = now() where id = any(array[${idList}]::uuid[]);\n`,
       );
     }
-  }
+
+    try {
+      return await fn();
+    } finally {
+      if (otherAdminIds.length > 0) {
+        const idList = otherAdminIds.map((id) => `'${id}'`).join(",");
+        execSql(
+          `update public.profiles set left_at = null where id = any(array[${idList}]::uuid[]);\n`,
+        );
+      }
+    }
+  });
+}
+
+export async function withNoDefaultWageRates<T>(
+  fn: () => Promise<T>,
+): Promise<T> {
+  return withDbLock("default_wage_rates", async () => {
+    const saved = queryColumn(
+      "select effective_date || '|' || amount from public.default_wage_rates;\n",
+    ).map((line) => line.split("|"));
+
+    if (saved.length > 0) {
+      execSql(
+        "delete from public.default_wage_rates where effective_date = any(string_to_array(:'dates', ',')::date[]);\n",
+        { dates: saved.map(([date]) => date).join(",") },
+      );
+    }
+
+    try {
+      return await fn();
+    } finally {
+      execSql(
+        "delete from public.default_wage_rates where effective_date = :'today';\n",
+        { today: kstDate() },
+      );
+      for (const [date, amount] of saved) {
+        execSql(
+          "insert into public.default_wage_rates (effective_date, amount) values (:'effective_date', :'amount') on conflict (effective_date) do nothing;\n",
+          { effective_date: date, amount },
+        );
+      }
+    }
+  });
 }
 
 export type BlockedUser = SignedInUser & {
