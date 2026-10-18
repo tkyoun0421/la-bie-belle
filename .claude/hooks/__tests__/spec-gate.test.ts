@@ -171,3 +171,56 @@ describe("spec 승인 게이트", () => {
     expect(run(projectDir, "src/entities/cart/model/price.ts")).toBe(blocked);
   });
 });
+
+function shell(projectDir: string, command: string) {
+  return spawnSync("python3", [join(hooksDir, HOOK)], {
+    input: JSON.stringify({
+      tool_name: "Bash",
+      tool_input: { command },
+      cwd: projectDir,
+    }),
+    env: { ...process.env, CLAUDE_PROJECT_DIR: projectDir },
+    encoding: "utf8",
+  }).status;
+}
+
+describe("spec 승인 게이트 — Bash로 쓰는 길", () => {
+  it("승인된 spec 없이 heredoc으로 src/를 쓰면 막는다", () => {
+    const projectDir = createProject("feat/cart-price");
+
+    expect(
+      shell(
+        projectDir,
+        "cat > src/entities/cart/model/price.ts <<'EOF'\nexport const price = 1;\nEOF",
+      ),
+    ).toBe(blocked);
+  });
+
+  it("승인된 spec이 있으면 통과시킨다", () => {
+    const projectDir = createProject("feat/cart-price");
+    write(projectDir, "docs/2-design/spec/cart-price.md", APPROVED_SPEC);
+
+    expect(shell(projectDir, "touch src/entities/cart/model/price.ts")).toBe(
+      allowed,
+    );
+  });
+
+  it.each([
+    ["문서", "cat > docs/2-design/spec/cart-price.md <<'EOF'\n# 제목\nEOF"],
+    ["git 커밋", 'git commit -m "a > src/entities/cart/model/price.ts"'],
+    ["버리는 출력", "pnpm test > /dev/null 2>&1"],
+    ["읽기", "cat src/entities/cart/model/price.ts"],
+  ])("src/에 안 쓰는 %s 는 막지 않는다", (_form, command) => {
+    const projectDir = createProject("feat/cart-price");
+
+    expect(shell(projectDir, command)).toBe(allowed);
+  });
+
+  it("feat 브랜치가 아니면 Bash로 src/를 써도 통과시킨다", () => {
+    const projectDir = createProject("fix/foo");
+
+    expect(shell(projectDir, "touch src/entities/cart/model/price.ts")).toBe(
+      allowed,
+    );
+  });
+});

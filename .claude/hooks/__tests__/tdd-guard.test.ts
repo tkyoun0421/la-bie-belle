@@ -54,6 +54,14 @@ function run(hook: string, relative: string, content: string) {
   return result.status;
 }
 
+function shell(hook: string, command: string, cwd: string = projectDir) {
+  return spawnSync("python3", [join(hooksDir, hook)], {
+    input: JSON.stringify({ tool_name: "Bash", tool_input: { command }, cwd }),
+    env: { ...process.env, CLAUDE_PROJECT_DIR: projectDir },
+    encoding: "utf8",
+  });
+}
+
 const blocked = 2;
 const allowed = 0;
 
@@ -74,6 +82,16 @@ beforeAll(() => {
   write("src/features/cart/model/__tests__/sum.test.ts", "sum();\nhalf();");
   write("src/features/cart/model/loose.ts", "export function loose() {}");
   write("src/features/cart/model/__tests__/loose.test.ts", "");
+  write("src/features/cart/model/orphan.ts", "export function orphan() {}");
+  write("src/entities/cart/model/cart.types.ts", "export type Cart = {};");
+  write(
+    "src/app/placed.tsx",
+    'import { OrdersScreen } from "@/screens/orders/ui/OrdersScreen";',
+  );
+  write(
+    "src/app/stubbed.tsx",
+    'import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";',
+  );
 });
 
 describe("유닛 훅", () => {
@@ -419,6 +437,158 @@ describe("e2e 훅", () => {
     });
 
     expect(result.status).toBe(blocked);
+  });
+});
+
+describe("Bash로 쓰는 길", () => {
+  it("heredoc으로 짝 없는 새 파일을 쓰면 막는다", () => {
+    const result = shell(
+      "tdd-guard-unit.py",
+      "cat > src/entities/cart/model/total.ts <<'EOF'\nexport function total() {}\nEOF",
+    );
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("src/entities/cart/model/total.ts");
+  });
+
+  it.each([
+    ["리다이렉션 >", "echo x > src/entities/cart/model/a.ts"],
+    ["리다이렉션 >>", "echo x >> src/entities/cart/model/a.ts"],
+    ["붙여 쓴 리다이렉션", "echo x>src/entities/cart/model/a.ts"],
+    ["&>", "make &> src/entities/cart/model/a.ts"],
+    ["tee", "echo x | tee src/entities/cart/model/a.ts"],
+    ["tee -a", "echo x | tee -a /dev/null src/entities/cart/model/a.ts"],
+    ["sed -i (BSD)", "sed -i '' 's/a/b/' src/features/cart/model/orphan.ts"],
+    ["sed -i (GNU)", "sed -i 's/a/b/' src/features/cart/model/orphan.ts"],
+    ["sed -i.bak", "sed -i.bak -e 's/a/b/' src/features/cart/model/orphan.ts"],
+    ["cp 목적지", "cp /tmp/a.ts src/entities/cart/model/a.ts"],
+    ["mv 목적지 디렉터리", "mv /tmp/a.ts src/entities/cart/model/"],
+    ["cp -t", "cp -t src/entities/cart/model /tmp/a.ts"],
+    ["install", "install -m 644 /tmp/a.ts src/entities/cart/model/a.ts"],
+    ["touch", "touch src/entities/cart/model/a.ts"],
+    ["&& 뒤", "pnpm lint && touch src/entities/cart/model/a.ts"],
+    ["; 뒤", "true; touch src/entities/cart/model/a.ts"],
+    ["줄바꿈 뒤", "true\ntouch src/entities/cart/model/a.ts"],
+    [
+      "환경 변수 뒤",
+      "LANG=C sed -i '' 's/a/b/' src/features/cart/model/orphan.ts",
+    ],
+  ])("%s 로 쓰는 것을 막는다", (_form, command) => {
+    expect(shell("tdd-guard-unit.py", command).status).toBe(blocked);
+  });
+
+  it("명령의 상대 경로를 그 명령이 도는 자리에서 읽는다", () => {
+    const result = shell(
+      "tdd-guard-unit.py",
+      "touch model/a.ts",
+      join(projectDir, "src/entities/cart"),
+    );
+
+    expect(result.status).toBe(blocked);
+  });
+
+  it("짝 테스트가 있는 파일은 통과시킨다", () => {
+    expect(
+      shell(
+        "tdd-guard-unit.py",
+        "cat >> src/features/cart/model/sum.ts <<'EOF'\nexport function sum() {}\nEOF",
+      ).status,
+    ).toBe(allowed);
+  });
+
+  /** 내용을 못 읽으니 있는 파일은 저장된 내용으로 판정한다 — 타입만 든 파일을 고치는 걸음을 막지 않는다. */
+  it("실행 코드가 없는 있는 파일을 고치는 것은 통과시킨다", () => {
+    expect(
+      shell(
+        "tdd-guard-unit.py",
+        "sed -i '' 's/Cart/Basket/' src/entities/cart/model/cart.types.ts",
+      ).status,
+    ).toBe(allowed);
+  });
+
+  /** 새 파일은 내용을 모르는 채로 서므로 짝을 먼저 요구하고, 그 까닭을 알린다. */
+  it("새 파일을 막을 때 내용을 못 읽는다고 알린다", () => {
+    const result = shell(
+      "tdd-guard-unit.py",
+      "touch src/entities/cart/model/cart.consts.ts",
+    );
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("Write");
+  });
+
+  it("여러 대상 중 하나만 막혀도 막는다", () => {
+    expect(
+      shell(
+        "tdd-guard-unit.py",
+        "touch docs/a.md src/shared/utils/cn.ts src/entities/cart/model/a.ts",
+      ).status,
+    ).toBe(blocked);
+  });
+
+  it.each([
+    ["읽기만 하는 명령", "cat src/entities/cart/model/a.ts"],
+    ["입력 리다이렉션", "wc -l < src/entities/cart/model/a.ts"],
+    ["따옴표 안의 >", 'git commit -m "a > src/entities/cart/model/a.ts"'],
+    ["따옴표로 감싼 > 하나", 'grep -n ">" src/entities/cart/model/a.ts'],
+    ["작은따옴표 안의 |", "echo 'a | tee src/entities/cart/model/a.ts'"],
+    [
+      "heredoc 본문",
+      "cat > docs/a.md <<'EOF'\necho x > src/entities/cart/model/a.ts\ntouch src/entities/cart/model/b.ts\nEOF",
+    ],
+    [
+      "커밋 메시지 heredoc",
+      "git commit -m \"$(cat <<'EOF'\nfeat: a > src/entities/cart/model/a.ts\n\nit's | tee src/x.ts\nEOF\n)\"",
+    ],
+    ["버리는 출력", "pnpm test > /dev/null 2>&1"],
+    ["fd 복제", "pnpm lint 2>&1 | tail -5"],
+    ["문서", "cat > docs/4-test/a.md <<'EOF'\nexport function x() {}\nEOF"],
+    ["node_modules", "echo x > node_modules/.cache/a.ts"],
+    ["worktree 밖", "cat > /private/tmp/scratch/src/a.ts <<'EOF'\nx\nEOF"],
+    [
+      "git 명령",
+      "git mv src/entities/cart/model/a.ts src/entities/cart/model/b.ts",
+    ],
+    ["sed -i 없는 sed", "sed -n 's/a/b/p' src/features/cart/model/orphan.ts"],
+  ])("%s 는 막지 않는다", (_form, command) => {
+    expect(shell("tdd-guard-unit.py", command).status).toBe(allowed);
+  });
+
+  it("e2e 플로우 없는 화면을 쓰면 막는다", () => {
+    expect(
+      shell(
+        "tdd-guard-e2e.py",
+        "cat > src/screens/cart/ui/CartScreen.tsx <<'EOF'\nexport function CartScreen() {}\nEOF",
+      ).status,
+    ).toBe(blocked);
+  });
+
+  /** 라우트의 짝은 부르는 슬라이스라 내용을 봐야 한다. 새 라우트는 그 내용을 모른다. */
+  it("새 라우트는 부르는 슬라이스를 못 읽어 막는다", () => {
+    const result = shell(
+      "tdd-guard-e2e.py",
+      "cat > src/app/fresh.tsx <<'EOF'\nimport { OrdersScreen } from \"@/screens/orders/ui/OrdersScreen\";\nEOF",
+    );
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("Write");
+  });
+
+  it("있는 라우트는 저장된 내용이 부르는 슬라이스로 판정한다", () => {
+    expect(
+      shell("tdd-guard-e2e.py", "sed -i '' 's/a/b/' src/app/placed.tsx").status,
+    ).toBe(allowed);
+    expect(
+      shell("tdd-guard-e2e.py", "sed -i '' 's/a/b/' src/app/stubbed.tsx")
+        .status,
+    ).toBe(allowed);
+  });
+
+  it("플로우가 있는 화면은 통과시킨다", () => {
+    expect(
+      shell("tdd-guard-e2e.py", "touch src/screens/orders/ui/OrdersScreen.tsx")
+        .status,
+    ).toBe(allowed);
   });
 });
 

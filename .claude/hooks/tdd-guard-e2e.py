@@ -67,7 +67,16 @@ def verdict(path, read):
     # 보는 것은 저장된 파일이 아니라 **이번에 쓰려는 조각**이다 — 라우트를 세우는 걸음이
     # 화면을 붙이는 걸음이라 그 조각에 import가 있고, 판정에 안 쓰는 파일을 읽지 않는다.
     if path.startswith("src/app/") and path.endswith(".tsx"):
-        name = route_slice(read("incoming"))
+        incoming = read("incoming")
+        if incoming is not None:
+            name = route_slice(incoming)
+        elif exists(path):
+            name = route_slice(read())
+        else:
+            return (
+                f"TDD 차단: {path} 는 새 라우트인데 Bash로는 그 내용을 못 읽는다.\n"
+                "라우트의 짝 플로우는 그 라우트가 부르는 슬라이스로 찾는다 — Write로 써라.\n"
+            )
         if not name:
             return None
     else:
