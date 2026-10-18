@@ -1,6 +1,14 @@
 import { createSupabaseClient } from "@/shared/api/createSupabaseClient";
-import { readSupabaseEnv } from "@/shared/config/supabase.config";
+import {
+  missingSupabaseEnv,
+  readSupabaseEnv,
+} from "@/shared/config/supabase.config";
+import { UNCONFIGURED_SUPABASE_ENV } from "@/shared/consts/supabase.const";
 
-const { url, anonKey } = readSupabaseEnv();
+export const supabaseConfigured = missingSupabaseEnv().length === 0;
+
+const { url, anonKey } = supabaseConfigured
+  ? readSupabaseEnv()
+  : UNCONFIGURED_SUPABASE_ENV;
 
 export const supabase = createSupabaseClient(url, anonKey);

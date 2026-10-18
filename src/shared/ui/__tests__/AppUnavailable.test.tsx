@@ -19,10 +19,7 @@ const INITIAL_METRICS = {
 };
 
 async function renderUnavailable() {
-  const { AppUnavailable } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/shared/ui/AppUnavailable"
-  );
+  const { AppUnavailable } = await import("@/shared/ui/AppUnavailable");
 
   return render(
     <SafeAreaProvider initialMetrics={INITIAL_METRICS}>
@@ -66,10 +63,8 @@ describe("AppUnavailable — 설정이 빠진 빌드가 보는 한 장", () => {
 
 describe("APP_UNAVAILABLE_COPY — 문안 상수", () => {
   it("제목과 아래 줄이 정본 문안이다", async () => {
-    const { APP_UNAVAILABLE_COPY } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/shared/consts/appUnavailable.const"
-    );
+    const { APP_UNAVAILABLE_COPY } =
+      await import("@/shared/consts/appUnavailable.const");
 
     expect(APP_UNAVAILABLE_COPY).toEqual({
       title: "앱을 열 수 없어요",

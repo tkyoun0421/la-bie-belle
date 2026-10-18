@@ -3,6 +3,15 @@ export type SupabaseEnv = {
   anonKey: string;
 };
 
+type SupabaseEnvInput = {
+  url?: string;
+  anonKey?: string;
+};
+
+const URL_ENV = "EXPO_PUBLIC_SUPABASE_URL";
+
+const ANON_KEY_ENV = "EXPO_PUBLIC_SUPABASE_ANON_KEY";
+
 function requireEnv(name: string, value: string | undefined): string {
   if (!value) {
     throw new Error(
@@ -15,13 +24,22 @@ function requireEnv(name: string, value: string | undefined): string {
 
 export function readSupabaseEnv(): SupabaseEnv {
   return {
-    url: requireEnv(
-      "EXPO_PUBLIC_SUPABASE_URL",
-      process.env.EXPO_PUBLIC_SUPABASE_URL,
-    ),
+    url: requireEnv(URL_ENV, process.env.EXPO_PUBLIC_SUPABASE_URL),
     anonKey: requireEnv(
-      "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+      ANON_KEY_ENV,
       process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     ),
   };
+}
+
+export function missingSupabaseEnv(
+  env: SupabaseEnvInput = {
+    url: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    anonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+  },
+): string[] {
+  return [
+    ...(env.url ? [] : [URL_ENV]),
+    ...(env.anonKey ? [] : [ANON_KEY_ENV]),
+  ];
 }
