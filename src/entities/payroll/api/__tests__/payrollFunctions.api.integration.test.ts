@@ -5,9 +5,9 @@ import {
   createLeftUser,
   createSubmittedUser,
   execSql,
+  freshYear,
   kstDate,
   kstMonthStart,
-  queryColumn,
   seedAssignment,
   withFreshMonth,
   type AdminUser,
@@ -68,23 +68,8 @@ function freshPastDate(): string {
   return kstDate(-(24 + Math.floor(Math.random() * 90000)));
 }
 
-function freshHolidayYear(): number {
-  for (
-    let year = 2050 + Math.floor(Math.random() * 450);
-    year < 2500;
-    year += 1
-  ) {
-    const used = queryColumn(
-      "select count(*) from public.holidays\n" +
-        "where holiday_date >= make_date(:'year'::integer, 1, 1)\n" +
-        "  and holiday_date < make_date(:'year'::integer + 1, 1, 1);\n",
-      { year: String(year) },
-    );
-    if (Number(used[0] ?? "0") === 0) {
-      return year;
-    }
-  }
-  throw new Error("빈 공휴일 연도가 없다 — 2050~2499가 다 찼다");
+function freshHolidayDate(): string {
+  return `${freshYear("holidays", "holiday_date")}-01-01`;
 }
 
 function seedWageRate(
@@ -567,7 +552,7 @@ describe("set_adjustment(plan AC-04) — 새 행을 넣는다. 덮어쓰지 않�
 describe("import_holidays(plan AC-05) — internal, 그 해 api 행만 갈아치운다", () => {
   it("api 행이 새 목록으로 완전히 교체된다", async () => {
     const admin = await createAdminUser();
-    const year = freshHolidayYear();
+    const year = freshYear("holidays", "holiday_date");
     callImportHolidays(year, [{ holiday_date: `${year}-02-01`, name: "이전" }]);
 
     callImportHolidays(year, [{ holiday_date: `${year}-03-01`, name: "새것" }]);
@@ -578,7 +563,7 @@ describe("import_holidays(plan AC-05) — internal, 그 해 api 행만 갈아치
 
   it("manual 행은 재수입에도 남는다", async () => {
     const admin = await createAdminUser();
-    const year = freshHolidayYear();
+    const year = freshYear("holidays", "holiday_date");
     seedHolidayRow(`${year}-01-01`, "manual");
 
     callImportHolidays(year, [{ holiday_date: `${year}-03-01`, name: "새것" }]);
@@ -589,7 +574,7 @@ describe("import_holidays(plan AC-05) — internal, 그 해 api 행만 갈아치
 
   it("빈 배열이면 기존 api 행이 그대로다", async () => {
     const admin = await createAdminUser();
-    const year = freshHolidayYear();
+    const year = freshYear("holidays", "holiday_date");
     callImportHolidays(year, [{ holiday_date: `${year}-05-01`, name: "기존" }]);
 
     callImportHolidays(year, []);
@@ -600,7 +585,7 @@ describe("import_holidays(plan AC-05) — internal, 그 해 api 행만 갈아치
 
   it("관리자가 import_holidays를 불러도 거절된다 — 서비스 키 자리다", async () => {
     const admin = await createAdminUser();
-    const year = freshHolidayYear();
+    const year = freshYear("holidays", "holiday_date");
 
     expect(() =>
       callImportHolidays(year, [
@@ -625,7 +610,7 @@ describe("set_holiday(plan AC-05) — public, 참이면 manual 행, 거짓이면
   });
 
   it("p_on=true면 manual 행이 선다", async () => {
-    const date = freshPastDate();
+    const date = freshHolidayDate();
 
     await rpcOrThrow(admin, "set_holiday", { p_date: date, p_on: true });
 
@@ -633,7 +618,7 @@ describe("set_holiday(plan AC-05) — public, 참이면 manual 행, 거짓이면
   });
 
   it("p_on=false면 manual 행이 지워진다", async () => {
-    const date = freshPastDate();
+    const date = freshHolidayDate();
     await rpcOrThrow(admin, "set_holiday", { p_date: date, p_on: true });
 
     await rpcOrThrow(admin, "set_holiday", { p_date: date, p_on: false });
@@ -642,7 +627,7 @@ describe("set_holiday(plan AC-05) — public, 참이면 manual 행, 거짓이면
   });
 
   it("같은 날짜에 api 행이 있으면 참이어도 무변화다", async () => {
-    const date = freshPastDate();
+    const date = freshHolidayDate();
     seedHolidayRow(date, "api");
 
     await rpcOrThrow(admin, "set_holiday", { p_date: date, p_on: true });
@@ -652,7 +637,7 @@ describe("set_holiday(plan AC-05) — public, 참이면 manual 행, 거짓이면
 
   it("관리자가 아니면 not_allowed", async () => {
     const worker = await createApprovedUser();
-    const date = freshPastDate();
+    const date = freshHolidayDate();
 
     const { error } = await rpc(worker, "set_holiday", {
       p_date: date,

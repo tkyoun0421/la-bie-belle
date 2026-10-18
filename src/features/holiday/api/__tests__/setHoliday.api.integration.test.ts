@@ -4,7 +4,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
-  kstDate,
+  freshYear,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -31,8 +31,8 @@ function holidayRows(
     .eq("holiday_date", holidayDate);
 }
 
-function freshDate(): string {
-  return kstDate(24 + Math.floor(Math.random() * 90000));
+function freshHolidayDate(): string {
+  return `${freshYear("holidays", "holiday_date")}-01-01`;
 }
 
 function seedApiHoliday(holidayDate: string): void {
@@ -66,7 +66,7 @@ describe("setHoliday dal(plan AC-07) — set_holiday를 부르고 오류를 Doma
   });
 
   it("on=true면 manual 행이 서고, on=false면 지워진다", async () => {
-    const date = freshDate();
+    const date = freshHolidayDate();
 
     await setHoliday(admin.client, { date, on: true });
     expect((await holidayRows(admin, date)).data).toEqual([
@@ -78,7 +78,7 @@ describe("setHoliday dal(plan AC-07) — set_holiday를 부르고 오류를 Doma
   });
 
   it("같은 날짜에 api 행이 있으면 on=true여도 무변화다", async () => {
-    const date = freshDate();
+    const date = freshHolidayDate();
     seedApiHoliday(date);
 
     await setHoliday(admin.client, { date, on: true });
@@ -88,7 +88,7 @@ describe("setHoliday dal(plan AC-07) — set_holiday를 부르고 오류를 Doma
 
   it("관리자가 아니면 not_allowed", async () => {
     const worker = await createApprovedUser();
-    const date = freshDate();
+    const date = freshHolidayDate();
 
     const error = await captureDomainError(() =>
       setHoliday(worker.client, { date, on: true }),

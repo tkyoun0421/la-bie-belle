@@ -4,6 +4,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -11,10 +12,6 @@ import {
   type ApprovedUser,
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
-
-function randomOffset(): number {
-  return 24 + Math.floor(Math.random() * 100000);
-}
 
 type FunctionName = keyof Database["public"]["Functions"];
 
@@ -225,7 +222,7 @@ describe("근무표 표 제약과 open_slots 뷰", () => {
     });
 
     it("availabilities는 같은 사람·날짜를 두 번 못 받는다", async () => {
-      const workDate = kstMonthStart(randomOffset());
+      const workDate = kstMonthStart(freshMonth());
       execSql(
         "insert into public.availabilities (profile_id, work_date) values (:'profile_id', :'work_date');\n",
         { profile_id: first.profileId, work_date: workDate },

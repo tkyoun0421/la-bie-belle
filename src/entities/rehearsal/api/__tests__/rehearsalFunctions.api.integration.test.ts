@@ -3,6 +3,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthStart,
   seedAssignment,
@@ -38,7 +39,9 @@ async function rpcOrThrow(
 }
 
 function freshWorkDate(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+  return kstMonthStart(
+    freshMonth({ table: "rehearsals", column: "work_date" }),
+  );
 }
 
 function grantRehearsal(profileId: string, grantedBy: string): void {

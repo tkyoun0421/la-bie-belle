@@ -19,7 +19,7 @@ function candidateUsers(): TestUserRow[] {
 const batches = stalePurgeBatches(candidateUsers(), new Date());
 
 for (const { emailPattern, userIds } of batches) {
-  purgeTestUsers(userIds, emailPattern);
+  purgeTestUsers({ userIds, profileIds: [] }, emailPattern);
   console.log(`${userIds.length}명 지움 — ${emailPattern}`);
 }
 

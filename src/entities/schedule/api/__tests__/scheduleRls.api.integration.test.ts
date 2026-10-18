@@ -5,6 +5,7 @@ import {
   createApprovedUser,
   createLeftUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -16,10 +17,6 @@ import {
   createSignedInUser,
   type SignedInUser,
 } from "@tests/integration/supabase";
-
-function randomOffset(): number {
-  return 24 + Math.floor(Math.random() * 100000);
-}
 
 type FunctionName = keyof Database["public"]["Functions"];
 
@@ -190,7 +187,7 @@ describe("근무표 RLS", () => {
     let cancelRequestId: string;
 
     beforeAll(() => {
-      const workDate = kstMonthStart(randomOffset());
+      const workDate = kstMonthStart(freshMonth());
       availabilityId = seedAvailability(owner.profileId, workDate);
       cancelRequestId = seedCancelRequest(
         trainingAssignmentId,
@@ -262,7 +259,7 @@ describe("근무표 RLS", () => {
   describe("표 아홉에 직접 못 쓴다", () => {
     it("schedules에 근무자가 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("schedules").insert({
-        month: kstMonthStart(randomOffset()),
+        month: kstMonthStart(freshMonth()),
         created_by: reader.profileId,
       });
       expect(error?.code).toBe("42501");
@@ -270,7 +267,7 @@ describe("근무표 RLS", () => {
 
     it("schedules에 관리자도 직접 insert를 못 한다", async () => {
       const { error } = await admin.client.from("schedules").insert({
-        month: kstMonthStart(randomOffset()),
+        month: kstMonthStart(freshMonth()),
         created_by: admin.profileId,
       });
       expect(error?.code).toBe("42501");
@@ -279,7 +276,7 @@ describe("근무표 RLS", () => {
     it("days에 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("days").insert({
         schedule_id: randomUUID(),
-        work_date: kstMonthStart(randomOffset()),
+        work_date: kstMonthStart(freshMonth()),
         starts_at: "10:00",
         ends_at: "22:00",
         opened_by: reader.profileId,
@@ -327,7 +324,7 @@ describe("근무표 RLS", () => {
     it("availabilities에 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("availabilities").insert({
         profile_id: reader.profileId,
-        work_date: kstMonthStart(randomOffset()),
+        work_date: kstMonthStart(freshMonth()),
       });
       expect(error?.code).toBe("42501");
     });

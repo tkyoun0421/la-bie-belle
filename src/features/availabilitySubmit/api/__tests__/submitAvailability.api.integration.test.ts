@@ -6,6 +6,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -67,11 +68,6 @@ async function seedSchedule(
 
     return { month: monthDate.slice(0, 7), monthDate, scheduleId: data.id };
   });
-}
-
-function randomMonthWithoutSchedule(): string {
-  const offset = 24 + Math.floor(Math.random() * 90000);
-  return kstMonthStart(offset).slice(0, 7);
 }
 
 async function availabilityDatesFor(
@@ -139,7 +135,7 @@ describe("submitAvailability dal — submit_availability를 부르고 오류를 
 
     it("승인 안 된 사람이 부르면 not_allowed", async () => {
       const unapproved: SignedInUser = await createSignedInUser();
-      const month = randomMonthWithoutSchedule();
+      const month = kstMonthStart(freshMonth()).slice(0, 7);
 
       const error = await captureDomainError(() =>
         submitAvailability(unapproved.client, month, [`${month}-01`]),
@@ -149,7 +145,7 @@ describe("submitAvailability dal — submit_availability를 부르고 오류를 
     });
 
     it("그 달 근무표가 없으면 no_schedule", async () => {
-      const month = randomMonthWithoutSchedule();
+      const month = kstMonthStart(freshMonth()).slice(0, 7);
 
       const error = await captureDomainError(() =>
         submitAvailability(worker.client, month, [`${month}-01`]),

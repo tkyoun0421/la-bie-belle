@@ -5,12 +5,15 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthStart,
   type AdminUser,
 } from "@tests/integration/postgres";
 
 function freshWorkDate(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+  return kstMonthStart(
+    freshMonth({ table: "rehearsals", column: "work_date" }),
+  );
 }
 
 function grantRehearsal(profileId: string, grantedBy: string): void {

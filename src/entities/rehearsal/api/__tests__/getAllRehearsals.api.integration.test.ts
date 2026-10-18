@@ -4,12 +4,15 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthStart,
   type AdminUser,
 } from "@tests/integration/postgres";
 
-function freshMonth(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+function freshRehearsalMonth(): string {
+  return kstMonthStart(
+    freshMonth({ table: "rehearsals", column: "work_date" }),
+  );
 }
 
 function nameProfile(profileId: string, displayName: string): void {
@@ -47,7 +50,7 @@ describe("getAllRehearsals dal(plan AC-05) — 그 달 전원 행을 이름과 �
   });
 
   it("관리자가 부르면 전원의 행이 오고 profiles(display_name)이 임베딩된다", async () => {
-    const month = freshMonth();
+    const month = freshRehearsalMonth();
     const worker = await createApprovedUser();
     nameProfile(worker.profileId, "박서연");
     const id = seedTimeRehearsal(worker.profileId, month, "14:00", "16:00");
@@ -60,7 +63,7 @@ describe("getAllRehearsals dal(plan AC-05) — 그 달 전원 행을 이름과 �
   });
 
   it("관리자가 아니면 RLS가 좁혀 자기 행만 온다", async () => {
-    const month = freshMonth();
+    const month = freshRehearsalMonth();
     const worker = await createApprovedUser();
     const other = await createApprovedUser();
     const ownId = seedTimeRehearsal(worker.profileId, month, "09:00", "10:00");

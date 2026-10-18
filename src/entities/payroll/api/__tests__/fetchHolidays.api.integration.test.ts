@@ -2,6 +2,7 @@ import {
   type AdminUser,
   createAdminUser,
   execSql,
+  freshYear,
   queryColumn,
   seedHoliday,
 } from "@tests/integration/postgres";
@@ -73,25 +74,6 @@ function apiHolidayCountInYear(year: number): number {
     { year: String(year) },
   );
   return Number(rows[0] ?? "0");
-}
-
-function freshHolidayYear(): number {
-  for (
-    let year = 2500 + Math.floor(Math.random() * 400);
-    year < 2950;
-    year += 1
-  ) {
-    const used = queryColumn(
-      "select count(*) from public.holidays\n" +
-        "where holiday_date >= make_date(:'year'::integer, 1, 1)\n" +
-        "  and holiday_date < make_date(:'year'::integer + 1, 1, 1);\n",
-      { year: String(year) },
-    );
-    if (Number(used[0] ?? "0") === 0) {
-      return year;
-    }
-  }
-  throw new Error("빈 공휴일 연도가 없다 — 2500~2949가 다 찼다");
 }
 
 function nextYear(): number {
@@ -179,7 +161,7 @@ describe("internal.fetch_holidays — 다음 해 조건(plan AC-01)", () => {
 describe("public.import_holidays 껍데기(plan AC-02) — service role만 통과한다", () => {
   it("로그인한 클라이언트가 rpc('import_holidays')를 부르면 not_allowed로 거절되고 아무것도 안 들어간다", async () => {
     const admin = await createAdminUser();
-    const year = freshHolidayYear();
+    const year = freshYear("holidays", "holiday_date");
 
     const { error } = await rpc(admin, "import_holidays", {
       p_year: year,

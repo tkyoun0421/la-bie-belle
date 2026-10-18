@@ -3,6 +3,7 @@ import { DomainError } from "@/shared/model/errors";
 import { setApplicationDeadline } from "@/features/availabilitySubmit/api/setApplicationDeadline.api";
 import {
   createAdminUser,
+  freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -20,11 +21,6 @@ async function rpcOrThrow<Name extends FunctionName>(
   if (error) {
     throw error;
   }
-}
-
-function randomMonthWithoutSchedule(): string {
-  const offset = 24 + Math.floor(Math.random() * 90000);
-  return kstMonthStart(offset);
 }
 
 async function captureDomainError(
@@ -69,7 +65,7 @@ describe("setApplicationDeadline dal — set_application_deadline을 부르고 �
   });
 
   it("그 달 근무표가 없으면 no_schedule", async () => {
-    const month = randomMonthWithoutSchedule();
+    const month = kstMonthStart(freshMonth());
 
     const error = await captureDomainError(() =>
       setApplicationDeadline(admin.client, month, kstDate(1)),

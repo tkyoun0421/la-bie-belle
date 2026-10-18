@@ -8,6 +8,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   endAssignment,
   kstMonthEnd,
@@ -279,20 +280,11 @@ describe("getMonthSchedule — 끝난 자리와 끝난 배정은 임베딩에 �
 const DAYS_IN_MONTH = 31;
 const TRAINING_PER_DAY = 40;
 
-function pickThirtyOneDayMonthOffset(): number {
-  for (;;) {
-    const offset = 24 + Math.floor(Math.random() * 90000);
-    if (kstMonthEnd(offset).endsWith("-31")) {
-      return offset;
-    }
-  }
-}
-
 describe("getMonthSchedule — 한 달 배정 합이 천을 넘어도 날마다 다 온다", () => {
   it("31일 모두 교육 배정이 40개씩이면 날마다 40개가 온다", async () => {
     const admin = await createAdminUser();
     const owner = await createApprovedUser();
-    const offset = pickThirtyOneDayMonthOffset();
+    const offset = freshMonth({ days: 31 });
     const monthDate = kstMonthStart(offset);
     const [scheduleId] = queryColumn(
       "with inserted as (\n" +

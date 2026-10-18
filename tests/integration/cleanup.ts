@@ -1,6 +1,9 @@
 import { execSql } from "@tests/integration/postgres";
 import { runEmailPattern } from "@tests/integration/testUserMark";
-import { currentRunId } from "@tests/integration/testUserRegistry";
+import {
+  currentRunId,
+  type PurgeTargets,
+} from "@tests/integration/testUserRegistry";
 
 export type ProfileReference = { table: string; column: string };
 
@@ -23,7 +26,7 @@ export const PROFILE_REFERENCES: readonly ProfileReference[] = [
 const MARKED_USERS =
   "select u.id from auth.users u where u.id = any(:'user_ids'::uuid[]) and u.email ~ :'email_pattern'";
 
-const MARKED_PROFILES = `select p.id from public.profiles p where p.user_id in (${MARKED_USERS})`;
+const MARKED_PROFILES = `select p.id from public.profiles p where p.user_id in (${MARKED_USERS}) or (p.user_id is null and p.id = any(:'profile_ids'::uuid[]))`;
 
 function purgeSql(): string {
   return [
@@ -39,15 +42,16 @@ function purgeSql(): string {
 }
 
 export function purgeTestUsers(
-  userIds: readonly string[],
+  { userIds, profileIds }: Readonly<PurgeTargets>,
   emailPattern: string = runEmailPattern(currentRunId()),
 ): void {
-  if (userIds.length === 0) {
+  if (userIds.length === 0 && profileIds.length === 0) {
     return;
   }
 
   execSql(`${purgeSql()}\n`, {
     user_ids: `{${userIds.join(",")}}`,
+    profile_ids: `{${profileIds.join(",")}}`,
     email_pattern: emailPattern,
   });
 }

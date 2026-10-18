@@ -9,6 +9,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -116,8 +117,10 @@ function holidaysOf(result: PayrollMonth): Holiday[] {
   return result.holidays;
 }
 
-function freshMonth(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+function freshHolidayMonth(): string {
+  return kstMonthStart(
+    freshMonth({ table: "holidays", column: "holiday_date", neighbours: true }),
+  );
 }
 
 const seededHolidays: { date: string; source: HolidaySource }[] = [];
@@ -275,7 +278,7 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
   });
 
   it("그 달의 api 행과 manual 행이 둘 다 온다 — 날짜와 source가 그대로", async () => {
-    const month = freshMonth();
+    const month = freshHolidayMonth();
     const apiDate = dayOfMonth(month, "10");
     const manualDate = dayOfMonth(month, "15");
     seedHoliday(apiDate, "api");
@@ -297,7 +300,7 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
   });
 
   it("범위 밖이 안 섞인다 — 전달 마지막 날과 다음 달 첫날은 안 온다", async () => {
-    const month = freshMonth();
+    const month = freshHolidayMonth();
     const lastDayOfPrevMonth = lastDayOfMonthBefore(month);
     const firstDayOfNextMonth = firstDayAfter(month);
     seedHoliday(lastDayOfPrevMonth, "api");
@@ -315,7 +318,7 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
   });
 
   it("같은 날짜에 api와 manual이 공존하면 두 행이 다 온다", async () => {
-    const month = freshMonth();
+    const month = freshHolidayMonth();
     const date = dayOfMonth(month, "10");
     seedHoliday(date, "api");
     seedHoliday(date, "manual");
@@ -330,7 +333,7 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
   });
 
   it("그 달에 공휴일이 하나도 없으면 빈 배열이다", async () => {
-    const month = freshMonth();
+    const month = freshHolidayMonth();
 
     const result = await getPayrollMonth(admin.client, month);
     const holidays = holidaysOf(result);

@@ -4,6 +4,7 @@ import { sendWorkRequest } from "@/features/workRequest/api/sendWorkRequest.api"
 import {
   createAdminUser,
   createApprovedUser,
+  deleteThisRunDay,
   execSql,
   kstDate,
   kstMonthStart,
@@ -126,9 +127,9 @@ function seedDayWithSlot(
   const dayId = randomUUID();
   const slotId = randomUUID();
 
+  deleteThisRunDay(workDate);
   execSql(
     [
-      "delete from public.days where work_date = :'work_date';",
       "insert into public.schedules (month, created_by) values (:'month', :'created_by') on conflict (month) do nothing;",
       "insert into public.days (id, schedule_id, work_date, starts_at, ends_at, opened_by)",
       "select :'day_id', id, :'work_date', :'starts_at', :'ends_at', :'created_by' from public.schedules where month = :'month';",

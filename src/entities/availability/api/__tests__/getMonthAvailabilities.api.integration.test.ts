@@ -3,16 +3,13 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthEnd,
   kstMonthStart,
   queryColumn,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
-
-function randomOffset(): number {
-  return 24 + Math.floor(Math.random() * 90000);
-}
 
 function dayInMonth(monthDate: string, day: number): string {
   return `${monthDate.slice(0, 7)}-${String(day).padStart(2, "0")}`;
@@ -44,7 +41,9 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
   });
 
   it("관리자 세션에는 전원의 신청과 display_name이 함께 온다", async () => {
-    const monthDate = kstMonthStart(randomOffset());
+    const monthDate = kstMonthStart(
+      freshMonth({ table: "availabilities", column: "work_date" }),
+    );
     const month = monthDate.slice(0, 7);
     const dateA = dayInMonth(monthDate, 1);
     const dateB = dayInMonth(monthDate, 2);
@@ -62,7 +61,9 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
   });
 
   it("근무자 세션에는 본인 행만 온다(RLS)", async () => {
-    const monthDate = kstMonthStart(randomOffset());
+    const monthDate = kstMonthStart(
+      freshMonth({ table: "availabilities", column: "work_date" }),
+    );
     const month = monthDate.slice(0, 7);
     const dateA = dayInMonth(monthDate, 1);
     const dateB = dayInMonth(monthDate, 2);
@@ -77,15 +78,6 @@ describe("getMonthAvailabilities dal — 그 달 근무 신청을 profiles.displ
 
 const BULK_PROFILES = 36;
 const BULK_ROWS = 31 * BULK_PROFILES;
-
-function thirtyOneDayMonthOffset(): number {
-  for (;;) {
-    const offset = randomOffset();
-    if (kstMonthEnd(offset).endsWith("-31")) {
-      return offset;
-    }
-  }
-}
 
 function seedBulkProfiles(): string[] {
   return queryColumn(
@@ -131,7 +123,11 @@ describe("getMonthAvailabilities dal — 천 행을 넘는 달도 잘리지 않�
   });
 
   it("한 달 신청이 1116행이어도 전부 오고 중복이 없고 날짜·사람 순이다", async () => {
-    const offset = thirtyOneDayMonthOffset();
+    const offset = freshMonth({
+      table: "availabilities",
+      column: "work_date",
+      days: 31,
+    });
     const monthDate = kstMonthStart(offset);
     const profileIds = seedBulkProfiles();
 

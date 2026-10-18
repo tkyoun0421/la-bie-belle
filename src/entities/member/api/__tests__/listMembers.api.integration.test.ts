@@ -115,7 +115,6 @@ describe("재직자 목록이 알림 갈래를 같이 낸다(AC-08)", () => {
     const admin: AdminUser = await createAdminUser();
 
     const off = await createApprovedUser();
-    setSubmittedAt(off.userId, new Date().toISOString());
     const { error: turnOffError } = await off.client.rpc(
       "set_notifications_enabled",
       { p_on: false },
@@ -123,10 +122,8 @@ describe("재직자 목록이 알림 갈래를 같이 낸다(AC-08)", () => {
     expect(turnOffError).toBeNull();
 
     const onNoDevice = await createApprovedUser();
-    setSubmittedAt(onNoDevice.userId, new Date().toISOString());
 
     const onWithDevice = await createApprovedUser();
-    setSubmittedAt(onWithDevice.userId, new Date().toISOString());
     seedPushToken(onWithDevice.profileId);
 
     const rows = (await listActiveMembers(
@@ -150,7 +147,6 @@ describe("퇴사 구획에는 알림 갈래가 안 붙는다(AC-08)", () => {
     const admin: AdminUser = await createAdminUser();
 
     const left = await createLeftUser();
-    setSubmittedAt(left.userId, new Date().toISOString());
     seedPushToken(left.profileId);
 
     const rows = (await listLeftMembers(

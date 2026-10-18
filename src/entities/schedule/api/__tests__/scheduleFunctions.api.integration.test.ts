@@ -5,6 +5,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthEnd,
   kstMonthStart,
@@ -12,10 +13,6 @@ import {
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
-
-function randomOffset(): number {
-  return 24 + Math.floor(Math.random() * 100000);
-}
 
 type SlotDefault = { positions: string[]; count: number };
 
@@ -174,7 +171,7 @@ describe("근무표 함수", () => {
   describe("호출자 검사 — 근무자가 부르면 not_allowed", () => {
     it("create_schedule을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("create_schedule", {
-        p_month: kstMonthStart(randomOffset()),
+        p_month: kstMonthStart(freshMonth()),
         p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
@@ -182,7 +179,7 @@ describe("근무표 함수", () => {
 
     it("set_application_deadline을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("set_application_deadline", {
-        p_month: kstMonthStart(randomOffset()),
+        p_month: kstMonthStart(freshMonth()),
         p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
@@ -190,7 +187,7 @@ describe("근무표 함수", () => {
 
     it("confirm_schedule을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("confirm_schedule", {
-        p_month: kstMonthStart(randomOffset()),
+        p_month: kstMonthStart(freshMonth()),
       });
       expect(error?.message).toBe("not_allowed");
     });
@@ -241,7 +238,7 @@ describe("근무표 함수", () => {
 
     it("마감일이 오늘 이전이면 deadline_past", async () => {
       const { error } = await admin.client.rpc("create_schedule", {
-        p_month: kstMonthStart(randomOffset()),
+        p_month: kstMonthStart(freshMonth()),
         p_deadline: kstDate(-1),
       });
       expect(error?.message).toBe("deadline_past");
@@ -308,7 +305,7 @@ describe("근무표 함수", () => {
   describe("날 열기와 닫기", () => {
     it("근무표가 없는 달의 날짜를 열면 no_schedule", async () => {
       const { error } = await admin.client.rpc("open_day", {
-        p_work_date: kstMonthStart(randomOffset()),
+        p_work_date: kstMonthStart(freshMonth()),
       });
       expect(error?.message).toBe("no_schedule");
     });
