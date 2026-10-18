@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: ADR-003 service role 조항 · tests/integration
 date: 2026-09-14
-resolved:
+resolved: 2026-10-18
 ---
 
 # integration 테스트가 만든 사용자를 못 치운다

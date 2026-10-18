@@ -6,22 +6,26 @@
 
 ## 다음 작업
 
-**사람 손이 필요한 것과 판정 대기가 남았다.** 어제 남은 후속 다섯이 닫혔고([docs/log/2026-10-17.md](log/2026-10-17.md)) 푸시 대기열 상한과 흐르는 스켈레톤 빛 줄과 날짜를 받는 마감 문장이 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
+**사람 손이 필요한 것과 판정 대기가 남았다.** 오늘 아홉 행이 닫혔고([docs/log/2026-10-18.md](log/2026-10-18.md)) 설정값이 빠진 빌드의 화면, 시트 손잡이, 통계·급여 조각의 신분 받기, Bash 쓰기를 보는 훅, integration의 로컬 가드와 자기 데이터 정리가 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
 1. **Supabase 원격 프로젝트의 Redirect URLs에 두 줄을 넣는다(사람 손).** `labiebelle://auth/callback`과 `exp://**/--/auth/callback`이다. 빠지면 로그인이 오류 없이 돌아오지 못한다. 로컬 `supabase/config.toml`에는 이미 든다. 자리는 [environments.md](5-deploy/environments.md)다.
-2. **실기기 확인.** 로그인(구글 왕복의 네 계정 경우, 창 닫기, 안드로이드 복귀 때 not-found, 라이트·다크 버튼 톤), 테마(시스템 테마인 다크 기기가 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지), 차트(통계 화면의 값 라벨 위치와 1·4·7·10월 라벨, 막대 폭, 근무표 칸의 점선 테두리, 출근 기록 없는 달의 출근율이 `–`인지), 등장 모션(움직임 줄이기를 끈 콜드 스타트에 다섯 요소가 70ms씩 어긋나 8px 아래에서 올라오는지, 켠 콜드 스타트는 이동 없이 밝기만 바뀌는지, 실패 줄이 떠도 등장이 다시 안 도는지)에 더해 오늘 것이 있다.
+2. **실기기 확인.** 로그인(구글 왕복의 네 계정 경우, 창 닫기, 안드로이드 복귀 때 not-found, 라이트·다크 버튼 톤), 테마(시스템 테마인 다크 기기가 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지), 차트(통계 화면의 값 라벨 위치와 1·4·7·10월 라벨, 막대 폭, 근무표 칸의 점선 테두리, 출근 기록 없는 달의 출근율이 `–`인지), 등장 모션(움직임 줄이기를 끈 콜드 스타트에 다섯 요소가 70ms씩 어긋나 8px 아래에서 올라오는지, 켠 콜드 스타트는 이동 없이 밝기만 바뀌는지, 실패 줄이 떠도 등장이 다시 안 도는지)에 더해 어제와 오늘 것이 있다.
    - 시트 푸터에 `flex-1` 버튼 둘이 나란히 설 때 폭을 반씩 나누는지, 모든 버튼이 눌리는 동안 줄고 `disabled`·`loading`이면 안 주는지(구글 버튼의 `busy` 포함)
    - 스켈레톤 빛 줄이 끊김 없이 흐르고 한 바퀴 돌아 다시 시작할 때 이음새가 튀지 않는지, 동작 줄이기를 켜면 빛 줄이 없고 끄면 다시 흐르는지, 빛 줄이 둥근 모서리(`rounded-xl`·`rounded-sm`) 안에서 잘려 보이는지, 카드 여럿이 한 화면에 설 때 깜빡임으로 읽히지 않는지
    - 앱을 켠 채 OS 설정을 바꾼 뒤 로그인 화면에 들어가면 등장 모션이 바뀐 설정을 따르는지
    - 기기 시계를 하루 돌려도 오늘이 서버 날짜인지(근무표 오늘 강조·통계 다음 달·관리자 홈 오늘 타일)
+   - env 두 값을 비운 빌드에서 스플래시가 내려가고 「앱을 열 수 없어요」 한 장이 뜨는지, 버튼이 없는지, 값이 찬 빌드는 전처럼 입장 판정대로 가는지
+   - 시트 손잡이는 `DraggableSheet`를 쓰는 화면이 없어 화면에서 안 보인다 — `sheets-not-draggable`이 서야 볼 수 있다
    - iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다
-3. **판정 대기는 그대로다.**
+3. **디자인 결정(사람).** [`error-screen-design`](backlog.md) — `AppUnavailable`의 생김새는 `RetryScreen`을 빌린 임시 꼴이다.
+4. **판정 대기는 그대로다.**
+   - [`sheets-not-draggable`](backlog.md) — 화면 시트 15곳이 끌어 닫기 없는 `SheetLayer`를 쓰고 손잡이를 단 `DraggableSheet`는 쓰는 곳이 0이다. 시트를 끌어 닫게 바꿀지, 손잡이만 그릴지
    - [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
    - [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
    - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
    - [`attendance-checkin`](backlog.md) — 사람 손이 닿는 문(NCP 대표 계정과 지도 키)이 먼저다
-4. **새 판정 후보 넷.** [`requests-closed-30-days`](backlog.md)(문서를 코드의 `closed_at is null`에 맞출지) · [`monthly-assignment-count-canon`](backlog.md)(한 달 배정 수 341·600쯤·천쯤 셋을 하나로) · [`runtime-unbounded-keys-table`](backlog.md)(`runtime.md`의 「전체를 읽는 키는 셋」이 코드와 안 맞는다) · [`my-reads-filter-by-profile`](backlog.md)(관리자가 근무자 화면을 쓰는지 미확인).
-5. **결정 없이 할 후보는 이제 비었다.** 어제 남은 둘(`skeleton-shimmer-reduce-motion-off`·`claim-notifications-concurrency-test`)이 닫혔다. 남은 일은 위 사람 손과 판정 대기다.
+   - 어제 나온 판정 후보 넷 — [`requests-closed-30-days`](backlog.md)(문서를 코드의 `closed_at is null`에 맞출지) · [`monthly-assignment-count-canon`](backlog.md)(한 달 배정 수 341·600쯤·천쯤 셋을 하나로) · [`runtime-unbounded-keys-table`](backlog.md)(`runtime.md`의 「전체를 읽는 키는 셋」이 코드와 안 맞는다) · [`my-reads-filter-by-profile`](backlog.md)(관리자가 근무자 화면을 쓰는지 미확인)
+5. **결정 없이 할 후보.** [`stats-retry-profile-key`](backlog.md)(`RETRY_KEYS`에 프로필 키를 넣는다) · [`orphan-profiles-legacy`](backlog.md)(`user_id` 빈 profile 238행) · [`default-wage-rate-tests-in-lock`](backlog.md)(헬퍼 밖에서 기본 시급을 심는 테스트) · [`fixture-blocked-user-shape`](backlog.md)(`createBlockedUser`가 만드는 없는 상태). [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
 
 ## 재개 맥락
 
@@ -29,7 +33,7 @@
 
 **테마는 OS 값을 직접 읽어 `light`나 `dark`로만 넣는다.** `ThemeColorScheme`에 `null`이 없다. react-native-css의 `Appearance` 리스너가 먼저 걸리고 `followOsColorScheme`가 `_layout.tsx`의 effect에서 나중에 걸려 같은 이벤트에서 고른 테마로 다시 적용한다 — 순서는 소스로 읽었고 기기로는 못 봤다. `logic` 프로젝트에서 `react-native` 대역은 구현의 import에 안 닿는다([관찰 072](observations/archive/072-react-native-mock-misses-in-logic-project.md), 정의문과 execution에 반영). 실제 모듈을 import해 `Object.assign`으로 갈거나 `tests/setup/appearance.ts`의 `stubAppearance`를 쓴다.
 
-**기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. `candidate` 행 `identity-threading-into-features`는 backlog에 선다.
+**기존에 남아 있던 두 위험도 그대로다.** `scheduleAdmin`의 조각 열둘이 `DayDetailPositionRow`(`screens/scheduleAdmin/model/dayDetail.type.ts`) 때문에 `features` 슬라이스 셋(`adjustment`·`scheduleAssign`·`scheduleConfirm`)을 당겨 못 내려간다. 통계 화면이 같은 달의 급여를 두 경로(차트 집계와 조각의 `empty` 판정)로 계산한다 — `TrendChart`를 조각으로 올려야 풀린다. 신분은 이제 아래로 흐른다 — 통계·급여 조각 훅은 `profileId`를 인자로 받고 화면 controller(`useStatsScreen`·`usePayrollScreen`)가 `useMyStanding`으로 한 번 읽어 심는다. 통계 화면은 `identity`(`pending`·`failed`·`absent`·`ready`)로 자리를 가른다.
 
 **1000행 넘게 쌓이는 표는 `shared/api/readAllPages.ts`로 읽는다.** `getWageRates`·`getPayrollMonth`·`getMonthAvailabilities`·`getMonthAttendance`의 `check_ins`가 쓴다. 페이지 사이에 행이 흔들리지 않게 정렬 키를 고정해야 한다. **`max_rows`(1000)는 응답 합이 아니라 맨 위 결과에 한 번, 부모 행 하나의 임베딩 배열에 한 번씩 따로 걸린다** — 근무표 한 달은 임베딩 합이 천을 넘어도 안 잘려 `readAllPages`를 안 쓴다(`runtime.md` 「읽기 범위」). 감사는 읽기 서른넷에서 끝났다. `claim_notifications`는 한 번에 오래된 500행만 잡고, 그 너머는 매분 `retry_push` 회차가 나눠 잡는다. 동시 호출이 서로 다른 행을 잡는 것은 integration이 연결 둘로 증명한다.
 
@@ -45,7 +49,7 @@
 
 **테스트 대역은 실물 서명으로 적는다.** 이름 붙은 상수는 `typeof`로도 남는 필드가 안 잡혀서 빌더와 상수에 반환 타입을 달았다. 상수 전체에 표기를 붙일지는 `fixture-constants-typed`가 든다. 계획이 센 수는 grep이면 하한이다(관찰 075).
 
-**통합 테스트는 병렬 워크트리에서 믿기 어렵다.** 공유 로컬 DB에 다른 워크트리의 마이그레이션이 먼저 올라가 있으면 `migration up`이 멈춘다. 그때는 jest만 돌리고 PR에 적는다. watchman이 파일을 다시 수집하면 jest가 조용히 0건을 낸다(`--no-watchman`). 둘 다 판정이 `docs/4-test/execution.md` 「돌릴 때」에 선다.
+**통합 테스트는 병렬 워크트리에서 믿기 어렵다.** 공유 로컬 DB에 다른 워크트리의 마이그레이션이 먼저 올라가 있으면 `migration up`이 멈춘다. 그때는 jest만 돌리고 PR에 적는다. 시작 전에 globalSetup이 붙을 곳이 이 저장소의 로컬 Supabase인지 보고 원격·LAN URL이면 하나도 안 돌린다 — 기기용 LAN 주소를 넣은 셸이면 `EXPO_PUBLIC_SUPABASE_URL`을 비우고 돌린다. 가입 헬퍼가 만든 사용자는 파일이 끝날 때 지워지고, 중단한 회차가 남긴 것은 `pnpm test:purge`가 6시간 뒤에 치운다. 달·연도는 `freshMonth`·`freshYear`로 비었는지 세어 고르고, where 없는 `delete from`은 `tests/lint/unscopedDelete.ts`가 문다. watchman이 파일을 다시 수집하면 jest가 조용히 0건을 낸다(`--no-watchman`). 둘 다 판정이 `docs/4-test/execution.md` 「돌릴 때」에 선다.
 
 **`as`는 `memberOf`가 만든 가드 한 자리로 모인다.** 실행 코드의 `as`는 셋(Expo Router `Href` 둘과 동작이 바뀌어 안 건드린 하나)이다. 가드를 만들어 돌려주는 고차 함수는 반환 타입이 함수 타입이라 규칙 47의 밖이고, 이름 없는 인라인 가드도 밖이다.
 
@@ -99,10 +103,10 @@
 
 **Edge Function을 타입 검사하는 자리가 없다.** Deno 런타임이라 `tsconfig.json`이 `exclude`하고 CI에 Deno가 없다. `erase-account`·`import-holidays`가 섰고 `send-push`가 셋째다.
 
-**e2e TDD 훅이 Edit·Write만 보고 Bash를 안 본다**(관찰 054는 archive로 갔지만 같은 성격의 재발 가능성은 남는다). `internal` 함수는 PostgREST 라우팅과 스키마 USAGE에 더해 `PUBLIC` 실행 권한도 걷혔다(#582). 새 `internal` 함수는 같은 마이그레이션에서 `revoke execute on function internal.<이름> from public`을 두고, 빠지면 `internalGrants` integration이 빨개진다 — 글로 적을지는 `internal-function-revoke-rule`이 든다.
+**TDD·spec 훅은 Bash로 쓰는 정해진 꼴(리다이렉션·`tee`·`sed -i`·`cp`·`mv`·`touch`)도 본다.** 인터프리터가 쓰는 파일(`python3 - <<EOF`·`node -e`)과 `git mv`·`ln`·`cp -r`은 못 본다. Bash에서는 내용을 모르므로 새 파일은 경로 기준으로 짝 테스트를 요구하고 타입·상수만 담을 파일은 Write로 쓴다. 판정은 `docs/4-test/execution.md` 「훅」에 선다. `internal` 함수는 PostgREST 라우팅과 스키마 USAGE에 더해 `PUBLIC` 실행 권한도 걷혔다(#582). 새 `internal` 함수는 같은 마이그레이션에서 `revoke execute on function internal.<이름> from public`을 두고, 빠지면 `internalGrants` integration이 빨개진다 — 글로 적을지는 `internal-function-revoke-rule`이 든다.
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e·Suspense), NCP 대표 계정과 지도 키, 3D 석 장, 로컬 Supabase 구글 프로바이더.
 
-회차 기록은 [docs/log/2026-10-16.md](log/2026-10-16.md)다 — 읽기 상한 감사가 끝나고 「오늘」이 서버 시각이 되고 모션 정본 후속이 코드로 내려갔다(#590~#593). 그 앞은 [docs/log/2026-10-15.md](log/2026-10-15.md)다 — 1000행 상한과 `internal` 권한이 닫히고 로그인 등장 모션이 섰다(#579~#588). 그 앞은 [docs/log/2026-10-14.md](log/2026-10-14.md)다 — 로그인 화면과 구글 흐름이 서고 시스템 테마가 OS 다크를 따르게 됐다(#572~#576). 그 앞은 [docs/log/2026-10-13.md](log/2026-10-13.md)(감사 묶음 여덟과 발견 둘, #551~#570)이고 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
+회차 기록은 [docs/log/2026-10-18.md](log/2026-10-18.md)다 — 설정값이 빠진 빌드가 한 장을 그리고 훅이 Bash 쓰기를 보고 integration이 자기 데이터를 치운다(#602~#615). 그 앞은 [docs/log/2026-10-17.md](log/2026-10-17.md)다 — 푸시 대기열 상한과 흐르는 스켈레톤 빛 줄(#595~#601). 그 앞은 [docs/log/2026-10-16.md](log/2026-10-16.md)다 — 읽기 상한 감사가 끝나고 「오늘」이 서버 시각이 되고 모션 정본 후속이 코드로 내려갔다(#590~#593). 그 앞은 [docs/log/2026-10-15.md](log/2026-10-15.md)다 — 1000행 상한과 `internal` 권한이 닫히고 로그인 등장 모션이 섰다(#579~#588). 그 앞은 [docs/log/2026-10-14.md](log/2026-10-14.md)다 — 로그인 화면과 구글 흐름이 서고 시스템 테마가 OS 다크를 따르게 됐다(#572~#576). 그 앞은 [docs/log/2026-10-13.md](log/2026-10-13.md)(감사 묶음 여덟과 발견 둘, #551~#570)이고 그 앞은 [docs/log/2026-10-12.md](log/2026-10-12.md)(선언형 묶음 여섯과 구현자 시간 측정, #537~#549)와 [docs/log/2026-10-10.md](log/2026-10-10.md)(리팩터링 묶음 여덟, #516~#528)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).

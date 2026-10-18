@@ -19,7 +19,7 @@ date: 2026-10-09
 
 지금 상태로는 **integration 결과가 PR의 완료 근거로 못 쓰인다.** 자동 리뷰가 「총괄 쪽 재실행이 없다」고 두 번 집었는데, 돌려도 그 수를 믿을 수 없다는 것이 답이다.
 
-[관찰 024](../024-cron-races-two-step-seed.md)가 픽스처를 여러 psql 호출로 심는 자리의 cron 경합을 들고 `test-seed-transaction`이 받는다. 이쪽은 축이 다르다 — 한 실행 안의 경합이 아니라 **실행 둘 사이**다.
+[관찰 024](024-cron-races-two-step-seed.md)가 픽스처를 여러 psql 호출로 심는 자리의 cron 경합을 들고 `test-seed-transaction`이 받는다. 이쪽은 축이 다르다 — 한 실행 안의 경합이 아니라 **실행 둘 사이**다.
 
 ## 고칠 길 셋
 

@@ -4,6 +4,21 @@
 
 | 날짜       | 변경 | PR   |
 | ---------- | ---- | ---- |
+| 2026-10-18 | integration 단언이 남은 행이 아니라 자기 행을 본다 (test-data-isolation D) | #615 |
+| 2026-10-18 | 픽스처가 빈 달을 확인해 고르고 자기 행만 지운다 (test-data-isolation C) | #614 |
+| 2026-10-18 | integration이 만든 사용자를 회차 끝에 지운다 (test-data-isolation B) | #613 |
+| 2026-10-18 | integration이 로컬 DB에만 붙는다는 것을 시작 전에 확인한다 (test-data-isolation A) | #612 |
+| 2026-10-18 | 코드가 가리키는 그림 파일이 저장소에 있다 (logo-e2e) | #611 |
+| 2026-10-18 | ADR 둘이 TDD 훅의 Bash 범위를 따라간다 (hook-bash-writes) | #610 |
+| 2026-10-18 | TDD·spec 훅이 Bash로 쓰는 길도 본다 (hook-bash-writes) | #609 |
+| 2026-10-18 | 통계·급여 조각이 신분을 화면에서 받는다 (identity-threading-into-features) | #608 |
+| 2026-10-18 | 바텀시트 맨 위에 손잡이가 선다 (sheet-handle) | #607 |
+| 2026-10-18 | 설정값이 빠진 빌드가 죽지 않고 「앱을 열 수 없어요」를 그린다 (error-screen) | #606 |
+| 2026-10-18 | test-planner가 판정에 확인 방법을 싣는다 (test-planner-ground-truth) | #605 |
+| 2026-10-18 | 바텀시트 손잡이를 조각의 정본에 올린다 (sheet-handle) | #604 |
+| 2026-10-18 | 설정값이 빠진 빌드는 「앱을 열 수 없다」 한 장을 그린다 (error-screen) | #602 |
+| 2026-10-18 | 요청과 첫 갈래를 한 트랜잭션으로 심는다 (test-seed-transaction) | #603 |
+| 2026-10-17 | 2026-10-17 회차에 후속 둘을 더한다 — 동시 호출 증명과 스켈레톤 폭 측정 (#599·#600) | #601 |
 | 2026-10-17 | 동작 줄이기가 꺼지면 떠 있는 스켈레톤의 빛 줄이 흐른다 (skeleton-shimmer-reduce-motion-off) | #600 |
 | 2026-10-17 | 동시에 부른 두 연결이 서로 다른 알림을 잡는다 (claim-notifications-concurrency-test) | #599 |
 | 2026-10-17 | 2026-10-17 회차를 기록한다 — 마감 문장이 날짜를 받고 푸시 대기열에 상한이 서고 스켈레톤 빛 줄이 흐른다 | #598 |

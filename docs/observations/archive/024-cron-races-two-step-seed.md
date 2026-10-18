@@ -1,7 +1,8 @@
 ---
-status: open
+status: actioned
 target: tests/integration/postgres.ts
 date: 2026-09-28
+resolved: 2026-10-18
 ---
 
 # cron이 픽스처를 두 번에 나눠 심는 틈에 들어온다

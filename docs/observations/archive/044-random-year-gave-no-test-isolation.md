@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: tests/integration/postgres.ts
 date: 2026-10-01
-resolved:
+resolved: 2026-10-18
 ---
 
 # 랜덤 연도가 테스트 격리를 못 줬다
