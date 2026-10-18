@@ -18,6 +18,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules sh -c 'jest --selectProjects logic ${1+--passWithNoTests} \"$@\" && jest --selectProjects components ${1+--passWithNoTests} \"$@\"' --",
     "test:integration": "supabase start && pnpm test:integration:run",
     "test:integration:run": "supabase migration up && NODE_OPTIONS=--experimental-vm-modules jest --config jest.integration.config.js",
+    "test:purge": "node --no-warnings --experimental-strip-types --import ./scripts/registerModuleAlias.mjs scripts/checkIntegrationTarget.mts && node --no-warnings --experimental-strip-types --import ./scripts/registerModuleAlias.mjs scripts/purgeStaleTestUsers.mts",
     "e2e": "node --experimental-strip-types --import ./scripts/registerModuleAlias.mjs scripts/e2e.mts",
     "e2e:seed": "node --experimental-strip-types --import ./scripts/registerModuleAlias.mjs scripts/e2eSeedServer.mts",
     "tokens:css": "node --experimental-strip-types scripts/generateGlobalsCss.mts",

@@ -13,6 +13,7 @@ import {
   seedNotificationRow,
   seedPushToken,
 } from "@tests/integration/postgres";
+import { trackUser } from "@tests/integration/testUserRegistry";
 
 type RpcCaller = { client: AdminUser["client"] };
 
@@ -147,18 +148,8 @@ function netRequestCountAfter(cursor: number): number {
   return netRequestCursor() - cursor;
 }
 
-let trackedUserIds: string[] = [];
 let trackedNotificationIds: string[] = [];
 let trackedPushTokens: string[] = [];
-let trackedProfileIds: string[] = [];
-
-function trackProfile(profileId: string): void {
-  trackedProfileIds.push(profileId);
-}
-
-function trackUser(userId: string): void {
-  trackedUserIds.push(userId);
-}
 
 function trackNotification(id: string): void {
   trackedNotificationIds.push(id);
@@ -182,20 +173,6 @@ afterEach(() => {
       `delete from public.push_tokens where token = any(array[${tokenList}]::text[]);\n`,
     );
     trackedPushTokens = [];
-  }
-  if (trackedProfileIds.length > 0) {
-    const idList = trackedProfileIds.map((id) => `'${id}'`).join(",");
-    execSql(
-      `delete from public.profiles where id = any(array[${idList}]::uuid[]);\n`,
-    );
-    trackedProfileIds = [];
-  }
-  if (trackedUserIds.length > 0) {
-    const idList = trackedUserIds.map((id) => `'${id}'`).join(",");
-    execSql(
-      `delete from auth.users where id = any(array[${idList}]::uuid[]);\n`,
-    );
-    trackedUserIds = [];
   }
 });
 
@@ -382,7 +359,6 @@ describe("internal.claim_notifications — 한 번에 잡는 상한", () => {
   it("p_ids가 널이면 1100행 중 가장 오래된 500행만 잡고 나머지는 손대지 않는다", async () => {
     const member = await createApprovedUser();
     trackUser(member.userId);
-    trackProfile(member.profileId);
     seedOldNotifications(member.profileId);
     const pNow = new Date().toISOString();
 
@@ -412,7 +388,6 @@ describe("internal.claim_notifications — 한 번에 잡는 상한", () => {
   it("두 번째 호출이 남은 행 중 가장 오래된 500행을 잡고 첫 묶음은 다시 안 잡는다", async () => {
     const member = await createApprovedUser();
     trackUser(member.userId);
-    trackProfile(member.profileId);
     seedOldNotifications(member.profileId);
     const pNow = new Date().toISOString();
     claimNotifications(null, pNow);
@@ -546,7 +521,6 @@ describe("internal.claim_notifications — 동시에 부른 두 연결", () => {
   it("먼저 잡은 연결이 커밋하기 전에 부른 두 번째 연결은 기다리지 않고 겹치지 않는 행을 잡는다", async () => {
     const member = await createApprovedUser();
     trackUser(member.userId);
-    trackProfile(member.profileId);
     seedConcurrentNotifications(member.profileId);
     const pNow = new Date().toISOString();
     const first = openPsql();
