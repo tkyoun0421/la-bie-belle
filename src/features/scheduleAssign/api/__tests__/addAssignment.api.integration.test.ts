@@ -5,8 +5,7 @@ import {
   createApprovedUser,
   kstDate,
   kstMonthStart,
-  seedRequestCandidate,
-  seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -158,9 +157,10 @@ describe("addAssignment dal — add_assignment을 부르고 오류를 DomainErro
   it("정규 배정이 들어가면 그 자리의 살아 있는 요청을 닫는다", async () => {
     const { dayId, workDate } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내");
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const applicant = await createApprovedUser();
     await applyForDay(applicant, workDate);
@@ -182,9 +182,10 @@ describe("addAssignment dal — add_assignment을 부르고 오류를 DomainErro
   it("교육 배정은 자리를 안 먹어 다른 자리의 요청을 안 닫는다", async () => {
     const { dayId, workDate } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "매니저");
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const trainee = await createApprovedUser();
     await applyForDay(trainee, workDate);

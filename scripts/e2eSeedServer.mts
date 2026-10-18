@@ -19,10 +19,9 @@ import {
   seedPastDay,
   seedPastSchedule,
   seedHoliday,
-  seedRequestCandidate,
   seedSlotOfPosition,
   seedWageHistory,
-  seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -750,9 +749,9 @@ async function seedWorkerRequestPending(
 
     const dayId = await dayIdOf(admin, workDate);
     const slotId = await freeSlotOfPosition(admin, dayId, "안내");
-    const requestId = seedWorkRequest(slotId, admin.profileId);
-
-    seedRequestCandidate(requestId, meProfileId, "pending");
+    seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: meProfileId },
+    ]);
 
     return {
       month,
@@ -783,9 +782,9 @@ async function seedWorkerRequestClaimed(
 
     const dayId = await dayIdOf(admin, workDate);
     const slotId = await freeSlotOfPosition(admin, dayId, "안내");
-    const requestId = seedWorkRequest(slotId, admin.profileId);
-
-    seedRequestCandidate(requestId, meProfileId, "pending");
+    seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: meProfileId },
+    ]);
     seedAssignment(dayId, colleague.profileId, "regular", slotId);
 
     return {

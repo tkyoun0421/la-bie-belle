@@ -498,44 +498,50 @@ export function seedWorkRequest(
   return id;
 }
 
-function reopenRequest(requestId: string): void {
-  execSql("update public.requests set closed_at = null where id = :'id';\n", {
-    id: requestId,
-  });
-}
+export type SeededCandidate = {
+  profileId: string;
+  status?: "pending" | "accepted" | "declined";
+  expiresAt?: string | null;
+};
 
-function stillLive(expiresAt: string | null): boolean {
-  return expiresAt === null || Date.parse(expiresAt) > Date.now();
-}
-
-export function seedRequestCandidate(
-  requestId: string,
-  profileId: string,
-  status: "pending" | "accepted" | "declined" = "pending",
-  expiresAt: string | null = null,
+export function seedWorkRequestWithCandidates(
+  slotId: string,
+  requestedBy: string,
+  candidates: readonly SeededCandidate[],
+  requestExpiresAt: string | null = null,
 ): string {
   const id = randomUUID();
-  const expiresSql =
-    expiresAt === null ? "now() + interval '1 hour'" : ":'expires_at'";
-  const respondedSql = status === "pending" ? "null" : "now()";
+  const requestExpiresSql =
+    requestExpiresAt === null ? "now() + interval '1 hour'" : ":'expires_at'";
   const vars: Record<string, string> = {
     id,
-    request_id: requestId,
-    profile_id: profileId,
-    status,
+    slot_id: slotId,
+    requested_by: requestedBy,
   };
-  if (expiresAt !== null) {
-    vars.expires_at = expiresAt;
-  }
-  execSql(
-    `insert into public.request_candidates (id, request_id, profile_id, status, responded_at, expires_at) values (:'id', :'request_id', :'profile_id', :'status', ${respondedSql}, ${expiresSql});\n`,
-    vars,
-  );
-
-  if (status === "pending" && stillLive(expiresAt)) {
-    reopenRequest(requestId);
+  if (requestExpiresAt !== null) {
+    vars.expires_at = requestExpiresAt;
   }
 
+  let sql =
+    "begin;\n" +
+    `insert into public.requests (id, kind, slot_id, requested_by, expires_at) values (:'id', 'work', :'slot_id', :'requested_by', ${requestExpiresSql});\n`;
+
+  candidates.forEach((candidate, index) => {
+    const status = candidate.status ?? "pending";
+    const expiresAt = candidate.expiresAt ?? null;
+    const expiresSql =
+      expiresAt === null ? "now() + interval '1 hour'" : `:'c${index}_expires'`;
+    const respondedSql = status === "pending" ? "null" : "now()";
+    vars[`c${index}_id`] = randomUUID();
+    vars[`c${index}_profile`] = candidate.profileId;
+    vars[`c${index}_status`] = status;
+    if (expiresAt !== null) {
+      vars[`c${index}_expires`] = expiresAt;
+    }
+    sql += `insert into public.request_candidates (id, request_id, profile_id, status, responded_at, expires_at) values (:'c${index}_id', :'id', :'c${index}_profile', :'c${index}_status', ${respondedSql}, ${expiresSql});\n`;
+  });
+
+  execSql(sql + "commit;\n", vars);
   return id;
 }
 

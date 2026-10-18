@@ -7,8 +7,7 @@ import {
   kstDate,
   kstMonthStart,
   seedAssignment,
-  seedRequestCandidate,
-  seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -182,9 +181,10 @@ describe("forceChange dal — force_change를 부르고 오류를 DomainError로
   it("확정 뒤 사람을 바꾸면 그 자리의 살아 있는 요청도 닫는다", async () => {
     const { scheduleId, workDate, slotId, assignmentId } =
       await seedOpenAssignment(admin);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const newWorker = await createApprovedUser();
     await applyForDay(newWorker, workDate);

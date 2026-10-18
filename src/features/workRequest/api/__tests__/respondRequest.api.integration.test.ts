@@ -8,8 +8,7 @@ import {
   kstDate,
   kstMonthStart,
   seedAssignment,
-  seedRequestCandidate,
-  seedWorkRequest,
+  seedWorkRequestWithCandidates,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -159,9 +158,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("후보가 아니면 not_allowed", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const bystander = await createApprovedUser();
 
@@ -175,9 +175,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("미신청자도 수락으로 즉시 배정된다 — not_applied 검사를 건너뛴다", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const assignmentId = await respondRequest(
       candidate.client,
@@ -210,9 +211,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("제한 포지션 자격이 없으면 not_qualified", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "스캔", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const error = await captureDomainError(() =>
       respondRequest(candidate.client, requestId, "accept"),
@@ -228,8 +230,11 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
     const candidate = await createApprovedUser();
     seedAssignment(dayId, candidate.profileId, "regular", occupiedSlotId);
 
-    const requestId = seedWorkRequest(targetSlotId, admin.profileId);
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(
+      targetSlotId,
+      admin.profileId,
+      [{ profileId: candidate.profileId }],
+    );
 
     const error = await captureDomainError(() =>
       respondRequest(candidate.client, requestId, "accept"),
@@ -241,9 +246,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("닫힌 요청에 답하면 request_closed", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
     execSql(
       "update public.requests set closed_at = now() where id = :'id';\n",
       { id: requestId },
@@ -259,9 +265,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("만료된 갈래로 답하면 request_closed", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending", pastIso(1));
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId, expiresAt: pastIso(1) },
+    ]);
 
     const error = await captureDomainError(() =>
       respondRequest(candidate.client, requestId, "accept"),
@@ -273,11 +280,12 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("거절하면 그 갈래만 declined고 남은 pending이 있으면 요청은 안 닫힌다", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "매니저", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidateA = await createApprovedUser();
     const candidateB = await createApprovedUser();
-    seedRequestCandidate(requestId, candidateA.profileId, "pending");
-    seedRequestCandidate(requestId, candidateB.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidateA.profileId },
+      { profileId: candidateB.profileId },
+    ]);
 
     const result = await respondRequest(
       candidateA.client,
@@ -297,9 +305,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("마지막 후보가 거절하면 요청이 닫힌다", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "매니저", 1);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const result = await respondRequest(candidate.client, requestId, "decline");
     expect(result).toBeNull();
@@ -311,11 +320,12 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("선착순 — 둘이 동시에 수락하면 하나만 통과하고 나머지는 slot_full", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "축가", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidateA = await createApprovedUser();
     const candidateB = await createApprovedUser();
-    seedRequestCandidate(requestId, candidateA.profileId, "pending");
-    seedRequestCandidate(requestId, candidateB.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidateA.profileId },
+      { profileId: candidateB.profileId },
+    ]);
 
     const results = await Promise.allSettled([
       respondRequest(candidateA.client, requestId, "accept"),
@@ -351,9 +361,10 @@ describe("respondRequest dal — respond_request를 부르고 오류를 DomainEr
   it("잘못된 answer면 wrong_kind", async () => {
     const { dayId } = await seedOpenDay(admin);
     const slotId = await slotIdForPosition(admin, dayId, "안내", 0);
-    const requestId = seedWorkRequest(slotId, admin.profileId);
     const candidate = await createApprovedUser();
-    seedRequestCandidate(requestId, candidate.profileId, "pending");
+    const requestId = seedWorkRequestWithCandidates(slotId, admin.profileId, [
+      { profileId: candidate.profileId },
+    ]);
 
     const error = await captureDomainError(() =>
       respondRequest(
