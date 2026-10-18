@@ -356,7 +356,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **캐시 키는 `shared/api/queryKeys.ts` 한 자리의 팩토리다.** 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 같은 층 슬라이스끼리 import를 막아 쓰기가 그 키에 닿을 수 없다. 키의 정본이 코드가 아니라 [runtime.md](../system/runtime.md)라고 이미 적혀 있고, 「어느 쓰기가 어느 읽기를 낡게 하나」는 슬라이스 하나가 아니라 앱 전체의 약속이다.
 
-**옮기는 일은 `git mv`로 한다.** TDD 훅은 Write와 Edit만 보고 Bash를 안 본다([ADR-001](ADR-001-fsd-layout-and-tdd-guard.md)이 그 구멍을 알고 남겼다). 테스트를 같이 옮기면 짝이 유지되고, 파일 내용을 한 줄도 안 고치는 커밋이 되어 되돌리기가 revert 한 번이다.
+**옮기는 일은 `git mv`로 한다.** `git mv`는 TDD 훅이 보는 Bash 꼴 밖이다([ADR-001](ADR-001-fsd-layout-and-tdd-guard.md)). 테스트를 같이 옮기면 짝이 유지되고, 파일 내용을 한 줄도 안 고치는 커밋이 되어 되돌리기가 revert 한 번이다.
 
 **세그먼트끼리는 자유롭다.** 막히는 것은 슬라이스 경계 하나뿐이라, 세그먼트 고정은 import를 한 줄도 막지 않는다. 슬라이스 쪼개기만 캐시 키를 먼저 치운 뒤에 간다.
 
