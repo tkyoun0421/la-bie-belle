@@ -10,6 +10,7 @@ import {
   kstMonthStart,
   seedAssignment,
   withFreshMonth,
+  withNoDefaultWageRates,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -96,10 +97,6 @@ function seedDefaultWageRate(effectiveDate: string, amount: number): void {
       "on conflict (effective_date) do update set amount = excluded.amount;\n",
     { effective_date: effectiveDate, amount: String(amount) },
   );
-}
-
-function clearDefaultWageRates(): void {
-  execSql("delete from public.default_wage_rates;\n");
 }
 
 function seedHolidayRow(holidayDate: string, source: "api" | "manual"): void {
@@ -329,15 +326,18 @@ describe("reset_wage_to_default(plan AC-03) — 오늘 날짜에 그 시점 기�
   it("되돌린 날 행의 금액이 그 시점 기본값이고 follows_default가 true다", async () => {
     const worker = await createApprovedUser();
     seedWageRate(worker.profileId, freshPastDate(), 20000, false);
-    seedDefaultWageRate(kstDate(0), 15000);
 
-    const { error } = await rpc(admin, "reset_wage_to_default", {
-      p_profile_id: worker.profileId,
+    await withNoDefaultWageRates(async () => {
+      seedDefaultWageRate(kstDate(0), 15000);
+
+      const { error } = await rpc(admin, "reset_wage_to_default", {
+        p_profile_id: worker.profileId,
+      });
+
+      expect(error).toBeNull();
+      const row = await wageRateRow(admin, worker.profileId, kstDate(0));
+      expect(row).toEqual({ amount: 15000, follows_default: true });
     });
-
-    expect(error).toBeNull();
-    const row = await wageRateRow(admin, worker.profileId, kstDate(0));
-    expect(row).toEqual({ amount: 15000, follows_default: true });
   });
 
   it("관리자가 아니면 not_allowed", async () => {
@@ -351,14 +351,15 @@ describe("reset_wage_to_default(plan AC-03) — 오늘 날짜에 그 시점 기�
   });
 
   it("기본값이 아직 없으면 no_default_wage다 — bad_amount가 아니다(PAY-014)", async () => {
-    clearDefaultWageRates();
     const worker = await createApprovedUser();
 
-    const { error } = await rpc(admin, "reset_wage_to_default", {
-      p_profile_id: worker.profileId,
-    });
+    await withNoDefaultWageRates(async () => {
+      const { error } = await rpc(admin, "reset_wage_to_default", {
+        p_profile_id: worker.profileId,
+      });
 
-    expect(error?.message).toBe("no_default_wage");
+      expect(error?.message).toBe("no_default_wage");
+    });
   });
 });
 
@@ -429,25 +430,28 @@ describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 
   });
 
   it("기본값이 한 번도 안 선 상태에서 승인한 사람이, 기본 시급을 처음 세우면 딸려 온다(PAY-012)", async () => {
-    clearDefaultWageRates();
     const applicant = await createSubmittedUser();
 
-    await rpcOrThrow(admin, "approve_member", {
-      profile_id: applicant.profileId,
-    });
-    expect(
-      await wageRateRow(admin, applicant.profileId, kstDate(0)),
-    ).toBeNull();
+    await withNoDefaultWageRates(async () => {
+      await rpcOrThrow(admin, "approve_member", {
+        profile_id: applicant.profileId,
+      });
+      expect(
+        await wageRateRow(admin, applicant.profileId, kstDate(0)),
+      ).toBeNull();
 
-    const amount = 12000;
-    const { error } = await rpc(admin, "set_default_wage", {
-      p_amount: amount,
-    });
+      const amount = 12000;
+      const { error } = await rpc(admin, "set_default_wage", {
+        p_amount: amount,
+      });
 
-    expect(error).toBeNull();
-    expect(await wageRateRow(admin, applicant.profileId, kstDate(0))).toEqual({
-      amount,
-      follows_default: true,
+      expect(error).toBeNull();
+      expect(await wageRateRow(admin, applicant.profileId, kstDate(0))).toEqual(
+        {
+          amount,
+          follows_default: true,
+        },
+      );
     });
   });
 
@@ -652,14 +656,17 @@ describe("승인 함수가 첫 wage_rates 행을 넣는다(plan AC-03 마지막 
   it("approve_member로 승인되면 오늘 날짜의 follows_default=true 행이 선다", async () => {
     const admin = await createAdminUser();
     const applicant = await createSubmittedUser();
-    seedDefaultWageRate(kstDate(0), 12000);
 
-    const { error } = await admin.client.rpc("approve_member", {
-      profile_id: applicant.profileId,
+    await withNoDefaultWageRates(async () => {
+      seedDefaultWageRate(kstDate(0), 12000);
+
+      const { error } = await admin.client.rpc("approve_member", {
+        profile_id: applicant.profileId,
+      });
+
+      expect(error).toBeNull();
+      const row = await wageRateRow(admin, applicant.profileId, kstDate(0));
+      expect(row).toEqual({ amount: 12000, follows_default: true });
     });
-
-    expect(error).toBeNull();
-    const row = await wageRateRow(admin, applicant.profileId, kstDate(0));
-    expect(row).toEqual({ amount: 12000, follows_default: true });
   });
 });
