@@ -14,7 +14,10 @@ import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
-import { useMyStanding } from "@/features/auth/hooks/useMyStanding";
+import {
+  useMyStanding,
+  type MyStanding,
+} from "@/features/auth/hooks/useMyStanding";
 import {
   monthSpan,
   type DateSpan,
@@ -43,6 +46,12 @@ export type StatsListState =
   | { state: "empty" }
   | { state: "ready"; tab: StatsTab };
 
+export type StatsIdentity =
+  | { state: "pending" }
+  | { state: "failed" }
+  | { state: "absent" }
+  | { state: "ready"; profileId: string };
+
 export type StatsTrendPoint = {
   month: number;
   value: number | null;
@@ -52,6 +61,7 @@ export type StatsScreenController = {
   goBack: () => void;
   openPayrollHistory: () => void;
   profileId: string | null;
+  identity: StatsIdentity;
   tab: StatsTab;
   month: string;
   selectedMonth: number;
@@ -74,6 +84,22 @@ const RETRY_KEYS = [
   queryKeys.rehearsal.all,
 ];
 
+function identityOf(standing: MyStanding): StatsIdentity {
+  if (standing.error !== null) {
+    return { state: "failed" };
+  }
+
+  if (standing.isLoading) {
+    return { state: "pending" };
+  }
+
+  if (standing.profile == null) {
+    return { state: "absent" };
+  }
+
+  return { state: "ready", profileId: standing.profile.id };
+}
+
 function tabOf(value: string): StatsTab {
   return STATS_TABS.find((tab) => tab === value) ?? STATS_TABS[0];
 }
@@ -86,7 +112,8 @@ export function useStatsScreen(): StatsScreenController {
   const [tab, setTab] = useState<StatsTab>(STATS_TABS[0]);
   const { month, goPrev, goNext } = useMonthCursor(monthOf(today));
 
-  const { profile, isLoading: profileLoading } = useMyStanding(supabase);
+  const standing = useMyStanding(supabase);
+  const { profile, isLoading: profileLoading } = standing;
   const serverNowMs = useServerNow();
 
   const months = useMemo(() => trendMonths(month), [month]);
@@ -227,6 +254,7 @@ export function useStatsScreen(): StatsScreenController {
     goBack,
     openPayrollHistory,
     profileId,
+    identity: identityOf(standing),
     tab,
     month,
     selectedMonth: Number(month.slice(5, MONTH_LENGTH)),

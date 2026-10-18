@@ -15,11 +15,21 @@ export type StatsListProps = {
 };
 
 export function StatsList({ screen }: StatsListProps) {
-  const { profileId } = screen;
+  const { identity } = screen;
 
-  if (profileId === null) {
+  if (identity.state === "failed") {
+    return <StatsFailed onRetry={screen.retry} />;
+  }
+
+  if (identity.state === "absent") {
+    return <StatsEmpty />;
+  }
+
+  if (identity.state === "pending") {
     return <SkeletonRows rows={SKELETON_ROWS} frame="headed" />;
   }
+
+  const { profileId } = identity;
 
   if (screen.tab === "attendance") {
     return (
