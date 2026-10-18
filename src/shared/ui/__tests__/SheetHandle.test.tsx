@@ -1,11 +1,7 @@
 import { render } from "@testing-library/react-native";
+import { SheetHandle } from "@/shared/ui/SheetHandle";
 
 async function renderHandle() {
-  const { SheetHandle } = await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/shared/ui/SheetHandle"
-  );
-
   return render(<SheetHandle />);
 }
 
