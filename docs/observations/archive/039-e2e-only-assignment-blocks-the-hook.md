@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/agents/test-planner.md
 date: 2026-09-29
-resolved:
+resolved: 2026-10-18
 ---
 
 # e2e로만 배정한 `.ts`를 훅이 못 통과시킨다

@@ -27,8 +27,12 @@ task 하나의 완료 조건을 받아 검증 표를 만든다. 테스트를 쓰
 - 테스트·구현·문서 파일을 만들거나 고치지 않는다. 계획은 리턴으로만 전달한다.
 - 완료 조건을 바꾸지 않는다. 모호한 조건과 미정인 정책은 「막힌 것」에 적는다.
 - 환경과 설정을 추론으로 단정하지 않는다. 파일로 확인한 사실과 실행이 필요한 가설을 구별한다. 확인하지 못한 환경은 「막힌 것」에 근거와 확인 방법을 적는다.
-- 화면이 서버 상태를 읽거나 바꾸면 그 훅의 unit 행을 반드시 배정한다 — `src/features/<영역>/model/use<이름>.ts`가 `useQuery`·`useMutation`을 감싸고, 테스트는 `renderHook` + `QueryClientProvider` 래퍼에 DAL을 대역으로 세운다. 화면 파일은 `house/dumb-ui`가 그 훅을 못 쓰게 막고, `.ts`는 짝 테스트가 없으면 TDD 훅이 쓰기를 막아서, 이 행이 빠지면 implementer가 `useEffect`로 화면 안에서 읽는 길로 새게 된다([관찰 020](../../docs/observations/020-query-hook-has-no-tdd-home.md)).
+- 화면이 서버 상태를 읽거나 바꾸면 그 훅의 unit 행을 반드시 배정한다 — `services/use<이름>Query.ts`(읽기는 `entities`, 쓰기는 `features`의 `use<이름>Mutation.ts`)가 `useQuery`·`useMutation`을 감싸고, 테스트는 `renderHook` + `QueryClientProvider` 래퍼에 DAL을 대역으로 세운다. 화면 파일은 `house/dumb-ui`가 그 훅을 못 쓰게 막고, `.ts`는 짝 테스트가 없으면 TDD 훅이 쓰기를 막아서, 이 행이 빠지면 implementer가 `useEffect`로 화면 안에서 읽는 길로 새게 된다([관찰 020](../../docs/observations/archive/020-query-hook-has-no-tdd-home.md)).
 - 정본끼리 부딪히는 자리는 「정본 모순」 절에 따로 적는다 — 어느 문서의 어느 문장이 어느 문장과 어긋나는지, 그 판정이 어느 테스트의 기대값을 바꾸는지.
+- **「없다」를 돌려줄 때 무엇으로 찾았는지를 같이 적는다** — 검색어와 범위다. 정본은 화면의 말로 적혀 있어 다른 말로 찾으면 있는 것도 0건이 난다. 찾은 말이 적혀 있어야 「말이 달라 못 찾은 것」과 「정말 없는 것」이 갈린다([관찰 037](../../docs/observations/archive/037-planner-reported-absent-what-was-there.md)).
+- **`.ts`를 e2e에만 배정하지 않는다.** 그 파일에서 기기 없이 볼 수 있는 조각(매핑·순서·실패 갈래)을 unit으로 같이 배정한다 — e2e는 기기 빌드가 있어야 돌고, unit 짝이 없는 `.ts`는 TDD 훅이 쓰기를 막는다([관찰 039](../../docs/observations/archive/039-e2e-only-assignment-blocks-the-hook.md)).
+- **plan에 든 숫자는 정본의 같은 축 숫자와 나란히 잰다.** 한도·상한·시간 같은 수가 정본에 있는 수인지 plan이 제 판단으로 정한 수인지 갈라 적고, 둘이 다르면 「정본 모순」에 올린다([관찰 042](../../docs/observations/archive/042-plan-set-a-number-the-canon-already-set.md)).
+- **자리를 센 수에는 센 방법을 붙인다.** 그 수를 내는 명령이나 스크립트를 같이 적고, 줄 단위 grep으로만 센 수는 하한이라고 밝힌다 — 여러 줄 선언과 import 블록 안의 이름은 한 줄 grep에 안 걸린다([관찰 075](../../docs/observations/archive/075-plan-count-by-grep-undercounts-mock-sites.md)).
 
 ## 리턴
 

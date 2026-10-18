@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/agents/test-planner.md
 date: 2026-10-01
-resolved:
+resolved: 2026-10-18
 ---
 
 # 임시로 둔 숫자에 임시라는 표시가 없다
@@ -18,7 +18,7 @@ if p_reported_at < p_now - interval '10 minutes' or p_reported_at > p_now then
 end if;
 ```
 
-정본은 2시간이다. [ATT-029](../2-design/modules/attendance/README.md#att-029)가 「누른 시각에서 2시간 넘어 닿은 인증은 받지 않는다」고 적고, [spec AC-07](../2-design/spec/attendance-checkin.md)과 [design.md](../2-design/modules/attendance/design.md)도 2시간과 `too_late`를 든다. `too_late`는 저장소에 아예 없다 — 함수도 안 던지고 `src/shared/api/error-codes.ts`에도 없다.
+정본은 2시간이다. [ATT-029](../../2-design/modules/attendance/README.md#att-029)가 「누른 시각에서 2시간 넘어 닿은 인증은 받지 않는다」고 적고, [spec AC-07](../../2-design/spec/attendance-checkin.md)과 [design.md](../../2-design/modules/attendance/design.md)도 2시간과 `too_late`를 든다. `too_late`는 저장소에 아예 없다 — 함수도 안 던지고 `src/shared/api/error-codes.ts`에도 없다.
 
 **보드는 이것을 알고 있었다.** `attendance-checkin` 행이 「마이그레이션의 10분 한도를 여기서 2시간으로 고친다」고 적는다. 그러니 어긋남은 사고가 아니라 의도한 임시 상태다.
 

@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/agents/test-planner.md
 date: 2026-09-27
-resolved:
+resolved: 2026-10-18
 ---
 
 # 서버 상태 훅이 살 자리를 TDD 훅이 막는다

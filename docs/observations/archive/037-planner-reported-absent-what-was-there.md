@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/agents/test-planner.md
 date: 2026-09-29
-resolved:
+resolved: 2026-10-18
 ---
 
 # 계획자가 「정본에 없다」고 한 문구가 거기 있었다

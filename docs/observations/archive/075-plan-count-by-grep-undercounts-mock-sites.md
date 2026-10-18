@@ -1,5 +1,6 @@
 ---
-status: open
+status: actioned
+resolved: 2026-10-18
 target: .claude/agents/test-planner.md
 date: 2026-10-15
 ---
