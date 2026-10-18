@@ -3,12 +3,15 @@ import { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import {
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthStart,
   type ApprovedUser,
 } from "@tests/integration/postgres";
 
-function freshMonth(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+function freshRehearsalMonth(): string {
+  return kstMonthStart(
+    freshMonth({ table: "rehearsals", column: "work_date" }),
+  );
 }
 
 function nextMonthOf(month: string): string {
@@ -62,7 +65,7 @@ describe("getMyRehearsals dal(plan AC-05) — 본인 행을 그 달 범위로 �
   });
 
   it("그 달 밖과 남의 행은 빠지고 본인의 그 달 행만 온다", async () => {
-    const month = freshMonth();
+    const month = freshRehearsalMonth();
     const other = await createApprovedUser();
     const inMonthId = seedTimeRehearsal(
       worker.profileId,
@@ -79,7 +82,7 @@ describe("getMyRehearsals dal(plan AC-05) — 본인 행을 그 달 범위로 �
   });
 
   it("시각 갈래와 건수 갈래가 각자의 열 값 그대로 온다", async () => {
-    const month = freshMonth();
+    const month = freshRehearsalMonth();
     const timeDate = `${month.slice(0, 7)}-01`;
     const countDate = `${month.slice(0, 7)}-02`;
     const timeId = seedTimeRehearsal(

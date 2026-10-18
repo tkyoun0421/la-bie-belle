@@ -4,6 +4,7 @@ import {
   createApprovedUser,
   createLeftUser,
   execSql,
+  freshYear,
   kstDate,
   kstMonthStart,
   withFreshMonth,
@@ -40,6 +41,10 @@ function tableFor<T>(
 
 function freshPastDate(): string {
   return kstDate(-(24 + Math.floor(Math.random() * 90000)));
+}
+
+function freshHolidayDate(): string {
+  return `${freshYear("holidays", "holiday_date")}-01-01`;
 }
 
 function seedWageRate(
@@ -274,7 +279,7 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
   describe("holidays — 기본값이다(is_approved)", () => {
     it("승인된 근무자는 공휴일을 읽는다", async () => {
       const worker = await createApprovedUser();
-      const holidayDate = freshPastDate();
+      const holidayDate = freshHolidayDate();
       seedHoliday(holidayDate, "manual");
 
       const { data, error } = await tableFor<{ holiday_date: string }>(
@@ -290,7 +295,7 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
 
     it("승인 안 된 사용자는 0행이다", async () => {
       const unapproved = await createSignedInUser();
-      const holidayDate = freshPastDate();
+      const holidayDate = freshHolidayDate();
       seedHoliday(holidayDate, "manual");
 
       const { data, error } = await tableFor<{ holiday_date: string }>(
@@ -306,7 +311,7 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
 
     it("퇴사자는 0행이다", async () => {
       const left = await createLeftUser();
-      const holidayDate = freshPastDate();
+      const holidayDate = freshHolidayDate();
       seedHoliday(holidayDate, "manual");
 
       const { data, error } = await tableFor<{ holiday_date: string }>(
@@ -396,7 +401,7 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
 
     it("holidays — 관리자도 직접 insert를 못 한다", async () => {
       const { error } = await tableFor(admin, "holidays").insert({
-        holiday_date: freshPastDate(),
+        holiday_date: freshHolidayDate(),
         source: "manual",
         name: "직접 시도",
       });

@@ -4,6 +4,7 @@ import { createCancelRequest } from "@/features/workRequest/api/createCancelRequ
 import {
   createAdminUser,
   createApprovedUser,
+  deleteThisRunDay,
   endAssignment,
   execSql,
   kstDate,
@@ -41,9 +42,9 @@ function seedAssignedDay(
   const dayId = randomUUID();
   const slotId = randomUUID();
 
+  deleteThisRunDay(workDate);
   execSql(
     [
-      "delete from public.days where work_date = :'work_date';",
       "insert into public.schedules (month, created_by) values (:'month', :'created_by') on conflict (month) do nothing;",
       "insert into public.days (id, schedule_id, work_date, starts_at, ends_at, opened_by)",
       "select :'day_id', id, :'work_date', '10:00:00', '22:00:00', :'created_by' from public.schedules where month = :'month';",

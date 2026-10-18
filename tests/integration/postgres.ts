@@ -1,6 +1,14 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import {
+  daysInMonth,
+  type DateWindow,
+  firstFree,
+  monthWindow,
+  rowsInWindowSql,
+  yearWindow,
+} from "@tests/integration/freshSlot";
+import {
   dbContainerOf,
   dbTargetProblems,
   hostPortOf,
@@ -11,6 +19,8 @@ import {
   createSignedInUser,
   type SignedInUser,
 } from "@tests/integration/supabase";
+import { runEmailPattern } from "@tests/integration/testUserMark";
+import { currentRunId } from "@tests/integration/testUserRegistry";
 
 let verifiedContainer: string | undefined;
 
@@ -103,7 +113,7 @@ export function approveProfile(
   approvedAt: string = new Date().toISOString(),
 ): void {
   execSql(
-    "update public.profiles set approved_at = :'approved_at' where user_id = :'user_id';\n",
+    "update public.profiles set submitted_at = coalesce(submitted_at, :'approved_at'), approved_at = :'approved_at' where user_id = :'user_id';\n",
     { user_id: userId, approved_at: approvedAt },
   );
 }
@@ -149,9 +159,69 @@ export function seedWageHistory(
 
 const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
 const FRESH_MONTH_ATTEMPTS = 7;
+const FRESH_PICK_ATTEMPTS = 20;
+
+type MonthScope =
+  { table?: undefined; column?: undefined } | { table: string; column: string };
+
+export type FreshMonthOptions = MonthScope & {
+  neighbours?: boolean;
+  days?: number;
+};
 
 function randomMonthOffset(): number {
   return 24 + Math.floor(Math.random() * 90000);
+}
+
+function randomYear(): number {
+  return 2050 + Math.floor(Math.random() * 7000);
+}
+
+function rowCountIn(table: string, column: string, window: DateWindow): number {
+  return Number(queryColumn(rowsInWindowSql(table, column), window)[0] ?? "0");
+}
+
+export function freshMonth(options: FreshMonthOptions = {}): number {
+  const {
+    table = "schedules",
+    column = "month",
+    neighbours = false,
+    days,
+  } = options;
+
+  const offset = firstFree(
+    randomMonthOffset,
+    (candidate) => {
+      const monthStart = kstMonthStart(candidate);
+      return (
+        (days === undefined || daysInMonth(monthStart) === days) &&
+        rowCountIn(table, column, monthWindow(monthStart, neighbours)) === 0
+      );
+    },
+    FRESH_PICK_ATTEMPTS,
+  );
+  if (offset === null) {
+    throw new Error(
+      `${table}.${column}이 빈 달을 ${FRESH_PICK_ATTEMPTS}번 뽑아 못 찾았다`,
+    );
+  }
+
+  return offset;
+}
+
+export function freshYear(table: string, column: string): number {
+  const year = firstFree(
+    randomYear,
+    (candidate) => rowCountIn(table, column, yearWindow(candidate)) === 0,
+    FRESH_PICK_ATTEMPTS,
+  );
+  if (year === null) {
+    throw new Error(
+      `${table}.${column}이 빈 연도를 ${FRESH_PICK_ATTEMPTS}번 뽑아 못 찾았다`,
+    );
+  }
+
+  return year;
 }
 
 function isMonthTaken(error: unknown): boolean {
@@ -161,12 +231,13 @@ function isMonthTaken(error: unknown): boolean {
 
 export async function withFreshMonth<T>(
   seed: (monthsFromNow: number) => Promise<T>,
+  options: FreshMonthOptions = {},
 ): Promise<T> {
   let taken: unknown;
 
   for (let attempt = 0; attempt < FRESH_MONTH_ATTEMPTS; attempt += 1) {
     try {
-      return await seed(randomMonthOffset());
+      return await seed(freshMonth(options));
     } catch (error) {
       if (!isMonthTaken(error)) {
         throw error;
@@ -285,7 +356,7 @@ export async function createRejectedUser(): Promise<RejectedUser> {
   const rejectedAt = new Date().toISOString();
 
   execSql(
-    "update public.profiles set rejected_at = :'rejected_at' where user_id = :'user_id';\n",
+    "update public.profiles set submitted_at = coalesce(submitted_at, :'rejected_at'), rejected_at = :'rejected_at' where user_id = :'user_id';\n",
     { user_id: user.userId, rejected_at: rejectedAt },
   );
 
@@ -431,6 +502,15 @@ export function seedAssignment(
   return id;
 }
 
+export function deleteThisRunDay(workDate: string): void {
+  execSql(
+    "delete from public.days where work_date = :'work_date' and opened_by in (\n" +
+      "  select p.id from public.profiles p join auth.users u on u.id = p.user_id where u.email ~ :'email_pattern'\n" +
+      ");\n",
+    { work_date: workDate, email_pattern: runEmailPattern(currentRunId()) },
+  );
+}
+
 export function seedPastSchedule(monthStart: string, createdBy: string): void {
   execSql(
     "insert into public.schedules (month, created_by) values (:'month', :'created_by')\n" +
@@ -446,9 +526,9 @@ export function seedPastDay(
   endsAt: string,
   openedBy: string,
 ): void {
+  deleteThisRunDay(workDate);
   execSql(
-    "delete from public.days where work_date = :'work_date';\n" +
-      "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
+    "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
       "select id, :'work_date', :'starts_at', :'ends_at', :'opened_by'\n" +
       "from public.schedules where month = :'month';\n",
     {
@@ -677,9 +757,9 @@ export async function seedDayEndedHoursAgo(
   const { workDate, time: endsAt } = kstParts(target);
   const month = `${workDate.slice(0, 7)}-01`;
 
+  deleteThisRunDay(workDate);
   execSql(
     [
-      "delete from public.days where work_date = :'work_date';",
       "insert into public.schedules (month, created_by) values (:'month', :'created_by') on conflict (month) do nothing;",
       "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)",
       "select id, :'work_date', :'starts_at', :'ends_at', :'created_by' from public.schedules where month = :'month';",

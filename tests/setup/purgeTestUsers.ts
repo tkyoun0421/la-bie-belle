@@ -1,13 +1,13 @@
 import { purgeTestUsers } from "@tests/integration/cleanup";
 import {
-  takeRegisteredUsers,
-  takeTrackedUsers,
+  takeRegistered,
+  takeTracked,
 } from "@tests/integration/testUserRegistry";
 
 afterEach(() => {
-  purgeTestUsers(takeTrackedUsers());
+  purgeTestUsers(takeTracked());
 });
 
 afterAll(() => {
-  purgeTestUsers(takeRegisteredUsers());
+  purgeTestUsers(takeRegistered());
 });

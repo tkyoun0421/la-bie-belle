@@ -3,13 +3,10 @@ import { getMyAvailability } from "@/entities/availability/api/getMyAvailability
 import {
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthStart,
   type ApprovedUser,
 } from "@tests/integration/postgres";
-
-function randomOffset(): number {
-  return 24 + Math.floor(Math.random() * 90000);
-}
 
 function nextMonthStart(monthDate: string): string {
   const [year, month] = monthDate.split("-").map(Number);
@@ -39,7 +36,9 @@ describe("getMyAvailability — 본인 신청을 그 달 범위만 읽는다", (
   });
 
   it("그 달 안의 신청은 전부 온다", async () => {
-    const monthDate = kstMonthStart(randomOffset());
+    const monthDate = kstMonthStart(
+      freshMonth({ table: "availabilities", column: "work_date" }),
+    );
     const month = monthDate.slice(0, 7);
     const day1 = dayInMonth(monthDate, 1);
     const day2 = dayInMonth(monthDate, 2);
@@ -53,7 +52,9 @@ describe("getMyAvailability — 본인 신청을 그 달 범위만 읽는다", (
   });
 
   it("다른 달의 신청은 안 온다", async () => {
-    const monthDate = kstMonthStart(randomOffset());
+    const monthDate = kstMonthStart(
+      freshMonth({ table: "availabilities", column: "work_date" }),
+    );
     const month = monthDate.slice(0, 7);
     const inMonth = dayInMonth(monthDate, 1);
     const outsideMonth = nextMonthStart(monthDate);

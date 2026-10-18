@@ -5,6 +5,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstDate,
   kstMonthEnd,
   kstMonthStart,
@@ -14,6 +15,7 @@ import {
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
+  type FreshMonthOptions,
 } from "@tests/integration/postgres";
 
 type FunctionName = keyof Database["public"]["Functions"];
@@ -59,7 +61,10 @@ function seedExcuse(dayId: string, profileId: string, decidedBy: string): void {
 
 type SeededMonth = { month: string; monthStart: string; monthsFromNow: number };
 
-async function seedScheduleMonth(admin: AdminUser): Promise<SeededMonth> {
+async function seedScheduleMonth(
+  admin: AdminUser,
+  options: FreshMonthOptions = {},
+): Promise<SeededMonth> {
   return withFreshMonth(async (monthsFromNow) => {
     const monthStart = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
@@ -67,7 +72,7 @@ async function seedScheduleMonth(admin: AdminUser): Promise<SeededMonth> {
       p_deadline: kstDate(1),
     });
     return { month: monthStart.slice(0, 7), monthStart, monthsFromNow };
-  });
+  }, options);
 }
 
 describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질의로 낸다(stats-admin AC-04)", () => {
@@ -117,7 +122,10 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
 
   it("전달 마지막 날과 다음 달 첫날은 안 온다", async () => {
     const owner: ApprovedUser = await createApprovedUser();
-    const { month, monthStart, monthsFromNow } = await seedScheduleMonth(admin);
+    const { month, monthStart, monthsFromNow } = await seedScheduleMonth(
+      admin,
+      { neighbours: true },
+    );
 
     const prevMonthStart = kstMonthStart(monthsFromNow - 1);
     const prevMonthLastDay = kstMonthEnd(monthsFromNow - 1);
@@ -151,9 +159,7 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
   });
 
   it("그달에 연 날이 하나도 없으면 두 배열이 다 빈다", async () => {
-    const emptyMonth = kstMonthStart(
-      600 + Math.floor(Math.random() * 600),
-    ).slice(0, 7);
+    const emptyMonth = kstMonthStart(freshMonth()).slice(0, 7);
 
     const result = await getMonthAttendance(admin.client, emptyMonth);
 
@@ -218,15 +224,6 @@ function seedBulkProfiles(): string[] {
   );
 }
 
-function pickThirtyOneDayMonthOffset(): number {
-  for (;;) {
-    const offset = 24 + Math.floor(Math.random() * 90000);
-    if (kstMonthEnd(offset).endsWith("-31")) {
-      return offset;
-    }
-  }
-}
-
 function seedMonthWithShuffledCheckIns(
   adminProfileId: string,
   profileIds: readonly string[],
@@ -270,7 +267,7 @@ describe("getMonthAttendance — 천 행을 넘는 달의 check_ins도 잘리지
   });
 
   it("한 달 출석이 1116행이어도 전부 오고 중복이 없고 날·사람 순이다", async () => {
-    const offset = pickThirtyOneDayMonthOffset();
+    const offset = freshMonth({ days: 31 });
     const monthDate = kstMonthStart(offset);
     const profileIds = seedBulkProfiles();
     let scheduleId: string | undefined;

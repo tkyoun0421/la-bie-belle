@@ -3,6 +3,7 @@ import { PROFILE_REFERENCES, purgeTestUsers } from "@tests/integration/cleanup";
 import {
   createAdminUser,
   createApprovedUser,
+  execSql,
   kstDate,
   kstMonthStart,
   queryColumn,
@@ -18,6 +19,7 @@ import {
   runIdOf,
   testUserEmail,
 } from "@tests/integration/testUserMark";
+import { takeRegistered } from "@tests/integration/testUserRegistry";
 
 const RUN_ID_FROM_GLOBAL_SETUP = process.env[RUN_ID_ENV];
 
@@ -73,6 +75,21 @@ async function openDayOf(admin: AdminUser): Promise<{
   });
 }
 
+function clearUserId(profileId: string): void {
+  execSql(
+    "update public.profiles set user_id = null where id = :'profile_id';\n",
+    { profile_id: profileId },
+  );
+}
+
+function ensureProfileOf(userId: string): string {
+  const [profileId] = queryColumn(
+    "insert into public.profiles (user_id) values (:'user_id') returning id;\n",
+    { user_id: userId },
+  );
+  return profileId;
+}
+
 async function signUpAs(email: string): Promise<string> {
   const { data, error } = await createGuestClient().auth.signUp({
     email,
@@ -119,7 +136,7 @@ describe("purgeTestUsers", () => {
     const { scheduleId, dayId } = await openDayOf(admin);
     const assignmentId = seedAssignment(dayId, member.profileId, "training");
 
-    purgeTestUsers([admin.userId, member.userId]);
+    purgeTestUsers({ userIds: [admin.userId, member.userId], profileIds: [] });
 
     expect(userExists(admin.userId)).toBe(false);
     expect(userExists(member.userId)).toBe(false);
@@ -141,9 +158,12 @@ describe("purgeTestUsers", () => {
     const otherRunId = newRunId(new Date(), randomBytes(3).toString("hex"));
     const otherUserId = await signUpAs(testUserEmail(otherRunId, randomUUID()));
 
-    purgeTestUsers([otherUserId]);
+    purgeTestUsers({ userIds: [otherUserId], profileIds: [] });
     const survived = userExists(otherUserId);
-    purgeTestUsers([otherUserId], runEmailPattern(otherRunId));
+    purgeTestUsers(
+      { userIds: [otherUserId], profileIds: [] },
+      runEmailPattern(otherRunId),
+    );
 
     expect(survived).toBe(true);
     expect(userExists(otherUserId)).toBe(false);
@@ -153,10 +173,64 @@ describe("purgeTestUsers", () => {
     const kept = await createApprovedUser();
     const purged = await createApprovedUser();
 
-    purgeTestUsers([purged.userId]);
+    purgeTestUsers({ userIds: [purged.userId], profileIds: [] });
 
     expect(userExists(purged.userId)).toBe(false);
     expect(userExists(kept.userId)).toBe(true);
     expect(profileExists(kept.profileId)).toBe(true);
+  });
+
+  it("user_id가 빈 profile도 넘어온 profile id면 지운다", async () => {
+    const member = await createApprovedUser();
+    clearUserId(member.profileId);
+
+    purgeTestUsers({
+      userIds: [member.userId],
+      profileIds: [member.profileId],
+    });
+
+    expect(userExists(member.userId)).toBe(false);
+    expect(profileExists(member.profileId)).toBe(false);
+  });
+
+  it("user_id가 빈 profile이라도 넘어온 profile id가 아니면 지우지 않는다", async () => {
+    const orphan = await createApprovedUser();
+    clearUserId(orphan.profileId);
+    const purged = await createApprovedUser();
+
+    purgeTestUsers({
+      userIds: [purged.userId],
+      profileIds: [purged.profileId],
+    });
+
+    expect(profileExists(purged.profileId)).toBe(false);
+    expect(profileExists(orphan.profileId)).toBe(true);
+  });
+
+  it("넘어온 profile id라도 다른 회차 표식 사용자의 profile이면 지우지 않는다", async () => {
+    const otherRunId = newRunId(new Date(), randomBytes(3).toString("hex"));
+    const otherUserId = await signUpAs(testUserEmail(otherRunId, randomUUID()));
+    const otherProfileId = ensureProfileOf(otherUserId);
+
+    purgeTestUsers({ userIds: [], profileIds: [otherProfileId] });
+    const survived = profileExists(otherProfileId);
+    purgeTestUsers(
+      { userIds: [otherUserId], profileIds: [] },
+      runEmailPattern(otherRunId),
+    );
+
+    expect(survived).toBe(true);
+    expect(profileExists(otherProfileId)).toBe(false);
+  });
+});
+
+describe("가입 헬퍼가 만든 profile", () => {
+  it("user_id를 비워도 등록부를 꺼내 정리하면 지워진다", async () => {
+    const member = await createApprovedUser();
+    clearUserId(member.profileId);
+
+    purgeTestUsers(takeRegistered());
+
+    expect(profileExists(member.profileId)).toBe(false);
   });
 });

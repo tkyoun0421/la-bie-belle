@@ -3,13 +3,16 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  freshMonth,
   kstMonthStart,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
 
 function freshWorkDate(): string {
-  return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+  return kstMonthStart(
+    freshMonth({ table: "rehearsals", column: "work_date" }),
+  );
 }
 
 function seedTimeRehearsal(

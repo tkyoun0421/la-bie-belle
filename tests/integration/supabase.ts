@@ -8,6 +8,7 @@ import {
 } from "@tests/integration/localTarget";
 import {
   newTestUserEmail,
+  registerTestProfile,
   registerTestUser,
 } from "@tests/integration/testUserRegistry";
 
@@ -122,6 +123,7 @@ export async function createSignedInUser(): Promise<SignedInUser> {
   if (profileError) {
     throw profileError;
   }
+  registerTestProfile(user.userId, profile.id);
 
   return { ...user, profileId: profile.id };
 }

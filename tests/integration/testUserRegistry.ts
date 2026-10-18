@@ -5,7 +5,9 @@ import {
   testUserEmail,
 } from "@tests/integration/testUserMark";
 
-const registered = new Set<string>();
+export type PurgeTargets = { userIds: string[]; profileIds: string[] };
+
+const profileOfRegisteredUser = new Map<string, string | null>();
 
 const trackedForThisTest = new Set<string>();
 
@@ -23,26 +25,39 @@ export function newTestUserEmail(): string {
 }
 
 export function registerTestUser(userId: string): void {
-  registered.add(userId);
+  if (!profileOfRegisteredUser.has(userId)) {
+    profileOfRegisteredUser.set(userId, null);
+  }
+}
+
+export function registerTestProfile(userId: string, profileId: string): void {
+  profileOfRegisteredUser.set(userId, profileId);
 }
 
 export function trackUser(userId: string): void {
   trackedForThisTest.add(userId);
 }
 
-export function takeTrackedUsers(): string[] {
-  const userIds = [...trackedForThisTest];
-  trackedForThisTest.clear();
+function takeUsers(userIds: readonly string[]): PurgeTargets {
+  const profileIds: string[] = [];
   for (const userId of userIds) {
-    registered.delete(userId);
+    const profileId = profileOfRegisteredUser.get(userId);
+    if (profileId) {
+      profileIds.push(profileId);
+    }
+    profileOfRegisteredUser.delete(userId);
   }
 
-  return userIds;
+  return { userIds: [...userIds], profileIds };
 }
 
-export function takeRegisteredUsers(): string[] {
-  const userIds = [...registered];
-  registered.clear();
+export function takeTracked(): PurgeTargets {
+  const userIds = [...trackedForThisTest];
+  trackedForThisTest.clear();
 
-  return userIds;
+  return takeUsers(userIds);
+}
+
+export function takeRegistered(): PurgeTargets {
+  return takeUsers([...profileOfRegisteredUser.keys()]);
 }
