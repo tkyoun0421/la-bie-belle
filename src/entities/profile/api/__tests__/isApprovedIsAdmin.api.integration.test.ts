@@ -1,19 +1,8 @@
-import { randomUUID } from "node:crypto";
 import { createAdminUser, execSql } from "@tests/integration/postgres";
-import { createGuestClient } from "@tests/integration/supabase";
-
-async function signUpWithoutProfile() {
-  const email = `${randomUUID()}@example.com`;
-  const password = randomUUID();
-  const client = createGuestClient();
-
-  const { error } = await client.auth.signUp({ email, password });
-  if (error) {
-    throw error;
-  }
-
-  return client;
-}
+import {
+  createGuestClient,
+  createSignedInUserWithoutProfile,
+} from "@tests/integration/supabase";
 
 describe("is_approved · is_admin", () => {
   it("세션 없이 부르면 거짓이다", async () => {
@@ -30,7 +19,7 @@ describe("is_approved · is_admin", () => {
   });
 
   it("프로필이 없으면 거짓이다", async () => {
-    const client = await signUpWithoutProfile();
+    const { client } = await createSignedInUserWithoutProfile();
 
     const { data: approved, error: approvedError } =
       await client.rpc("is_approved");

@@ -12,6 +12,7 @@ import {
   seedAssignment,
   withFreshMonth,
 } from "@tests/integration/postgres";
+import { trackUser } from "@tests/integration/testUserRegistry";
 
 type RpcCaller = { client: AdminUser["client"] };
 
@@ -269,21 +270,6 @@ async function seedDayForAssignment(admin: AdminUser): Promise<string> {
     return data.id;
   });
 }
-
-let trackedUserIds: string[] = [];
-
-function trackUser(userId: string): void {
-  trackedUserIds.push(userId);
-}
-
-afterEach(() => {
-  if (trackedUserIds.length === 0) {
-    return;
-  }
-  const idList = trackedUserIds.map((id) => `'${id}'`).join(",");
-  execSql(`delete from auth.users where id = any(array[${idList}]::uuid[]);\n`);
-  trackedUserIds = [];
-});
 
 describe("internal.erase_profiles — 퇴사 1년 뒤 비우기(plan AC-01)", () => {
   let admin: AdminUser;

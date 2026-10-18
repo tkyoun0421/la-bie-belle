@@ -6,6 +6,10 @@ import {
   remoteUrlProblems,
   throwIfProblems,
 } from "@tests/integration/localTarget";
+import {
+  newTestUserEmail,
+  registerTestUser,
+} from "@tests/integration/testUserRegistry";
 
 type LocalSupabase = {
   apiUrl: string;
@@ -80,13 +84,16 @@ export type SignedInUserWithoutProfile = {
 };
 
 export async function createSignedInUserWithoutProfile(): Promise<SignedInUserWithoutProfile> {
-  const email = `${randomUUID()}@example.com`;
+  const email = newTestUserEmail();
   const password = randomUUID();
   const client = createGuestClient();
 
   const { data, error } = await client.auth.signUp({ email, password });
   if (error) {
     throw error;
+  }
+  if (data.user) {
+    registerTestUser(data.user.id);
   }
   if (!data.user || !data.session) {
     throw new Error(`가입은 됐는데 세션이 없다: ${email}`);
@@ -100,36 +107,21 @@ export async function createSignedInUserWithoutProfile(): Promise<SignedInUserWi
 }
 
 export async function createSignedInUser(): Promise<SignedInUser> {
-  const email = `${randomUUID()}@example.com`;
-  const password = randomUUID();
-  const client = createGuestClient();
+  const user = await createSignedInUserWithoutProfile();
 
-  const { data, error } = await client.auth.signUp({ email, password });
-  if (error) {
-    throw error;
-  }
-  if (!data.user || !data.session) {
-    throw new Error(`가입은 됐는데 세션이 없다: ${email}`);
-  }
-
-  const { error: ensureError } = await client.rpc("ensure_profile");
+  const { error: ensureError } = await user.client.rpc("ensure_profile");
   if (ensureError) {
     throw ensureError;
   }
 
-  const { data: profile, error: profileError } = await client
+  const { data: profile, error: profileError } = await user.client
     .from("profiles")
     .select("id")
-    .eq("user_id", data.user.id)
+    .eq("user_id", user.userId)
     .single<{ id: string }>();
   if (profileError) {
     throw profileError;
   }
 
-  return {
-    client,
-    userId: data.user.id,
-    email,
-    profileId: profile.id,
-  };
+  return { ...user, profileId: profile.id };
 }
