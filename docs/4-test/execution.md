@@ -318,7 +318,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 
 현재 한계는 다음과 같다. 문서의 원칙과 실제 헬퍼가 제공하는 기능을 구별한다.
 
-- **사용자에 안 매인 행은 정리가 못 닿는다.** 아래 [사용자 정리](#사용자-정리)는 테스트 사용자와 그가 만들거나 가리키는 행만 지운다. 공휴일처럼 사용자 없이 심은 행, 사진 객체(storage), 옛 회차가 `auth.users`만 지워 `user_id`가 빈 profile은 그대로다([관찰 013](../observations/013-integration-users-never-cleaned.md)). 테스트가 `user_id`를 직접 비운 profile은 등록부가 profile id로 들고 있어 지워진다.
+- **사용자에 안 매인 행은 정리가 못 닿는다.** 아래 [사용자 정리](#사용자-정리)는 테스트 사용자와 그가 만들거나 가리키는 행만 지운다. 공휴일처럼 사용자 없이 심은 행, 사진 객체(storage), 옛 회차가 `auth.users`만 지워 `user_id`가 빈 profile은 그대로다([관찰 013](../observations/archive/013-integration-users-never-cleaned.md)). 테스트가 `user_id`를 직접 비운 profile은 등록부가 profile id로 들고 있어 지워진다.
 - **달과 연도는 비었는지 세어 보고 고른다.** 근무표·신청·리허설·공휴일처럼 날짜 열로 갈리는 행을 심을 때는 무작위 달을 손으로 뽑지 않고 [postgres 헬퍼](../../tests/integration/postgres.ts)의 `freshMonth`·`freshYear`를 쓴다. `freshMonth`는 고른 달에 그 표의 행(기본은 `schedules.month`, `table`·`column`으로 바꾼다)이 하나도 없는지 세어 보고 돌려준다. `neighbours`를 주면 앞뒤 달까지 보고, `days`를 주면 그 날 수의 달만 고른다. `freshYear(table, column)`은 그 해에 행이 없는 연도를 준다. `withFreshMonth`는 같은 달을 심어 넘기고, 다른 회차와 동시에 심다 `already_exists`가 나면 다시 고른다.
 - **진짜 날짜여야 하는 씨앗은 그날 행 중 이 회차가 연 것만 지운다.** 오늘·내일·몇 시간 전처럼 달을 못 바꾸는 자리(`seedDayEndedHoursAgo`·`seedPastDay`, `createCancelRequest`·`sendWorkRequest` 테스트의 씨앗)는 `deleteThisRunDay`로 그날 행 중 이 회차 표식 사용자가 연 것만 지우고 다시 심는다. 한 파일 안에서 관리자 둘이 같은 날을 심는 경우가 있어 「그 관리자」가 아니라 「이 회차」로 가른다. 다른 회차나 실제 계정이 연 그날 행이 있으면 지우지 않고 `days_work_date_key` 위반으로 멈춘다. 중단한 회차가 남긴 날이면 [치우기](#사용자-정리)를 돌린다.
 - **쌓인 행이 거짓 초록과 거짓 빨강을 다 만든다.** 행 존재만 단언하는 테스트는 앞 회차가 남긴 행으로 통과하고, 전수를 읽는 질의는 [config.toml](../../supabase/config.toml)의 `max_rows = 1000`에 잘려 심은 행을 못 받는다 — 상한이 limit이 아니라 **전체 결과**에 걸린다. **둘 다 로컬에서만 나고 CI는 깨끗한 DB라 안 난다.** 로컬 실패가 바뀐 코드 탓인지 보려면 `supabase db reset` 뒤 그 테스트만 다시 돌린다.
@@ -337,7 +337,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 
 **결근은 저장하는 배치가 없다.** 「인증 창이 닫혔고 그 뒤로 48시간이 지났다」를 그때그때 계산하는 값이라 **진짜로 지나간 달력 날짜**라야 결근한 날이 선다 — 미래 날짜로는 못 심는다.
 
-**매 분 도는 cron이 씨를 뿌리는 중간을 본다.** `expire_requests()`는 「안 지난 pending 후보가 하나도 없다」로만 요청을 닫는데, 요청 행이 선 뒤 후보가 들어가기까지 그 요청에는 후보가 없다 — 사용자를 만드는 `await` 하나가 그 창을 초 단위로 벌리고 그 사이 cron이 닫는다([관찰 055](../observations/archive/055-cron-closes-the-row-the-test-is-seeding.md)). 헬퍼가 후보를 넣은 자리에서 그 요청을 되돌려 부르는 쪽이 순서를 신경 쓰지 않게 한다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는 것이 맞는 모습이다. 한 줄씩 나눠 `execSql`하면 같은 틈이 다시 생긴다([관찰 024](../observations/024-cron-races-two-step-seed.md)).
+**매 분 도는 cron이 씨를 뿌리는 중간을 본다.** `expire_requests()`는 「안 지난 pending 후보가 하나도 없다」로만 요청을 닫는데, 요청 행이 선 뒤 후보가 들어가기까지 그 요청에는 후보가 없다 — 사용자를 만드는 `await` 하나가 그 창을 초 단위로 벌리고 그 사이 cron이 닫는다([관찰 055](../observations/archive/055-cron-closes-the-row-the-test-is-seeding.md)). `seedWorkRequestWithCandidates`가 요청과 첫 갈래를 한 `begin`·`commit`으로 심어 다른 연결에는 둘이 같이 보이거나 둘 다 안 보인다. 지난 후보를 넣을 때도 같은 호출이고 그때는 닫히는 것이 맞는 모습이다. 한 줄씩 나눠 `execSql`하면 같은 틈이 다시 생긴다([관찰 024](../observations/archive/024-cron-races-two-step-seed.md)).
 
 ### 사용자 정리
 

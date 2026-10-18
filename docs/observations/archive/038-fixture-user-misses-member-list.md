@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: tests/integration/postgres.ts
 date: 2026-09-29
-resolved:
+resolved: 2026-10-18
 ---
 
 # 픽스처가 만든 사람이 직원 목록에 안 잡힌다
