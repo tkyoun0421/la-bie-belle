@@ -1,27 +1,83 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import {
+  dbContainerOf,
+  dbTargetProblems,
+  hostPortOf,
+  readLocalProject,
+  throwIfProblems,
+} from "@tests/integration/localTarget";
+import {
   createSignedInUser,
   type SignedInUser,
 } from "@tests/integration/supabase";
 
-function dbContainerName(): string {
+let verifiedContainer: string | undefined;
+
+function serverIdentityOf(container: string): {
+  serverPort: string;
+  database: string;
+} {
   const result = spawnSync(
     "docker",
-    ["ps", "--filter", "name=supabase_db", "--format", "{{.Names}}"],
+    [
+      "exec",
+      "-i",
+      container,
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "-t",
+      "-A",
+      "-c",
+      "select current_setting('port'), current_database()",
+    ],
     { encoding: "utf8" },
   );
-  const name = result.stdout.trim().split("\n")[0];
-  if (!name) {
+  if (result.status !== 0) {
     throw new Error(
-      "supabase_db 컨테이너를 못 찾았다. 로컬 Supabase가 떠 있는지 확인해라.",
+      `${container} 컨테이너의 DB에 못 붙었다. 이 저장소에서 supabase start 로 로컬 Supabase를 띄워라.\n${result.stderr.trim()}`,
     );
   }
-  return name;
+
+  const [serverPort = "", database = ""] = result.stdout.trim().split("|");
+  return { serverPort, database };
+}
+
+function hostPortMappedTo(
+  container: string,
+  serverPort: string,
+): number | null {
+  const result = spawnSync("docker", ["port", container, `${serverPort}/tcp`], {
+    encoding: "utf8",
+  });
+  return result.status === 0 ? hostPortOf(result.stdout) : null;
+}
+
+export function localDbContainer(): string {
+  if (verifiedContainer) {
+    return verifiedContainer;
+  }
+
+  const project = readLocalProject();
+  const container = dbContainerOf(project);
+  const { serverPort, database } = serverIdentityOf(container);
+
+  throwIfProblems(
+    dbTargetProblems(project, {
+      hostPort: hostPortMappedTo(container, serverPort),
+      database,
+    }),
+  );
+
+  verifiedContainer = container;
+  return container;
 }
 
 export function execSql(sql: string, vars: Record<string, string> = {}): void {
-  const container = dbContainerName();
+  const container = localDbContainer();
 
   const args = [
     "exec",
@@ -150,7 +206,7 @@ export function queryColumn(
   sql: string,
   vars: Record<string, string> = {},
 ): string[] {
-  const container = dbContainerName();
+  const container = localDbContainer();
 
   const args = [
     "exec",
