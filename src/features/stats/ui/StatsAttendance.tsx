@@ -8,6 +8,7 @@ import { useStatsAttendance } from "@/features/stats/hooks/useStatsAttendance";
 
 export type StatsAttendanceProps = {
   month: string;
+  profileId: string;
   pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
@@ -15,11 +16,12 @@ export type StatsAttendanceProps = {
 
 export function StatsAttendance({
   month,
+  profileId,
   pending,
   failed,
   empty,
 }: StatsAttendanceProps) {
-  const fragment = useStatsAttendance(month);
+  const fragment = useStatsAttendance(month, profileId);
 
   return (
     <FragmentView

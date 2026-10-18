@@ -20,6 +20,16 @@ import { PayrollList } from "@/screens/payroll/ui/PayrollList";
 export function PayrollScreen() {
   const screen = usePayrollScreen();
 
+  const summaryPending = (
+    <>
+      <SkeletonLine className="mt-4 h-9 w-2/3" />
+
+      <Text size="sm" tone="subtle" className="mt-1">
+        {PAYROLL_VIEW_COPY.estimateNote}
+      </Text>
+    </>
+  );
+
   return (
     <Screen floor="plain">
       <AppBar
@@ -54,19 +64,16 @@ export function PayrollScreen() {
             onNext={screen.goNext}
           />
 
-          <PayrollSummary
-            span={screen.span}
-            pending={
-              <>
-                <SkeletonLine className="mt-4 h-9 w-2/3" />
-
-                <Text size="sm" tone="subtle" className="mt-1">
-                  {PAYROLL_VIEW_COPY.estimateNote}
-                </Text>
-              </>
-            }
-            failed={(retry) => <PayrollViewFailed onRetry={retry} />}
-          />
+          {screen.profileId === null ? (
+            summaryPending
+          ) : (
+            <PayrollSummary
+              span={screen.span}
+              profileId={screen.profileId}
+              pending={summaryPending}
+              failed={(retry) => <PayrollViewFailed onRetry={retry} />}
+            />
+          )}
 
           <View className="mt-8">
             <PayrollList screen={screen} />

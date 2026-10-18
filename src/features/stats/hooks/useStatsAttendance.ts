@@ -4,8 +4,6 @@ import { fragmentOf } from "@/shared/model/fragmentState.policy";
 import { monthIn } from "@/shared/utils/monthIn";
 import { useServerNow } from "@/entities/clock/hooks/useServerNow";
 import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   buildMyAttendanceDays,
@@ -36,21 +34,21 @@ export type StatsAttendanceController =
       rows: StatsAttendanceRow[];
     };
 
-export function useStatsAttendance(month: string): StatsAttendanceController {
+export function useStatsAttendance(
+  month: string,
+  profileId: string,
+): StatsAttendanceController {
   const months = useMemo(() => [month], [month]);
 
-  const { data: me } = useSessionUserQuery(supabase);
-  const profile = useMyProfileQuery(supabase, me?.id ?? null);
   const attendance = useAttendanceMonthsQuery(supabase, months);
   const serverNowMs = useServerNow();
 
-  const profileId = profile.data?.id ?? null;
   const now = serverNowIso(serverNowMs);
   const shown = monthIn(attendance.data, month);
 
   const days = useMemo(
     () =>
-      profileId === null || shown === undefined
+      shown === undefined
         ? []
         : buildMyAttendanceDays(
             profileId,
@@ -74,7 +72,7 @@ export function useStatsAttendance(month: string): StatsAttendanceController {
     [shown, profileId, now],
   );
 
-  return fragmentOf([profile, attendance], {
+  return fragmentOf(attendance, {
     empty: () => days.length === 0,
     ready: () => ({
       line: monthAttendanceLine(tally),

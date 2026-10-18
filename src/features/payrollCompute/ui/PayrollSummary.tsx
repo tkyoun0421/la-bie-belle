@@ -7,12 +7,18 @@ import { PayrollAccrual } from "@/features/payrollCompute/ui/PayrollAccrual";
 
 export type PayrollSummaryProps = {
   span: DateSpan;
+  profileId: string;
   pending?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
 };
 
-export function PayrollSummary({ span, pending, failed }: PayrollSummaryProps) {
-  const fragment = usePayrollSummary(span);
+export function PayrollSummary({
+  span,
+  profileId,
+  pending,
+  failed,
+}: PayrollSummaryProps) {
+  const fragment = usePayrollSummary(span, profileId);
 
   return (
     <FragmentView
@@ -30,7 +36,7 @@ export function PayrollSummary({ span, pending, failed }: PayrollSummaryProps) {
             {ready.estimateNote}
           </Text>
 
-          <PayrollAccrual span={span} />
+          <PayrollAccrual span={span} profileId={profileId} />
         </>
       )}
     </FragmentView>

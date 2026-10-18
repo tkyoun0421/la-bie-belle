@@ -9,6 +9,7 @@ import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 
 export type StatsPayrollProps = {
   span: DateSpan;
+  profileId: string;
   onOpenHistory: () => void;
   pending?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
@@ -16,11 +17,12 @@ export type StatsPayrollProps = {
 
 export function StatsPayroll({
   span,
+  profileId,
   onOpenHistory,
   pending,
   failed,
 }: StatsPayrollProps) {
-  const fragment = useStatsPayroll(span);
+  const fragment = useStatsPayroll(span, profileId);
 
   return (
     <FragmentView

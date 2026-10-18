@@ -139,10 +139,13 @@ afterEach(() => {
 
 const OCTOBER = { from: "2026-10-01", to: "2026-10-31" };
 
-async function mounted(span: { from: string; to: string } = OCTOBER) {
+async function mounted(
+  span: { from: string; to: string } = OCTOBER,
+  profileId = "me",
+) {
   const { wrapper } = createWrapper();
   const hook = renderHook(
-    () => useMyPayrollViewDaysQuery(FAKE_CLIENT, span, FIXED_NOW_MS),
+    () => useMyPayrollViewDaysQuery(FAKE_CLIENT, span, FIXED_NOW_MS, profileId),
     {
       wrapper,
     },
@@ -193,13 +196,41 @@ describe("useMyPayrollViewDaysQuery — 네 도메인을 맞춰 급여 날을 �
   });
 });
 
+describe("useMyPayrollViewDaysQuery — 신분은 부르는 쪽이 심는다", () => {
+  it("받은 profileId의 몫으로 급여 날을 낸다", async () => {
+    getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-09")]);
+
+    const colleague = await mounted(OCTOBER, "colleague");
+    const mine = await mounted(OCTOBER, "me");
+
+    expect(colleague.result.current.data).toEqual([]);
+    expect(mine.result.current.data).toHaveLength(1);
+  });
+
+  it("스스로 세션이나 프로필을 읽지 않는다", async () => {
+    await mounted();
+
+    expect(getCurrentUserMock).not.toHaveBeenCalled();
+    expect(getMyProfileMock).not.toHaveBeenCalled();
+  });
+
+  it("프로필 읽기를 기다리지 않아 isLoading이 질의 셋만 따른다", async () => {
+    getMyProfileMock.mockImplementation(() => new Promise(() => {}));
+
+    const { result } = await mounted();
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual([]);
+  });
+});
+
 describe("useMyPayrollViewDaysQuery — 다 오기 전에는 값을 안 낸다", () => {
   it("읽는 중에는 data가 undefined고 isLoading이다", () => {
     getMonthScheduleMock.mockImplementation(() => new Promise(() => {}));
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS, "me"),
       { wrapper },
     );
 
@@ -214,7 +245,7 @@ describe("useMyPayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", 
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS, "me"),
       { wrapper },
     );
 
@@ -229,7 +260,7 @@ describe("useMyPayrollViewDaysQuery — 어느 쪽 오류든 올려 보낸다", 
 
     const { wrapper } = createWrapper();
     const { result } = renderHook(
-      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS),
+      () => useMyPayrollViewDaysQuery(FAKE_CLIENT, OCTOBER, FIXED_NOW_MS, "me"),
       { wrapper },
     );
 

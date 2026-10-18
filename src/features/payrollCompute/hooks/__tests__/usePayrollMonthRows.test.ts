@@ -22,6 +22,7 @@ const { usePayrollMonthRows } =
   await import("@/features/payrollCompute/hooks/usePayrollMonthRows");
 
 const SPAN = { from: "2026-01-01", to: "2026-12-31" };
+const PROFILE_ID = "me";
 
 const refetch = jest.fn();
 const onOpenMonth = jest.fn<(month: string) => void>();
@@ -53,7 +54,9 @@ function reads(result: Partial<PayrollViewDaysResult>) {
 }
 
 function mounted() {
-  return renderHook(() => usePayrollMonthRows({ span: SPAN, onOpenMonth }));
+  return renderHook(() =>
+    usePayrollMonthRows({ span: SPAN, profileId: PROFILE_ID, onOpenMonth }),
+  );
 }
 
 beforeEach(() => {
@@ -139,5 +142,18 @@ describe("usePayrollMonthRows — 조각이 달마다 금액을 모은다", () =
     result.current.retry();
 
     expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("받은 profileId를 그대로 service에 넘긴다", () => {
+    reads({ data: [] });
+
+    mounted();
+
+    expect(useMyPayrollViewDaysQueryMock).toHaveBeenCalledWith(
+      expect.anything(),
+      SPAN,
+      expect.any(Number),
+      PROFILE_ID,
+    );
   });
 });

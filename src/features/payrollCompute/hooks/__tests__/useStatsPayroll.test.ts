@@ -23,6 +23,7 @@ const { useStatsPayroll } =
   await import("@/features/payrollCompute/hooks/useStatsPayroll");
 
 const SPAN = { from: "2026-10-01", to: "2026-10-31" };
+const PROFILE_ID = "me";
 
 const refetch = jest.fn();
 
@@ -65,7 +66,7 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
   it("금액과 예상치 안내와 보조 줄을 낸다", () => {
     reads({ data: [day(50000), day(60000)] });
 
-    const { result } = renderHook(() => useStatsPayroll(SPAN));
+    const { result } = renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("ready");
 
@@ -81,7 +82,7 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
   it("보조 줄이 일한 횟수와 시간을 말한다", () => {
     reads({ data: [day(50000, "normal", 300), day(60000, "normal", 180)] });
 
-    const { result } = renderHook(() => useStatsPayroll(SPAN));
+    const { result } = renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
 
     if (result.current.state !== "ready") {
       throw new Error("ready가 아니다");
@@ -94,7 +95,7 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
   it("근무가 없어도 금액이 0원으로 선다", () => {
     reads({ data: [] });
 
-    const { result } = renderHook(() => useStatsPayroll(SPAN));
+    const { result } = renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
 
     if (result.current.state !== "ready") {
       throw new Error("ready가 아니다");
@@ -106,7 +107,7 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
   it("읽는 중에는 pending이다", () => {
     reads({ isLoading: true });
 
-    const { result } = renderHook(() => useStatsPayroll(SPAN));
+    const { result } = renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("pending");
   });
@@ -114,7 +115,7 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
   it("읽기가 넘어지면 failed고 다시 시도할 손이 있다", () => {
     reads({ error: new Error("끊겼다") });
 
-    const { result } = renderHook(() => useStatsPayroll(SPAN));
+    const { result } = renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("failed");
 
@@ -125,5 +126,18 @@ describe("useStatsPayroll — 통계의 급여 칸이 자기 값을 든다", () 
     result.current.retry();
 
     expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("받은 profileId를 그대로 service에 넘긴다", () => {
+    reads({ data: [] });
+
+    renderHook(() => useStatsPayroll(SPAN, PROFILE_ID));
+
+    expect(useMyPayrollViewDaysQueryMock).toHaveBeenCalledWith(
+      expect.anything(),
+      SPAN,
+      expect.any(Number),
+      PROFILE_ID,
+    );
   });
 });

@@ -23,6 +23,7 @@ const { usePayrollAccrual } =
   await import("@/features/payrollCompute/hooks/usePayrollAccrual");
 
 const SPAN = { from: "2026-10-01", to: "2026-10-31" };
+const PROFILE_ID = "me";
 
 function day(kind: PayrollDayKind, minutes: number): PayrollViewDay {
   return {
@@ -58,7 +59,7 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
   it("일한 횟수와 시간을 한 줄로 낸다", () => {
     reads({ data: [day("normal", 300), day("normal", 180)] });
 
-    const { result } = renderHook(() => usePayrollAccrual(SPAN));
+    const { result } = renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("ready");
 
@@ -73,7 +74,7 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
   it("결근한 날은 근무에서 빠진다", () => {
     reads({ data: [day("normal", 300), day("absent", 0)] });
 
-    const { result } = renderHook(() => usePayrollAccrual(SPAN));
+    const { result } = renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
 
     if (result.current.state !== "ready") {
       throw new Error("ready가 아니다");
@@ -85,7 +86,7 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
   it("지각이 없으면 지각 줄이 없다", () => {
     reads({ data: [day("normal", 300)] });
 
-    const { result } = renderHook(() => usePayrollAccrual(SPAN));
+    const { result } = renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
 
     if (result.current.state !== "ready") {
       throw new Error("ready가 아니다");
@@ -97,7 +98,7 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
   it("읽는 중에는 pending이다", () => {
     reads({ isLoading: true });
 
-    const { result } = renderHook(() => usePayrollAccrual(SPAN));
+    const { result } = renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("pending");
   });
@@ -105,8 +106,21 @@ describe("usePayrollAccrual — 조각이 쌓인 근무를 말한다", () => {
   it("읽기가 넘어지면 failed다", () => {
     reads({ error: new Error("끊겼다") });
 
-    const { result } = renderHook(() => usePayrollAccrual(SPAN));
+    const { result } = renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
 
     expect(result.current.state).toBe("failed");
+  });
+
+  it("받은 profileId를 그대로 service에 넘긴다", () => {
+    reads({ data: [] });
+
+    renderHook(() => usePayrollAccrual(SPAN, PROFILE_ID));
+
+    expect(useMyPayrollViewDaysQueryMock).toHaveBeenCalledWith(
+      expect.anything(),
+      SPAN,
+      expect.any(Number),
+      PROFILE_ID,
+    );
   });
 });

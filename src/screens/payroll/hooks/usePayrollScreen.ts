@@ -39,6 +39,7 @@ export type PayrollScreenController = {
   goBack: (() => void) | undefined;
   showBell: boolean;
   openNotifications: () => void;
+  profileId: string | null;
   unit: PeriodUnit;
   periodLabel: string;
   span: DateSpan;
@@ -66,11 +67,13 @@ export function usePayrollScreen(): PayrollScreenController {
   const { profile, isLoading: profileLoading } = useMyStanding(supabase);
   const unreadCount = useUnreadCountQuery(supabase);
 
+  const profileId = profile?.id ?? null;
+
   const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);
   const span = useMemo(() => periodSpan(period), [period]);
 
   const nowMs = useServerNow();
-  const payroll = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const payroll = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   const loading = profileLoading || payroll.isLoading;
 
@@ -100,6 +103,7 @@ export function usePayrollScreen(): PayrollScreenController {
     goBack: hasLeft ? goLeft : undefined,
     showBell: !hasLeft,
     openNotifications,
+    profileId,
     unit,
     periodLabel: periodLabel(period),
     span,

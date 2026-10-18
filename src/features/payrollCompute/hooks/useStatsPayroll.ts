@@ -18,9 +18,12 @@ export type StatsPayrollController =
       subtitle: string;
     };
 
-export function useStatsPayroll(span: DateSpan): StatsPayrollController {
+export function useStatsPayroll(
+  span: DateSpan,
+  profileId: string,
+): StatsPayrollController {
   const nowMs = useServerNow();
-  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   return fragmentOf(read, {
     failed: () => ({ retry: read.refetch }),

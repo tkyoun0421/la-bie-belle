@@ -120,10 +120,10 @@ beforeEach(() => {
   getMonthAttendanceMock.mockResolvedValue(EMPTY_ATTENDANCE);
 });
 
-function mounted() {
+function mounted(profileId = "me") {
   const { wrapper } = createWrapper();
 
-  return renderHook(() => useStatsAttendance(MONTH), { wrapper });
+  return renderHook(() => useStatsAttendance(MONTH, profileId), { wrapper });
 }
 
 describe("useStatsAttendance — 조각이 자기 근태를 읽는다", () => {
@@ -162,5 +162,36 @@ describe("useStatsAttendance — 조각이 자기 근태를 읽는다", () => {
     const { result } = mounted();
 
     await waitFor(() => expect(result.current.state).toBe("failed"));
+  });
+
+  it("받은 profileId의 몫으로 읽는다", async () => {
+    getMonthScheduleMock.mockResolvedValue([
+      {
+        ...scheduleDay("2026-10-02"),
+        assignments: [
+          {
+            ...scheduleDay("2026-10-02").assignments[0],
+            profileId: "colleague",
+          },
+        ],
+      },
+    ]);
+
+    const mine = mounted("me");
+    const colleague = mounted("colleague");
+
+    await waitFor(() => expect(colleague.result.current.state).toBe("ready"));
+    await waitFor(() => expect(mine.result.current.state).toBe("empty"));
+  });
+
+  it("스스로 세션이나 프로필을 읽지 않는다", async () => {
+    getMonthScheduleMock.mockResolvedValue([scheduleDay("2026-10-02")]);
+
+    const { result } = mounted("me");
+
+    await waitFor(() => expect(result.current.state).toBe("ready"));
+
+    expect(getCurrentUserMock).not.toHaveBeenCalled();
+    expect(getMyProfileMock).not.toHaveBeenCalled();
   });
 });

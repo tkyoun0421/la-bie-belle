@@ -196,6 +196,12 @@ async function mounted() {
 }
 
 describe("useStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => {
+  it("조각에 심어 줄 내 profileId를 낸다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.profileId).toBe("me");
+  });
+
   it("처음에는 근태 탭이고 이번 달이다", async () => {
     const { result } = await mounted();
 
@@ -326,5 +332,65 @@ describe("useStatsScreen — 갈 데를 controller가 정한다", () => {
     act(() => result.current.openPayrollHistory());
 
     expect(pushMock).toHaveBeenCalledWith(PAYROLL_PATH);
+  });
+});
+
+function identityOf(controller: object) {
+  return "identity" in controller ? controller.identity : undefined;
+}
+
+describe("useStatsScreen — 신분을 읽는 결과가 조각의 자리를 가른다", () => {
+  function mountedUnsettled() {
+    const { wrapper } = createWrapper();
+
+    return renderHook(() => useStatsScreen(), { wrapper });
+  }
+
+  it("프로필을 읽는 중이면 신분은 pending이다", async () => {
+    getMyProfileMock.mockReturnValue(new Promise(() => undefined));
+
+    const { result } = mountedUnsettled();
+
+    await waitFor(() => expect(getMyProfileMock).toHaveBeenCalled());
+
+    expect(identityOf(result.current)).toEqual({ state: "pending" });
+    expect(result.current.profileId).toBeNull();
+  });
+
+  it("프로필 읽기가 넘어지면 신분은 failed다", async () => {
+    getMyProfileMock.mockRejectedValue(new Error("끊겼다"));
+
+    const { result } = mountedUnsettled();
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({ state: "failed" }),
+    );
+
+    expect(result.current.profileId).toBeNull();
+  });
+
+  it("로그인은 됐는데 프로필 행이 없으면 신분은 absent다", async () => {
+    getMyProfileMock.mockResolvedValue(null);
+
+    const { result } = mountedUnsettled();
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({ state: "absent" }),
+    );
+
+    expect(result.current.profileId).toBeNull();
+  });
+
+  it("프로필이 오면 신분은 ready고 profileId를 든다", async () => {
+    const { result } = mountedUnsettled();
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({
+        state: "ready",
+        profileId: "me",
+      }),
+    );
+
+    expect(result.current.profileId).toBe("me");
   });
 });

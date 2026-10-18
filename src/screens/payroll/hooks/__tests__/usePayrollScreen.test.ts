@@ -185,6 +185,12 @@ async function mounted() {
 }
 
 describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다", () => {
+  it("조각에 심어 줄 내 profileId를 낸다", async () => {
+    const { result } = await mounted();
+
+    expect(result.current.profileId).toBe("me");
+  });
+
   it("처음에는 이번 달이다", async () => {
     const { result } = await mounted();
 

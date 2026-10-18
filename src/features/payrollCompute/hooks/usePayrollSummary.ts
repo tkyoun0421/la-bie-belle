@@ -11,9 +11,12 @@ export type PayrollSummaryController =
   | { state: "failed"; retry: () => void }
   | { state: "ready"; amountLabel: string; estimateNote: string };
 
-export function usePayrollSummary(span: DateSpan): PayrollSummaryController {
+export function usePayrollSummary(
+  span: DateSpan,
+  profileId: string,
+): PayrollSummaryController {
   const nowMs = useServerNow();
-  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   return fragmentOf(read, {
     failed: () => ({ retry: read.refetch }),

@@ -14,6 +14,12 @@ export type PayrollListProps = {
 };
 
 export function PayrollList({ screen }: PayrollListProps) {
+  const { profileId } = screen;
+
+  if (profileId === null) {
+    return <PayrollLoading />;
+  }
+
   return (
     <FragmentView
       fragment={screen.listState}
@@ -25,6 +31,7 @@ export function PayrollList({ screen }: PayrollListProps) {
         ready.view === "months" ? (
           <PayrollMonthRows
             span={screen.span}
+            profileId={profileId}
             onOpenMonth={screen.openMonth}
             pending={
               <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />
@@ -35,6 +42,7 @@ export function PayrollList({ screen }: PayrollListProps) {
         ) : (
           <PayrollHistoryRows
             span={screen.span}
+            profileId={profileId}
             pending={
               <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />
             }

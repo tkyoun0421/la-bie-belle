@@ -8,12 +8,18 @@ import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 
 export type PayrollAccrualProps = {
   span: DateSpan;
+  profileId: string;
   pending?: ReactNode;
   failed?: ReactNode;
 };
 
-export function PayrollAccrual({ span, pending, failed }: PayrollAccrualProps) {
-  const fragment = usePayrollAccrual(span);
+export function PayrollAccrual({
+  span,
+  profileId,
+  pending,
+  failed,
+}: PayrollAccrualProps) {
+  const fragment = usePayrollAccrual(span, profileId);
 
   return (
     <FragmentView fragment={fragment} pending={pending} failed={failed}>

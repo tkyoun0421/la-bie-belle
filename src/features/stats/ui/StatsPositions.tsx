@@ -8,6 +8,7 @@ import { useStatsPositions } from "@/features/stats/hooks/useStatsPositions";
 
 export type StatsPositionsProps = {
   month: string;
+  profileId: string;
   pending: ReactNode;
   failed: ReactNode;
   empty: ReactNode;
@@ -15,11 +16,12 @@ export type StatsPositionsProps = {
 
 export function StatsPositions({
   month,
+  profileId,
   pending,
   failed,
   empty,
 }: StatsPositionsProps) {
-  const fragment = useStatsPositions(month);
+  const fragment = useStatsPositions(month, profileId);
 
   return (
     <FragmentView

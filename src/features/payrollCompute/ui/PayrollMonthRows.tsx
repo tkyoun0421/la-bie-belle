@@ -6,6 +6,7 @@ import type { DateSpan } from "@/features/payrollCompute/model/dateSpan.policy";
 
 export type PayrollMonthRowsProps = {
   span: DateSpan;
+  profileId: string;
   onOpenMonth: (month: string) => void;
   pending?: ReactNode;
   failed?: (retry: () => void) => ReactNode;
@@ -14,12 +15,13 @@ export type PayrollMonthRowsProps = {
 
 export function PayrollMonthRows({
   span,
+  profileId,
   onOpenMonth,
   pending,
   failed,
   empty,
 }: PayrollMonthRowsProps) {
-  const fragment = usePayrollMonthRows({ span, onOpenMonth });
+  const fragment = usePayrollMonthRows({ span, profileId, onOpenMonth });
 
   return (
     <FragmentView
