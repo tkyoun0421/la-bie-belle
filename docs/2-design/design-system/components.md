@@ -657,6 +657,14 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 **바텀시트**는 화면 폭에 붙고 위쪽 한 변에만 `stroke.neutral` 1px 선을 둔다. 나머지 세 변은 화면 밖이라 선을 두를 자리가 없다. 뒤가 어두워지는 스크림이 시트를 띄우는 몫을 하므로 그림자가 없어도 앞뒤가 갈린다. 올라오는 시간은 `--d-slow`다.
 
+**바텀시트는 맨 위 가운데에 손잡이를 둔다.** 끌어 내려 닫을 수 있다는 것을 말하는 자리라 끌어 닫기가 되는 시트에는 다 선다. 결과가 같은 시트 안에서 날 때 손잡이가 그 자리에 그대로 있어 방금 누른 것의 답이라는 것이 자리로 읽힌다([excuse.md](../modules/attendance/screens/excuse.md)).
+
+| 자리 | 값 |
+| --- | --- |
+| 색 | `stroke.neutral-muted` |
+| 크기 | `w-8` `h-1` `rounded-full` |
+| 위아래 | 시트 위 변에서 8px, 아래 내용까지 12px |
+
 **가운데 Dialog**는 시트를 쌓지 않고 따로 뜨는 확인이다. 근무 취소 승인([approvals.md](../system/screens/approvals.md))과 시급 되돌리기([wages.md](../modules/payroll/screens/wages.md))가 여기다. 시트 위에서 한 번 더 묻는 자리라 시트와 다른 모양이어야 한다.
 
 | 자리 | 값 |
