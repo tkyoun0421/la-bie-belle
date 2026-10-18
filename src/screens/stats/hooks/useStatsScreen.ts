@@ -51,6 +51,7 @@ export type StatsTrendPoint = {
 export type StatsScreenController = {
   goBack: () => void;
   openPayrollHistory: () => void;
+  profileId: string | null;
   tab: StatsTab;
   month: string;
   selectedMonth: number;
@@ -225,6 +226,7 @@ export function useStatsScreen(): StatsScreenController {
   return {
     goBack,
     openPayrollHistory,
+    profileId,
     tab,
     month,
     selectedMonth: Number(month.slice(5, MONTH_LENGTH)),

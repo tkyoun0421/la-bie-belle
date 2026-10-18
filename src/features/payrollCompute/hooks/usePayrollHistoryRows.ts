@@ -16,9 +16,10 @@ export type PayrollHistoryRowsController =
 
 export function usePayrollHistoryRows(
   span: DateSpan,
+  profileId: string,
 ): PayrollHistoryRowsController {
   const nowMs = useServerNow();
-  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   return fragmentOf(read, {
     empty: (days) => payrollHistoryRows(days).length === 0,

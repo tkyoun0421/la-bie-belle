@@ -25,6 +25,7 @@ export type PayrollMonthRowsController =
 
 export type PayrollMonthRowsSource = {
   span: DateSpan;
+  profileId: string;
   onOpenMonth: (month: string) => void;
 };
 
@@ -51,10 +52,11 @@ function monthLinesOf(
 
 export function usePayrollMonthRows({
   span,
+  profileId,
   onOpenMonth,
 }: PayrollMonthRowsSource): PayrollMonthRowsController {
   const nowMs = useServerNow();
-  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   return fragmentOf(read, {
     empty: (days) => yearRows(monthRowsOfDays(days)).length === 0,

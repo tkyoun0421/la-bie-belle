@@ -4,10 +4,8 @@ import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { serverNowIso } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
-import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import {
   isInSpan,
   monthKeysOf,
@@ -35,22 +33,16 @@ export function useMyPayrollViewDaysQuery(
   client: DB,
   span: DateSpan,
   nowMs: number,
+  profileId: string | null,
 ): PayrollViewDaysResult {
   const queryClient = useQueryClient();
   const { from, to } = span;
 
   const months = useMemo(() => monthKeysOf({ from, to }), [from, to]);
 
-  const { data: me } = useSessionUserQuery(client);
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
-    client,
-    me?.id ?? null,
-  );
   const payroll = usePayrollMonthsQuery(client, months);
   const schedule = useScheduleMonthsQuery(client, months);
   const rehearsal = useRehearsalMonthsQuery(client, months);
-
-  const profileId = profile?.id ?? null;
 
   const data = useMemo(() => {
     if (
@@ -81,11 +73,7 @@ export function useMyPayrollViewDaysQuery(
 
   return {
     data,
-    isLoading:
-      profileLoading ||
-      payroll.isLoading ||
-      schedule.isLoading ||
-      rehearsal.isLoading,
+    isLoading: payroll.isLoading || schedule.isLoading || rehearsal.isLoading,
     error: payroll.error ?? schedule.error ?? rehearsal.error,
     refetch,
   };

@@ -15,10 +15,17 @@ export type StatsListProps = {
 };
 
 export function StatsList({ screen }: StatsListProps) {
+  const { profileId } = screen;
+
+  if (profileId === null) {
+    return <SkeletonRows rows={SKELETON_ROWS} frame="headed" />;
+  }
+
   if (screen.tab === "attendance") {
     return (
       <StatsAttendance
         month={screen.month}
+        profileId={profileId}
         pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
@@ -30,6 +37,7 @@ export function StatsList({ screen }: StatsListProps) {
     return (
       <StatsPositions
         month={screen.month}
+        profileId={profileId}
         pending={<SkeletonRows rows={SKELETON_ROWS} frame="headed" />}
         failed={<StatsFailed onRetry={screen.retry} />}
         empty={<StatsEmpty />}
@@ -47,6 +55,7 @@ export function StatsList({ screen }: StatsListProps) {
       {() => (
         <StatsPayroll
           span={screen.payrollSpan}
+          profileId={profileId}
           onOpenHistory={screen.openPayrollHistory}
           pending={
             <SkeletonRows rows={PAYROLL_VIEW_SKELETON_ROWS} frame="bare" />

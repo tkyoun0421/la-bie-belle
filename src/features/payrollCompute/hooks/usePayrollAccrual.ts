@@ -10,9 +10,12 @@ export type PayrollAccrualController =
   | { state: "failed" }
   | { state: "ready"; work: string; late: string | null };
 
-export function usePayrollAccrual(span: DateSpan): PayrollAccrualController {
+export function usePayrollAccrual(
+  span: DateSpan,
+  profileId: string,
+): PayrollAccrualController {
   const nowMs = useServerNow();
-  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs);
+  const read = useMyPayrollViewDaysQuery(supabase, span, nowMs, profileId);
 
   return fragmentOf(read, { ready: (days) => summarizeAccrual(days) });
 }
