@@ -265,6 +265,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `designMap.ts` — 화면 문서가 업무 영역 지도에 다 걸렸는지
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
 - `sourcesExist.ts` — spec·plan의 `sources` 경로와 앵커 존재
+- `assetReferences.ts` — `src/` 코드가 `require`·`import`로 가리키는 그림·서체 파일과 `require.context`가 여는 폴더가 저장소에 있는지, 구글 로그인 버튼이 이름으로 고르는 로고 SVG 넷이 `assets/google/`에 있는지. 버튼은 파일을 못 찾으면 `catch`로 삼키고 빈 그림을 그려서 화면 테스트도 e2e도 초록이다. 사람이 아직 안 넣은 `assets/illustrations/`만 면제 목록에 있고, 그 폴더가 생기면 면제를 빼라고 테스트가 빨개진다
 - `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlogIds.ts` — 작업 ID와 선행 작업 참조
 - `routeTypes.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
