@@ -4,6 +4,7 @@ import GorhomBottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { type ReactNode, useCallback } from "react";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
+import { SheetHandle } from "@/shared/ui/SheetHandle";
 
 const TRANSPARENT = { backgroundColor: "transparent" } as const;
 
@@ -43,7 +44,10 @@ export function DraggableSheet({
       style={TRANSPARENT}
     >
       <BottomSheetView>
-        <BottomSheet>{children}</BottomSheet>
+        <BottomSheet className="pt-0">
+          <SheetHandle />
+          {children}
+        </BottomSheet>
       </BottomSheetView>
     </GorhomBottomSheet>
   );
