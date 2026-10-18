@@ -317,7 +317,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 
 현재 한계는 다음과 같다. 문서의 원칙과 실제 헬퍼가 제공하는 기능을 구별한다.
 
-- **사용자에 안 매인 행은 정리가 못 닿는다.** 아래 [사용자 정리](#사용자-정리)는 테스트 사용자와 그가 만들거나 가리키는 행만 지운다. 공휴일처럼 사용자 없이 심은 행, 사진 객체(storage), 옛 회차가 `auth.users`만 지워 `user_id`가 비어 남은 profile은 그대로다([관찰 013](../observations/013-integration-users-never-cleaned.md)).
+- **사용자에 안 매인 행은 정리가 못 닿는다.** 아래 [사용자 정리](#사용자-정리)는 테스트 사용자와 그가 만들거나 가리키는 행만 지운다. 공휴일처럼 사용자 없이 심은 행, 사진 객체(storage), `user_id`가 빈 profile은 그대로다. 마지막 것은 옛 회차가 `auth.users`만 지운 행과, 테스트가 `user_id`를 직접 비운 행이다 — `eraseProfiles`의 「user_id가 널이면 다시 쏘지 않는다」가 회차마다 한 행을 남긴다([관찰 013](../observations/013-integration-users-never-cleaned.md)).
 - **쌓인 행이 거짓 초록과 거짓 빨강을 다 만든다.** 행 존재만 단언하는 테스트는 앞 회차가 남긴 행으로 통과하고, 전수를 읽는 질의는 [config.toml](../../supabase/config.toml)의 `max_rows = 1000`에 잘려 심은 행을 못 받는다 — 상한이 limit이 아니라 **전체 결과**에 걸린다. **둘 다 로컬에서만 나고 CI는 깨끗한 DB라 안 난다.** 로컬 실패가 바뀐 코드 탓인지 보려면 `supabase db reset` 뒤 그 테스트만 다시 돌린다.
 - **integration은 시작 전에 붙을 곳을 확인한다.** [globalSetup](../../tests/integration/globalSetup.ts)이 [config.toml](../../supabase/config.toml)의 `project_id`로 `supabase_db_<project_id>` 컨테이너를 고르고, 그 DB가 `[db]` 포트에 열린 `postgres`인지, `supabase status`의 `API_URL`과 env의 `EXPO_PUBLIC_SUPABASE_URL`이 loopback(127.0.0.1·localhost·::1)인지 본다. 하나라도 어긋나면 이유를 찍고 테스트를 하나도 안 돌린다 — 기기용으로 LAN 주소를 넣어 둔 셸이면 그 변수를 비우고 돌린다.
 - [config.toml](../../supabase/config.toml)의 `sign_in_sign_ups = 30`은 IP당 5분간 로그인·가입 요청 제한이다. 사용자 삭제만으로 요청 제한이 풀리지는 않는다. 제한 오류를 확인하면 제한 시간이 지난 뒤 재실행하고 반복 검증의 요청 수를 별도로 점검한다. CI도 한 실행 안에서 제한을 넘길 수 있다.
