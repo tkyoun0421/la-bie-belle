@@ -78,6 +78,8 @@ export type StatsScreenController = {
 const NO_MONTHS: string[] = [];
 
 const RETRY_KEYS = [
+  queryKeys.session.user(),
+  queryKeys.profile.all,
   queryKeys.schedule.all,
   queryKeys.attendance.all,
   queryKeys.payroll.all,
