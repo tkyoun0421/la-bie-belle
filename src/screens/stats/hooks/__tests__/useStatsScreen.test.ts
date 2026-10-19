@@ -369,6 +369,44 @@ describe("useStatsScreen — 신분을 읽는 결과가 조각의 자리를 가�
     expect(result.current.profileId).toBeNull();
   });
 
+  it("프로필 읽기가 넘어진 뒤 다시 시도하면 신분이 ready로 돌아온다", async () => {
+    getMyProfileMock.mockRejectedValueOnce(new Error("끊겼다"));
+
+    const { result } = mountedUnsettled();
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({ state: "failed" }),
+    );
+
+    act(() => result.current.retry());
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({
+        state: "ready",
+        profileId: "me",
+      }),
+    );
+  });
+
+  it("세션 읽기가 넘어진 뒤 다시 시도하면 신분이 ready로 돌아온다", async () => {
+    getCurrentUserMock.mockRejectedValueOnce(new Error("끊겼다"));
+
+    const { result } = mountedUnsettled();
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({ state: "failed" }),
+    );
+
+    act(() => result.current.retry());
+
+    await waitFor(() =>
+      expect(identityOf(result.current)).toEqual({
+        state: "ready",
+        profileId: "me",
+      }),
+    );
+  });
+
   it("로그인은 됐는데 프로필 행이 없으면 신분은 absent다", async () => {
     getMyProfileMock.mockResolvedValue(null);
 
