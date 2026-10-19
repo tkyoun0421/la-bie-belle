@@ -3,6 +3,7 @@ import {
   newRunId,
   runEmailPattern,
   runIdOf,
+  staleOrphanProfileIds,
   stalePurgeBatches,
   testUserEmail,
 } from "@tests/integration/testUserMark";
@@ -130,5 +131,54 @@ describe("오래된 회차 치우기 묶음", () => {
       { emailPattern: runEmailPattern(OTHER_RUN_ID), userIds: ["stale-2"] },
       { emailPattern: LEGACY_EMAIL_PATTERN, userIds: ["legacy-1"] },
     ]);
+  });
+});
+
+describe("옛 회차가 남긴 user_id 빈 profile", () => {
+  const legacyFixture = {
+    id: "orphan-1",
+    createdAtMs: RUN_STARTED_AT.getTime(),
+    approved: true,
+    submitted: false,
+    hasSubmittedEmail: false,
+  };
+
+  it("제출 없이 승인만 찍힌 꼴은 만든 지 6시간이 넘으면 고른다", () => {
+    expect(staleOrphanProfileIds([legacyFixture], hoursAfterStart(7))).toEqual([
+      "orphan-1",
+    ]);
+  });
+
+  it("만든 지 6시간이 안 넘었으면 건드리지 않는다", () => {
+    expect(staleOrphanProfileIds([legacyFixture], hoursAfterStart(6))).toEqual(
+      [],
+    );
+  });
+
+  it("제출한 적이 있으면 승인됐어도 고르지 않는다", () => {
+    expect(
+      staleOrphanProfileIds(
+        [{ ...legacyFixture, submitted: true }],
+        hoursAfterStart(7),
+      ),
+    ).toEqual([]);
+  });
+
+  it("제출이 남긴 이메일이 개인정보에 있으면 고르지 않는다", () => {
+    expect(
+      staleOrphanProfileIds(
+        [{ ...legacyFixture, hasSubmittedEmail: true }],
+        hoursAfterStart(7),
+      ),
+    ).toEqual([]);
+  });
+
+  it("승인되지 않은 profile은 고르지 않는다", () => {
+    expect(
+      staleOrphanProfileIds(
+        [{ ...legacyFixture, approved: false }],
+        hoursAfterStart(7),
+      ),
+    ).toEqual([]);
   });
 });

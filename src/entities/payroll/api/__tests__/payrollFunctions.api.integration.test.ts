@@ -4,11 +4,13 @@ import {
   createBlockedUser,
   createLeftUser,
   createSubmittedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   freshYear,
   kstDate,
   kstMonthStart,
   seedAssignment,
+  withDbLock,
   withFreshMonth,
   withNoDefaultWageRates,
   type AdminUser,
@@ -371,52 +373,58 @@ describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 
   });
 
   it("100,001원이면 bad_amount고, 따르는 사람에게도 오늘 행이 안 선다", async () => {
-    const follower = await createApprovedUser();
-    seedWageRate(follower.profileId, freshPastDate(), 10000, true);
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const follower = await createApprovedUser();
+      seedWageRate(follower.profileId, freshPastDate(), 10000, true);
 
-    const { error } = await rpc(admin, "set_default_wage", {
-      p_amount: 100001,
+      const { error } = await rpc(admin, "set_default_wage", {
+        p_amount: 100001,
+      });
+
+      expect(error?.message).toBe("bad_amount");
+      const row = await wageRateRow(admin, follower.profileId, kstDate(0));
+      expect(row).toBeNull();
     });
-
-    expect(error?.message).toBe("bad_amount");
-    const row = await wageRateRow(admin, follower.profileId, kstDate(0));
-    expect(row).toBeNull();
   });
 
   it("가장 최근 행이 follows_default=true인 사람만 오늘 행이 선다", async () => {
-    const follower = await createApprovedUser();
-    seedWageRate(follower.profileId, freshPastDate(), 10000, true);
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const follower = await createApprovedUser();
+      seedWageRate(follower.profileId, freshPastDate(), 10000, true);
 
-    const individual = await createApprovedUser();
-    seedWageRate(individual.profileId, freshPastDate(), 12000, false);
+      const individual = await createApprovedUser();
+      seedWageRate(individual.profileId, freshPastDate(), 12000, false);
 
-    const amount = 16000 + Math.floor(Math.random() * 1000);
-    const { error } = await rpc(admin, "set_default_wage", {
-      p_amount: amount,
+      const amount = 16000 + Math.floor(Math.random() * 1000);
+      const { error } = await rpc(admin, "set_default_wage", {
+        p_amount: amount,
+      });
+
+      expect(error).toBeNull();
+      const today = kstDate(0);
+      expect(await wageRateRow(admin, follower.profileId, today)).toEqual({
+        amount,
+        follows_default: true,
+      });
+      expect(await wageRateRow(admin, individual.profileId, today)).toBeNull();
+      expect(await defaultWageRateAmount(admin, today)).toBe(amount);
     });
-
-    expect(error).toBeNull();
-    const today = kstDate(0);
-    expect(await wageRateRow(admin, follower.profileId, today)).toEqual({
-      amount,
-      follows_default: true,
-    });
-    expect(await wageRateRow(admin, individual.profileId, today)).toBeNull();
-    expect(await defaultWageRateAmount(admin, today)).toBe(amount);
   });
 
   it("과거에 따랐지만 지금은 개별로 정한 사람은 제외된다", async () => {
-    const switched = await createApprovedUser();
-    const earlier = kstDate(-(200 + Math.floor(Math.random() * 90000)));
-    const laterButPast = kstDate(-(1 + Math.floor(Math.random() * 100)));
-    seedWageRate(switched.profileId, earlier, 10000, true);
-    seedWageRate(switched.profileId, laterButPast, 14000, false);
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const switched = await createApprovedUser();
+      const earlier = kstDate(-(200 + Math.floor(Math.random() * 90000)));
+      const laterButPast = kstDate(-(1 + Math.floor(Math.random() * 100)));
+      seedWageRate(switched.profileId, earlier, 10000, true);
+      seedWageRate(switched.profileId, laterButPast, 14000, false);
 
-    const amount = 21000 + Math.floor(Math.random() * 1000);
-    await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
+      const amount = 21000 + Math.floor(Math.random() * 1000);
+      await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
 
-    const row = await wageRateRow(admin, switched.profileId, kstDate(0));
-    expect(row).toBeNull();
+      const row = await wageRateRow(admin, switched.profileId, kstDate(0));
+      expect(row).toBeNull();
+    });
   });
 
   it("관리자가 아니면 not_allowed", async () => {
@@ -456,17 +464,19 @@ describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 
   });
 
   it("승인받지 않았거나 차단됐거나 퇴사한 사람에게는 안 선다", async () => {
-    const notApproved = await createSubmittedUser();
-    const blocked = await createBlockedUser();
-    const left = await createLeftUser();
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const notApproved = await createSubmittedUser();
+      const blocked = await createBlockedUser();
+      const left = await createLeftUser();
 
-    const amount = 13000 + Math.floor(Math.random() * 1000);
-    await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
+      const amount = 13000 + Math.floor(Math.random() * 1000);
+      await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
 
-    const today = kstDate(0);
-    expect(await wageRateRow(admin, notApproved.profileId, today)).toBeNull();
-    expect(await wageRateRow(admin, blocked.profileId, today)).toBeNull();
-    expect(await wageRateRow(admin, left.profileId, today)).toBeNull();
+      const today = kstDate(0);
+      expect(await wageRateRow(admin, notApproved.profileId, today)).toBeNull();
+      expect(await wageRateRow(admin, blocked.profileId, today)).toBeNull();
+      expect(await wageRateRow(admin, left.profileId, today)).toBeNull();
+    });
   });
 });
 

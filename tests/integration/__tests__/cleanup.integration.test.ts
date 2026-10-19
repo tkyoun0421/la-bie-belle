@@ -1,5 +1,9 @@
 import { randomBytes, randomUUID } from "node:crypto";
-import { PROFILE_REFERENCES, purgeTestUsers } from "@tests/integration/cleanup";
+import {
+  PROFILE_REFERENCES,
+  purgeTestUsers,
+  staleOrphanTestProfileIds,
+} from "@tests/integration/cleanup";
 import {
   createAdminUser,
   createApprovedUser,
@@ -88,6 +92,20 @@ function ensureProfileOf(userId: string): string {
     { user_id: userId },
   );
   return profileId;
+}
+
+function orphanAsLegacyFixture(
+  profileId: string,
+  { hoursAgo, submitted }: { hoursAgo: number; submitted: boolean },
+): void {
+  execSql(
+    "update public.profiles\n" +
+      "set user_id = null,\n" +
+      `    submitted_at = ${submitted ? "submitted_at" : "null"},\n` +
+      "    created_at = now() - make_interval(hours => :'hours_ago'::integer)\n" +
+      "where id = :'profile_id';\n",
+    { profile_id: profileId, hours_ago: String(hoursAgo) },
+  );
 }
 
 async function signUpAs(email: string): Promise<string> {
@@ -232,5 +250,47 @@ describe("가입 헬퍼가 만든 profile", () => {
     purgeTestUsers(takeRegistered());
 
     expect(profileExists(member.profileId)).toBe(false);
+  });
+});
+
+describe("옛 회차가 남긴 user_id 빈 profile 고르기", () => {
+  it("만든 지 6시간이 넘었고 제출 없이 승인만 찍힌 profile을 고른다", async () => {
+    const legacy = await createApprovedUser();
+    orphanAsLegacyFixture(legacy.profileId, { hoursAgo: 7, submitted: false });
+
+    expect(staleOrphanTestProfileIds(new Date())).toContain(legacy.profileId);
+  });
+
+  it("만든 지 6시간이 안 넘었으면 고르지 않는다", async () => {
+    const recent = await createApprovedUser();
+    orphanAsLegacyFixture(recent.profileId, { hoursAgo: 1, submitted: false });
+
+    expect(staleOrphanTestProfileIds(new Date())).not.toContain(
+      recent.profileId,
+    );
+  });
+
+  it("제출 시각이 있으면 고르지 않는다", async () => {
+    const submitted = await createApprovedUser();
+    orphanAsLegacyFixture(submitted.profileId, {
+      hoursAgo: 7,
+      submitted: true,
+    });
+
+    expect(staleOrphanTestProfileIds(new Date())).not.toContain(
+      submitted.profileId,
+    );
+  });
+
+  it("user_id가 남은 profile은 고르지 않는다", async () => {
+    const member = await createApprovedUser();
+    execSql(
+      "update public.profiles set submitted_at = null, created_at = now() - interval '7 hours' where id = :'profile_id';\n",
+      { profile_id: member.profileId },
+    );
+
+    expect(staleOrphanTestProfileIds(new Date())).not.toContain(
+      member.profileId,
+    );
   });
 });

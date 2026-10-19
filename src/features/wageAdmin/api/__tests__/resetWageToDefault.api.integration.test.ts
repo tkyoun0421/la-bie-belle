@@ -3,8 +3,10 @@ import { resetWageToDefault } from "@/features/wageAdmin/api/resetWageToDefault.
 import {
   createAdminUser,
   createApprovedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   kstDate,
+  withDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -95,19 +97,21 @@ describe("resetWageToDefault dal(plan AC-07) — reset_wage_to_default를 부르
   });
 
   it("관리자가 부르면 오늘 날짜에 그 시점 기본값 행이 선다(PAY-014)", async () => {
-    const worker = await createApprovedUser();
-    seedWageRate(worker.profileId, freshPastDate(), 20000, false);
-    seedDefaultWageRate(kstDate(0), 15500);
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const worker = await createApprovedUser();
+      seedWageRate(worker.profileId, freshPastDate(), 20000, false);
+      seedDefaultWageRate(kstDate(0), 15500);
 
-    await resetWageToDefault(admin.client, worker.profileId);
+      await resetWageToDefault(admin.client, worker.profileId);
 
-    const { data, error } = await wageRateRow(
-      admin,
-      worker.profileId,
-      kstDate(0),
-    );
-    expect(error).toBeNull();
-    expect(data).toEqual({ amount: 15500, follows_default: true });
+      const { data, error } = await wageRateRow(
+        admin,
+        worker.profileId,
+        kstDate(0),
+      );
+      expect(error).toBeNull();
+      expect(data).toEqual({ amount: 15500, follows_default: true });
+    });
   });
 
   it("관리자가 아니면 not_allowed", async () => {

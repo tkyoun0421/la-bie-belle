@@ -3,10 +3,12 @@ import {
   createAdminUser,
   createApprovedUser,
   createLeftUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   freshYear,
   kstDate,
   kstMonthStart,
+  withDbLock,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -192,34 +194,38 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
 
   describe("default_wage_rates — 관리자만 읽는다", () => {
     it("근무자는 기본 시급을 못 읽는다 — 0행", async () => {
-      const worker = await createApprovedUser();
-      const effectiveDate = freshPastDate();
-      seedDefaultWageRate(effectiveDate, 10000);
+      await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+        const worker = await createApprovedUser();
+        const effectiveDate = freshPastDate();
+        seedDefaultWageRate(effectiveDate, 10000);
 
-      const { data, error } = await tableFor<{ effective_date: string }>(
-        worker,
-        "default_wage_rates",
-      )
-        .select("effective_date")
-        .eq("effective_date", effectiveDate);
+        const { data, error } = await tableFor<{ effective_date: string }>(
+          worker,
+          "default_wage_rates",
+        )
+          .select("effective_date")
+          .eq("effective_date", effectiveDate);
 
-      expect(error).toBeNull();
-      expect(data).toEqual([]);
+        expect(error).toBeNull();
+        expect(data).toEqual([]);
+      });
     });
 
     it("관리자는 기본 시급을 읽는다", async () => {
-      const effectiveDate = freshPastDate();
-      seedDefaultWageRate(effectiveDate, 10000);
+      await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+        const effectiveDate = freshPastDate();
+        seedDefaultWageRate(effectiveDate, 10000);
 
-      const { data, error } = await tableFor<{ effective_date: string }>(
-        admin,
-        "default_wage_rates",
-      )
-        .select("effective_date")
-        .eq("effective_date", effectiveDate);
+        const { data, error } = await tableFor<{ effective_date: string }>(
+          admin,
+          "default_wage_rates",
+        )
+          .select("effective_date")
+          .eq("effective_date", effectiveDate);
 
-      expect(error).toBeNull();
-      expect(data).toEqual([{ effective_date: effectiveDate }]);
+        expect(error).toBeNull();
+        expect(data).toEqual([{ effective_date: effectiveDate }]);
+      });
     });
   });
 
