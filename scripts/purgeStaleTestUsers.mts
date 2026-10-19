@@ -1,4 +1,7 @@
-import { purgeTestUsers } from "@tests/integration/cleanup";
+import {
+  purgeTestUsers,
+  staleOrphanTestProfileIds,
+} from "@tests/integration/cleanup";
 import { queryColumn } from "@tests/integration/postgres";
 import {
   stalePurgeBatches,
@@ -16,7 +19,8 @@ function candidateUsers(): TestUserRow[] {
   });
 }
 
-const batches = stalePurgeBatches(candidateUsers(), new Date());
+const now = new Date();
+const batches = stalePurgeBatches(candidateUsers(), now);
 
 for (const { emailPattern, userIds } of batches) {
   purgeTestUsers({ userIds, profileIds: [] }, emailPattern);
@@ -27,4 +31,16 @@ console.log(
   batches.length === 0
     ? "치울 테스트 사용자가 없다."
     : `회차 ${batches.length}묶음을 치웠다.`,
+);
+
+const orphanProfileIds = staleOrphanTestProfileIds(now);
+
+if (orphanProfileIds.length > 0) {
+  purgeTestUsers({ userIds: [], profileIds: orphanProfileIds });
+}
+
+console.log(
+  orphanProfileIds.length === 0
+    ? "치울 user_id 빈 테스트 profile이 없다."
+    : `user_id 빈 테스트 profile ${orphanProfileIds.length}행을 치웠다.`,
 );

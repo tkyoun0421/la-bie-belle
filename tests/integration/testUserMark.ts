@@ -22,6 +22,14 @@ export type TestUserRow = { id: string; email: string; createdAtMs: number };
 
 export type PurgeBatch = { emailPattern: string; userIds: string[] };
 
+export type OrphanProfileRow = {
+  id: string;
+  createdAtMs: number;
+  approved: boolean;
+  submitted: boolean;
+  hasSubmittedEmail: boolean;
+};
+
 export function newRunId(startedAt: Date, nonce: string): string {
   if (!NONCE.test(nonce)) {
     throw new Error(`runId 의 nonce 는 여섯 자리 16진수다: "${nonce}"`);
@@ -55,6 +63,10 @@ export function runIdOf(email: string): string | null {
   return MARKED_EMAIL.exec(email)?.[1] ?? null;
 }
 
+function isStaleAt(now: Date, startedAtMs: number): boolean {
+  return now.getTime() - startedAtMs > STALE_RUN_AGE_MS;
+}
+
 function runStartedAtMs(runId: string): number {
   return Number(runId.slice(0, runId.indexOf("-")));
 }
@@ -66,8 +78,7 @@ export function stalePurgeBatches(
   const staleRuns = new Map<string, string[]>();
   const legacyIds: string[] = [];
 
-  const isStale = (startedAtMs: number) =>
-    now.getTime() - startedAtMs > STALE_RUN_AGE_MS;
+  const isStale = (startedAtMs: number) => isStaleAt(now, startedAtMs);
 
   for (const user of users) {
     const runId = runIdOf(user.email);
@@ -90,4 +101,20 @@ export function stalePurgeBatches(
   return legacyIds.length > 0
     ? [...batches, { emailPattern: LEGACY_EMAIL_PATTERN, userIds: legacyIds }]
     : batches;
+}
+
+function isApprovedWithoutSubmission(row: OrphanProfileRow): boolean {
+  return row.approved && !row.submitted && !row.hasSubmittedEmail;
+}
+
+export function staleOrphanProfileIds(
+  rows: readonly OrphanProfileRow[],
+  now: Date,
+): string[] {
+  return rows
+    .filter(
+      (row) =>
+        isApprovedWithoutSubmission(row) && isStaleAt(now, row.createdAtMs),
+    )
+    .map((row) => row.id);
 }

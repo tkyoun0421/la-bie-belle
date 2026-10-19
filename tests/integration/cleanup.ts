@@ -1,5 +1,9 @@
-import { execSql } from "@tests/integration/postgres";
-import { runEmailPattern } from "@tests/integration/testUserMark";
+import { execSql, queryColumn } from "@tests/integration/postgres";
+import {
+  type OrphanProfileRow,
+  runEmailPattern,
+  staleOrphanProfileIds,
+} from "@tests/integration/testUserMark";
 import {
   currentRunId,
   type PurgeTargets,
@@ -54,4 +58,31 @@ export function purgeTestUsers(
     profile_ids: `{${profileIds.join(",")}}`,
     email_pattern: emailPattern,
   });
+}
+
+const ORPHAN_PROFILES =
+  "select p.id::text\n" +
+  "  || '|' || floor(extract(epoch from p.created_at) * 1000)::bigint\n" +
+  "  || '|' || (p.approved_at is not null)\n" +
+  "  || '|' || (p.submitted_at is not null)\n" +
+  "  || '|' || exists (select 1 from public.profile_private pp where pp.profile_id = p.id and pp.email is not null)\n" +
+  "from public.profiles p\n" +
+  "where p.user_id is null;\n";
+
+function orphanProfileRows(): OrphanProfileRow[] {
+  return queryColumn(ORPHAN_PROFILES).map((line) => {
+    const [id, createdAtMs, approved, submitted, hasSubmittedEmail] =
+      line.split("|");
+    return {
+      id,
+      createdAtMs: Number(createdAtMs),
+      approved: approved === "true",
+      submitted: submitted === "true",
+      hasSubmittedEmail: hasSubmittedEmail === "true",
+    };
+  });
+}
+
+export function staleOrphanTestProfileIds(now: Date): string[] {
+  return staleOrphanProfileIds(orphanProfileRows(), now);
 }
