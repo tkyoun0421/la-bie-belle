@@ -394,10 +394,12 @@ export async function withOnlyAdmin<T>(
   });
 }
 
+export const DEFAULT_WAGE_RATES_LOCK = "default_wage_rates";
+
 export async function withNoDefaultWageRates<T>(
   fn: () => Promise<T>,
 ): Promise<T> {
-  return withDbLock("default_wage_rates", async () => {
+  return withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
     const saved = queryColumn(
       "select effective_date || '|' || amount from public.default_wage_rates;\n",
     ).map((line) => line.split("|"));
@@ -424,23 +426,6 @@ export async function withNoDefaultWageRates<T>(
       }
     }
   });
-}
-
-export type BlockedUser = SignedInUser & {
-  approvedAt: string;
-  blockedAt: string;
-};
-
-export async function createBlockedUser(): Promise<BlockedUser> {
-  const user = await createApprovedUser();
-  const blockedAt = new Date().toISOString();
-
-  execSql(
-    "update public.profiles set blocked_at = :'blocked_at' where user_id = :'user_id';\n",
-    { user_id: user.userId, blocked_at: blockedAt },
-  );
-
-  return { ...user, blockedAt };
 }
 
 export type RejectedUser = SignedInUser & { rejectedAt: string };
@@ -486,6 +471,20 @@ export async function createSubmittedUser(): Promise<SubmittedUser> {
   }
 
   return { ...user, submittedAt: data.submitted_at };
+}
+
+export type BlockedUser = SubmittedUser & { blockedAt: string };
+
+export async function createBlockedUser(): Promise<BlockedUser> {
+  const user = await createSubmittedUser();
+  const blockedAt = new Date().toISOString();
+
+  execSql(
+    "update public.profiles set blocked_at = :'blocked_at' where user_id = :'user_id';\n",
+    { user_id: user.userId, blocked_at: blockedAt },
+  );
+
+  return { ...user, blockedAt };
 }
 
 export type LeftUser = SignedInUser & {

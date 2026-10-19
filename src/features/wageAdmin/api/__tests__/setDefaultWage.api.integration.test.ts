@@ -3,8 +3,10 @@ import { setDefaultWage } from "@/features/wageAdmin/api/setDefaultWage.api";
 import {
   createAdminUser,
   createApprovedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   kstDate,
+  withDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -86,26 +88,28 @@ describe("setDefaultWage dal(plan AC-07) — set_default_wage를 부르고 오�
   });
 
   it("관리자가 부르면 따르는 사람 전원에게 오늘 행이 같이 선다(PAY-013)", async () => {
-    const follower = await createApprovedUser();
-    seedWageRate(follower.profileId, freshPastDate(), 10000, true);
-    const individual = await createApprovedUser();
-    seedWageRate(individual.profileId, freshPastDate(), 12000, false);
-    const amount = 17000 + Math.floor(Math.random() * 1000);
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const follower = await createApprovedUser();
+      seedWageRate(follower.profileId, freshPastDate(), 10000, true);
+      const individual = await createApprovedUser();
+      seedWageRate(individual.profileId, freshPastDate(), 12000, false);
+      const amount = 17000 + Math.floor(Math.random() * 1000);
 
-    await setDefaultWage(admin.client, amount);
+      await setDefaultWage(admin.client, amount);
 
-    const followerRow = await wageRateRow(
-      admin,
-      follower.profileId,
-      kstDate(0),
-    );
-    expect(followerRow.data).toEqual({ amount, follows_default: true });
-    const individualRow = await wageRateRow(
-      admin,
-      individual.profileId,
-      kstDate(0),
-    );
-    expect(individualRow.data).toBeNull();
+      const followerRow = await wageRateRow(
+        admin,
+        follower.profileId,
+        kstDate(0),
+      );
+      expect(followerRow.data).toEqual({ amount, follows_default: true });
+      const individualRow = await wageRateRow(
+        admin,
+        individual.profileId,
+        kstDate(0),
+      );
+      expect(individualRow.data).toBeNull();
+    });
   });
 
   it("100,001원이면 bad_amount", async () => {
