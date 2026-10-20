@@ -226,7 +226,7 @@ sources:
 | `src/screens/applications/ui/ApplicationsScreen.tsx` · `src/app/admin/applications.tsx` | 모아보기 | AC-07 |
 | `src/shared/ui/MonthCalendar.tsx` · `ScheduleDayCell.tsx` | 달력 그리드를 근무자 화면에서 공용 자리로 올리고 칸에 관리자 편집 상태를 더한다 | AC-10 |
 | `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx` | 올린 달력 그리드를 따라가는 import | AC-10 |
-| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seed-session.js` | 시드 상태 다섯과 `month`·`day` 입력 | AC-11 |
+| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seedSession.js` | 시드 상태 다섯과 `month`·`day` 입력 | AC-11 |
 | `tests/e2e/schedule-admin.yaml` · `admin-home.yaml` · `applications.yaml` | e2e 한 줄기 | AC-11 |
 
 ## 구현 순서

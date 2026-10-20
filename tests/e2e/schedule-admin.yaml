@@ -44,7 +44,7 @@
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/schedule-worker.yaml 머리말, scripts/e2eSeedServer.mts,
-# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# scripts/seedSession.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/admin/schedule"(`?month=`·`?date=` 그대로) 행이다.
 #
 # **시드 서버에 상태 넷과 액션 하나가 아직 없다 — implementer가 이 task에서
@@ -59,12 +59,12 @@
 # 만들기)가 선다. 응답에 `month`(raw "YYYY-MM")·`monthLabel`(spellMonth)·
 # `deadlineDate`(`kstDate(3)`, raw "YYYY-MM-DD" — 마감일 시트의 날짜 입력에
 # 그대로 타이핑할 값)를 싣는다. `deadlineDate`는 화면에 그대로 찍히는 문구가
-# 아니라 입력값이라 seed-session.js의 escapeForTextSelector를 안 거친다.
+# 아니라 입력값이라 seedSession.js의 escapeForTextSelector를 안 거친다.
 #
 # ## schedule_admin_race_open (env MONTH, DAY)
 #
 # 세션을 새로 만들지 않는다 — 이미 로그인된 세션을 그대로 두고 그 사이에 다른
-# 관리자가 날을 먼저 여는 것을 흉내 낸다. seed-session.js가 지금은 `state`·
+# 관리자가 날을 먼저 여는 것을 흉내 낸다. seedSession.js가 지금은 `state`·
 # `name` 둘만 요청 본문에 담는데, 이 상태를 쓸 때는 env의 `MONTH`·`DAY`가 있으면
 # `month`·`day` 필드로 같이 보내도록 넓혀야 한다(있을 때만 — 다른 상태를 쓰는
 # 플로우가 이 필드 때문에 깨지면 안 된다). 서버는 `createAdminUser()`로 완전히
@@ -91,7 +91,7 @@
 # DAY로 "03" 하나만 보내 실패도 하나뿐이므로 단수형 문장("…은 열지 못했어요")만
 # 확인한다 — 복수형("외 n개")은 이 액션 하나로는 못 만든다(실패가 둘 이상이
 # 되려면 서로 다른 날짜에 이 액션을 두 번 걸어야 하는데, 이 파일의 배정에는
-# 그 조각이 없다). seed-session.js는 이 값도 `escapeForTextSelector`로 감싸
+# 그 조각이 없다). seedSession.js는 이 값도 `escapeForTextSelector`로 감싸
 # 내보낸다 — 지금 꼴엔 정규식 특수문자가 없어 실제로는 그대로 나가지만, 다른
 # 동적 라벨과 같은 손을 타는 것으로 남겨둔다.
 #
@@ -132,7 +132,7 @@
 #
 # **날짜 입력 위젯과의 실제 상호작용(inputText로 "YYYY-MM-DD"를 그대로
 # 받는지, 아니면 네이티브 피커라 다른 조작이 필요한지)은 한 번도 못
-# 돌려봤다** — scripts/seed-session.js 머리말의 http.post 처럼, Maestro
+# 돌려봤다** — scripts/seedSession.js 머리말의 http.post 처럼, Maestro
 # CLI로 실행해 실물 위젯을 보기 전까지는 확인할 수 없는 자리로 남는다.
 #
 # 텍스트 셀렉터는 정규식이다. 월·일처럼 오늘 날짜에 따라 바뀌는 문구는
@@ -387,7 +387,7 @@ appId: com.labiebelle.app
 # 빈 달 → 마감일 시트 → 만들기 → 만든 직후 안내
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_empty_month
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -432,7 +432,7 @@ appId: com.labiebelle.app
 
 # --- 여기서 03일이 다른 관리자에 의해 먼저 열린다(위 계약 참고) ---
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_race_open
       MONTH: "${output.month}"
@@ -493,7 +493,7 @@ appId: com.labiebelle.app
 # 이유로 뺐다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_confirmable
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -526,7 +526,7 @@ appId: com.labiebelle.app
 # 뒤에도 「날 열기」가 되고 새로 연 날에도 「이 날 닫기」가 없다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_confirmed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -554,7 +554,7 @@ appId: com.labiebelle.app
 # 자리 요청을 보내고, 자리 카드 배지와 재진입 상태를 본다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_request_slot
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -586,7 +586,7 @@ appId: com.labiebelle.app
 # 여정으로 간다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: payroll_adjust
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

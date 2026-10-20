@@ -44,7 +44,7 @@
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/schedule-admin.yaml 머리말, scripts/e2eSeedServer.mts,
-# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# scripts/seedSession.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/admin/schedule"(`?date=` 그대로)이다 — 이 파일은 달력을 거치지 않고 날 상세로 바로
 # 들어간다. 날 열기·달력·확정 자체는 schedule-admin.yaml 몫이라 여기서 다시 안 밟는다.
 #
@@ -107,7 +107,7 @@
 #
 # `SchedulePayload`에 `day?: string`를 더하고, `STATES`·`ADMIN_STATES`에
 # `"schedule_assign_day"`를 더한다. `schedulePayloadOf`에 갈래를 하나 추가한다.
-# **seed-session.js도 이 상태만 쓰는 `day`를 그대로 통과시켜야 한다** —
+# **seedSession.js도 이 상태만 쓰는 `day`를 그대로 통과시켜야 한다** —
 # `schedule_admin_empty_month`의 `deadlineDate`처럼 화면 문구가 아니라 딥링크 조립용
 # raw 값이라 `escapeForTextSelector`를 안 거친다: `if (seeded.day) { output.day =
 # seeded.day; }`.
@@ -210,7 +210,7 @@ appId: com.labiebelle.app
 # 교육 붙이기(셈 불변), 자물쇠 풀고 자리 추가.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_assign_day
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -278,7 +278,7 @@ appId: com.labiebelle.app
 # 변경(사람 바꾸기·사람 빼기·닫기)이고, 「빼기」는 확인 문구 뒤에 실행된다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_admin_confirmed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

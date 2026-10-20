@@ -173,7 +173,7 @@ sources:
 | `src/app/me/rehearsals.tsx` | `NotBuiltYet`을 걷고 `/me/rehearsals`에 화면을 붙인다 | AC-08 |
 | `src/screens/profile/model/has-rehearsal-grant.ts`·`__tests__/has-rehearsal-grant.test.ts` · `src/screens/profile/ui/ProfileScreen.tsx` | 「리허설」 줄과 그 줄이 서는 판정 | AC-08 |
 | `tests/e2e/rehearsal.yaml`·`rehearsals.yaml` · `tests/e2e/profile.yaml` | 넣고 고치고 지우는 한 바퀴, 관리자 읽기, 자격 없는 사람의 진입. `rehearsals.yaml`은 라우트 파일명으로 찾는 훅을 위해 같은 플로우를 부르기만 한다 | 검증 표 |
-| `scripts/e2e-seed-server.mts`·`tests/e2e/scripts/seed-session.js` | `rehearsal_qualified` 시드 — `grant_position`으로 자격을 주고 배정 있는 날과 없는 날을 같이 깐다 | 검증 표 |
+| `scripts/e2e-seed-server.mts`·`tests/e2e/scripts/seedSession.js` | `rehearsal_qualified` 시드 — `grant_position`으로 자격을 주고 배정 있는 날과 없는 날을 같이 깐다 | 검증 표 |
 
 ## 구현 순서
 

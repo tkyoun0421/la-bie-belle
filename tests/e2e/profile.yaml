@@ -9,7 +9,7 @@
 # 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts, seed-session.js를
+# tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts, seedSession.js를
 # 본다. 딥링크는 세션을 심은 뒤 "labiebelle://me"다 — 라우트가
 # src/app/(tabs)/me.tsx인데 그룹을 감싼 괄호 "(tabs)"는 URL 세그먼트가
 # 아니라서 빠진다(tests/e2e/home.yaml의 "/"와 같은 결).
@@ -21,7 +21,7 @@
 # 위한 것이라 프로필이 없다. implementer가 "approved"에도 "rejected"·
 # "blocked"·"submitted"가 쓰는 것과 같은 SEEDED_PROFILE을 채워야 이 플로우가
 # 선다(제출까지 시키거나 프로필만 얹거나는 구현 몫). 아래 다섯 값 단언은 그
-# 프로필이 SEEDED_PROFILE과 같다고 보고 seed-session.js가 주는
+# 프로필이 SEEDED_PROFILE과 같다고 보고 seedSession.js가 주는
 # ${output.profileName}·${output.profileGenderLabel}·
 # ${output.profileBirthDateLabel}·${output.profilePhone}을 쓴다 — 글자를
 # 박지 않는다.
@@ -71,7 +71,7 @@ appId: com.labiebelle.app
     clearState: true
     clearKeychain: true
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: approved
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -134,7 +134,7 @@ appId: com.labiebelle.app
     clearState: true
     clearKeychain: true
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: admin
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -149,7 +149,7 @@ appId: com.labiebelle.app
     clearState: true
     clearKeychain: true
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: rehearsal_qualified
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

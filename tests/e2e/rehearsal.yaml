@@ -18,7 +18,7 @@
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/schedule-worker.yaml 머리말, scripts/e2eSeedServer.mts,
-# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# scripts/seedSession.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/me/rehearsals" 그대로다 — "me" 세그먼트가 "(tabs)" 같은 괄호 그룹이 아니라서
 # 그대로 URL에 남는다.
 #
@@ -82,7 +82,7 @@
 # 판정 2번) — 그래서 로컬 DB를 안 비우고 이 상태를 두 번 돌리면 두 번째 `create_schedule`이
 # `already_exists`로 죽는다. 아래 「이슈」에 적는다.
 #
-# `scripts/seed-session.js`도 이 파일이 고쳤다(그 파일도 tests/e2e/ 안이다). 바뀐 것 셋이다.
+# `scripts/seedSession.js`도 이 파일이 고쳤다(그 파일도 tests/e2e/ 안이다). 바뀐 것 셋이다.
 #   - `month`을 받아도 서버가 `monthLabel`을 안 줄 수 있어(위 상태처럼) 그 둘의 assign을
 #     분리했다 — 기존에는 한 `if (seeded.month)` 블록 안에서 같이 넣어 `monthLabel`이
 #     없으면 `.replace`가 undefined에서 죽었다.
@@ -130,7 +130,7 @@ appId: com.labiebelle.app
 # 자격 있는 근무자 — 배정 없는 날은 시각, 배정 있는 날은 건수, 달 고르기
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: rehearsal_qualified
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -239,7 +239,7 @@ appId: com.labiebelle.app
 # 관리자 — 같은 화면에서 이름 있는 줄만 읽는다. 넣기 없음, 줄이 안 눌린다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: admin
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -263,7 +263,7 @@ appId: com.labiebelle.app
 # 자격 없는 근무자 — 주소를 직접 치면 /me로 돌아가고 줄이 없다
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_confirmed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
