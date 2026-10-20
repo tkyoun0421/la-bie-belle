@@ -8,11 +8,13 @@ import {
 import {
   createAdminUser,
   createApprovedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   freshMonth,
   kstDate,
   kstMonthStart,
   withFreshMonth,
+  withSharedDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -342,21 +344,23 @@ describe("getPayrollMonth(plan AC-01) — holidays도 그달치로 같이 싣는
   });
 
   it("한 사람의 wage_rates가 천 행을 넘어도 그 달 기준으로 전부 온다", async () => {
-    const worker = await createApprovedUser();
-    seedManyWageRates(worker.profileId);
+    await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const worker = await createApprovedUser();
+      seedManyWageRates(worker.profileId);
 
-    try {
-      const result = await getPayrollMonth(
-        admin.client,
-        kstDate(0).slice(0, 7),
-      );
-      const own = result.wageRates.filter(
-        (row) => row.profileId === worker.profileId,
-      );
+      try {
+        const result = await getPayrollMonth(
+          admin.client,
+          kstDate(0).slice(0, 7),
+        );
+        const own = result.wageRates.filter(
+          (row) => row.profileId === worker.profileId,
+        );
 
-      expect(own).toHaveLength(SEEDED_ROWS);
-    } finally {
-      clearWageRates(worker.profileId);
-    }
+        expect(own).toHaveLength(SEEDED_ROWS);
+      } finally {
+        clearWageRates(worker.profileId);
+      }
+    });
   });
 });

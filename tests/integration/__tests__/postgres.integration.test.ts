@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import {
   daysInMonth,
   monthWindow,
@@ -14,7 +15,9 @@ import {
   kstMonthStart,
   queryColumn,
   seedDayEndedHoursAgo,
+  withDbLock,
   withFreshMonth,
+  withSharedDbLock,
 } from "@tests/integration/postgres";
 
 function rowsBetween(
@@ -44,6 +47,46 @@ function dayIdsOn(workDate: string): string[] {
     "select id from public.days where work_date = :'work_date';\n",
     { work_date: workDate },
   );
+}
+
+type LockRunner = <T>(key: string, fn: () => Promise<T>) => Promise<T>;
+
+const HOLD_MS = 1500;
+
+function settle(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function startHolding(
+  lock: LockRunner,
+  key: string,
+): Promise<{ isHolding: () => boolean; done: Promise<void> }> {
+  let holding = false;
+  let markHeld: () => void = () => undefined;
+  const held = new Promise<void>((resolve) => {
+    markHeld = resolve;
+  });
+
+  const done = lock(key, async () => {
+    holding = true;
+    markHeld();
+    await settle(HOLD_MS);
+    holding = false;
+  });
+
+  await held;
+  return { isHolding: () => holding, done };
+}
+
+async function heldTogether(
+  first: LockRunner,
+  second: LockRunner,
+): Promise<boolean> {
+  const key = `lock_probe_${randomUUID()}`;
+  const holder = await startHolding(first, key);
+  const overlapped = await second(key, async () => holder.isHolding());
+  await holder.done;
+  return overlapped;
 }
 
 describe("freshMonth — 고른 달이 비었는지 세어 보고 돌려준다", () => {
@@ -171,5 +214,19 @@ describe("seedDayEndedHoursAgo — 그날 행은 이 회차가 연 것만 지운
         { id: foreign.dayId, outsider: outsiderId },
       );
     }
+  });
+});
+
+describe("withSharedDbLock — 같은 키의 공유 잠금끼리는 같이 서고 배타 잠금과는 엇갈린다", () => {
+  it("공유 잠금 둘은 서로를 기다리지 않는다", async () => {
+    expect(await heldTogether(withSharedDbLock, withSharedDbLock)).toBe(true);
+  });
+
+  it("배타 잠금은 공유 잠금이 풀린 뒤에 선다", async () => {
+    expect(await heldTogether(withSharedDbLock, withDbLock)).toBe(false);
+  });
+
+  it("공유 잠금은 배타 잠금이 풀린 뒤에 선다", async () => {
+    expect(await heldTogether(withDbLock, withSharedDbLock)).toBe(false);
   });
 });

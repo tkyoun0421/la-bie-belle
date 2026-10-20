@@ -2,10 +2,12 @@ import { getWageRates } from "@/entities/payroll/api/getWageRates.api";
 import {
   createAdminUser,
   createApprovedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   kstDate,
   queryColumn,
   withNoDefaultWageRates,
+  withSharedDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -69,36 +71,40 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
   });
 
   it("관리자 세션으로 부르면 한 사람의 wage_rates 이력이 날짜로 안 잘리고 전부 온다", async () => {
-    const worker = await createApprovedUser();
-    const veryOld = kstDate(-5000);
-    const recent = kstDate(-10);
-    const future = kstDate(60);
-    seedWageRate(worker.profileId, veryOld, 10000, false);
-    seedWageRate(worker.profileId, recent, 11000, false);
-    seedWageRate(worker.profileId, future, 12000, false);
+    await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const worker = await createApprovedUser();
+      const veryOld = kstDate(-5000);
+      const recent = kstDate(-10);
+      const future = kstDate(60);
+      seedWageRate(worker.profileId, veryOld, 10000, false);
+      seedWageRate(worker.profileId, recent, 11000, false);
+      seedWageRate(worker.profileId, future, 12000, false);
 
-    const result = await getWageRates(admin.client);
-    const own = result.wageRates.filter(
-      (row) => row.profileId === worker.profileId,
-    );
-    const effectiveDates = own.map((row) => row.effectiveDate);
+      const result = await getWageRates(admin.client);
+      const own = result.wageRates.filter(
+        (row) => row.profileId === worker.profileId,
+      );
+      const effectiveDates = own.map((row) => row.effectiveDate);
 
-    expect(effectiveDates).toEqual(
-      expect.arrayContaining([veryOld, recent, future]),
-    );
-    expect(own).toHaveLength(3);
+      expect(effectiveDates).toEqual(
+        expect.arrayContaining([veryOld, recent, future]),
+      );
+      expect(own).toHaveLength(3);
+    });
   });
 
   it("시급 이력이 아예 없는 승인 사원이 있어도 던지지 않는다", async () => {
-    const workerWithoutHistory = await createApprovedUser();
+    await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const workerWithoutHistory = await createApprovedUser();
 
-    await expect(getWageRates(admin.client)).resolves.toBeDefined();
+      await expect(getWageRates(admin.client)).resolves.toBeDefined();
 
-    const result = await getWageRates(admin.client);
-    const own = result.wageRates.filter(
-      (row) => row.profileId === workerWithoutHistory.profileId,
-    );
-    expect(own).toHaveLength(0);
+      const result = await getWageRates(admin.client);
+      const own = result.wageRates.filter(
+        (row) => row.profileId === workerWithoutHistory.profileId,
+      );
+      expect(own).toHaveLength(0);
+    });
   });
 
   it("default_wage_rates가 비어 있으면 그 자리가 null이고 던지지 않는다(PAY-012)", async () => {

@@ -133,11 +133,12 @@
 # ## schedule_worker_request_pending
 #
 # 확정된 달의 열린 날에, 내가 아직 신청 안 한 자리(안내)로 걸린 근무 요청의
-# `pending` 갈래 하나다. `tests/integration/postgres.ts`의 `seedWorkRequest`·
-# `seedRequestCandidate`를 그대로 쓴다 — `send_work_request` RPC는 이 task가
-# 만드는 함수라 시드 시점엔 아직 없다. 직결로 만든 요청·갈래는 실제 함수가
-# 만드는 모양과 같다(같은 표, 같은 상태 값). `scripts/e2eSeedServer.mts`의
-# `@tests/integration/postgres` import 목록에 이 둘을 더해야 쓸 수 있다.
+# `pending` 갈래 하나다. `tests/integration/postgres.ts`의
+# `seedWorkRequestWithCandidates`로 요청과 갈래를 한 번에 심는다 —
+# `send_work_request` RPC는 이 task가 만드는 함수라 시드 시점엔 아직 없다.
+# 직결로 만든 요청·갈래는 실제 함수가 만드는 모양과 같다(같은 표, 같은 상태
+# 값). `scripts/e2eSeedServer.mts`의 `@tests/integration/postgres` import
+# 목록에 이것을 더해야 쓸 수 있다.
 #
 # ```ts
 # async function seedWorkerRequestPending(
@@ -157,8 +158,9 @@
 #
 #     const dayId = await dayIdOf(admin, workDate);
 #     const slotId = await freeSlotOfPosition(admin, dayId, "안내");
-#     const requestId = seedWorkRequest(slotId, admin.profileId);
-#     seedRequestCandidate(requestId, meProfileId, "pending");
+#     seedWorkRequestWithCandidates(slotId, admin.profileId, [
+#       { profileId: meProfileId },
+#     ]);
 #
 #     return { month, myDateLabel: spellWorkDate(workDate) };
 #   });
@@ -193,8 +195,9 @@
 #
 #     const dayId = await dayIdOf(admin, workDate);
 #     const slotId = await freeSlotOfPosition(admin, dayId, "안내");
-#     const requestId = seedWorkRequest(slotId, admin.profileId);
-#     seedRequestCandidate(requestId, meProfileId, "pending");
+#     seedWorkRequestWithCandidates(slotId, admin.profileId, [
+#       { profileId: meProfileId },
+#     ]);
 #
 #     seedAssignment(dayId, colleague.profileId, "regular", slotId);
 #

@@ -3,7 +3,9 @@ import { setWage } from "@/features/wageAdmin/api/setWage.api";
 import {
   createAdminUser,
   createApprovedUser,
+  DEFAULT_WAGE_RATES_LOCK,
   kstDate,
+  withSharedDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -64,17 +66,22 @@ describe("setWage dal(plan AC-07) — set_wage를 부르고 오류를 DomainErro
   });
 
   it("관리자가 부르면 오늘 날짜에 개인 시급 행이 선다", async () => {
-    const worker = await createApprovedUser();
+    await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const worker = await createApprovedUser();
 
-    await setWage(admin.client, { profileId: worker.profileId, amount: 15000 });
+      await setWage(admin.client, {
+        profileId: worker.profileId,
+        amount: 15000,
+      });
 
-    const { data, error } = await wageRateRow(
-      admin,
-      worker.profileId,
-      kstDate(0),
-    );
-    expect(error).toBeNull();
-    expect(data).toEqual({ amount: 15000, follows_default: false });
+      const { data, error } = await wageRateRow(
+        admin,
+        worker.profileId,
+        kstDate(0),
+      );
+      expect(error).toBeNull();
+      expect(data).toEqual({ amount: 15000, follows_default: false });
+    });
   });
 
   it("100,001원이면 bad_amount", async () => {

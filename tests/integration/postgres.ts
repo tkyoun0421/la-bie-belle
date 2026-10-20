@@ -306,7 +306,14 @@ export function queryColumn(
 
 const LOCK_ACQUIRED = "lock_acquired";
 
-async function acquireDbLock(key: string): Promise<() => void> {
+type LockMode = "exclusive" | "shared";
+
+const LOCK_FUNCTION: Record<LockMode, string> = {
+  exclusive: "pg_advisory_lock",
+  shared: "pg_advisory_lock_shared",
+};
+
+async function acquireDbLock(key: string, mode: LockMode): Promise<() => void> {
   const container = localDbContainer();
   const session = spawn(
     "docker",
@@ -340,7 +347,7 @@ async function acquireDbLock(key: string): Promise<() => void> {
       reject(new Error(`${key} 잠금 세션이 잠금을 잡기 전에 끝났다`)),
     );
     session.stdin.write(
-      `select pg_advisory_lock(hashtext('${key}')), '${LOCK_ACQUIRED}';\n`,
+      `select ${LOCK_FUNCTION[mode]}(hashtext('${key}')), '${LOCK_ACQUIRED}';\n`,
     );
   });
 
@@ -351,17 +358,29 @@ async function acquireDbLock(key: string): Promise<() => void> {
   };
 }
 
-export async function withDbLock<T>(
+async function withDbLockIn<T>(
+  mode: LockMode,
   key: string,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const release = await acquireDbLock(key);
+  const release = await acquireDbLock(key, mode);
 
   try {
     return await fn();
   } finally {
     release();
   }
+}
+
+export function withDbLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  return withDbLockIn("exclusive", key, fn);
+}
+
+export function withSharedDbLock<T>(
+  key: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  return withDbLockIn("shared", key, fn);
 }
 
 export async function withOnlyAdmin<T>(
