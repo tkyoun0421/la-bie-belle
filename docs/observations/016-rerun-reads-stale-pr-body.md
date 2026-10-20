@@ -1,6 +1,6 @@
 ---
 status: open
-target: .github/workflows/ci.yml · scripts/check-sources-impact.mts
+target: .github/workflows/ci.yml · scripts/checkSourcesImpact.mts
 date: 2026-09-22
 resolved:
 ---

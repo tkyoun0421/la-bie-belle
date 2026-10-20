@@ -130,7 +130,7 @@ sources:
 | `src/entities/notification/api/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
 | `src/entities/notification/api/__tests__/count-unread-notifications.integration.test.ts` | 안 읽은 수가 50건 창에 안 갇히는 것 | AC-03·AC-06 |
 | `tests/e2e/notifications.yaml` | 줄을 눌러 목적지로 가고 점이 사라지는 한 여정 | AC-04~AC-06 |
-| `scripts/e2e-seed-server.mts` | 알림 50건을 넘기는 시드 상태 | AC-03·AC-04 |
+| `scripts/e2eSeedServer.mts` | 알림 50건을 넘기는 시드 상태 | AC-03·AC-04 |
 
 ## 구현 순서
 

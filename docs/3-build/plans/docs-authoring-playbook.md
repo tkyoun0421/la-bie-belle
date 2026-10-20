@@ -99,7 +99,7 @@ PR 하나가 묶음 하나다. 브랜치는 `docs/authoring-playbook-<글자>`. 
 
 ## 리스크·전환·되돌리기
 
-- **결정이 바뀌는 것** — 틀에 맞추다 문장을 새로 쓰면 결정이 섞여 들어온다. 매 PR에 `scripts/check-moved-lines.mts`를 돌려 옛 문장이 새 파일에 있는지 세고, 없는 줄은 PR 본문에 이유를 적는다. D~G는 문장 재구성이 허용되니 검사가 남긴 줄이 많아지는데, 그 줄마다 「같은 뜻의 새 문장」을 PR 본문이 짝지어 보인다
+- **결정이 바뀌는 것** — 틀에 맞추다 문장을 새로 쓰면 결정이 섞여 들어온다. 매 PR에 `scripts/checkMovedLines.mts`를 돌려 옛 문장이 새 파일에 있는지 세고, 없는 줄은 PR 본문에 이유를 적는다. D~G는 문장 재구성이 허용되니 검사가 남긴 줄이 많아지는데, 그 줄마다 「같은 뜻의 새 문장」을 PR 본문이 짝지어 보인다
 - **표를 채우려고 규칙을 만드는 것** — 판정 예시·상태 전이·계약 표는 규칙 ID가 근거인 행만 둔다. 근거 없는 행은 「미정」 절의 Q-nn으로 간다
 - **정의문·검사가 옛 절 이름을 읽는 것** — 절 이름이 바뀌는 PR에 그것을 읽는 정의문·검사를 같이 태운다. `design-map.ts`·`sian-html.ts`·`doc-links.ts`가 그 자리다
 - **되돌리기** — 묶음이 PR 하나라 squash 커밋 하나를 revert하면 그 묶음 전이 돌아간다. B1 이후 묶음은 B1의 작성법에 기대니 B1을 되돌리면 뒤를 다 되돌린다
@@ -111,7 +111,7 @@ PR 하나가 묶음 하나다. 브랜치는 `docs/authoring-playbook-<글자>`. 
 | --- | --- | --- | --- |
 | AC-01·AC-02 | 수동 — README 열고 절 순서 대조 | `pr-diff` | 절 넷, 작성법 다섯 항목 |
 | AC-01~AC-04 | `tests/lint/doc-links.ts`·`doc-map.ts`·`design-map.ts`·`legacy-doc-paths.ts` | `pnpm test` | 초록 |
-| AC-04 | 문장 보존 | `node --experimental-strip-types scripts/check-moved-lines.mts origin/main <옛> -- <새>` | 남은 줄이 PR 본문의 짝 목록과 같다 |
+| AC-04 | 문장 보존 | `node --experimental-strip-types scripts/checkMovedLines.mts origin/main <옛> -- <새>` | 남은 줄이 PR 본문의 짝 목록과 같다 |
 | AC-05 | `sian-auditor` | 정의문 | 어긋남 0 |
 | AC-06 | `tests/lint/` 새 검사 넷과 짝 테스트 | `pnpm test` | 초록, 회귀 케이스 포함 |
 | 전부 | 매 PR | `pnpm lint` · `pnpm format:check` · `pnpm typecheck` · `pnpm test`, `pnpm tokens:css` 결과가 `src/app/globals.css`와 같다 | 초록 |

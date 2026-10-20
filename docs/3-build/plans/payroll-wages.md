@@ -132,7 +132,7 @@ sources:
 | `src/features/payroll/model/useSetWage.ts`·`useSetDefaultWage.ts`·`useResetWageToDefault.ts`·`__tests__/` | 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
 | `src/features/payroll/model/query-keys.ts` | `['payroll']`과 `['payroll', 'wages']` 두 키 | AC-05 |
 | `tests/e2e/wages.yaml` | 기본을 바꿔 따르는 사람이 같이 바뀌는 한 바퀴 | 검증 표 |
-| `scripts/e2e-seed-server.mts`·`tests/integration/postgres.ts` | `payroll_wages` 시드 — 사람 다섯과 기본 시급, 지난 이력 세 줄을 SQL로 꽂는다 | 검증 표 |
+| `scripts/e2eSeedServer.mts`·`tests/integration/postgres.ts` | `payroll_wages` 시드 — 사람 다섯과 기본 시급, 지난 이력 세 줄을 SQL로 꽂는다 | 검증 표 |
 
 ## 구현 순서
 

@@ -33,7 +33,7 @@ import {
 
 ## 지은 것
 
-아직 없다. `notification-push` plan의 AC-10이 복사 단계(`scripts/sync-edge-shared.mts`)를 세우면서 `import-holidays`도 그 길로 옮기기로 잡아뒀다.
+아직 없다. `notification-push` plan의 AC-10이 복사 단계(`scripts/syncEdgeShared.mts`)를 세우면서 `import-holidays`도 그 길로 옮기기로 잡아뒀다.
 
 **검사가 없는 자리가 진짜 발견이다.** 복사 단계가 서도 다음 Edge Function이 또 `../../../src/`를 적으면 똑같이 통과한다. 막는 길은 둘 — lint 규칙(`supabase/functions/`에서 `../../../src/` 시작 import 금지)이거나, CI가 edge-runtime을 켜서 함수가 뜨는지 보는 것이다. 앞쪽이 싸고 뒤쪽이 넓다.
 

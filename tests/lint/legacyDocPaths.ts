@@ -11,6 +11,8 @@ const DOCS = "docs/";
 
 const DESIGN = `${DOCS}2-design/`;
 
+const SCRIPTS = "scripts/";
+
 const LEGACY_PATTERNS = [
   `${DOCS}plan.md`,
   `${DOCS}prd.md`,
@@ -21,6 +23,19 @@ const LEGACY_PATTERNS = [
   `${DESIGN}domain/`,
   `${DESIGN}architecture/`,
   `${DESIGN}design-system/pages/`,
+  `${SCRIPTS}check-moved-lines.mts`,
+  `${SCRIPTS}check-sources-impact.mts`,
+  `${SCRIPTS}e2e-seed-server.mts`,
+  `${SCRIPTS}font-subset.mts`,
+  `${SCRIPTS}generate-database-types.mts`,
+  `${SCRIPTS}generate-globals-css.mts`,
+  `${SCRIPTS}generate-route-types.mts`,
+  `${SCRIPTS}inline-sian-font.mts`,
+  `${SCRIPTS}module-alias-hooks.mjs`,
+  `${SCRIPTS}sync-edge-shared.mts`,
+  `${SCRIPTS}tokens-md.mts`,
+  `${SCRIPTS}tossface-fetch.mts`,
+  `${SCRIPTS}seed-session.js`,
 ];
 
 const SCANNED_ROOTS = [
@@ -84,6 +99,10 @@ const ALLOWED_LINES = [
   {
     file: "docs/proposals/docs-structure-followup.md",
     marker: "**수정 대상.**",
+  },
+  {
+    file: "tests/lint/e2eFileReferences.test.ts",
+    marker: `reference: "${SCRIPTS}seed-session.js"`,
   },
 ];
 

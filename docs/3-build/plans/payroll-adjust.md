@@ -124,7 +124,7 @@ sources:
 | `src/features/payroll/model/day-minutes.ts` | 조정 마지막 행 고르기를 `adjustedMinutes`로 내보내 조정 시트와 셈을 나눠 쓴다 | AC-03 |
 | `src/features/schedule/model/useMonthSchedule.ts` | `refetch`를 낸다 — 배정이 사라진 거절에 목록을 다시 읽는다 | AC-05 |
 | `tests/e2e/schedule-admin.yaml` | 새 절을 이어 붙인다. 새 파일이 아니다 | 검증 표 |
-| `scripts/e2e-seed-server.mts`·`tests/e2e/scripts/seedSession.js`·`tests/integration/postgres.ts` | 임시공휴일과 조정이 붙은 날의 시드 | 검증 표 |
+| `scripts/e2eSeedServer.mts`·`tests/e2e/scripts/seedSession.js`·`tests/integration/postgres.ts` | 임시공휴일과 조정이 붙은 날의 시드 | 검증 표 |
 
 ## 구현 순서
 
