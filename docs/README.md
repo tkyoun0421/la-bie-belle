@@ -6,6 +6,7 @@
 
 - [`docs/handoff.md`](handoff.md) — 다음 작업과 재개 맥락. 세션은 여기서 시작한다
 - [`docs/backlog.md`](backlog.md) — task 보드. 작업 ID·상태·선행 작업·산출물 링크. 완료 조건은 행이 링크하는 spec(기능)이나 plan(비기능)에 산다
+- [`docs/owner-todo.md`](owner-todo.md) — 사람이 할 일. 직접 손·실기기 확인·디자인 결정·판정을 한 곳에 모은다
 - [`docs/CHANGELOG.md`](CHANGELOG.md) — 날짜·변경·PR 표. 왜는 log와 PR에
 - [`docs/log/`](log/) — 회차 기록. 왜 그렇게 정했는지
 - [`docs/observations/`](observations/) — 관찰 로그. 정의문·훅이 삐걱인 자리, 증축 규칙의 카운터. 규칙은 그 안 `README.md`, 근거는 ADR-006
@@ -36,6 +37,7 @@
 | 작업 상태·우선순위·선행 관계 | `backlog.md` |
 | 기능 승인 | `2-design/spec/<task>.md`의 `status`와 승인 근거. `approved`는 작업 완료가 아니다 |
 | 제안 채택 | `proposals/<제안>.md`의 `status` |
+| 사람이 할 일 | `owner-todo.md`. 줄마다 backlog 행을 링크하고 사정은 행이 든다 |
 | 재개 정보 | `handoff.md`. 완료 목록과 전체 설계 상태를 되풀이하지 않는다 |
 | 업무 규칙과 용어 | `2-design/modules/<영역>/README.md` |
 | 데이터·API·실행 동작 | `2-design/modules/<영역>/design.md`. 공통 원칙은 `2-design/system/` |
