@@ -2,7 +2,7 @@
 
 ## 문서 지도
 
-무엇이 어디 있는지는 [`docs/README.md`](docs/README.md)가 정본이다. 세션은 [`docs/handoff.md`](docs/handoff.md)에서 시작하고, task 보드는 [`docs/backlog.md`](docs/backlog.md)다. PR 리뷰 정책은 [`REVIEW.md`](REVIEW.md), subagent 정의문은 [`.claude/agents/`](.claude/agents/), 스킬은 [`.claude/skills/`](.claude/skills/)다.
+무엇이 어디 있는지는 [`docs/README.md`](docs/README.md)가 정본이다. 세션은 [`docs/handoff.md`](docs/handoff.md)에서 시작하고, task 보드는 [`docs/backlog.md`](docs/backlog.md)다. 사람이 할 일(직접 손·실기기 확인·디자인 결정·판정)은 [`docs/owner-todo.md`](docs/owner-todo.md) 한 곳에 모은다. PR 리뷰 정책은 [`REVIEW.md`](REVIEW.md), subagent 정의문은 [`.claude/agents/`](.claude/agents/), 스킬은 [`.claude/skills/`](.claude/skills/)다.
 
 ## 스택과 명령어
 

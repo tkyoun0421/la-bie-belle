@@ -8,24 +8,8 @@
 
 **사람 손이 필요한 것과 판정 대기가 남았다.** 어제 아홉 행이 닫혔고([docs/log/2026-10-18.md](log/2026-10-18.md)) 설정값이 빠진 빌드의 화면, 시트 손잡이, 통계·급여 조각의 신분 받기, Bash 쓰기를 보는 훅, integration의 로컬 가드와 자기 데이터 정리가 섰다. 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
-1. **Supabase 원격 프로젝트의 Redirect URLs에 두 줄을 넣는다(사람 손).** `labiebelle://auth/callback`과 `exp://**/--/auth/callback`이다. 빠지면 로그인이 오류 없이 돌아오지 못한다. 로컬 `supabase/config.toml`에는 이미 든다. 자리는 [environments.md](5-deploy/environments.md)다.
-2. **실기기 확인.** 로그인(구글 왕복의 네 계정 경우, 창 닫기, 안드로이드 복귀 때 not-found, 라이트·다크 버튼 톤), 테마(시스템 테마인 다크 기기가 다크로 뜨는지, 라이트를 고른 뒤 OS를 다크로 바꿔도 라이트로 남는지), 차트(통계 화면의 값 라벨 위치와 1·4·7·10월 라벨, 막대 폭, 근무표 칸의 점선 테두리, 출근 기록 없는 달의 출근율이 `–`인지), 등장 모션(움직임 줄이기를 끈 콜드 스타트에 다섯 요소가 70ms씩 어긋나 8px 아래에서 올라오는지, 켠 콜드 스타트는 이동 없이 밝기만 바뀌는지, 실패 줄이 떠도 등장이 다시 안 도는지)에 더해 어제와 오늘 것이 있다.
-   - 시트 푸터에 `flex-1` 버튼 둘이 나란히 설 때 폭을 반씩 나누는지, 모든 버튼이 눌리는 동안 줄고 `disabled`·`loading`이면 안 주는지(구글 버튼의 `busy` 포함)
-   - 스켈레톤 빛 줄이 끊김 없이 흐르고 한 바퀴 돌아 다시 시작할 때 이음새가 튀지 않는지, 동작 줄이기를 켜면 빛 줄이 없고 끄면 다시 흐르는지, 빛 줄이 둥근 모서리(`rounded-xl`·`rounded-sm`) 안에서 잘려 보이는지, 카드 여럿이 한 화면에 설 때 깜빡임으로 읽히지 않는지
-   - 앱을 켠 채 OS 설정을 바꾼 뒤 로그인 화면에 들어가면 등장 모션이 바뀐 설정을 따르는지
-   - 기기 시계를 하루 돌려도 오늘이 서버 날짜인지(근무표 오늘 강조·통계 다음 달·관리자 홈 오늘 타일)
-   - env 두 값을 비운 빌드에서 스플래시가 내려가고 「앱을 열 수 없어요」 한 장이 뜨는지, 버튼이 없는지, 값이 찬 빌드는 전처럼 입장 판정대로 가는지
-   - 시트 손잡이는 `DraggableSheet`를 쓰는 화면이 없어 화면에서 안 보인다 — `sheets-not-draggable`이 서야 볼 수 있다
-   - iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다
-3. **디자인 결정(사람).** [`error-screen-design`](backlog.md) — `AppUnavailable`의 생김새는 `RetryScreen`을 빌린 임시 꼴이다.
-4. **판정 대기는 그대로다.**
-   - [`sheets-not-draggable`](backlog.md) — 화면 시트 15곳이 끌어 닫기 없는 `SheetLayer`를 쓰고 손잡이를 단 `DraggableSheet`는 쓰는 곳이 0이다. 시트를 끌어 닫게 바꿀지, 손잡이만 그릴지
-   - [`query-failure-reaches-the-screen`](backlog.md) — 화면 일곱(adminHome·profile·wages·membersPending·blocked·left·종 점)의 읽기 실패가 정본에 없다. wages는 실패하면 스켈레톤이 끝없이 돈다. 빈 `.catch` 여섯도 같은 판정을 기다린다 — 그래서 그 검사를 안 켰다
-   - [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
-   - [`day-sheet-missing-day-is-not-failure`](backlog.md) · [`payroll-screen-duplicates-fragment-state`](backlog.md) · [`dto-derives-from-generated-types`](backlog.md) — 각 행이 판정 하나씩을 든다
-   - [`attendance-checkin`](backlog.md) — 사람 손이 닿는 문(NCP 대표 계정과 지도 키)이 먼저다
-   - 어제 나온 판정 후보 넷 — [`requests-closed-30-days`](backlog.md)(문서를 코드의 `closed_at is null`에 맞출지) · [`monthly-assignment-count-canon`](backlog.md)(한 달 배정 수 341·600쯤·천쯤 셋을 하나로) · [`runtime-unbounded-keys-table`](backlog.md)(`runtime.md`의 「전체를 읽는 키는 셋」이 코드와 안 맞는다) · [`my-reads-filter-by-profile`](backlog.md)(관리자가 근무자 화면을 쓰는지 미확인)
-5. **결정 없이 할 후보.** 어제 넷이 닫혔다([docs/log/2026-10-19.md](log/2026-10-19.md)). 남은 것은 테스트 셋이다 — [`default-wage-side-effect-lock`](backlog.md)(`set_default_wage`가 승인자 전원에게 오늘 행을 넣어, 잠금 밖에서 행 수를 세는 테스트가 동시 회차에 흔들린다) · [`blocked-guard-coverage`](backlog.md)(`is_approved()`의 `blocked_at` 조건과 `set_default_wage`의 `blocked_at is null` 갈래를 지키는 테스트가 없다) · [`e2e-comment-blocked-user`](backlog.md)(`members-pending.yaml` 머리말이 옛 차단 헬퍼 꼴을 적는다). [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
+1. **사람 손·기기 확인·디자인 결정·판정은 [owner-todo.md](owner-todo.md)에 모였다.** 세션은 거기 줄을 대신 하지 않는다.
+2. **결정 없이 할 후보.** 어제 넷이 닫혔다([docs/log/2026-10-19.md](log/2026-10-19.md)). 남은 것은 테스트 셋이다 — [`default-wage-side-effect-lock`](backlog.md)(`set_default_wage`가 승인자 전원에게 오늘 행을 넣어, 잠금 밖에서 행 수를 세는 테스트가 동시 회차에 흔들린다) · [`blocked-guard-coverage`](backlog.md)(`is_approved()`의 `blocked_at` 조건과 `set_default_wage`의 `blocked_at is null` 갈래를 지키는 테스트가 없다) · [`e2e-comment-blocked-user`](backlog.md)(`members-pending.yaml` 머리말이 옛 차단 헬퍼 꼴을 적는다). [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
 
 ## 재개 맥락
 
