@@ -266,6 +266,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
 - `sourcesExist.ts` — spec·plan의 `sources` 경로와 앵커 존재
 - `assetReferences.ts` — `src/` 코드가 `require`·`import`로 가리키는 그림·서체 파일과 `require.context`가 여는 폴더가 저장소에 있는지, 구글 로그인 버튼이 이름으로 고르는 로고 SVG 넷이 `assets/google/`에 있는지. 버튼은 파일을 못 찾으면 `catch`로 삼키고 빈 그림을 그려서 화면 테스트도 e2e도 초록이다. 사람이 아직 안 넣은 `assets/illustrations/`만 면제 목록에 있고, 그 폴더가 생기면 면제를 빼라고 테스트가 빨개진다
+- `e2eFileReferences.ts` — `tests/e2e/`의 Maestro 플로우가 파일로 읽는 경로(`runScript`·`runFlow`를 한 줄로 쓴 값과 그 아래 `file:`)가 플로우 기준 상대 경로로 있는지. 앱 빌드가 없어 `pnpm e2e`가 못 도는 동안에는 스크립트 이름을 바꿔도 플로우가 옛 이름을 부르는 줄을 아무도 안 돌린다 — 빌드가 서는 날 그 줄에서 처음 깨진다
 - `unscopedDelete.ts` — `src/`와 `tests/`의 코드에서 조건 없이 표 전체를 지우는 `delete from <표>;`. integration이 공유 DB의 남의 행까지 지우면 같이 도는 다른 회차의 단언이 흔들린다 — 지울 행은 자기가 넣은 키로 좁힌다
 - `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlogIds.ts` — 작업 ID와 선행 작업 참조

@@ -226,7 +226,7 @@ sources:
 | `src/shared/ui/Accordion.tsx` · `Checkbox.tsx` · `RosterRow.tsx` | 이 화면이 처음 세운 공용 조각 셋 | AC-10 |
 | `src/shared/ui/ScheduleDayCell.tsx` · `Segment.tsx` | 날짜 칸에 `muted` 상태, 세그먼트에 아이콘 칸 | AC-05·AC-10 |
 | `src/shared/ui/MonthCalendar.tsx` | 달력 그리드 — 이 화면이 세웠고 [`schedule-admin`](schedule-admin.md)이 공용 자리로 올렸다 | AC-04·AC-10 |
-| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seed-session.js` | 시드 상태 `schedule_submission_window`·`schedule_confirmed` | AC-11 |
+| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seedSession.js` | 시드 상태 `schedule_submission_window`·`schedule_confirmed` | AC-11 |
 | `tests/e2e/schedule-worker.yaml` · `tests/e2e/schedule.yaml` | e2e | AC-11 |
 
 ## 구현 순서

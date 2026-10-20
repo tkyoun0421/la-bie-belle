@@ -209,7 +209,7 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 | `src/screens/admin-home/model/approvals-line.ts` · `__tests__/` · `ui/AdminHomeScreen.tsx` | 「승인할 일 · n건」 | AC-05 |
 | `src/shared/ui/QuoteBlock.tsx` | 사람이 쓴 사유가 앉는 면 | AC-08 |
 | `src/shared/ui/Checkbox.tsx` · `Dialog.tsx` · `RosterRow.tsx` · `src/app/_catalog.tsx` | 픽커 체크박스·승인 확인 Dialog·명단 줄 배지 | AC-05~AC-08 |
-| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seed-session.js` · `tests/integration/postgres.ts` | 시드 상태 넷과 요청·취소 요청 시드 헬퍼 | AC-10 |
+| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 넷과 요청·취소 요청 시드 헬퍼 | AC-10 |
 | `tests/e2e/approvals.yaml` · `schedule-admin.yaml` · `schedule-worker.yaml` | e2e | AC-10 |
 | `tests/lint/file-naming.ts` · `file-naming.test.ts` | 파일 이름 검사가 새 자리를 보게 | AC-10 |
 

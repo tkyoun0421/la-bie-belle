@@ -25,7 +25,7 @@
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts,
-# scripts/seed-session.js를 따른다. 딥링크는 라우트가 src/app/(tabs)/schedule.tsx인데
+# scripts/seedSession.js를 따른다. 딥링크는 라우트가 src/app/(tabs)/schedule.tsx인데
 # 그룹을 감싼 괄호 "(tabs)"는 URL 세그먼트가 아니라서 빠져
 # "labiebelle://schedule"이다(tests/e2e/me.yaml의 "/me"와 같은 결). "?month="과
 # "?date="는 spec AC-03·navigation.md 「경로」의 "/schedule" 행이 쓰는 그대로다.
@@ -97,7 +97,7 @@
 #
 # 텍스트 셀렉터는 정규식이다. 물음표·괄호가 든 문구는 이스케이프한다. 동적
 # 값(monthLabel·deadlineLabel·myDateLabel·otherDateLabel)의 괄호는
-# scripts/seed-session.js의 escapeForTextSelector가 미리 이스케이프해서 내보낸다.
+# scripts/seedSession.js의 escapeForTextSelector가 미리 이스케이프해서 내보낸다.
 #
 # ================================================================
 # schedule-requests task가 더하는 것 — 근무 요청에 답하고 근무를 취소 요청한다
@@ -236,7 +236,7 @@ appId: com.labiebelle.app
 # 확정 달 — 세그먼트 전환에 「내 근무만」 유지, 날 칸 → 시트, ?date= 진입
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_confirmed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -287,7 +287,7 @@ appId: com.labiebelle.app
 # 접수 중인 달 — 셋 선택 → 보내기 → 재진입 → 덮어쓰기 → 0개
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_submission_window
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -382,7 +382,7 @@ appId: com.labiebelle.app
 # 「근무할게요」를 누르면 시트가 닫히고 그 날이 바로 내 근무가 된다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_worker_request_pending
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -408,7 +408,7 @@ appId: com.labiebelle.app
 # 달력 아래 줄이 그 사건을 남긴다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_worker_request_claimed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -427,7 +427,7 @@ appId: com.labiebelle.app
 # 부른다(1일이 내 정규 배정이다).
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_confirmed
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

@@ -39,7 +39,7 @@
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/schedule-admin.yaml 머리말, scripts/e2eSeedServer.mts,
-# scripts/seed-session.js를 따른다. 라우트는 navigation.md 「경로」의
+# scripts/seedSession.js를 따른다. 라우트는 navigation.md 「경로」의
 # "/admin/approvals"다.
 #
 # **시드 서버에 상태 하나가 아직 없다 — implementer가 이 task에서 더한다.**
@@ -116,7 +116,7 @@
 #
 # 텍스트 셀렉터는 정규식이다. 물음표(「근무를 취소할까요?」)는 이스케이프
 # 한다. 동적 값(approvalListTitle·approvalDetailTitle·approvalConfirmBody·
-# approvalDayAppbar)의 괄호·가운뎃점은 seed-session.js의
+# approvalDayAppbar)의 괄호·가운뎃점은 seedSession.js의
 # escapeForTextSelector가 미리 이스케이프해서 내보낸다.
 appId: com.labiebelle.app
 ---
@@ -128,7 +128,7 @@ appId: com.labiebelle.app
 # 승인 — 목록 → 상세 → 승인 → 근무 취소 확인 Dialog → 그 자리로 이동·토스트
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_approvals_cancel_pending
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -160,7 +160,7 @@ appId: com.labiebelle.app
 # 빠진다. 정본이 어긋난 자리는 파일 위 머리말을 본다.
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: schedule_approvals_cancel_pending
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

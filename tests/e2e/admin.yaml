@@ -29,7 +29,7 @@ appId: com.labiebelle.app
     clearState: true
     clearKeychain: true
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: approved
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

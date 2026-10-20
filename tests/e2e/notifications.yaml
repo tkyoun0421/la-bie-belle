@@ -115,7 +115,7 @@ appId: com.labiebelle.app
 # 종 아이콘의 점 → 목록 → 줄을 눌러 목적지로 → 뒤로 두 번으로 되돌아온다
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: notification_list
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -163,7 +163,7 @@ appId: com.labiebelle.app
 # 빈 상태 — 알림이 하나도 없는 사람. 종에도 점이 없다
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: notification_list_empty
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
@@ -185,7 +185,7 @@ appId: com.labiebelle.app
 # 알림이 쉰 건을 넘는다 — 끝까지 내리면 끝 문구가 선다
 # ================================================================
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: notification_list_many
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"

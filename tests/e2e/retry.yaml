@@ -26,7 +26,7 @@ appId: com.labiebelle.app
     clearState: true
     clearKeychain: true
 - runScript:
-    file: scripts/seed-session.js
+    file: scripts/seedSession.js
     env:
       STATE: read_failure
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}&simulate=${output.simulate}"
