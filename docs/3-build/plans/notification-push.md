@@ -135,7 +135,7 @@ sources:
 
 **`_shared` 복사 단계.**
 
-- `scripts/sync-edge-shared.mts`가 `src/features/notification/model/`을 `supabase/functions/_shared/notification/`으로 옮긴다. 옮기면서 상대 import에 `.ts`를 붙이고 `@/`로 시작하는 별칭을 복사본 뿌리로 다시 쓴다
+- `scripts/syncEdgeShared.mts`가 `src/features/notification/model/`을 `supabase/functions/_shared/notification/`으로 옮긴다. 옮기면서 상대 import에 `.ts`를 붙이고 `@/`로 시작하는 별칭을 복사본 뿌리로 다시 쓴다
 - 복사본은 생성물이라 커밋하지 않는다. `.gitignore`에 든다. 정본은 `src/`다
 - **`import-holidays`도 같은 길로 옮긴다.** 지금 그 함수가 `../../../src/`를 직접 import하는데, 마운트 경계 밖이라 로컬에서 서면 부팅이 깨진다. edge-runtime을 안 띄워 아직 안 드러났을 뿐이다([관찰 035](../../observations/035-edge-function-reaches-outside-mount.md))
 - `pnpm dev`와 CI가 이 단계를 부른다
@@ -160,7 +160,7 @@ sources:
 | `supabase/config.toml` | `send-push` 항목 | AC-05 |
 | `src/features/notification/model/push-message.ts` | 메시지 만들기와 백 건 끊기 | AC-06 |
 | `src/features/notification/model/push-result.ts` | 성공·폐기·재시도 가르기 | AC-07 |
-| `scripts/sync-edge-shared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
+| `scripts/syncEdgeShared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
 | `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-09 |
 | `package.json` | 복사 스크립트 항목 | AC-09 |
 | `eslint-rules/<이름>.mjs` 둘·`eslint-rules/index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`와 그 표 | 마운트 밖 import 막기, `node:` import 막기 | AC-10 |

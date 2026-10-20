@@ -41,6 +41,49 @@ const RISK_10_CASES: [string, string][] = [
   [OLD_PAGES, `옛 페이지 문서 자리였던 ${OLD_PAGES}를 아직 참고한다.`],
 ];
 
+const RENAMED_SCRIPTS: [string, string][] = [
+  [
+    legacyPath("scripts/", "check-moved-lines.mts"),
+    "scripts/checkMovedLines.mts",
+  ],
+  [
+    legacyPath("scripts/", "check-sources-impact.mts"),
+    "scripts/checkSourcesImpact.mts",
+  ],
+  [legacyPath("scripts/", "e2e-seed-server.mts"), "scripts/e2eSeedServer.mts"],
+  [legacyPath("scripts/", "font-subset.mts"), "scripts/fontSubset.mts"],
+  [
+    legacyPath("scripts/", "generate-database-types.mts"),
+    "scripts/generateDatabaseTypes.mts",
+  ],
+  [
+    legacyPath("scripts/", "generate-globals-css.mts"),
+    "scripts/generateGlobalsCss.mts",
+  ],
+  [
+    legacyPath("scripts/", "generate-route-types.mts"),
+    "scripts/generateRouteTypes.mts",
+  ],
+  [
+    legacyPath("scripts/", "inline-sian-font.mts"),
+    "scripts/inlineSianFont.mts",
+  ],
+  [
+    legacyPath("scripts/", "module-alias-hooks.mjs"),
+    "scripts/moduleAliasHooks.mjs",
+  ],
+  [
+    legacyPath("scripts/", "sync-edge-shared.mts"),
+    "scripts/syncEdgeShared.mts",
+  ],
+  [legacyPath("scripts/", "tokens-md.mts"), "scripts/tokensMd.mts"],
+  [legacyPath("scripts/", "tossface-fetch.mts"), "scripts/tossfaceFetch.mts"],
+  [
+    legacyPath("scripts/", "seed-session.js"),
+    "tests/e2e/scripts/seedSession.js",
+  ],
+];
+
 const RISK_14_CASES: [string, string][] = [
   [".claude/agents/test-planner.md", `정의문에 \`${OLD_PLAN}\`가 남아 있다.`],
   [
@@ -167,6 +210,34 @@ describe("구 경로 잔존 검사", () => {
     write(root, "docs/proposals/other.md", `${sentence}\n`);
 
     expect(violatingFiles(root)).toEqual(["docs/proposals/other.md"]);
+  });
+
+  it.each(RENAMED_SCRIPTS)(
+    "camelCase로 옮기기 전 스크립트 이름 %s가 남아 있으면 검출한다",
+    (oldPath) => {
+      const root = tempRoot();
+      write(
+        root,
+        "docs/3-build/plans/sample.md",
+        `| \`${oldPath}\` | 시드 상태 | AC-01 |\n`,
+      );
+
+      const patterns = violationsFor(root, "docs/3-build/plans/sample.md").map(
+        (violation) => violation.pattern,
+      );
+
+      expect(patterns).toContain(oldPath);
+    },
+  );
+
+  it("옮긴 뒤의 스크립트 이름은 잡지 않는다", () => {
+    const root = tempRoot();
+    const table = RENAMED_SCRIPTS.map(
+      ([, currentPath]) => `| \`${currentPath}\` | 시드 상태 | AC-01 |`,
+    ).join("\n");
+    write(root, "docs/3-build/plans/sample.md", `${table}\n`);
+
+    expect(violatingFiles(root)).toEqual([]);
   });
 
   it.each(RISK_14_CASES)(

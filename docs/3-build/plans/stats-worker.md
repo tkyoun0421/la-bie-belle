@@ -113,7 +113,7 @@ sources:
 | `src/entities/attendance/model/__tests__/attendance-summary.test.ts`·`src/shared/lib/__tests__/month-boundary.test.ts`·`src/shared/lib/__tests__/spell-number.test.ts`·`src/features/payroll/model/__tests__/payroll-days.test.ts` | 내려가고 올라간 함수들의 unit | AC-01·AC-04·AC-05 |
 | `tests/e2e/stats.yaml` | 「나」의 통계 줄 → 탭 셋 → 「내역 보기」 → 빈 상태 한 여정. `stats-admin`이 두었던 shim을 대신한다 | AC-02~AC-05 |
 | `tests/e2e/admin-stats.yaml` | 올라간 경계·라벨을 따라 손본다 | AC-01 |
-| `scripts/e2e-seed-server.mts` | 근무자 시드 상태 | AC-02~AC-05 |
+| `scripts/e2eSeedServer.mts` | 근무자 시드 상태 | AC-02~AC-05 |
 
 ## 구현 순서
 

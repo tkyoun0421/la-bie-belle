@@ -151,7 +151,7 @@ sources:
 | `docs/2-design/modules/attendance/screens/excuse.sian.html` | 낡은 경로 주석을 지운다 | AC-08 |
 | `src/features/attendance/model/__tests__/`·`src/screens/approvals/model/__tests__/`·`src/screens/schedule-worker/model/__tests__/attendance-column.test.ts` | 입력 규칙과 상태 갈림, 판정 줄, 현황 줄의 unit | AC-09 |
 | `tests/e2e/excuse.yaml` | 제출부터 반려 뒤 재제출까지 | AC-09 |
-| `scripts/e2e-seed-server.mts` | 못 찍은 날과 낸 사유와 반려된 사유가 있는 시드 상태 | AC-09 |
+| `scripts/e2eSeedServer.mts` | 못 찍은 날과 낸 사유와 반려된 사유가 있는 시드 상태 | AC-09 |
 
 ## 구현 순서
 

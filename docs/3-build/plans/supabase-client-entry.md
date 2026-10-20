@@ -11,7 +11,7 @@
 - `src/app/auth-gate.ts`·`src/app/login/actions.ts`·`src/app/auth/callback/route.ts`·`src/app/auth/logout/route.ts`가 새 진입점을 쓴다. 저장소에서 `createSupabaseServerClient(await cookies())`가 사라진다.
 - `src/features/auth/read-auth-gate.ts`가 클라이언트를 받아 목적지와 계정을 돌려준다 — 지금 `src/app/auth-gate.ts`의 `readAuthGate`와 `googlePhotoOf`, `AuthGate`·`SignedInAccount` 타입이 여기로 온다. `next/*`를 import하지 않는다. 짝 테스트 `src/features/auth/__tests__/read-auth-gate.test.ts`가 가짜 클라이언트로 세션 없음·승인 전·승인 후와 아바타 키 둘(`avatar_url`·`picture`)을 확인한다.
 - `src/app/auth-gate.ts`에는 `enterRoute`·`enterPendingRoute`만 남는다. 하는 일은 클라이언트를 만들어 `readAuthGate`에 넘기고 `redirect`하는 것뿐이다.
-- `scripts/tokens-md.mts`가 `SUBSECTION`을 export하고 `scripts/generate-globals-css.mts`가 그것을 import한다. 정규식 정의가 한 곳이 된다. `pnpm tokens:css`의 출력이 바뀌지 않는다.
+- `scripts/tokensMd.mts`가 `SUBSECTION`을 export하고 `scripts/generateGlobalsCss.mts`가 그것을 import한다. 정규식 정의가 한 곳이 된다. `pnpm tokens:css`의 출력이 바뀌지 않는다.
 - ADR-001 「레이어」에 조립의 자리가 한 문단 선다 — 여러 계층을 묶는 조립은 `features`에 두고, `src/app/`의 `.ts`는 Next API를 부르는 위임만 한다. 관찰 007이 `actioned`로 닫힌다.
 - e2e 11개가 고치지 않은 채 초록이다. 동작은 하나도 바뀌지 않는다.
 
@@ -19,4 +19,4 @@
 
 - ADR-003 「클라이언트는 `dals`에서만」과 `shared/lib/get-current-user.ts`·`handle-auth-callback.ts`의 어긋남. 클라이언트를 받아 쓰는 함수가 `shared/lib`에 있는 것이 그 조항과 맞는지는 따로 본다.
 - `tdd-guard-unit.py`의 `SKIP_PREFIXES`에서 `src/app/`을 빼는 것. 조립이 `features`로 나가면 `src/app/`의 `.ts`는 위임뿐이라 짝 테스트를 요구할 것이 없다.
-- `tokens-md.mts`의 절 나누기를 `tests/lint/markdown.ts` 위로 옮기는 것. `scripts/`가 `tests/lint/`를 import하는 방향이 낯설고, `###`를 순서대로 훑는 모양과 제목 하나를 찾는 `section()`의 모양이 다르다.
+- `tokensMd.mts`의 절 나누기를 `tests/lint/markdown.ts` 위로 옮기는 것. `scripts/`가 `tests/lint/`를 import하는 방향이 낯설고, `###`를 순서대로 훑는 모양과 제목 하나를 찾는 `section()`의 모양이 다르다.

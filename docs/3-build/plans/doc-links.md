@@ -16,6 +16,6 @@
 
 ## 범위 밖
 
-- `scripts/tokens-md.mts`의 절 나누기를 이 모듈 위로 옮기는 것. 지금 아프지 않은 자리고, `generate-globals-css.mts`에 복제된 `SUBSECTION` 정규식과 묶어 따로 간다.
+- `scripts/tokensMd.mts`의 절 나누기를 이 모듈 위로 옮기는 것. 지금 아프지 않은 자리고, `generateGlobalsCss.mts`에 복제된 `SUBSECTION` 정규식과 묶어 따로 간다.
 - `legacy-doc-paths.ts`·`sian-html.ts`의 순회를 공용으로 빼는 것. 넷의 대상 집합이 다 달라 하나로 묶으면 옵션이 인터페이스를 넓힐 뿐이다. 순회가 아파지면 그때 본다.
 - `docs/log/`의 링크. 회차 기록은 당시 경로를 그대로 두는 원칙이 문자열 검사와 같이 걸린다.

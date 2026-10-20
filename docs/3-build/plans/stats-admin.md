@@ -166,7 +166,7 @@ sources:
 | `src/entities/attendance/api/__tests__/get-month-attendance.integration.test.ts`·`src/entities/schedule/api/__tests__/get-first-schedule-month.integration.test.ts` | 달 키 둘의 integration | AC-04 |
 | `tests/integration/postgres.ts` | 시드 헬퍼 `seedJointSlot`·`seedExcuse` | AC-04 |
 | `tests/e2e/admin-stats.yaml` | 근무 탭 → 시트 → 근태 탭 → 달 이동 → 빈 상태 한 여정 | AC-06~AC-09 |
-| `scripts/e2e-seed-server.mts` | 시드 상태 `stats_admin_overview` — 관리자 하나와 근무자 넷, 지난 세 달 | AC-06~AC-09 |
+| `scripts/e2eSeedServer.mts` | 시드 상태 `stats_admin_overview` — 관리자 하나와 근무자 넷, 지난 세 달 | AC-06~AC-09 |
 
 ## 구현 순서
 

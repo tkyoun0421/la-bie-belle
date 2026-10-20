@@ -49,7 +49,7 @@ sources:
 
 프레임워크를 안 타는 것은 그대로 간다 — `handle-auth-callback.ts`, `resolve-auth-destination.ts`, `read-supabase-env.ts`, `get-current-user.ts`, `features/auth/google-photo-of.ts`, `entities/profile/dals/` 둘이다.
 
-설정은 이렇다. Tailwind 4라 config 파일이 없고 토큰이 `src/app/globals.css`의 `:root`에 OKLCH로 깔린다 — `pnpm tokens:css`(`scripts/generate-globals-css.mts`)가 그것을 만든다. `tsconfig.json`의 alias가 `@/*` → `./src/*`, `@tests/*`, `@scripts/*` 셋이다. `vitest.config.ts`가 unit과 integration 두 project를 든다. `playwright.config.ts`와 e2e spec 여덟이 있다.
+설정은 이렇다. Tailwind 4라 config 파일이 없고 토큰이 `src/app/globals.css`의 `:root`에 OKLCH로 깔린다 — `pnpm tokens:css`(`scripts/generateGlobalsCss.mts`)가 그것을 만든다. `tsconfig.json`의 alias가 `@/*` → `./src/*`, `@tests/*`, `@scripts/*` 셋이다. `vitest.config.ts`가 unit과 integration 두 project를 든다. `playwright.config.ts`와 e2e spec 여덟이 있다.
 
 테스트는 `tests/lint/` 34개와 `tests/e2e/` 여덟과 `tests/integration/` 지원 둘이다. lint 중 둘이 Tailwind를 실제로 돌린다 — `dark-variant-compiles.test.ts`가 `@tailwindcss/postcss`로 `globals.css`를 컴파일해 `data-theme` 갈래를 보고, `tailwind-default-palette.test.ts`가 ESLint 규칙을 돌린다.
 
@@ -78,7 +78,7 @@ sources:
 **토큰이 기기에서 제 색을 낸다.**
 
 - `globals.css`의 `@theme`과 역할 토큰 이름이 그대로 산다. `bg.brand-solid`가 `bg-brand-solid` 유틸로 나오는 규칙이 안 바뀐다
-- 시뮬레이터에서 실제로 그 색이 나오는지를 눈과 테스트로 본다. v5의 색 문서는 `@theme`에 `oklch()`를 적는 예를 들지만 호환성 문서의 색 항목은 「Configured color tokens, hexadecimal, RGB and HSL colors」만 든다. OKLCH가 그대로 안 가면 생성기(`scripts/generate-globals-css.mts`)가 sRGB로 바꾼 값을 낸다 — 바꿀 수 없는 색(sRGB 밖으로 나가는 채도)이 있으면 생성이 실패한다. 조용히 가까운 색으로 끌어당기지 않는다
+- 시뮬레이터에서 실제로 그 색이 나오는지를 눈과 테스트로 본다. v5의 색 문서는 `@theme`에 `oklch()`를 적는 예를 들지만 호환성 문서의 색 항목은 「Configured color tokens, hexadecimal, RGB and HSL colors」만 든다. OKLCH가 그대로 안 가면 생성기(`scripts/generateGlobalsCss.mts`)가 sRGB로 바꾼 값을 낸다 — 바꿀 수 없는 색(sRGB 밖으로 나가는 채도)이 있으면 생성이 실패한다. 조용히 가까운 색으로 끌어당기지 않는다
 - [tokens.md](../../2-design/design-system/tokens.md)의 8절이 다시 쓰인다. 그 절은 스스로 「이 절은 웹 전제고 Expo 골격을 세울 때 정해서 통째로 다시 쓴다」고 예고해둔 자리다 — Tailwind 4를 지키니 뼈대는 남고 웹 전제였던 자리(`postcss`, shadcn 다리)가 빠진다
 
 ### AC-04

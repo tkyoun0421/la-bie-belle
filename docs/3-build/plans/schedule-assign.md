@@ -208,7 +208,7 @@ sources:
 | `src/screens/schedule-admin/ui/PositionRow.tsx` · `PersonPickerSheet.tsx` · `PersonSheet.tsx` · `QualificationSheet.tsx` · `SlotSheet.tsx` · `DiscardSlotSheet.tsx` · `ConfirmChangeSheet.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·자격 시트·자리 시트·자리 버리기 시트·확인 시트, 그리고 임시 줄 제거 | AC-03~AC-07 |
 | `src/shared/ui/DragAndDrop.tsx` · `DropZone.tsx` · `SlotCard.tsx` | 끌어서 옮기기, 버리는 영역, 자리 카드 | AC-09 |
 | `src/shared/ui/Icon.tsx` · `Text.tsx` | 아이콘 `tone` — 규칙 19가 `src/screens/`의 색 유틸리티를 막는다 | AC-03 |
-| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 `schedule_assign_day`와 시드 헬퍼 | AC-10 |
+| `scripts/e2eSeedServer.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 `schedule_assign_day`와 시드 헬퍼 | AC-10 |
 | `tests/e2e/schedule-assign.yaml` | e2e | AC-10 |
 
 ## 구현 순서

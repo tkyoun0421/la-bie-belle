@@ -37,7 +37,7 @@ status: proposed
 | 묶음 | 꼴 수 | 지금 |
 | --- | --- | --- |
 | `tests/lint/<kebab>.ts` | 15 | `doc-links.ts`→`docLinks.ts`, `error-codes.ts`→`errorCodes.ts`, `file-naming.ts`→`fileNaming.ts` 등 |
-| `scripts/<kebab>.mts` | 5 | `e2e-seed-server.mts`→`e2eSeedServer.mts`, `generate-globals-css.mts`→`generateGlobalsCss.mts` 등 |
+| `scripts/<kebab>.mts` | 5 | `e2eSeedServer.mts`·`generateGlobalsCss.mts` 등 camelCase 이름 |
 | `tests/integration/<이름>.test.ts` | 11 | 그 폴더에는 헬퍼 둘(`postgres.ts`·`supabase.ts`)만 남고 integration 96개는 `src/**/api/__tests__/*.integration.test.ts`에 산다 |
 | `src/screens/<kebab>/`·`src/features/<도메인>/model/` | plan 바구니 492건의 대부분 | camelCase 슬라이스와 `hooks`·`services`·`api` |
 
