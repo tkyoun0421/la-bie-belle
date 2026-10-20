@@ -9,10 +9,12 @@ import {
   freshYear,
   kstDate,
   kstMonthStart,
+  queryColumn,
   seedAssignment,
   withDbLock,
   withFreshMonth,
   withNoDefaultWageRates,
+  withSharedDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 
@@ -253,16 +255,18 @@ describe("set_wage(plan AC-03) — 개인 시급을 오늘 날짜로 upsert한�
   });
 
   it("100,000원은 통과한다", async () => {
-    const worker = await createApprovedUser();
+    await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const worker = await createApprovedUser();
 
-    const { error } = await rpc(admin, "set_wage", {
-      p_profile_id: worker.profileId,
-      p_amount: 100000,
+      const { error } = await rpc(admin, "set_wage", {
+        p_profile_id: worker.profileId,
+        p_amount: 100000,
+      });
+
+      expect(error).toBeNull();
+      const row = await wageRateRow(admin, worker.profileId, kstDate(0));
+      expect(row).toEqual({ amount: 100000, follows_default: false });
     });
-
-    expect(error).toBeNull();
-    const row = await wageRateRow(admin, worker.profileId, kstDate(0));
-    expect(row).toEqual({ amount: 100000, follows_default: false });
   });
 
   it("100,001원이면 bad_amount", async () => {
@@ -476,6 +480,29 @@ describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 
       expect(await wageRateRow(admin, notApproved.profileId, today)).toBeNull();
       expect(await wageRateRow(admin, blocked.profileId, today)).toBeNull();
       expect(await wageRateRow(admin, left.profileId, today)).toBeNull();
+    });
+  });
+
+  it("방어 가드: 승인과 차단이 같이 찍힌 사람에게도 오늘 행이 안 선다 — 실제 경로로는 안 서는 상태다", async () => {
+    await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+      const blocked = await createApprovedUser();
+      execSql(
+        "update public.profiles set blocked_at = now() where id = :'profile_id';\n",
+        { profile_id: blocked.profileId },
+      );
+      expect(
+        queryColumn(
+          "select approved_at is not null and blocked_at is not null from public.profiles where id = :'profile_id';\n",
+          { profile_id: blocked.profileId },
+        ),
+      ).toEqual(["t"]);
+
+      const amount = 13000 + Math.floor(Math.random() * 1000);
+      await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
+
+      expect(
+        await wageRateRow(admin, blocked.profileId, kstDate(0)),
+      ).toBeNull();
     });
   });
 });

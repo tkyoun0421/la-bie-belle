@@ -1,6 +1,8 @@
 import {
   createApprovedUser,
   createBlockedUser,
+  execSql,
+  queryColumn,
 } from "@tests/integration/postgres";
 import {
   createGuestClient,
@@ -48,6 +50,29 @@ describe("profiles 읽기 권한", () => {
 
   it("차단되면 남의 프로필을 다시 못 읽는다", async () => {
     const reader = await createBlockedUser();
+    const other = await createSignedInUser();
+
+    const { data, error } = await reader.client
+      .from("profiles")
+      .select("id")
+      .eq("id", other.profileId);
+
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
+  it("방어 가드: 승인과 차단이 같이 찍혀도 남의 프로필을 못 읽는다 — 실제 경로로는 안 서는 상태다", async () => {
+    const reader = await createApprovedUser();
+    execSql(
+      "update public.profiles set blocked_at = now() where id = :'profile_id';\n",
+      { profile_id: reader.profileId },
+    );
+    expect(
+      queryColumn(
+        "select approved_at is not null and blocked_at is not null from public.profiles where id = :'profile_id';\n",
+        { profile_id: reader.profileId },
+      ),
+    ).toEqual(["t"]);
     const other = await createSignedInUser();
 
     const { data, error } = await reader.client

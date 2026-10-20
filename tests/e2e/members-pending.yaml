@@ -9,21 +9,14 @@
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
 # tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts, 이 task 리턴을 본다.
 #
-# **시드 상태 "admin"이 아직 없다.** scripts/e2eSeedServer.mts의 STATES에
-# "admin"이 없다. implementer가 이 task에서 더한다 — 이미 있는
-# tests/integration/postgres.ts의 createAdminUser()를 그대로 불러 관리자 사용자를
-# 만들고 access_token·refresh_token을 돌려주면 된다. profile은 null이다(관리자는
-# 이 화면에서 자기 프로필을 안 본다).
+# 시드 상태 "admin"은 tests/integration/postgres.ts의 createAdminUser()로
+# 관리자 사용자를 만들고 access_token·refresh_token을 돌려준다. profile은
+# null이다(관리자는 이 화면에서 자기 프로필을 안 본다).
 #
-# **시드 상태 "blocked"가 지금은 이름 없는 사람을 만든다.** 지금 코드
-# (createBlockedUser)는 submit_profile을 거치지 않고 이미 승인된 사용자에
-# blocked_at만 SQL로 얹는다 — tests/e2e/blocked.yaml(로그인 직후 튕기는 화면,
-# 프로필 값을 안 보임)에는 맞지만, 여기 「차단한 사람」 목록은 이름이 있는
-# 줄을 보여줘야 한다. design.md 정본대로면 차단은 「제출됨」 사람만 대상이라
-# (이 task의 block_member 규칙), "blocked" 시드가 submit_profile로 이름을 채운
-# 뒤 blocked_at을 얹도록(또는 admin이 block_member를 불러) 고쳐야 이 시나리오가
-# 실제로 통과한다. 그때까지는 seed-session.js의 output.profileName이 이전
-# 장면의 값을 들고 있어 우연히 통과한 것처럼 보일 수 있다 — 진짜 확인이 아니다.
+# 시드 상태 "blocked"는 이름이 있는 사람을 만든다. scripts/e2eSeedServer.mts가
+# submit_profile로 이름을 채운 뒤 관리자 세션으로 block_member를 부른다.
+# design.md 정본대로 차단은 「제출됨」 사람만 대상이라, 차단된 사람은 승인된
+# 적이 없다. 그래서 「차단한 사람」 목록에 그 이름이 있는 줄로 선다.
 #
 # 아래에서 대기자·차단자는 runScript로 "submitted"·"blocked" 상태를 먼저 불러
 # DB에 행만 남기고 그 토큰은 버린다(그다음 "admin"을 불러 관리자 토큰으로

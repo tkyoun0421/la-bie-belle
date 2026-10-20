@@ -10,6 +10,7 @@ import {
   kstMonthStart,
   withDbLock,
   withFreshMonth,
+  withSharedDbLock,
   type AdminUser,
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
@@ -143,19 +144,21 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
 
   describe("wage_rates — 본인 행과 관리자만 읽는다(PAY-018)", () => {
     it("본인은 자기 시급 행을 읽는다", async () => {
-      const owner = await createApprovedUser();
-      const effectiveDate = freshPastDate();
-      seedWageRate(owner.profileId, effectiveDate, 11000, false);
+      await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+        const owner = await createApprovedUser();
+        const effectiveDate = freshPastDate();
+        seedWageRate(owner.profileId, effectiveDate, 11000, false);
 
-      const { data, error } = await tableFor<{ profile_id: string }>(
-        owner,
-        "wage_rates",
-      )
-        .select("profile_id")
-        .eq("profile_id", owner.profileId);
+        const { data, error } = await tableFor<{ profile_id: string }>(
+          owner,
+          "wage_rates",
+        )
+          .select("profile_id")
+          .eq("profile_id", owner.profileId);
 
-      expect(error).toBeNull();
-      expect(data).toEqual([{ profile_id: owner.profileId }]);
+        expect(error).toBeNull();
+        expect(data).toEqual([{ profile_id: owner.profileId }]);
+      });
     });
 
     it("남의 시급 행은 0행이다", async () => {
@@ -176,19 +179,21 @@ describe("payroll RLS(plan AC-02) — wage_rates는 본인·관리자만, defaul
     });
 
     it("관리자는 전원의 시급 행을 읽는다", async () => {
-      const owner = await createApprovedUser();
-      const effectiveDate = freshPastDate();
-      seedWageRate(owner.profileId, effectiveDate, 11000, false);
+      await withSharedDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+        const owner = await createApprovedUser();
+        const effectiveDate = freshPastDate();
+        seedWageRate(owner.profileId, effectiveDate, 11000, false);
 
-      const { data, error } = await tableFor<{ profile_id: string }>(
-        admin,
-        "wage_rates",
-      )
-        .select("profile_id")
-        .eq("profile_id", owner.profileId);
+        const { data, error } = await tableFor<{ profile_id: string }>(
+          admin,
+          "wage_rates",
+        )
+          .select("profile_id")
+          .eq("profile_id", owner.profileId);
 
-      expect(error).toBeNull();
-      expect(data).toEqual([{ profile_id: owner.profileId }]);
+        expect(error).toBeNull();
+        expect(data).toEqual([{ profile_id: owner.profileId }]);
+      });
     });
   });
 
