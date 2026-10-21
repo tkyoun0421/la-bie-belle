@@ -64,7 +64,7 @@
 - 기본 계약:
   - **`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다
   - 뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). `open_slots`는 `security_invoker`라 RLS를 그대로 탄다. **`excuse_status`만 `security_definer`다** — `excuses`의 RLS가 본인과 관리자라 `security_invoker`로 두면 남의 판정이 0행이고 뷰가 존재할 이유가 사라진다. 대신 뷰 몸통이 `where public.is_approved()`를 들어 기본 읽기 계약을 지킨다. 낼 열에서 글을 이미 뺐으니 정의자 권한으로 읽어도 새는 것이 없다. Supabase linter의 `security_definer_view`가 이 뷰를 잡으니 예외로 적어둔다
-  - 한 질의는 `max_rows`(지금 1000)에서 잘린다. 잘려도 오류가 아니다. 알림처럼 안 지우고 쌓이는 표는 첫 사람이 1000에 닿기 전에 `range()`를 건다 — 어느 표부터인지는 [system/runtime.md](runtime.md#읽기-범위)가 정한다
+  - 한 질의는 `max_rows`(지금 1000)에서 잘린다. 잘려도 오류가 아니다. 알림처럼 안 지우고 쌓이는 표는 첫 사람이 1000에 닿기 전에 `readAllPages`로 읽는다. 질의는 유일한 키로 오름차순 정렬하고 직전 페이지 마지막 키보다 큰 행만 받는다 — offset으로 넘기면 읽는 도중 앞 행이 지워질 때 한 행이 빠진다 — 어느 표부터인지는 [system/runtime.md](runtime.md#읽기-범위)가 정한다
 - 이유: 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`attendance/design.md`](../modules/attendance/design.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 임베딩 문자열은 런타임에서만 틀린다. 표가 바뀌면 `dals`의 integration 테스트가 잡는다 — `dals` 함수의 짝 테스트는 integration으로 쓴다. 훅은 unit도 통과시키니 이건 `implementer` 정의문과 `pr-diff`가 본다
 - 예외: `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다
 
