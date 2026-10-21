@@ -69,7 +69,7 @@
 ### `pnpm test:integration`
 
 - 전제: 로컬 Docker가 떠 있다. 스택이 이미 떠 있으면 `pnpm test:integration:run`으로 기동을 건너뛴다.
-- 실행: `pnpm test:integration` — `supabase start` 뒤 `supabase migration up && jest --config jest.integration.config.js`.
+- 실행: `pnpm test:integration` — `supabase start` 뒤 `supabase migration up && jest --config jest.integration.config.js`. 뒤에 붙인 인자는 jest가 아니라 이어진 스크립트로 가서 테스트 경로 패턴이 된다 — `--no-watchman` 같은 jest 옵션을 줄 때는 스택을 띄운 뒤 `pnpm test:integration:run -- --no-watchman`으로 돌린다.
 - 정상 결과: 실패 0.
 - 실패할 때: 가입 한도와 로그 읽는 자리는 [integration과 e2e](#integration과-e2e)가 든다.
 - 근거 위치: CI는 테스트가 쓰는 서비스만 `supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime`(`storage-api`는 `avatars` 버킷 테스트가 쓴다)으로 띄우고 `pnpm test:integration:run`을 돌린다.
