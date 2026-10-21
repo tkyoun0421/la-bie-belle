@@ -28,6 +28,9 @@ const HISTORY_ROOTS = ["src", "scripts", "tests"];
 
 const SOURCE_ROOT = "src/";
 
+const SOURCE_LAYER_FILE =
+  /^(?:app|screens|features|entities|shared)\/.+\.tsx?$/;
+
 function gitOutput(repo: string, args: string[]): string {
   const result = spawnSync(
     "git",
@@ -85,11 +88,16 @@ const NAME_CHARACTER = /[\w-]/;
 
 const BEFORE_STANDALONE = /[\w.-]/;
 
+const BEFORE_LAYER_RELATIVE = /[\w./-]/;
+
 function leadingWordOf(pattern: string): string {
   return /^[\w-]*/.exec(pattern)?.[0] ?? "";
 }
 
-function standaloneFinder(patterns: string[]): FindInLine {
+function standaloneFinder(
+  patterns: string[],
+  before = BEFORE_STANDALONE,
+): FindInLine {
   const wanted = new Set(patterns);
   const leadingWords = new Set(patterns.map(leadingWordOf));
   const longest = Math.max(0, ...patterns.map((pattern) => pattern.length));
@@ -99,10 +107,7 @@ function standaloneFinder(patterns: string[]): FindInLine {
 
     for (const word of line.matchAll(/[\w-]+/g)) {
       const start = word.index;
-      if (
-        !leadingWords.has(word[0]) ||
-        BEFORE_STANDALONE.test(line[start - 1] ?? "")
-      ) {
+      if (!leadingWords.has(word[0]) || before.test(line[start - 1] ?? "")) {
         continue;
       }
 
@@ -136,6 +141,7 @@ function siblingPathsIn(line: string): string[] {
 type RenamedPatterns = {
   inEveryFile: FindInLine;
   outsideCode: FindInLine;
+  layerRelative: FindInLine;
   siblingTargets: Set<string>;
 };
 
@@ -157,12 +163,16 @@ function renamedPatternsFor(
   const insideSource = gone.filter((oldPath) =>
     oldPath.startsWith(SOURCE_ROOT),
   );
+  const layerRelative = insideSource
+    .map((oldPath) => oldPath.slice(SOURCE_ROOT.length))
+    .filter((layerPath) => SOURCE_LAYER_FILE.test(layerPath));
 
   return {
     inEveryFile: standaloneFinder(outsideSource),
     outsideCode: standaloneFinder(insideSource),
+    layerRelative: standaloneFinder(layerRelative, BEFORE_LAYER_RELATIVE),
     siblingTargets: new Set(
-      [...outsideSource, ...insideSource].filter((pattern) =>
+      [...outsideSource, ...insideSource, ...layerRelative].filter((pattern) =>
         pattern.includes("/"),
       ),
     ),
@@ -373,6 +383,168 @@ export const ALLOWED_LINES: AllowedLine[] = [
     file: "tests/lint/noFocusedTests.test.ts",
     marker: `회귀 — ${fileName("utils", ".test.ts")}는`,
   },
+  {
+    file: "docs/2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md",
+    marker: "앞선 판은 「부르는 이름이 이긴다」로",
+  },
+  {
+    file: "docs/3-build/plans/api-exports-only-transport.md",
+    marker: "| `shared/utils/devDoor.ts` | `shared/lib/devDoor.lib.ts` |",
+  },
+  {
+    file: "docs/3-build/plans/as-assertions-to-guards.md",
+    marker: "`features/stats/utils/chartValues.utils.ts:36`과",
+  },
+  {
+    file: "docs/3-build/plans/as-assertions-to-guards.md",
+    marker: "**그리고 이 둘은 같은 이름의 파일이 두 슬라이스에 있다.**",
+  },
+  {
+    file: "docs/3-build/plans/as-assertions-to-guards.md",
+    marker: "| `features/pushSwitch/config/pushSwitch.config.ts:4` |",
+  },
+  {
+    file: "docs/3-build/plans/audit-checks-into-catalog.md",
+    marker:
+      "`screens/notifications/hooks/pressNotification.ts` — 순수 판정이면",
+  },
+  {
+    file: "docs/3-build/plans/duplicated-constants-and-copy.md",
+    marker: "`DAY_MS` 일곱 자리 —",
+  },
+  {
+    file: "docs/3-build/plans/duplicated-constants-and-copy.md",
+    marker: "`screens/scheduleAdmin/model/adjustmentFailure.policy.ts:5`",
+  },
+  {
+    file: "docs/3-build/plans/expo-scaffold.md",
+    marker: "프레임워크를 안 타는 것은 그대로 간다",
+  },
+  {
+    file: "docs/3-build/plans/fragments-own-their-data.md",
+    marker: "는 `shared`만 당겨 지금도 옮길 수 있다",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "그것을 `useWorkMonthsQuery`와 달마다 맞추는",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "**접미사 패스가 reducer를 못 봤다.**",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "**재수출이 층을 우회하고 있었다.**",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "**`.policy.ts` 중에 통신을 실제로 부르는 것이 하나였고",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "`features/stats/hooks/useAttendanceMonths.ts`는 `services/",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "`features/auth/hooks/wireAutoRefresh.ts`는 `lib/",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "zustand store 둘의 자리가 갈려 있다",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "`canGoBack`·`canGoForward` —",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker:
+      "`dayMinutes` — `features/payrollCompute/model/dayMinutes.policy.ts`",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "`attendanceSummaryLine` — `screens/",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "**재수출이 또 나왔다.**",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "| `shared/utils/theme.ts` |",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "| `shared/utils/fontLoading.ts` |",
+  },
+  {
+    file: "docs/3-build/plans/fsd-read-write-layers.md",
+    marker: "| `entities/clock/model/clock.store.ts` |",
+  },
+  {
+    file: "docs/3-build/plans/loading-fragments-share-one-body.md",
+    marker: "는 `api-exports-only-transport`가 같은 시기에 만진다",
+  },
+  {
+    file: "docs/3-build/plans/screens-calc-placement.md",
+    marker: "가장 또렷한 셋 —",
+  },
+  {
+    file: "docs/3-build/plans/signout-removes-push-token.md",
+    marker: "**projectId 읽기는 `shared/config`로 내린다.**",
+  },
+  {
+    file: "docs/3-build/plans/spell-number-shared.md",
+    marker: "**다만 한 자리는 대상을 잃는다.**",
+  },
+  {
+    file: "docs/3-build/plans/spell-number-shared.md",
+    marker: "**둘째 결함** —",
+  },
+  {
+    file: "docs/3-build/plans/stats-admin.md",
+    marker: "**포지션 아홉의 정본을",
+  },
+  {
+    file: "docs/3-build/plans/stats-worker.md",
+    marker: "**출근율 셈을 `entities`로 내린다.**",
+  },
+  {
+    file: "docs/3-build/plans/stats-worker.md",
+    marker: "에서 여기로 내려온다 — 인자가",
+  },
+  {
+    file: "docs/3-build/plans/stats-worker.md",
+    marker: "금액 꼴 `spellWon`이",
+  },
+  {
+    file: "docs/3-build/plans/stats-worker.md",
+    marker: "`NO_VALUE`(`–`)가",
+  },
+  {
+    file: "docs/3-build/plans/supabase-client-entry.md",
+    marker: "의 어긋남. 클라이언트를 받아 쓰는",
+  },
+  {
+    file: "docs/proposals/codebase-refactor-triage.md",
+    marker: "| 1 | `screens/payroll/model/period.policy.ts`의 `periodSpan`",
+  },
+  {
+    file: "docs/proposals/codebase-refactor-triage.md",
+    marker: "가장 또렷한 셋 —",
+  },
+  {
+    file: "docs/proposals/post-refactor-audit.md",
+    marker: "| 결론 1 | `features/pushSwitch/api/removePushToken.api.ts` |",
+  },
+  {
+    file: "docs/proposals/post-refactor-audit.md",
+    marker: "**같은 이름 다른 본문** —",
+  },
+  {
+    file: "docs/backlog.md",
+    marker: "| `screens-calc-placement` |",
+  },
 ];
 
 function* filesUnder(root: string, relative: string): Generator<string> {
@@ -439,6 +611,7 @@ function legacyPatternsIn(
   if (!CODE_EXTENSIONS.has(path.extname(file))) {
     found.push(
       ...renamed.outsideCode(line),
+      ...renamed.layerRelative(line),
       ...siblingPathsIn(line).filter((sibling) =>
         renamed.siblingTargets.has(sibling),
       ),
