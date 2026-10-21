@@ -90,8 +90,8 @@ sources:
   - **갈래를 다시 판정하지 않는다.** 그 행이 이미 든 갈래 안에서만 값을 고친다 — 시각 행은 시각을, 건수 행은 건수를. 다른 갈래 인자가 오면 `wrong_kind`
   - 겹침 검사는 자기 자신을 뺀 나머지와 한다
 - `remove_rehearsal(p_id uuid)` — 남의 행이면 `not_allowed`. 지운다
-- 오류 코드 넷이 새로 선다 — `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`. `not_allowed`는 이미 있다. 이 가운데 `error-codes.ts`에 없는 것은 `overlaps` 하나다 — 나머지 셋은 근무표 함수가 이미 올렸다(`tests/lint/error-codes`가 중복을 막는다)
-- 값 자체가 틀린 것도 둘 갈린다 — 건수가 1~9 밖이면 `bad_count`, 끝이 시작보다 이르거나 같으면 `bad_hours`다. 표의 check가 이미 막는 것을 함수가 먼저 받아 코드로 돌려준다 — check 위반은 SQLSTATE `23514`로 올라와 화면이 읽을 코드가 없다. `bad_count`도 `error-codes.ts`에 새로 선다
+- 오류 코드 넷이 새로 선다 — `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`. `not_allowed`는 이미 있다. 이 가운데 `error.const.ts`에 없는 것은 `overlaps` 하나다 — 나머지 셋은 근무표 함수가 이미 올렸다(`tests/lint/error-codes`가 중복을 막는다)
+- 값 자체가 틀린 것도 둘 갈린다 — 건수가 1~9 밖이면 `bad_count`, 끝이 시작보다 이르거나 같으면 `bad_hours`다. 표의 check가 이미 막는 것을 함수가 먼저 받아 코드로 돌려준다 — check 위반은 SQLSTATE `23514`로 올라와 화면이 읽을 코드가 없다. `bad_count`도 `error.const.ts`에 새로 선다
 
 ### AC-04
 
@@ -146,7 +146,7 @@ sources:
 
 ### AC-09
 
-**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`·`bad_count`·`bad_hours`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `tests/lint/error-codes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`와 `bad_count` 둘이다.
+**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`·`bad_count`·`bad_hours`가 `src/shared/consts/error.const.ts`와 마이그레이션 양쪽에 선다. `tests/lint/errorCodes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`와 `bad_count` 둘이다.
 
 **KST 날짜 손을 `src/shared/lib/kst-date.ts`로 모은다.** `kstDateOf`·`kstToday`·`shiftMonth`·`spellMonth`·`lastDateOfMonth`가 슬라이스 넷(`schedule-worker`·`schedule-admin`·`admin-home`·`applications`)에 각자 서 있었고 이 화면이 다섯째다. 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용 자리로 올리고, 넷은 그 파일을 부른다 — 슬라이스의 기존 테스트는 그대로 통과해야 한다.
 
@@ -156,8 +156,8 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/20260927091508_rehearsals.sql` | 표, check, unique index, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/20260927091509_rehearsal_functions.sql` | `has_rehearsal_grant`와 함수 셋 | AC-02·AC-03 |
-| `src/shared/api/error-codes.ts` | 코드 둘(`overlaps`·`bad_count`) | AC-09 |
-| `src/shared/api/database-types.ts` | 새 표와 함수 셋의 생성 타입 | AC-01·AC-03 |
+| `src/shared/consts/error.const.ts` | 코드 둘(`overlaps`·`bad_count`) | AC-09 |
+| `src/shared/api/databaseTypes.ts` | 새 표와 함수 셋의 생성 타입 | AC-01·AC-03 |
 | `src/shared/lib/kst-date.ts`·`__tests__/kst-date.test.ts` | KST 날짜 손 공용화, 슬라이스 넷이 부른다 | AC-09 |
 | `src/screens/schedule-admin/model/format-schedule-date.ts`·`month-empty-state.ts` · `src/screens/schedule-worker/model/agenda-row.ts`·`month-state.ts` · `src/screens/admin-home/model/today-status.ts` · `src/screens/applications/model/applications-grouping.ts` | 각자 들고 있던 KST 날짜 손을 버리고 공용 파일을 부른다 | AC-09 |
 | `src/shared/lib/month-picker.ts`·`__tests__/month-picker.test.ts` | 달 고르기 시트가 그릴 해와 열두 달 | AC-06 |
@@ -212,7 +212,7 @@ sources:
 | AC-06 | 못 누르는 칸이 생긴다 | e2e `tests/e2e/rehearsal.yaml` | `pnpm e2e` | 근무표에 없는 달의 아무 날이나 눌린다 |
 | AC-07 | 갈래가 바뀌면 고른 날짜가 날아간다 | e2e 위 | 위와 같다 | 알림 한 줄, 날짜 그대로, 칸만 바뀜 |
 | AC-08 | 자격 없는 사람이 주소로 들어온다 | e2e 위 | 위와 같다 | `/me`로 보낸다. 「나」에 줄이 없다 |
-| AC-09 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 넷이 양쪽에 있다 |
+| AC-09 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/errorCodes.test.ts` | `pnpm test` | 넷이 양쪽에 있다 |
 
 - 배정하지 않은 것: 관리자가 전원 리허설을 달력에서 훑는 실사용 — 서른 명치가 한 칸에 겹칠 때 읽히는지는 실기기에서 손으로 본다
 - 막힌 것: **리허설 자격을 주는 화면이 없다.** `position_grants`에 `'리허설'` 행을 넣는 자리가 정본 어디에도 안 그려져 있어 이 task만으로는 아무도 자격을 못 받는다. 화면을 정하는 것이 선행이고, 정해지기 전에는 SQL 콘솔로 행을 넣어 테스트한다

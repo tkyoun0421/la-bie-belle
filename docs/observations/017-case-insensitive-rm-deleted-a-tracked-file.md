@@ -1,6 +1,6 @@
 ---
 status: open
-target: tests/lint/file-naming.ts
+target: tests/lint/fileNaming.ts
 date: 2026-09-23
 resolved:
 ---

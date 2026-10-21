@@ -1,6 +1,6 @@
 ---
 status: open
-target: tests/lint/legacy-doc-paths.ts
+target: tests/lint/legacyDocPaths.ts
 date: 2026-09-10
 resolved:
 ---
@@ -11,7 +11,7 @@ resolved:
 
 handoff에 이번 회차에 고친 것을 적었다 — `login.md`와 `dashboard.md`의 domain 링크가 한 단 더 올라가 없는 자리를 가리키고 있었다는 것이다. 어디를 가리켰는지 쓰려고 그 경로를 문장 안에 적었더니 `pnpm test`가 빨개졌다.
 
-`tests/lint/legacy-doc-paths.test.ts`가 `docs/handoff.md:55`에서 옛 domain 경로 패턴을 찾아 뱉었다. 검사가 옳게 동작했다. 저 문자열이 파일에 있는 것은 사실이다. 다만 **가리키려고 쓴 것이 아니라 「이게 틀렸다」고 말하려고 쓴 것**인데 검사는 그 둘을 못 가른다.
+`tests/lint/legacyDocPaths.test.ts`가 `docs/handoff.md:55`에서 옛 domain 경로 패턴을 찾아 뱉었다. 검사가 옳게 동작했다. 저 문자열이 파일에 있는 것은 사실이다. 다만 **가리키려고 쓴 것이 아니라 「이게 틀렸다」고 말하려고 쓴 것**인데 검사는 그 둘을 못 가른다.
 
 문장을 「한 단 더 올라가 없는 자리를 가리켰다」로 바꿔서 풀었다. 뜻은 전해지지만 어디였는지가 흐려졌다.
 

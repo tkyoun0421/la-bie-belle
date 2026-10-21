@@ -100,7 +100,7 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
   - 거절이면 `decision = 'rejected'`고 `decision_reason`이 **필수다** — 비면 `invalid_reason`. 그 글이 근무자에게 그대로 간다
   - 근무는 그대로 남는다
 
-`error-codes.ts`에 `request_closed`·`already_requested`·`invalid_reason`·`already_decided`가 든다. `slot_full`·`window_closed`·`not_allowed`·`stale`은 앞 task들이 이미 넣었다.
+`error.const.ts`에 `request_closed`·`already_requested`·`invalid_reason`·`already_decided`가 든다. `slot_full`·`window_closed`·`not_allowed`·`stale`은 앞 task들이 이미 넣었다.
 
 ### AC-03
 
@@ -194,7 +194,7 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `supabase/migrations/20260927091506_schedule_requests.sql` | 함수 넷, `internal.close_slot_requests`, `add_assignment`의 `create or replace`, `internal.expire_requests`와 `cron.schedule`, `pg_cron` 켜기, `public.server_now()` | AC-01~AC-04 |
-| `src/shared/api/error-codes.ts` · `database-types.ts` | `request_closed`·`already_requested`·`invalid_reason`·`already_decided`와 다시 뽑은 생성 타입 | AC-01·AC-02 |
+| `src/shared/consts/error.const.ts` · `databaseTypes.ts` | `request_closed`·`already_requested`·`invalid_reason`·`already_decided`와 다시 뽑은 생성 타입 | AC-01·AC-02 |
 | `src/entities/schedule/api/send-work-request.ts` · `respond-request.ts` · `create-cancel-request.ts` · `decide-cancel-request.ts` | 쓰기 넷 | AC-05~AC-08 |
 | `src/entities/schedule/api/get-slot-requests.ts` · `get-pending-approvals.ts` | 자리의 요청과 판정 대기 목록 | AC-05·AC-08 |
 | `src/entities/schedule/api/__tests__/` | 함수 넷과 cron, 요청을 닫는 `add_assignment`·`force_change`의 integration | AC-10 |
@@ -211,7 +211,7 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 | `src/shared/ui/Checkbox.tsx` · `Dialog.tsx` · `RosterRow.tsx` · `src/app/_catalog.tsx` | 픽커 체크박스·승인 확인 Dialog·명단 줄 배지 | AC-05~AC-08 |
 | `scripts/e2eSeedServer.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 넷과 요청·취소 요청 시드 헬퍼 | AC-10 |
 | `tests/e2e/approvals.yaml` · `schedule-admin.yaml` · `schedule-worker.yaml` | e2e | AC-10 |
-| `tests/lint/file-naming.ts` · `file-naming.test.ts` | 파일 이름 검사가 새 자리를 보게 | AC-10 |
+| `tests/lint/fileNaming.ts` · `fileNaming.test.ts` | 파일 이름 검사가 새 자리를 보게 | AC-10 |
 
 ## 구현 순서
 

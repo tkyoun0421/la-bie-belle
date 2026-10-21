@@ -77,7 +77,7 @@ sources:
 - 받은 날짜 중 그 달 밖이 있으면 `bad_dates`. 함수가 마지막 문이다 — 화면이 먼저 막는다
 - 자기 행만 만진다. `p_profile_id`를 안 받는다 — 남의 신청을 내는 길을 만들지 않는다
 
-`error-codes.ts`에 `bad_dates`가 는다. `window_closed`는 [`attendance-data`](attendance-data.md)가 이미 올렸다.
+`error.const.ts`에 `bad_dates`가 는다. `window_closed`는 [`attendance-data`](attendance-data.md)가 이미 올렸다.
 
 ### AC-02
 
@@ -210,7 +210,7 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `supabase/migrations/20260927091504_submit_availability.sql` | `submit_availability` | AC-01 |
-| `src/shared/api/error-codes.ts` · `database-types.ts` | `bad_dates`와 다시 뽑은 생성 타입 | AC-01 |
+| `src/shared/consts/error.const.ts` · `databaseTypes.ts` | `bad_dates`와 다시 뽑은 생성 타입 | AC-01 |
 | `src/entities/schedule/api/get-month-schedule.ts` | 그 달 근무표 행과 연 날들을 한 질의로, `assignments`에 프로필 이름 임베딩 | AC-02 |
 | `src/entities/schedule/api/get-my-availability.ts` · `submit-availability.ts` | 읽기 하나, 쓰기 하나 | AC-02 |
 | `src/entities/schedule/api/__tests__/get-month-schedule.integration.test.ts` · `get-my-availability.integration.test.ts` · `submit-availability.integration.test.ts` | dal 셋의 integration | AC-11 |

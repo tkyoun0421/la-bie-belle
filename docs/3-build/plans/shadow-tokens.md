@@ -11,7 +11,7 @@
 - 값 칸에 `var(--stroke-neutral)`처럼 다른 변수가 들어 있어도 그대로 옮겨 적는다. 생성기가 값을 해석하지 않는다.
 - `tokens.md` 8.3 다리에 `--shadow-pop: var(--surface-shadow-pop)`과 `--shadow-sheet: var(--surface-shadow-sheet)` 두 줄이 있고, 생성된 `globals.css`에 그대로 나온다. Tailwind가 `shadow-pop`·`shadow-sheet` 유틸을 만든다.
 - `pnpm tokens:css`를 돌린 `src/app/globals.css`가 커밋된다. 기존 `--surface-shadow`와 `--shadow-card` 줄은 글자까지 그대로다.
-- `tests/lint/generate-globals-css.test.ts`가 그림자 표 세 줄 픽스처로 `--surface-shadow-pop`·`--surface-shadow-sheet`가 라이트·다크 세 블록에 서는 것과, 한 줄 픽스처에서 둘째 줄 변수가 안 나오는 것을 확인한다. 「리스크 C」의 기존 단언은 고치지 않는다.
+- `tests/lint/generateGlobalsCss.test.ts`가 그림자 표 세 줄 픽스처로 `--surface-shadow-pop`·`--surface-shadow-sheet`가 라이트·다크 세 블록에 서는 것과, 한 줄 픽스처에서 둘째 줄 변수가 안 나오는 것을 확인한다. 「리스크 C」의 기존 단언은 고치지 않는다.
 
 ## 범위 밖
 

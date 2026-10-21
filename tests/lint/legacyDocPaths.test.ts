@@ -42,46 +42,51 @@ const RISK_10_CASES: [string, string][] = [
 ];
 
 const RENAMED_SCRIPTS: [string, string][] = [
+  [legacyPath("check-moved-lines", ".mts"), "scripts/checkMovedLines.mts"],
   [
-    legacyPath("scripts/", "check-moved-lines.mts"),
-    "scripts/checkMovedLines.mts",
-  ],
-  [
-    legacyPath("scripts/", "check-sources-impact.mts"),
+    legacyPath("check-sources-impact", ".mts"),
     "scripts/checkSourcesImpact.mts",
   ],
-  [legacyPath("scripts/", "e2e-seed-server.mts"), "scripts/e2eSeedServer.mts"],
-  [legacyPath("scripts/", "font-subset.mts"), "scripts/fontSubset.mts"],
+  [legacyPath("e2e-seed-server", ".mts"), "scripts/e2eSeedServer.mts"],
+  [legacyPath("font-subset", ".mts"), "scripts/fontSubset.mts"],
   [
-    legacyPath("scripts/", "generate-database-types.mts"),
+    legacyPath("generate-database-types", ".mts"),
     "scripts/generateDatabaseTypes.mts",
   ],
   [
-    legacyPath("scripts/", "generate-globals-css.mts"),
+    legacyPath("generate-globals-css", ".mts"),
     "scripts/generateGlobalsCss.mts",
   ],
   [
-    legacyPath("scripts/", "generate-route-types.mts"),
+    legacyPath("generate-route-types", ".mts"),
     "scripts/generateRouteTypes.mts",
   ],
+  [legacyPath("inline-sian-font", ".mts"), "scripts/inlineSianFont.mts"],
+  [legacyPath("module-alias-hooks", ".mjs"), "scripts/moduleAliasHooks.mjs"],
+  [legacyPath("sync-edge-shared", ".mts"), "scripts/syncEdgeShared.mts"],
+  [legacyPath("tokens-md", ".mts"), "scripts/tokensMd.mts"],
+  [legacyPath("tossface-fetch", ".mts"), "scripts/tossfaceFetch.mts"],
+  [legacyPath("seed-session", ".js"), "tests/e2e/scripts/seedSession.js"],
+];
+
+const RENAMED_LINT_FILES: [string, string][] = [
   [
-    legacyPath("scripts/", "inline-sian-font.mts"),
-    "scripts/inlineSianFont.mts",
+    legacyPath("generate-globals-css", ".test.ts"),
+    "tests/lint/generateGlobalsCss.test.ts",
   ],
+  [legacyPath("legacy-doc-paths", ".ts"), "tests/lint/legacyDocPaths.ts"],
+  [legacyPath("rule-check", ".ts"), "tests/lint/ruleCheck.ts"],
   [
-    legacyPath("scripts/", "module-alias-hooks.mjs"),
-    "scripts/moduleAliasHooks.mjs",
+    legacyPath("dark-media-query-compiles", ".test.ts"),
+    "tests/lint/darkMediaQueryCompiles.test.ts",
   ],
-  [
-    legacyPath("scripts/", "sync-edge-shared.mts"),
-    "scripts/syncEdgeShared.mts",
-  ],
-  [legacyPath("scripts/", "tokens-md.mts"), "scripts/tokensMd.mts"],
-  [legacyPath("scripts/", "tossface-fetch.mts"), "scripts/tossfaceFetch.mts"],
-  [
-    legacyPath("scripts/", "seed-session.js"),
-    "tests/e2e/scripts/seedSession.js",
-  ],
+];
+
+const NAMES_INSIDE_OTHER_WORDS = [
+  legacyPath("design-", "tokens-md", ".mts"),
+  legacyPath("seed-session", ".json"),
+  legacyPath("my", "font-subset", ".mts"),
+  legacyPath("doc-links", ".tsx"),
 ];
 
 const RISK_14_CASES: [string, string][] = [
@@ -212,29 +217,55 @@ describe("구 경로 잔존 검사", () => {
     expect(violatingFiles(root)).toEqual(["docs/proposals/other.md"]);
   });
 
+  function patternsInSample(line: string): string[] {
+    const root = tempRoot();
+    write(root, "docs/3-build/plans/sample.md", `${line}\n`);
+
+    return violationsFor(root, "docs/3-build/plans/sample.md").map(
+      (violation) => violation.pattern,
+    );
+  }
+
   it.each(RENAMED_SCRIPTS)(
-    "camelCase로 옮기기 전 스크립트 이름 %s가 남아 있으면 검출한다",
-    (oldPath) => {
-      const root = tempRoot();
-      write(
-        root,
-        "docs/3-build/plans/sample.md",
-        `| \`${oldPath}\` | 시드 상태 | AC-01 |\n`,
-      );
-
-      const patterns = violationsFor(root, "docs/3-build/plans/sample.md").map(
-        (violation) => violation.pattern,
-      );
-
-      expect(patterns).toContain(oldPath);
+    "camelCase로 옮기기 전 스크립트 경로 scripts/%s가 남아 있으면 검출한다",
+    (oldName) => {
+      expect(
+        patternsInSample(`| \`scripts/${oldName}\` | 시드 상태 | AC-01 |`),
+      ).toContain(oldName);
     },
   );
 
-  it("옮긴 뒤의 스크립트 이름은 잡지 않는다", () => {
+  it.each(RENAMED_SCRIPTS)(
+    "경로 없이 이름만 적힌 옛 스크립트 %s도 검출한다",
+    (oldName) => {
+      expect(
+        patternsInSample(`\`${oldName}\`가 토큰 표를 읽어 CSS를 만든다.`),
+      ).toContain(oldName);
+    },
+  );
+
+  it.each(RENAMED_LINT_FILES)(
+    "camelCase로 옮기기 전 tests/lint 파일 이름 %s를 경로가 있든 없든 검출한다",
+    (oldName) => {
+      expect(
+        patternsInSample(`검사는 \`tests/lint/${oldName}\`가 한다.`),
+      ).toEqual([oldName]);
+      expect(patternsInSample(`검사는 ${oldName}가 한다.`)).toEqual([oldName]);
+    },
+  );
+
+  it.each(NAMES_INSIDE_OTHER_WORDS)(
+    "옛 이름이 다른 낱말 %s 안에 들어 있으면 잡지 않는다",
+    (word) => {
+      expect(patternsInSample(`\`${word}\`는 다른 파일이다.`)).toEqual([]);
+    },
+  );
+
+  it("옮긴 뒤의 스크립트·검사 파일 이름은 잡지 않는다", () => {
     const root = tempRoot();
-    const table = RENAMED_SCRIPTS.map(
-      ([, currentPath]) => `| \`${currentPath}\` | 시드 상태 | AC-01 |`,
-    ).join("\n");
+    const table = [...RENAMED_SCRIPTS, ...RENAMED_LINT_FILES]
+      .map(([, currentPath]) => `| \`${currentPath}\` | 시드 상태 | AC-01 |`)
+      .join("\n");
     write(root, "docs/3-build/plans/sample.md", `${table}\n`);
 
     expect(violatingFiles(root)).toEqual([]);
@@ -252,7 +283,7 @@ describe("구 경로 잔존 검사", () => {
 });
 
 describe("구 경로 잔존 검사 — 실제 저장소 회귀", () => {
-  it("허용된 두 자리(ADR-004 결정 문장, sdlc-gate.md 패턴 열거 줄) 말고는 옛 경로가 안 남아 있다", () => {
+  it("허용된 자리(ADR-004 결정 문장, sdlc-gate.md 패턴 열거 줄 등) 말고는 옛 경로가 안 남아 있다", () => {
     const violations = legacyPathViolations(process.cwd());
 
     expect(violations).toEqual([]);

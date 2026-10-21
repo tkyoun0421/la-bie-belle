@@ -51,7 +51,7 @@ sources:
 
 설정은 이렇다. Tailwind 4라 config 파일이 없고 토큰이 `src/app/globals.css`의 `:root`에 OKLCH로 깔린다 — `pnpm tokens:css`(`scripts/generateGlobalsCss.mts`)가 그것을 만든다. `tsconfig.json`의 alias가 `@/*` → `./src/*`, `@tests/*`, `@scripts/*` 셋이다. `vitest.config.ts`가 unit과 integration 두 project를 든다. `playwright.config.ts`와 e2e spec 여덟이 있다.
 
-테스트는 `tests/lint/` 34개와 `tests/e2e/` 여덟과 `tests/integration/` 지원 둘이다. lint 중 둘이 Tailwind를 실제로 돌린다 — `dark-variant-compiles.test.ts`가 `@tailwindcss/postcss`로 `globals.css`를 컴파일해 `data-theme` 갈래를 보고, `tailwind-default-palette.test.ts`가 ESLint 규칙을 돌린다.
+테스트는 `tests/lint/` 34개와 `tests/e2e/` 여덟과 `tests/integration/` 지원 둘이다. lint 중 둘이 Tailwind를 실제로 돌린다 — `dark-variant-compiles.test.ts`가 `@tailwindcss/postcss`로 `globals.css`를 컴파일해 `data-theme` 갈래를 보고, `tailwindDefaultPalette.test.ts`가 ESLint 규칙을 돌린다.
 
 확인한 코드와 Git 기준점 — `package.json`·`vitest.config.ts`·`src/app/globals.css`가 `552dfed`.
 
@@ -196,9 +196,9 @@ sources:
 | 완료 조건 | 깨질 수 있는 것 | 테스트 층·위치 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-01 | 앱이 안 뜬다 | 수동 | `pnpm dev` 뒤 시뮬레이터 | iOS·Android 둘 다 첫 화면이 뜬다 |
-| AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 네이티브 rem이 14가 아니라 16이고, `p-4`가 16·`text-base`가 17로 컴파일된다 |
-| AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 팔레트가 OKLCH가 아니라 hex로 풀리고 브랜드가 ADR-012의 값이다. 시뮬레이터의 색이 시안과 같다 |
-| AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/design-token-values.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
+| AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit — `tests/lint/nativeCompileValues.test.ts` | 시뮬레이터, `pnpm test` | 네이티브 rem이 14가 아니라 16이고, `p-4`가 16·`text-base`가 17로 컴파일된다 |
+| AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — `tests/lint/nativeCompileValues.test.ts` | 시뮬레이터, `pnpm test` | 팔레트가 OKLCH가 아니라 hex로 풀리고 브랜드가 ADR-012의 값이다. 시뮬레이터의 색이 시안과 같다 |
+| AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/designTokenValues.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
 | AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles`·`native-compile-values` | 시뮬레이터, `pnpm test` | 팔레트 변수가 `prefers-color-scheme` 조건 하나로 둘로 갈리고, 기기 설정을 켜면 화면이 그것을 따른다 |
 | AC-05 | 서체가 시스템 것으로 떨어진다 | 수동 | 시뮬레이터 | 굵기 넷이 다 다르게 보인다 |
 | AC-05 · AC-09 | 스플래시가 한쪽만 기다리고 내려간다 | 수동 | 시뮬레이터, 콜드 스타트 여러 번 | 글자가 시스템 서체로 한 프레임 그려지지도, 잘못된 층이 비치지도 않는다. 둘이 같은 지점에 걸려서 한 번에 본다 |

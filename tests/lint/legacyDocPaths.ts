@@ -11,9 +11,7 @@ const DOCS = "docs/";
 
 const DESIGN = `${DOCS}2-design/`;
 
-const SCRIPTS = "scripts/";
-
-const LEGACY_PATTERNS = [
+const LEGACY_PATHS = [
   `${DOCS}plan.md`,
   `${DOCS}prd.md`,
   `${DOCS}domain`,
@@ -23,19 +21,120 @@ const LEGACY_PATTERNS = [
   `${DESIGN}domain/`,
   `${DESIGN}architecture/`,
   `${DESIGN}design-system/pages/`,
-  `${SCRIPTS}check-moved-lines.mts`,
-  `${SCRIPTS}check-sources-impact.mts`,
-  `${SCRIPTS}e2e-seed-server.mts`,
-  `${SCRIPTS}font-subset.mts`,
-  `${SCRIPTS}generate-database-types.mts`,
-  `${SCRIPTS}generate-globals-css.mts`,
-  `${SCRIPTS}generate-route-types.mts`,
-  `${SCRIPTS}inline-sian-font.mts`,
-  `${SCRIPTS}module-alias-hooks.mjs`,
-  `${SCRIPTS}sync-edge-shared.mts`,
-  `${SCRIPTS}tokens-md.mts`,
-  `${SCRIPTS}tossface-fetch.mts`,
-  `${SCRIPTS}seed-session.js`,
+];
+
+const RENAMED_FILE_STEMS: Record<string, string[]> = {
+  ".mts": [
+    "check-moved-lines",
+    "check-sources-impact",
+    "e2e-seed-server",
+    "font-subset",
+    "generate-database-types",
+    "generate-globals-css",
+    "generate-route-types",
+    "inline-sian-font",
+    "sync-edge-shared",
+    "tokens-md",
+    "tossface-fetch",
+  ],
+  ".mjs": ["module-alias-hooks"],
+  ".js": ["seed-session"],
+  ".ts": [
+    "attendance-constants",
+    "backlog-ids",
+    "contrast-check",
+    "database-types",
+    "design-map",
+    "doc-links",
+    "doc-map",
+    "error-codes",
+    "file-naming",
+    "font-subset",
+    "legacy-doc-paths",
+    "route-types",
+    "rule-check",
+    "sian-html",
+    "slug-chain",
+    "sources-exist",
+    "sources-impact",
+    "spec-docs",
+    "spec-grid",
+    "table-rls",
+    "tossface-fetch",
+  ],
+  ".test.ts": [
+    "attendance-constants",
+    "backlog-ids",
+    "contrast-check",
+    "dark-media-query-compiles",
+    "database-types",
+    "design-map",
+    "design-token-values",
+    "doc-links",
+    "doc-map",
+    "error-codes",
+    "file-naming",
+    "font-asset-files",
+    "font-subset",
+    "format-check",
+    "fsd-layer-order",
+    "fsd-slice-boundary",
+    "generate-globals-css",
+    "import-order",
+    "legacy-doc-paths",
+    "native-compile-values",
+    "no-console",
+    "no-focused-tests",
+    "pre-commit",
+    "relative-import",
+    "route-types",
+    "rule-catalogue",
+    "sian-html",
+    "slug-chain",
+    "sources-exist",
+    "sources-impact",
+    "spec-docs",
+    "spec-grid",
+    "table-rls",
+    "tailwind-default-palette",
+    "tossface-fetch",
+    "tsx-dumb-ui",
+    "unused-imports",
+  ],
+};
+
+type LegacyPattern = {
+  pattern: string;
+  foundIn: (line: string) => boolean;
+};
+
+function fileName(stem: string, extension: string): string {
+  return `${stem}${extension}`;
+}
+
+const OLD_SEED_SESSION = fileName("seed-session", ".js");
+
+function escapedForRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function standaloneFileName(name: string): RegExp {
+  return new RegExp(`(?<![\\w.-])${escapedForRegExp(name)}(?![\\w-])`);
+}
+
+const LEGACY_PATTERNS: LegacyPattern[] = [
+  ...LEGACY_PATHS.map((pattern) => ({
+    pattern,
+    foundIn: (line: string) => line.includes(pattern),
+  })),
+  ...Object.entries(RENAMED_FILE_STEMS).flatMap(([extension, stems]) =>
+    stems.map((stem) => {
+      const pattern = fileName(stem, extension);
+      const regExp = standaloneFileName(pattern);
+
+      return { pattern, foundIn: (line: string) => regExp.test(line) };
+    }),
+  ),
 ];
 
 const SCANNED_ROOTS = [
@@ -102,7 +201,44 @@ const ALLOWED_LINES = [
   },
   {
     file: "tests/lint/e2eFileReferences.test.ts",
-    marker: `reference: "${SCRIPTS}seed-session.js"`,
+    marker: `reference: "scripts/${OLD_SEED_SESSION}"`,
+  },
+  {
+    file: "tests/lint/fileNaming.test.ts",
+    marker: 'camelWanted: "src/shared/api/',
+  },
+  {
+    file: "tests/lint/fileNaming.test.ts",
+    marker: 'camelWantedTest: "tests/lint/',
+  },
+  {
+    file: "tests/lint/fileNaming.test.ts",
+    marker: 'expect(stemOf("database-',
+  },
+  {
+    file: "docs/3-build/plans/schedule-data.md",
+    marker: "디렉터리가 없어",
+  },
+  {
+    file: "docs/proposals/canon-and-code-divergence.md",
+    marker:
+      "[.claude/agents/sian-auditor.md](../../.claude/agents/sian-auditor.md):27",
+  },
+  {
+    file: "docs/proposals/canon-and-code-divergence.md",
+    marker: "가리키는 자리가 그 결과다",
+  },
+  {
+    file: "docs/backlog.md",
+    marker: "`legacy-bare-script-names`",
+  },
+  {
+    file: "docs/handoff.md",
+    marker: "(없는 경로)",
+  },
+  {
+    file: "tests/lint/e2eFileReferences.test.ts",
+    marker: `"seedSession.js", "${OLD_SEED_SESSION}")`,
   },
 ];
 
@@ -166,8 +302,8 @@ export function legacyPathViolations(root: string): LegacyPathViolation[] {
         continue;
       }
 
-      for (const pattern of LEGACY_PATTERNS) {
-        if (line.includes(pattern)) {
+      for (const { pattern, foundIn } of LEGACY_PATTERNS) {
+        if (foundIn(line)) {
           violations.push({ file, pattern, line: index + 1 });
         }
       }

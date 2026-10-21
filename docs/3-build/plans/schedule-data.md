@@ -167,10 +167,10 @@ sources:
 
 **오류 코드 목록.**
 
-- 이 task가 던지는 코드를 `src/shared/api/error-codes.ts`에 더한다 — `already_exists`·`deadline_past`·`date_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
+- 이 task가 던지는 코드를 `src/shared/consts/error.const.ts`에 더한다 — `already_exists`·`deadline_past`·`date_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
 - 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
 - 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다. **양방향이라 목록은 마이그레이션 전체의 합집합이다** — 위 열하나에 `profiles`가 던지는 `already_submitted`·`already_approved`가 더해져 열셋이다
-- 그 파일과 대조 테스트는 `profile-form`의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/error-codes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
+- 그 파일과 대조 테스트는 `profile-form`의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/errorCodes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
 
 타입 생성(`pnpm types`·`database.types.ts`)은 이 task가 하지 않는다 — [`types-generation`](../../backlog.md)이 절차를 세우는 task고 지금 저장소에 그 스크립트가 없다.
 
@@ -179,7 +179,7 @@ sources:
 **`mark_leave`의 남은 배정 검사를 잇는다.** `members`이 「`assignments` 표가 서는 마이그레이션이 이 함수를 `create or replace`로 고쳐 검사를 넣는다」고 예고한 자리다. [ACC-010](../../2-design/modules/account/README.md#acc-010)이 DB에서 지켜지는 유일한 문이라 잊으면 근무표가 선 뒤로 규칙이 비어 있다.
 
 - `mark_leave`가 살아 있는 `assignments`(`ended_at is null`) 중 `days.work_date`가 `(now() at time zone 'Asia/Seoul')::date`보다 뒤인 행이 있으면 `has_future_assignments`를 던진다. 교육 배정도 센다 — 그날 나와야 하는 것은 같다
-- `error-codes.ts`에 `has_future_assignments`가 든다
+- `error.const.ts`에 `has_future_assignments`가 든다
 - integration이 본다 — 앞 배정이 있는 사람은 퇴사 처리가 막히고, 지난 날짜 배정만 있으면 통과하고, `ended_at`이 찍힌 배정은 안 센다
 - **`members` task가 이 task보다 뒤면 여기서 안 한다.** 그때는 `mark_leave` 자체가 아직 없다 — 그 task가 함수를 만들 때 검사를 처음부터 넣고, 이 AC는 그 plan의 AC-11이 삼킨다. 어느 쪽이 먼저든 `assignments`가 선 뒤 `mark_leave`가 검사를 든 상태로 main에 있어야 한다
 
@@ -190,12 +190,12 @@ sources:
 | `supabase/migrations/<날짜>_halls.sql` | 홀 표와 씨앗 행. 공유 표라 근무표보다 앞이다 | AC-08 |
 | `supabase/migrations/<날짜>_schedule.sql` | 표 아홉, 제약, 인덱스, `open_slots` 뷰, RLS, 권한 회수 | AC-01~AC-05 |
 | `supabase/migrations/<날짜>_schedule_functions.sql` | 함수 일곱. [이름과 자리](../../2-design/system/data-access.md#이름과-자리)가 도메인마다 파일 하나로 정했다 | AC-06~AC-08 |
-| `src/shared/api/error-codes.ts` | 코드 열하나 | AC-10 |
+| `src/shared/consts/error.const.ts` | 코드 열하나 | AC-10 |
 | `src/entities/schedule/api/__tests__/schedule-rls.integration.test.ts` | RLS와 직접 쓰기 | AC-05·AC-09 |
 | `src/entities/schedule/api/__tests__/schedule-functions.integration.test.ts` | 호출자 검사·달·확정·날 열기 | AC-06~AC-09 |
 | `src/entities/schedule/api/__tests__/schedule-constraints.integration.test.ts` | 제약·unique index와 뷰 | AC-02~AC-04·AC-09 |
 | `tests/integration/postgres.ts` | 범용 `execSql`과 `backdateDeadline` | AC-09 |
-| `tests/lint/error-codes.ts`·`tests/lint/error-codes.test.ts` | 코드 대조 | AC-10 |
+| `tests/lint/errorCodes.ts`·`tests/lint/errorCodes.test.ts` | 코드 대조 | AC-10 |
 
 integration 테스트가 `tests/integration/`이 아니라 `src/` 아래인 것은 `jest.integration.config.js`의 `testMatch`가 `<rootDir>/src/**/__tests__/**/*.integration.test.ts`만 잡아서다 — `tests/integration/`에 두면 `No tests found`다. 기존 profile 테스트 열도 같은 자리에 있고 `tests/integration/`에는 헬퍼만 산다.
 
@@ -203,7 +203,7 @@ integration 테스트가 `tests/integration/`이 아니라 `src/` 아래인 것�
 
 기능 task 파이프라인이다 — `test-planner` → `integration-test-writer` → `implementer` → `pr-diff`. 화면이 없어 unit은 오류 코드 대조 하나뿐이고 e2e는 없다.
 
-1. `error-codes.ts`와 `tests/lint/error-codes.test.ts`의 상태를 본다. `profile-form`이 merge됐으면 그 파일에 코드를 더하고, 아니면 여기서 세운다([AC-10](#ac-10))
+1. `error.const.ts`와 `tests/lint/errorCodes.test.ts`의 상태를 본다. `profile-form`이 merge됐으면 그 파일에 코드를 더하고, 아니면 여기서 세운다([AC-10](#ac-10))
 2. `test-planner`가 AC-01~AC-08·AC-11을 층에 배정한다. 제약·RLS·함수는 전부 integration이고, 코드 목록만 unit이다
 3. `integration-test-writer`가 실패 테스트를 쓴다. 로컬 Supabase가 떠 있어야 실패를 확인한다 — 표가 없어 `relation ... does not exist`로 빨간 것이 첫 빨강이다
 4. `implementer`가 순서대로 초록을 만든다
@@ -223,7 +223,7 @@ integration 테스트가 `tests/integration/`이 아니라 `src/` 아래인 것�
 - **`requests.approved_candidate_id`에 FK가 없다.** 순환을 끊느라 뺀 것이라 그 열이 없는 후보를 가리킬 수 있다. 요청을 닫는 함수가 `request_candidates`에서 고른 값을 넣는 것이 지키는 길이고, 그 함수는 [`schedule-requests`](../../backlog.md)가 만든다 — 이 task는 열만 세운다
 - **씨앗 좌표가 가짜다.** 공개 저장소라 실제 홀 좌표를 커밋하지 않는다. 출근 인증이 그 값을 쓰기 전에 운영 DB에서 갈아 끼워야 하고, 그것은 출근 인증 task의 전환 항목이다
 - **`mark_leave` 검사를 놓치기 쉽다.** 이 task의 산출에 화면이 없어 `assignments`를 쓰는 코드가 하나도 없고, 그래서 [ACC-010](../../2-design/modules/account/README.md#acc-010)이 비어 있어도 아무것도 빨갛지 않다. [AC-11](#ac-11)이 그 자리고 `pr-diff`가 `mark_leave`의 존재와 검사를 같이 본다
-- **`error-codes.ts`를 두 브랜치가 만든다.** `profile-form`과 이 task가 같은 파일을 세울 수 있다. 뒤에 merge되는 쪽이 충돌을 푼다 — 코드는 합집합이라 지우는 것이 없다
+- **`error.const.ts`를 두 브랜치가 만든다.** `profile-form`과 이 task가 같은 파일을 세울 수 있다. 뒤에 merge되는 쪽이 충돌을 푼다 — 코드는 합집합이라 지우는 것이 없다
 - 되돌리기는 `supabase db reset`이다. 배포한 적이 없어 마이그레이션을 고쳐 다시 만든다
 
 ## 검증 방법
@@ -236,7 +236,7 @@ integration 테스트가 `tests/integration/`이 아니라 `src/` 아래인 것�
 | AC-05 | 남의 근무 신청·취소 사유가 샌다, 표를 직접 쓴다 | integration `tests/integration/schedule-rls.test.ts`(예정) | 위와 같다 | 근무자에게 남의 `availabilities`·`cancel_requests`가 0행, `insert`가 막힌다 |
 | AC-06·AC-07·AC-08 | 근무자가 관리자 함수를 부른다, 마감 전 확정이 통과한다, 확정 뒤 날이 닫힌다 | integration `tests/integration/schedule-functions.test.ts`(예정) | 위와 같다 | `not_allowed`·`too_early`·`already_confirmed` |
 | AC-07 | 날이 엉뚱한 달에 붙는다, 자리가 안 깔린다, 지난 날짜가 열린다 | integration 위 파일 | 위와 같다 | 8월 31일과 9월 1일이 다른 `schedules`, `open_day` 한 번에 `slots` 열한 개, 어제는 `date_past`고 오늘은 열린다 |
-| AC-10 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 코드 열이 양쪽에 있다 |
+| AC-10 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/errorCodes.test.ts` | `pnpm test` | 코드 열이 양쪽에 있다 |
 | AC-11 | 앞 배정이 남은 사람이 퇴사 처리된다 | integration `tests/integration/schedule-functions.test.ts`(예정) | `pnpm test:integration:run` | `has_future_assignments`, 지난 배정·끝난 배정은 통과 |
 | 전체 | — | — | `pnpm lint`·`pnpm format:check`·`pnpm typecheck` | 초록 |
 

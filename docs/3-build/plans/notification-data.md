@@ -139,7 +139,7 @@ sources:
 | `src/entities/notification/api/` | 함수 넷의 `supabase.rpc()` 래퍼. 파일 하나에 함수 하나 | AC-04~AC-06 |
 | `src/entities/notification/model/notification.type.ts` | `kind`와 `payload`의 타입 | AC-01 |
 
-`src/shared/api/error-codes.ts`는 안 건드린다 — AC-07이 코드를 안 더한다.
+`src/shared/consts/error.const.ts`는 안 건드린다 — AC-07이 코드를 안 더한다.
 
 ## 구현 순서
 
