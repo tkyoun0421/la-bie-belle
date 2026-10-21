@@ -7,6 +7,7 @@ import type {
   HolidayRow,
   MemberWageRateRow,
 } from "@/entities/payroll/api/payroll.dto";
+import { afterWageRate } from "@/entities/payroll/api/wageRateCursor";
 import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import {
   toAdjustment,
@@ -39,10 +40,6 @@ const EXCUSE_STATUS_COLUMNS = [
 ].join(", ");
 
 const HOLIDAY_COLUMNS = ["holiday_date", "source", "name"].join(", ");
-
-function afterWageRate(after: MemberWageRateRow): string {
-  return `profile_id.gt.${after.profile_id},and(profile_id.eq.${after.profile_id},effective_date.gt.${after.effective_date})`;
-}
 
 function byDateThenProfile(
   left: MemberWageRateRow,
