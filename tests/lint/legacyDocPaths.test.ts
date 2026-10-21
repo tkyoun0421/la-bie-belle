@@ -131,6 +131,25 @@ const RENAMED_SOURCES: [string, string][] = [
   ],
 ];
 
+function withoutSourceRoot(sourcePath: string): string {
+  return sourcePath.replace(/^src\//, "");
+}
+
+const LAYER_RELATIVE_SOURCES: [string, string][] = RENAMED_SOURCES.map(
+  ([oldPath, currentPath]) => [
+    withoutSourceRoot(oldPath),
+    withoutSourceRoot(currentPath),
+  ],
+);
+
+const OTHER_FOLDER_PREFIXES = [
+  "tests/",
+  "eslint-rules/",
+  "other-repo/",
+  "../other-repo/",
+  "x",
+];
+
 const RENAMED_AWAY = [
   ...RENAMED_SCRIPTS,
   ...RENAMED_LINT_FILES,
@@ -464,6 +483,97 @@ describe("구 경로 잔존 검사", () => {
         `const files = "\`${SIBLING_FOLDER}SampleScreen.tsx\`·\`${OLD_DAY_SHEET}\`";`,
         SIBLINGS_RENAMED_AWAY,
         "tests/lint/sample.test.ts",
+      ),
+    ).toEqual([]);
+  });
+
+  it.each(LAYER_RELATIVE_SOURCES)(
+    "src 없이 층부터 적은 옛 경로 %s도 src를 붙여 읽어 잡는다",
+    (layerPath) => {
+      expect(patternsInSample(`| \`${layerPath}\` | 판정 | AC-01 |`)).toEqual([
+        layerPath,
+      ]);
+      expect(patternsInSample(`${layerPath}가 그 자리다.`)).toEqual([
+        layerPath,
+      ]);
+    },
+  );
+
+  it.each(LAYER_RELATIVE_SOURCES)(
+    "층부터 적은 옛 경로 %s가 더 긴 이름의 일부면 잡지 않는다",
+    (layerPath) => {
+      expect(patternsInSample(`\`${layerPath}x\`는 다른 파일이다.`)).toEqual(
+        [],
+      );
+    },
+  );
+
+  it("층부터 적은 지금 경로는 잡지 않는다", () => {
+    const root = tempRoot();
+    const table = LAYER_RELATIVE_SOURCES.map(
+      ([, currentPath]) => `| \`${currentPath}\` | 판정 | AC-01 |`,
+    ).join("\n");
+    write(root, "docs/3-build/plans/sample.md", `${table}\n`);
+
+    expect(violatingFiles(root)).toEqual([]);
+  });
+
+  it.each(OTHER_FOLDER_PREFIXES)(
+    "층 경로 앞에 %s가 붙어 있으면 다른 자리라 잡지 않는다",
+    (prefix) => {
+      const [[layerPath]] = LAYER_RELATIVE_SOURCES;
+
+      expect(
+        patternsInSample(`\`${prefix}${layerPath}\`는 다른 자리다.`),
+      ).toEqual([]);
+    },
+  );
+
+  it("층부터 적은 옛 경로가 .ts·.tsx 파일이 아니면 잡지 않는다", () => {
+    expect(
+      patternsInSample("`app/old-globals.css`가 토큰을 든다.", [
+        "src/app/old-globals.css",
+      ]),
+    ).toEqual([]);
+  });
+
+  it("코드 파일 안의 층부터 적은 옛 경로는 잡지 않는다", () => {
+    const [[layerPath]] = LAYER_RELATIVE_SOURCES;
+
+    expect(
+      patternsInSample(
+        `const file = "${layerPath}";`,
+        RENAMED_AWAY,
+        "tests/lint/sample.test.ts",
+      ),
+    ).toEqual([]);
+  });
+
+  it("층부터 적은 경로 뒤에 이어 쓴 형제 이름도 src를 붙여 읽어 잡는다", () => {
+    const layerFolder = withoutSourceRoot(SIBLING_FOLDER);
+
+    expect(
+      patternsInSample(
+        `\`${layerFolder}SampleScreen.tsx\`·\`${OLD_DAY_SHEET}\`가 화면이다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([`${layerFolder}${OLD_DAY_SHEET}`]);
+    expect(
+      patternsInSample(
+        `\`${layerFolder}${OLD_FORM_SHEET}\`·\`${OLD_DAY_SHEET}\`가 시트다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([
+      `${layerFolder}${OLD_FORM_SHEET}`,
+      `${layerFolder}${OLD_DAY_SHEET}`,
+    ]);
+  });
+
+  it("다른 폴더 아래 층 이름으로 시작하는 형제 이름은 잡지 않는다", () => {
+    expect(
+      patternsInSample(
+        `\`tests/${withoutSourceRoot(SIBLING_FOLDER)}SampleScreen.tsx\`·\`${OLD_DAY_SHEET}\`가 화면이다.`,
+        SIBLINGS_RENAMED_AWAY,
       ),
     ).toEqual([]);
   });
