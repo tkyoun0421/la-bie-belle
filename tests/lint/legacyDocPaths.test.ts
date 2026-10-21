@@ -11,7 +11,7 @@ import { basename, dirname, join } from "node:path";
 import {
   ALLOWED_LINES,
   legacyPathViolations,
-  pathsRenamedAway,
+  pathsMovedAway,
   staleAllowedLines,
 } from "@tests/lint/legacyDocPaths";
 
@@ -529,12 +529,28 @@ describe("구 경로 잔존 검사", () => {
     },
   );
 
-  it("층부터 적은 옛 경로가 .ts·.tsx 파일이 아니면 잡지 않는다", () => {
+  it.each([
+    "app/old-globals.css",
+    "app/old-favicon.ico",
+    "shared/config/fonts/OldLicense.txt",
+    "shared/config/fonts/OldSans.woff2",
+    "shared/old-models/.gitkeep",
+  ])("층부터 적은 옛 경로 %s는 .ts·.tsx가 아니어도 잡는다", (layerPath) => {
     expect(
-      patternsInSample("`app/old-globals.css`가 토큰을 든다.", [
-        "src/app/old-globals.css",
-      ]),
-    ).toEqual([]);
+      patternsInSample(`\`${layerPath}\`가 그 자리다.`, [`src/${layerPath}`]),
+    ).toEqual([layerPath]);
+  });
+
+  it("층부터 적은 ts 밖 옛 경로에 지금 파일이 다시 있으면 잡지 않는다", () => {
+    const root = tempRoot();
+    write(root, "src/app/globals.css", "@import 'tailwindcss';\n");
+    write(
+      root,
+      "docs/3-build/plans/sample.md",
+      "`app/globals.css`가 토큰을 든다.\n",
+    );
+
+    expect(violatingFiles(root, ["src/app/globals.css"])).toEqual([]);
   });
 
   it("코드 파일 안의 층부터 적은 옛 경로는 잡지 않는다", () => {
@@ -691,7 +707,7 @@ describe("허용 항목의 낡음", () => {
   let renamedAway: string[];
 
   beforeAll(() => {
-    renamedAway = pathsRenamedAway(process.cwd());
+    renamedAway = pathsMovedAway(process.cwd());
   });
 
   function rootWithRealAllowedFiles() {
@@ -809,9 +825,79 @@ describe("이름 변경 기록", () => {
   }
 
   it("src·scripts·tests 아래 개명의 옛 경로를 뽑고 다른 자리의 개명은 뺀다", () => {
-    expect(new Set(pathsRenamedAway(repoWithRenames()))).toEqual(
+    expect(new Set(pathsMovedAway(repoWithRenames()))).toEqual(
       new Set(["src/old-name.ts", "scripts/old-script.mts"]),
     );
+  });
+
+  const REWRITTEN_BODY = [
+    'import { View } from "react-native";',
+    "",
+    "type Props = { title: string; onClose: () => void };",
+    "",
+    "export function Rewritten({ title, onClose }: Props) {",
+    "  return <View accessibilityLabel={title} onTouchEnd={onClose} />;",
+    "}",
+    "",
+  ].join("\n");
+
+  function repoWithLowSimilarityMoves() {
+    const repo = tempRoot();
+    git(repo, "init", "--quiet");
+    write(repo, "src/ui/Removed.tsx", "export const removed = 1;\n");
+    write(repo, "src/ui/OldSheet.tsx", "export const sheet = null;\n");
+    write(repo, "src/ui/Restored.tsx", "export const restored = 1;\n");
+    write(repo, "docs/moved-doc.md", "# 문서\n");
+    commitAll(repo, "처음");
+    rmSync(join(repo, "src/ui/Removed.tsx"));
+    rmSync(join(repo, "src/ui/OldSheet.tsx"));
+    write(repo, "src/screens/sample/ui/OldSheet.tsx", REWRITTEN_BODY);
+    rmSync(join(repo, "src/ui/Restored.tsx"));
+    write(repo, "src/screens/sample/ui/Restored.tsx", REWRITTEN_BODY);
+    rmSync(join(repo, "docs/moved-doc.md"));
+    write(repo, "docs/archive/moved-doc.md", REWRITTEN_BODY);
+    commitAll(repo, "옮기며 다시 쓴다");
+    write(repo, "src/ui/Restored.tsx", "export const restored = 2;\n");
+    commitAll(repo, "같은 자리에 다시 만든다");
+
+    return repo;
+  }
+
+  it("닮음이 낮아 삭제·생성으로 남은 이동은 같은 커밋에 같은 이름이 생겼으면 옛 경로로 뽑는다", () => {
+    const movedAway = pathsMovedAway(repoWithLowSimilarityMoves());
+
+    expect(movedAway).toEqual(
+      expect.arrayContaining(["src/ui/OldSheet.tsx", "src/ui/Restored.tsx"]),
+    );
+    expect(movedAway).not.toContain("docs/moved-doc.md");
+  });
+
+  it("이어지는 파일 없이 지운 경로는 이동이 아니라 뽑지 않는다", () => {
+    expect(pathsMovedAway(repoWithLowSimilarityMoves())).not.toContain(
+      "src/ui/Removed.tsx",
+    );
+  });
+
+  it("옮긴 뒤 옛 경로에 다시 만든 파일은 잡지 않고 지금 없는 옛 경로만 잡는다", () => {
+    const repo = repoWithLowSimilarityMoves();
+    write(
+      repo,
+      "docs/3-build/plans/sample.md",
+      [
+        "`src/ui/Restored.tsx`가 지금 자리다.",
+        "`src/ui/OldSheet.tsx`가 옛 시트다.",
+        "`src/ui/Removed.tsx`는 그때 지웠다.",
+        "",
+      ].join("\n"),
+    );
+
+    expect(legacyPathViolations(repo, pathsMovedAway(repo))).toEqual([
+      {
+        file: "docs/3-build/plans/sample.md",
+        pattern: "src/ui/OldSheet.tsx",
+        line: 2,
+      },
+    ]);
   });
 
   it("얕은 clone이면 이력이 없다고 알리고 실패한다", () => {
@@ -826,11 +912,11 @@ describe("이름 변경 기록", () => {
       shallow,
     );
 
-    expect(() => pathsRenamedAway(shallow)).toThrow(/얕은 clone/);
+    expect(() => pathsMovedAway(shallow)).toThrow(/얕은 clone/);
   });
 
   it("git 저장소가 아니면 실패한다", () => {
-    expect(() => pathsRenamedAway(join(tempRoot(), "missing"))).toThrow(/git/);
+    expect(() => pathsMovedAway(join(tempRoot(), "missing"))).toThrow(/git/);
   });
 
   it("이름 변경 기록이 비었으면 조용히 통과하지 않고 실패한다", () => {
@@ -839,7 +925,7 @@ describe("이름 변경 기록", () => {
     write(repo, "src/only.ts", "export const only = 1;\n");
     commitAll(repo, "처음");
 
-    expect(() => pathsRenamedAway(repo)).toThrow(/이름 변경 기록이 비었다/);
+    expect(() => pathsMovedAway(repo)).toThrow(/이름 변경 기록이 비었다/);
   });
 });
 
@@ -847,7 +933,7 @@ describe("구 경로 잔존 검사 — 실제 저장소 회귀", () => {
   let renamedAway: string[];
 
   beforeAll(() => {
-    renamedAway = pathsRenamedAway(process.cwd());
+    renamedAway = pathsMovedAway(process.cwd());
   });
 
   it.each([
@@ -856,7 +942,10 @@ describe("구 경로 잔존 검사 — 실제 저장소 회귀", () => {
     "src/features/payroll/model/query-keys.ts",
     legacyPath("scripts/font-subset", ".mts"),
     legacyPath("tests/lint/legacy-doc-paths", ".ts"),
-  ])("개명 기록이 옛 경로 %s를 든다", (oldPath) => {
+    "src/screens/scheduleAdmin/ui/ConfirmSheet.tsx",
+    "src/screens/scheduleWorker/ui/ScheduleAgenda.tsx",
+    "src/screens/scheduleWorker/ui/DaySheet.tsx",
+  ])("개명·이동 기록이 옛 경로 %s를 든다", (oldPath) => {
     expect(renamedAway).toContain(oldPath);
   });
 

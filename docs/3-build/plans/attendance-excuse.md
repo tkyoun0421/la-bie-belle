@@ -145,7 +145,7 @@ sources:
 | `src/entities/workRequest/utils/approvalsList.utils.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |
 | `src/entities/workRequest/utils/approvalDetail.utils.ts` | 사유 줄의 제목·본문과 `excuses.body` 전문 | AC-06 |
 | `src/features/workRequest/model/rejectReason.policy.ts` | 사유 반려의 이유가 비면 못 보낸다 | AC-06 |
-| `src/screens/approvals/ui/ApprovalsScreen.tsx`·`ApprovalDetailSheet.tsx` | 사유 줄과 판정. 판정한 줄이 그 자리에서 결과로 바뀐다 | AC-06 |
+| `src/screens/approvals/ui/ApprovalsScreen.tsx`·`src/features/workRequest/ui/ApprovalDetailSheet.tsx` | 사유 줄과 판정. 판정한 줄이 그 자리에서 결과로 바뀐다 | AC-06 |
 | `src/screens/schedule-worker/model/attendance-column.ts` | **이미 섰다** — 창이 열렸는지와 현황 줄의 0 제외를 [`schedule-worker`](schedule-worker.md)가 세웠다. 이 task는 상태 여섯을 줄마다 붙이는 손만 더한다 | AC-07 |
 | `src/entities/schedule/ui/DayRoster.tsx`·`DaySheet.tsx` | 명단 줄의 인증 상태 열과 그 위 현황 줄. `RosterRow`의 `status`가 이미 받는 자리다 | AC-07 |
 | `docs/2-design/modules/attendance/screens/excuse.sian.html` | 낡은 경로 주석을 지운다 | AC-08 |
