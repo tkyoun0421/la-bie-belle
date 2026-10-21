@@ -29,8 +29,9 @@ const HISTORY_ROOTS = ["src", "scripts", "tests"];
 
 const SOURCE_ROOT = "src/";
 
-const SOURCE_LAYER_FILE =
-  /^(?:app|screens|features|entities|shared)\/.+\.tsx?$/;
+const SOURCE_LAYER_FILE = /^(?:app|screens|features|entities|shared)\/./;
+
+const COMMIT_MARKER = "commit";
 
 function gitOutput(repo: string, args: string[]): string {
   const result = spawnSync(
@@ -42,45 +43,75 @@ function gitOutput(repo: string, args: string[]): string {
   if (result.error || result.status !== 0) {
     const reason = result.error?.message ?? result.stderr.trim();
     throw new Error(
-      `${repo}에서 git ${args.join(" ")}을 못 돌렸다. 이름 변경 기록은 git 이력에서 읽는다: ${reason}`,
+      `${repo}에서 git ${args.join(" ")}을 못 돌렸다. 이름 변경·이동 기록은 git 이력에서 읽는다: ${reason}`,
     );
   }
 
   return result.stdout;
 }
 
-export function pathsRenamedAway(repo: string): string[] {
+type FileChange = { status: string; from: string };
+
+function changesByCommit(log: string): FileChange[][] {
+  const commits: FileChange[][] = [];
+
+  for (const line of log.split("\n")) {
+    if (line === COMMIT_MARKER) {
+      commits.push([]);
+      continue;
+    }
+
+    const [status, from] = line.split("\t");
+    if (from !== undefined) {
+      commits.at(-1)?.push({ status, from });
+    }
+  }
+
+  return commits;
+}
+
+function movedAwayIn(changes: FileChange[]): string[] {
+  const addedNames = new Set(
+    changes
+      .filter(({ status }) => status === "A")
+      .map(({ from }) => path.basename(from)),
+  );
+
+  return changes
+    .filter(
+      ({ status, from }) =>
+        status.startsWith("R") ||
+        (status === "D" && addedNames.has(path.basename(from))),
+    )
+    .map(({ from }) => from);
+}
+
+export function pathsMovedAway(repo: string): string[] {
   const shallow = gitOutput(repo, ["rev-parse", "--is-shallow-repository"]);
   if (shallow.trim() === "true") {
     throw new Error(
-      `${repo}는 얕은 clone이라 이름 변경 기록을 못 읽는다. git fetch --unshallow로 이력을 다 받은 뒤 다시 돌린다.`,
+      `${repo}는 얕은 clone이라 이름 변경·이동 기록을 못 읽는다. git fetch --unshallow로 이력을 다 받은 뒤 다시 돌린다.`,
     );
   }
 
-  const renameLog = gitOutput(repo, [
+  const changeLog = gitOutput(repo, [
     "log",
-    "--diff-filter=R",
+    "--diff-filter=RAD",
     "--name-status",
-    "--format=",
+    `--format=tformat:${COMMIT_MARKER}`,
     "-M",
     "--",
     ...HISTORY_ROOTS,
   ]);
-  const renamedAway = new Set(
-    renameLog
-      .split("\n")
-      .map((line) => line.split("\t"))
-      .filter((columns) => columns.length === 3)
-      .map(([, from]) => from),
-  );
+  const movedAway = new Set(changesByCommit(changeLog).flatMap(movedAwayIn));
 
-  if (renamedAway.size === 0) {
+  if (movedAway.size === 0) {
     throw new Error(
-      `${repo}의 ${HISTORY_ROOTS.join("·")} 이름 변경 기록이 비었다. 이력이 잘렸는지 본다.`,
+      `${repo}의 ${HISTORY_ROOTS.join("·")} 이름 변경 기록이 비었다. 이동 기록도 없다. 이력이 잘렸는지 본다.`,
     );
   }
 
-  return [...renamedAway];
+  return [...movedAway];
 }
 
 type FindInLine = (line: string) => string[];
@@ -371,6 +402,14 @@ export const ALLOWED_LINES: AllowedLine[] = [
   {
     file: "docs/backlog.md",
     marker: "| `screens-calc-placement` |",
+  },
+  {
+    file: "docs/backlog.md",
+    marker: "| `fragment-triple-one-hand` |",
+  },
+  {
+    file: "docs/3-build/plans/login-screens.md",
+    marker: "지금의 스캐폴드 카드(",
   },
 ];
 
