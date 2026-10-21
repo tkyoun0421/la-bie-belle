@@ -48,7 +48,7 @@
 
 ### `pnpm test`
 
-- 전제: `pnpm install --frozen-lockfile`이 끝나 있다. unit만 돌아 Docker가 필요 없다.
+- 전제: `pnpm install --frozen-lockfile`이 끝나 있다. unit만 돌아 Docker가 필요 없다. git 이력이 다 있어야 한다 — 얕은 clone이면 `legacyDocPaths`가 이력이 없다며 실패하니 `git fetch --unshallow`로 받는다.
 - 실행: `pnpm test` — `jest`를 **두 번** 돌린다. `logic` 갈래(계산·문서 검사)와 `components` 갈래(조각 렌더)가 각자의 프로세스를 받고, 앞이 빨개지면 뒤는 안 돈다. 갈래는 `jest.projects.js`의 `testMatch`가 가르고 integration은 부정 glob으로 빠진다.
 - 정상 결과: 실패 0. 요약이 갈래마다 하나씩 둘 찍힌다. `tests/lint/`의 문서 검사는 `logic` 갈래에서 돈다 — [`pnpm test`에 끼는 문서 검사](#pnpm-test에-끼는-문서-검사).
 - 실패할 때: 첫 테스트가 타임아웃에서 흔들리거나 픽스처 표기가 어긋나면 [돌릴 때](#돌릴-때)를 본다.
@@ -146,7 +146,7 @@ pnpm exec jest --config jest.integration.config.js src/entities/profile/api/__te
 
 | job | 하는 일 | 건너뛰는 조건 |
 | --- | --- | --- |
-| `checks` | lint · format · typecheck · 단위 테스트 | 없다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다 |
+| `checks` | lint · format · typecheck · 단위 테스트. 이력을 다 받는다(`fetch-depth: 0`) — `legacyDocPaths`가 이름 변경 기록을 읽는다 | 없다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다 |
 | `bundle` | `pnpm bundle` | `docs/`·`.claude/`·루트 마크다운만 바뀐 PR |
 | `db` | supabase 기동 · integration · 생성 타입 대조 | integration의 판정을 바꿀 수 없는 파일만 바뀐 PR |
 | `secrets` | gitleaks | 없다 |
@@ -261,7 +261,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 - `docMap.ts` — `docs/README.md` 문서 지도의 `docs/` 경로가 실존하는지
 - `docLinks.ts` — `docs/`·루트 README·CLAUDE.md의 상대 링크와 앵커. `docs/log/`는 밖이라 당시 경로를 그대로 써도 된다
-- `legacyDocPaths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지
+- `legacyDocPaths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지. `src/`·`scripts/`·`tests/`의 옛 경로는 손 목록이 아니라 `git log --diff-filter=R`의 이름 변경 기록에서 지금 없는 것을 뽑는다. `` `X/a.ts`·`b.ts` ``처럼 이어 쓴 형제 이름은 앞 경로의 폴더에서 읽는다
 - `designMap.ts` — 화면 문서가 업무 영역 지도에 다 걸렸는지
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
 - `sourcesExist.ts` — spec·plan의 `sources` 경로와 앵커 존재

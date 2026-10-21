@@ -169,7 +169,7 @@ sources:
 | `src/entities/rehearsal/services/useMyRehearsalsQuery.ts`·`useAllRehearsals.ts`·`useAddRehearsal.ts`·`useEditRehearsal.ts`·`useRemoveRehearsal.ts`·`__tests__/` | 읽기 훅 둘, 쓰기 훅 셋, 무효화 | AC-05 |
 | `src/entities/rehearsal/api/get-my-rehearsals.ts`·`get-all-rehearsals.ts`·`add-rehearsal.ts`·`edit-rehearsal.ts`·`remove-rehearsal.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 오류 가르기 | AC-05 |
 | `src/shared/model/rehearsalDayCell.policy.ts`·`spell-total.ts`·`day-sheet-rows.ts`·`add-sheet-state.ts`·`rehearsal-guard.ts`·`__tests__/` | 달력 칸 문구·합계 문구·날 시트 줄·시트 상태와 거절 받기·문 판정 | AC-06~AC-08 |
-| `src/screens/rehearsal/ui/RehearsalScreen.tsx`·`RehearsalDaySheet.tsx`·`RehearsalFormSheet.tsx` | 달력·날 시트·넣는 시트와 고치는 시트·지우기 Dialog | AC-06·AC-07 |
+| `src/screens/rehearsal/ui/RehearsalScreen.tsx`·`src/entities/rehearsal/ui/RehearsalDaySheet.tsx`·`src/features/rehearsalEdit/ui/RehearsalFormSheet.tsx` | 달력·날 시트·넣는 시트와 고치는 시트·지우기 Dialog | AC-06·AC-07 |
 | `src/app/me/rehearsals.tsx` | `NotBuiltYet`을 걷고 `/me/rehearsals`에 화면을 붙인다 | AC-08 |
 | `src/entities/member/model/hasRehearsalGrant.policy.ts`·`__tests__/has-rehearsal-grant.test.ts` · `src/screens/profile/ui/ProfileScreen.tsx` | 「리허설」 줄과 그 줄이 서는 판정 | AC-08 |
 | `tests/e2e/rehearsal.yaml`·`rehearsals.yaml` · `tests/e2e/profile.yaml` | 넣고 고치고 지우는 한 바퀴, 관리자 읽기, 자격 없는 사람의 진입. `rehearsals.yaml`은 라우트 파일명으로 찾는 훅을 위해 같은 플로우를 부르기만 한다 | 검증 표 |
