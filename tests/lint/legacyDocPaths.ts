@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { backlogRows, repositoryBacklog } from "@tests/lint/backlogIds";
 
 export type LegacyPathViolation = {
   file: string;
@@ -202,6 +203,10 @@ const SCANNED_ROOTS = [
 
 const EXCLUDED_PREFIXES = [`${DOCS}log/`, ".claude/worktrees/"];
 
+const PLANS = `${DOCS}3-build/plans/`;
+
+const DONE = "done";
+
 const SKIPPED_DIRECTORIES = new Set(["node_modules", "__pycache__"]);
 
 const BINARY_EXTENSIONS = new Set([
@@ -243,14 +248,6 @@ export const ALLOWED_LINES: AllowedLine[] = [
     marker: `${DESIGN}domain/`,
   },
   {
-    file: "docs/3-build/plans/session-foundation.md",
-    marker: `\`${DESIGN}domain/account.md\``,
-  },
-  {
-    file: "docs/3-build/plans/doc-map-links.md",
-    marker: `\`${DESIGN}architecture/README.md\``,
-  },
-  {
     file: "docs/proposals/docs-structure-followup.md",
     marker: "**수정 대상.**",
   },
@@ -269,10 +266,6 @@ export const ALLOWED_LINES: AllowedLine[] = [
   {
     file: "tests/lint/fileNaming.test.ts",
     marker: 'expect(stemOf("database-',
-  },
-  {
-    file: "docs/3-build/plans/schedule-data.md",
-    marker: "디렉터리가 없어",
   },
   {
     file: "docs/proposals/canon-and-code-divergence.md",
@@ -340,43 +333,7 @@ export const ALLOWED_LINES: AllowedLine[] = [
     marker: "폴더에 훅이 아닌 함수 파일",
   },
   {
-    file: "docs/3-build/plans/screens-calc-placement.md",
-    marker: "는 세 줄이고 `qrcode` 패키지를",
-  },
-  {
-    file: "docs/3-build/plans/screens-calc-placement.md",
-    marker: "는 `navigate`와 `markRead`를 인자로 받아",
-  },
-  {
-    file: "docs/3-build/plans/screens-calc-placement.md",
-    marker: "자리는 그대로고 `shared/utils`로 올라간다",
-  },
-  {
-    file: "docs/3-build/plans/screens-calc-placement.md",
-    marker: "흐름이 `hooks`로 간다",
-  },
-  {
-    file: "docs/3-build/plans/reexport-launders-layers.md",
-    marker: "monthState.policy.ts:35",
-  },
-  {
-    file: "docs/3-build/plans/reexport-launders-layers.md",
-    marker: "monthEmptyState.policy.ts:9",
-  },
-  {
-    file: "docs/3-build/plans/reexport-launders-layers.md",
-    marker: "| `kstDateOf` | `formatScheduleDate.utils` |",
-  },
-  {
-    file: "docs/3-build/plans/auth-entry.md",
-    marker: "`src/middleware.ts`",
-  },
-  {
     file: "docs/3-build/plans/attendance-excuse.md",
-    marker: "/attendance-column.",
-  },
-  {
-    file: "docs/3-build/plans/schedule-worker.md",
     marker: "/attendance-column.",
   },
   {
@@ -388,142 +345,12 @@ export const ALLOWED_LINES: AllowedLine[] = [
     marker: "앞선 판은 「부르는 이름이 이긴다」로",
   },
   {
-    file: "docs/3-build/plans/api-exports-only-transport.md",
-    marker: "| `shared/utils/devDoor.ts` | `shared/lib/devDoor.lib.ts` |",
-  },
-  {
-    file: "docs/3-build/plans/as-assertions-to-guards.md",
-    marker: "`features/stats/utils/chartValues.utils.ts:36`과",
-  },
-  {
-    file: "docs/3-build/plans/as-assertions-to-guards.md",
-    marker: "**그리고 이 둘은 같은 이름의 파일이 두 슬라이스에 있다.**",
-  },
-  {
-    file: "docs/3-build/plans/as-assertions-to-guards.md",
-    marker: "| `features/pushSwitch/config/pushSwitch.config.ts:4` |",
-  },
-  {
-    file: "docs/3-build/plans/audit-checks-into-catalog.md",
-    marker:
-      "`screens/notifications/hooks/pressNotification.ts` — 순수 판정이면",
-  },
-  {
-    file: "docs/3-build/plans/duplicated-constants-and-copy.md",
-    marker: "`DAY_MS` 일곱 자리 —",
-  },
-  {
-    file: "docs/3-build/plans/duplicated-constants-and-copy.md",
-    marker: "`screens/scheduleAdmin/model/adjustmentFailure.policy.ts:5`",
-  },
-  {
     file: "docs/3-build/plans/expo-scaffold.md",
     marker: "프레임워크를 안 타는 것은 그대로 간다",
   },
   {
     file: "docs/3-build/plans/fragments-own-their-data.md",
     marker: "는 `shared`만 당겨 지금도 옮길 수 있다",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "그것을 `useWorkMonthsQuery`와 달마다 맞추는",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "**접미사 패스가 reducer를 못 봤다.**",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "**재수출이 층을 우회하고 있었다.**",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "**`.policy.ts` 중에 통신을 실제로 부르는 것이 하나였고",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "`features/stats/hooks/useAttendanceMonths.ts`는 `services/",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "`features/auth/hooks/wireAutoRefresh.ts`는 `lib/",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "zustand store 둘의 자리가 갈려 있다",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "`canGoBack`·`canGoForward` —",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker:
-      "`dayMinutes` — `features/payrollCompute/model/dayMinutes.policy.ts`",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "`attendanceSummaryLine` — `screens/",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "**재수출이 또 나왔다.**",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "| `shared/utils/theme.ts` |",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "| `shared/utils/fontLoading.ts` |",
-  },
-  {
-    file: "docs/3-build/plans/fsd-read-write-layers.md",
-    marker: "| `entities/clock/model/clock.store.ts` |",
-  },
-  {
-    file: "docs/3-build/plans/loading-fragments-share-one-body.md",
-    marker: "는 `api-exports-only-transport`가 같은 시기에 만진다",
-  },
-  {
-    file: "docs/3-build/plans/screens-calc-placement.md",
-    marker: "가장 또렷한 셋 —",
-  },
-  {
-    file: "docs/3-build/plans/signout-removes-push-token.md",
-    marker: "**projectId 읽기는 `shared/config`로 내린다.**",
-  },
-  {
-    file: "docs/3-build/plans/spell-number-shared.md",
-    marker: "**다만 한 자리는 대상을 잃는다.**",
-  },
-  {
-    file: "docs/3-build/plans/spell-number-shared.md",
-    marker: "**둘째 결함** —",
-  },
-  {
-    file: "docs/3-build/plans/stats-admin.md",
-    marker: "**포지션 아홉의 정본을",
-  },
-  {
-    file: "docs/3-build/plans/stats-worker.md",
-    marker: "**출근율 셈을 `entities`로 내린다.**",
-  },
-  {
-    file: "docs/3-build/plans/stats-worker.md",
-    marker: "에서 여기로 내려온다 — 인자가",
-  },
-  {
-    file: "docs/3-build/plans/stats-worker.md",
-    marker: "금액 꼴 `spellWon`이",
-  },
-  {
-    file: "docs/3-build/plans/stats-worker.md",
-    marker: "`NO_VALUE`(`–`)가",
-  },
-  {
-    file: "docs/3-build/plans/supabase-client-entry.md",
-    marker: "의 어긋남. 클라이언트를 받아 쓰는",
   },
   {
     file: "docs/proposals/codebase-refactor-triage.md",
@@ -584,8 +411,42 @@ function presentFilesIn(root: string): string[] {
   );
 }
 
-function isScannable(file: string): boolean {
-  return !BINARY_EXTENSIONS.has(path.extname(file).toLowerCase());
+function finishedPlansIn(root: string): Set<string> {
+  let backlog;
+  try {
+    backlog = repositoryBacklog(root);
+  } catch {
+    return new Set();
+  }
+
+  const statusesByPlan = new Map<string, string[]>();
+  for (const row of backlogRows(backlog.markdown, backlog.columns)) {
+    for (const href of row.documents) {
+      const file = path.posix.join(DOCS, href.split("#")[0]);
+      if (file.startsWith(PLANS)) {
+        statusesByPlan.set(file, [
+          ...(statusesByPlan.get(file) ?? []),
+          row.status,
+        ]);
+      }
+    }
+  }
+
+  return new Set(
+    [...statusesByPlan]
+      .filter(([, statuses]) => statuses.every((status) => status === DONE))
+      .map(([file]) => file),
+  );
+}
+
+function scannedFilesIn(root: string, presentFiles: string[]): string[] {
+  const finishedPlans = finishedPlansIn(root);
+
+  return presentFiles.filter(
+    (file) =>
+      !BINARY_EXTENSIONS.has(path.extname(file).toLowerCase()) &&
+      !finishedPlans.has(file),
+  );
 }
 
 function isAllowed(file: string, line: string): boolean {
@@ -629,7 +490,7 @@ export function legacyPathViolations(
   const renamed = renamedPatternsFor(presentFiles, renamedAway);
   const violations: LegacyPathViolation[] = [];
 
-  for (const file of presentFiles.filter(isScannable)) {
+  for (const file of scannedFilesIn(root, presentFiles)) {
     for (const [index, line] of linesOf(root, file).entries()) {
       if (isAllowed(file, line)) {
         continue;
@@ -646,17 +507,15 @@ export function legacyPathViolations(
 
 function coversALegacyLine(
   root: string,
+  scanned: Set<string>,
   renamed: RenamedPatterns,
   { file, marker }: AllowedLine,
 ) {
-  let lines;
-  try {
-    lines = linesOf(root, file);
-  } catch {
+  if (!scanned.has(file)) {
     return false;
   }
 
-  return lines.some(
+  return linesOf(root, file).some(
     (line) =>
       line.includes(marker) && legacyPatternsIn(file, line, renamed).length > 0,
   );
@@ -666,9 +525,11 @@ export function staleAllowedLines(
   root: string,
   renamedAway: string[],
 ): AllowedLine[] {
-  const renamed = renamedPatternsFor(presentFilesIn(root), renamedAway);
+  const presentFiles = presentFilesIn(root);
+  const scanned = new Set(scannedFilesIn(root, presentFiles));
+  const renamed = renamedPatternsFor(presentFiles, renamedAway);
 
   return ALLOWED_LINES.filter(
-    (allowed) => !coversALegacyLine(root, renamed, allowed),
+    (allowed) => !coversALegacyLine(root, scanned, renamed, allowed),
   );
 }

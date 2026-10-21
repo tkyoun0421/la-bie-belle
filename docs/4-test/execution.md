@@ -261,7 +261,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 - `docMap.ts` — `docs/README.md` 문서 지도의 `docs/` 경로가 실존하는지
 - `docLinks.ts` — `docs/`·루트 README·CLAUDE.md의 상대 링크와 앵커. `docs/log/`는 밖이라 당시 경로를 그대로 써도 된다
-- `legacyDocPaths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지. `src/`·`scripts/`·`tests/`의 옛 경로는 손 목록이 아니라 `git log --diff-filter=R`의 이름 변경 기록에서 지금 없는 것을 뽑는다. `` `X/a.ts`·`b.ts` ``처럼 이어 쓴 형제 이름은 앞 경로의 폴더에서 읽는다. `src/` 없이 층부터 적은 `.ts`·`.tsx` 경로(`` `features/x/a.ts` ``)는 `src/`를 붙여 읽고, 앞에 다른 폴더가 붙은 꼴(`tests/features/…`)은 안 본다
+- `legacyDocPaths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지. `src/`·`scripts/`·`tests/`의 옛 경로는 손 목록이 아니라 `git log --diff-filter=R`의 이름 변경 기록에서 지금 없는 것을 뽑는다. `` `X/a.ts`·`b.ts` ``처럼 이어 쓴 형제 이름은 앞 경로의 폴더에서 읽는다. `src/` 없이 층부터 적은 `.ts`·`.tsx` 경로(`` `features/x/a.ts` ``)는 `src/`를 붙여 읽고, 앞에 다른 폴더가 붙은 꼴(`tests/features/…`)은 안 본다. `docs/backlog.md`에서 그 plan을 링크하는 task가 모두 `done`인 `3-build/plans/` 문서는 그때 작업의 기록이라 안 보고, 링크하는 행이 없거나 하나라도 `done`이 아니면 본다. spec과 proposal은 `status`가 끝남을 말하지 않아 늘 본다
 - `designMap.ts` — 화면 문서가 업무 영역 지도에 다 걸렸는지
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
 - `sourcesExist.ts` — spec·plan의 `sources` 경로와 앵커 존재

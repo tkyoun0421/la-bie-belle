@@ -589,6 +589,102 @@ describe("구 경로 잔존 검사", () => {
   );
 });
 
+const BACKLOG_COLUMNS = [
+  "작업 ID",
+  "작업",
+  "상태",
+  "선행 작업 ID",
+  "spec 또는 plan",
+  "검증·완료 근거",
+];
+
+function tableHead(): string {
+  return `| ${BACKLOG_COLUMNS.join(" | ")} |\n| ${BACKLOG_COLUMNS.map(() => "---").join(" | ")} |`;
+}
+
+type BacklogLink = { id: string; status: string; plan: string };
+
+function writeBacklog(root: string, links: BacklogLink[]) {
+  write(
+    root,
+    "docs/README.md",
+    `# docs\n\n## 협업 기록\n\n\`\`\`markdown\n${tableHead()}\n\`\`\`\n`,
+  );
+  const rows = links.map(
+    ({ id, status, plan }) =>
+      `| \`${id}\` | 지어낸 작업 | ${status} | — | [plan](${plan.replace(/^docs\//, "")}) | — |`,
+  );
+  write(
+    root,
+    "docs/backlog.md",
+    `# backlog\n\n${tableHead()}\n${rows.join("\n")}\n`,
+  );
+}
+
+describe("끝난 plan", () => {
+  const PLAN = "docs/3-build/plans/sample-plan.md";
+  const OLD_PATH_LINE = `그때는 \`${OLD_PLAN}\`가 계획 문서였다.`;
+
+  function rootWithPlan(links: BacklogLink[]) {
+    const root = tempRoot();
+    write(root, PLAN, `# 계획\n\n${OLD_PATH_LINE}\n`);
+    writeBacklog(root, links);
+    return root;
+  }
+
+  it("링크하는 task가 모두 done이면 그 plan의 옛 경로는 잡지 않는다", () => {
+    const root = rootWithPlan([
+      { id: "alpha", status: "done", plan: PLAN },
+      { id: "beta", status: "done", plan: PLAN },
+    ]);
+
+    expect(violatingFiles(root)).toEqual([]);
+  });
+
+  it.each(["active", "ready", "blocked", "candidate"])(
+    "링크하는 task 하나가 %s면 done이 섞여 있어도 그 plan을 검사한다",
+    (status) => {
+      const root = rootWithPlan([
+        { id: "alpha", status: "done", plan: PLAN },
+        { id: "beta", status, plan: PLAN },
+      ]);
+
+      expect(violationsFor(root, PLAN)).toEqual([
+        { file: PLAN, pattern: OLD_PLAN, line: 3 },
+      ]);
+    },
+  );
+
+  it("링크하는 task가 없는 plan은 검사한다", () => {
+    const root = rootWithPlan([
+      { id: "alpha", status: "done", plan: "docs/3-build/plans/other.md" },
+    ]);
+
+    expect(violatingFiles(root)).toEqual([PLAN]);
+  });
+
+  it("backlog가 없으면 모든 plan을 검사한다", () => {
+    const root = tempRoot();
+    write(root, PLAN, `# 계획\n\n${OLD_PATH_LINE}\n`);
+
+    expect(violatingFiles(root)).toEqual([PLAN]);
+  });
+
+  it("done task가 링크해도 plan 밖의 문서는 검사한다", () => {
+    const spec = "docs/2-design/spec/sample-plan.md";
+    const proposal = "docs/proposals/sample-plan.md";
+    const root = tempRoot();
+    write(root, spec, `# spec\n\n${OLD_PATH_LINE}\n`);
+    write(root, proposal, `# 제안\n\n${OLD_PATH_LINE}\n`);
+    writeBacklog(root, [
+      { id: "alpha", status: "done", plan: spec },
+      { id: "beta", status: "done", plan: proposal },
+    ]);
+
+    expect(new Set(violatingFiles(root))).toEqual(new Set([spec, proposal]));
+  });
+});
+
 describe("허용 항목의 낡음", () => {
   const TARGET = "docs/backlog.md";
 
@@ -644,6 +740,24 @@ describe("허용 항목의 낡음", () => {
     );
 
     expect(new Set(staleFiles(root))).toEqual(new Set([TARGET]));
+  });
+
+  it("허용 항목의 plan을 링크한 task가 모두 done이 되면 그 항목이 낡았다고 드러난다", () => {
+    const root = rootWithRealAllowedFiles();
+    writeBacklog(root, [
+      { id: "sdlc-gate", status: "done", plan: SDLC_GATE_RELATIVE },
+    ]);
+
+    expect(staleFiles(root)).toContain(SDLC_GATE_RELATIVE);
+  });
+
+  it("허용 항목의 plan을 링크한 task가 아직 done이 아니면 그 항목은 살아 있다", () => {
+    const root = rootWithRealAllowedFiles();
+    writeBacklog(root, [
+      { id: "sdlc-gate", status: "active", plan: SDLC_GATE_RELATIVE },
+    ]);
+
+    expect(staleFiles(root)).not.toContain(SDLC_GATE_RELATIVE);
   });
 
   it("허용 항목의 파일이 없어도 낡았다", () => {
