@@ -15,6 +15,12 @@ import {
 
 const EMPTY: Attendance = { checkIns: [], excuseStatuses: [] };
 
+function byDayThenProfile(left: CheckInRow, right: CheckInRow): number {
+  const leftKey = `${left.day_id}|${left.profile_id}`;
+  const rightKey = `${right.day_id}|${right.profile_id}`;
+  return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+}
+
 export async function getMonthAttendance(
   client: DB,
   month: string,
@@ -37,15 +43,18 @@ export async function getMonthAttendance(
   }
 
   const [checkIns, excuseStatuses] = await Promise.all([
-    readAllPages((from, to) =>
-      client
-        .from("check_ins")
-        .select(CHECK_IN_COLUMNS)
-        .in("day_id", dayIds)
-        .order("day_id")
-        .order("profile_id")
-        .range(from, to)
-        .returns<CheckInRow[]>(),
+    readAllPages(
+      (after: string | null, limit) => {
+        const query = client
+          .from("check_ins")
+          .select(CHECK_IN_COLUMNS)
+          .in("day_id", dayIds);
+        return (after === null ? query : query.gt("id", after))
+          .order("id")
+          .limit(limit)
+          .returns<CheckInRow[]>();
+      },
+      (row) => row.id,
     ),
     client
       .from("excuse_status")
@@ -59,7 +68,7 @@ export async function getMonthAttendance(
   }
 
   return {
-    checkIns: checkIns.map(toCheckIn),
+    checkIns: checkIns.sort(byDayThenProfile).map(toCheckIn),
     excuseStatuses: (excuseStatuses.data ?? []).map(toExcuseStatus),
   };
 }
