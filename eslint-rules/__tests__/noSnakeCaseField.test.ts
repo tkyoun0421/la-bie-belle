@@ -107,10 +107,66 @@ describe("house/no-snake-case-field — DB 열 이름은 api를 안 떠난다", 
     expect(ruleIds).not.toContain(RULE_ID);
   });
 
-  it("글자로 적은 키는 못 본다 — 계산식 키가 이 규칙의 구멍이다", async () => {
+  it("따옴표로 적은 키도 걸린다", async () => {
+    const ruleIds = await ruleIdsOf(
+      'export type Fixture = { "profile_id": string };\n',
+      OUTSIDE,
+    );
+
+    expect(ruleIds).toContain(RULE_ID);
+  });
+
+  it("계산식에 글자로 적은 키도 걸린다", async () => {
     const ruleIds = await ruleIdsOf(
       'export type Fixture = { ["work_date"]: string };\n',
       OUTSIDE,
+    );
+
+    expect(ruleIds).toContain(RULE_ID);
+  });
+
+  it.each([
+    ['Record<"profile_id", string>'],
+    ['Record<"profile_id" | "workDate", string>'],
+    ['Pick<Row, "profile_id">'],
+    ['Pick<Row, "workDate" | "profile_id">'],
+    ['Omit<Row, "profile_id">'],
+  ])("키를 글자로 받는 %s도 걸린다", async (shape) => {
+    const ruleIds = await ruleIdsOf(
+      `type Row = { workDate: string };\n\nexport type Fixture = ${shape};\n`,
+      OUTSIDE,
+    );
+
+    expect(ruleIds).toContain(RULE_ID);
+  });
+
+  it.each([
+    ['Record<"workDate", string>'],
+    ['Pick<Row, "workDate">'],
+    ['Extract<Kind, "signup_approved">'],
+    ['Exclude<Kind, "signup_approved">'],
+  ])("camelCase 키와 키가 아닌 글자 자리의 %s는 통과한다", async (shape) => {
+    const ruleIds = await ruleIdsOf(
+      `type Row = { workDate: string };\n\ntype Kind = "signup_approved" | "shift_assigned";\n\nexport type Fixture = ${shape};\n`,
+      OUTSIDE,
+    );
+
+    expect(ruleIds).not.toContain(RULE_ID);
+  });
+
+  it("DB가 든 값을 따옴표 키로 쓰는 표도 통과한다 — 객체 리터럴은 안 본다", async () => {
+    const ruleIds = await ruleIdsOf(
+      'const of: Record<string, string> = { "signup_approved": "가입이 승인됐어요" };\n\nexport const fixture = of;\n',
+      "src/entities/notification/utils/title.utils.ts",
+    );
+
+    expect(ruleIds).not.toContain(RULE_ID);
+  });
+
+  it("`api/` 안에서는 글자로 받는 키도 밖이다", async () => {
+    const ruleIds = await ruleIdsOf(
+      'type Row = { profile_id: string };\n\nexport type Fixture = Pick<Row, "profile_id">;\n',
+      "src/entities/schedule/api/getFixture.api.ts",
     );
 
     expect(ruleIds).not.toContain(RULE_ID);

@@ -5,6 +5,38 @@ const GENERATED_TYPES = "src/shared/api/databaseTypes.ts";
 const MAPPER_SUFFIX = ".mapper.ts";
 const ROUTE_LAYER = "app";
 
+const KEY_ARGUMENT_OF = new Map([
+  ["Record", 0],
+  ["Pick", 1],
+  ["Omit", 1],
+]);
+
+function keyNameOf(key) {
+  if (key.type === "Identifier") {
+    return key.name;
+  }
+
+  if (key.type === "Literal" && typeof key.value === "string") {
+    return key.value;
+  }
+
+  return null;
+}
+
+function* stringLiteralsIn(type) {
+  if (type.type === "TSUnionType") {
+    for (const member of type.types) {
+      yield* stringLiteralsIn(member);
+    }
+  } else if (
+    type.type === "TSLiteralType" &&
+    type.literal.type === "Literal" &&
+    typeof type.literal.value === "string"
+  ) {
+    yield type.literal;
+  }
+}
+
 const noSnakeCaseField = {
   meta: {
     type: "problem",
@@ -38,8 +70,29 @@ const noSnakeCaseField = {
 
     return {
       TSPropertySignature(node) {
-        if (node.key.type === "Identifier") {
-          check(node.key, node.key.name);
+        const name = keyNameOf(node.key);
+
+        if (name !== null) {
+          check(node.key, name);
+        }
+      },
+      TSTypeReference(node) {
+        if (node.typeName.type !== "Identifier") {
+          return;
+        }
+
+        const position = KEY_ARGUMENT_OF.get(node.typeName.name);
+        const keys =
+          position === undefined
+            ? undefined
+            : node.typeArguments?.params[position];
+
+        if (keys === undefined) {
+          return;
+        }
+
+        for (const literal of stringLiteralsIn(keys)) {
+          check(literal, literal.value);
         }
       },
     };
