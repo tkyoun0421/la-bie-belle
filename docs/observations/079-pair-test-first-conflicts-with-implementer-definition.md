@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/agents/implementer.md
 date: 2026-10-21
-resolved:
+resolved: 2026-10-21
 ---
 
 **일**: 옛 경로 검사를 넓히는 묶음 둘(#634·#635)에서 구현자가 같은 어긋남을 두 번 보고했다. 스폰 프롬프트는 「짝 테스트를 먼저 쓰고 빨강을 본 뒤 구현하라」고 했는데 `implementer` 정의문은 「테스트를 직접 쓰지 않는다」고 한다. 이 묶음은 고칠 대상이 `tests/lint/legacyDocPaths.ts`라서 검사 자체가 테스트 폴더에 있고, 짝 테스트도 같은 폴더의 테스트 파일이다.
