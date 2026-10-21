@@ -203,9 +203,9 @@ sources:
 | `src/entities/schedule/api/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰, 키 `['members', 'qualifications']` | AC-02 |
 | `src/entities/schedule/api/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind`, `slots`를 `created_at` 순으로 | AC-02 |
 | `src/entities/schedule/api/__tests__/` | 함수 여덟과 뷰의 integration | AC-10 |
-| `src/features/schedule/model/query-keys.ts` · `useAddSlot.ts` · `useRemoveSlot.ts` · `useMergeSlots.ts` · `useSplitSlot.ts` · `useAddAssignment.ts` · `useRemoveAssignment.ts` · `useForceChange.ts` · `useGrantPosition.ts` · `useQualifications.ts` · `__tests__/` | mutation 여덟과 읽기 하나, 무효화와 보내는 동안의 잠금 | AC-08 |
-| `src/screens/schedule-admin/model/position-rows.ts` · `person-picker-rows.ts` · `person-sheet.ts` · `confirm-gate.ts` · `merge-target.ts` · `discard-slot.ts` · `force-change-copy.ts` · `__tests__/` | 포지션 줄 가르기와 셈 / 픽커 넷 갈래 / 성별 기호·년생·자격 / 확정 갈림 / 겸임이 되는 조합인지 / 버릴 자리에 사람이 들었는지 / 확인 시트 문안 | AC-02 |
-| `src/screens/schedule-admin/ui/PositionRow.tsx` · `PersonPickerSheet.tsx` · `PersonSheet.tsx` · `QualificationSheet.tsx` · `SlotSheet.tsx` · `DiscardSlotSheet.tsx` · `ConfirmChangeSheet.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·자격 시트·자리 시트·자리 버리기 시트·확인 시트, 그리고 임시 줄 제거 | AC-03~AC-07 |
+| `src/shared/api/queryKeys.ts` · `useAddSlot.ts` · `useRemoveSlot.ts` · `useMergeSlots.ts` · `useSplitSlot.ts` · `useAddAssignment.ts` · `useRemoveAssignment.ts` · `useForceChange.ts` · `useGrantPosition.ts` · `useQualifications.ts` · `__tests__/` | mutation 여덟과 읽기 하나, 무효화와 보내는 동안의 잠금 | AC-08 |
+| `src/entities/schedule/utils/positionRows.utils.ts` · `person-picker-rows.ts` · `person-sheet.ts` · `confirm-gate.ts` · `merge-target.ts` · `discard-slot.ts` · `force-change-copy.ts` · `__tests__/` | 포지션 줄 가르기와 셈 / 픽커 넷 갈래 / 성별 기호·년생·자격 / 확정 갈림 / 겸임이 되는 조합인지 / 버릴 자리에 사람이 들었는지 / 확인 시트 문안 | AC-02 |
+| `src/screens/scheduleAdmin/ui/PositionRow.tsx` · `PersonPickerSheet.tsx` · `PersonSheet.tsx` · `QualificationSheet.tsx` · `SlotSheet.tsx` · `DiscardSlotSheet.tsx` · `ConfirmChangeSheet.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·자격 시트·자리 시트·자리 버리기 시트·확인 시트, 그리고 임시 줄 제거 | AC-03~AC-07 |
 | `src/shared/ui/DragAndDrop.tsx` · `DropZone.tsx` · `SlotCard.tsx` | 끌어서 옮기기, 버리는 영역, 자리 카드 | AC-09 |
 | `src/shared/ui/Icon.tsx` · `Text.tsx` | 아이콘 `tone` — 규칙 19가 `src/screens/`의 색 유틸리티를 막는다 | AC-03 |
 | `scripts/e2eSeedServer.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 `schedule_assign_day`와 시드 헬퍼 | AC-10 |

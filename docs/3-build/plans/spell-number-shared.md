@@ -49,9 +49,9 @@
 | `src/features/payrollCompute/utils/historyRows.utils.ts` | 지역 `spellLength`가 지워진다 |
 | `src/features/payrollCompute/utils/summary.utils.ts` | 지역 `spellWorkedHours`가 지워진다 |
 | `src/features/payrollCompute/utils/payrollSummary.utils.ts` | 같다 |
-| `src/screens/payroll/model/period.policy.ts` | `periodSpan`의 month 갈래가 `monthSpan(period.month)`를 부른다 |
+| `src/features/payrollCompute/model/period.policy.ts` | `periodSpan`의 month 갈래가 `monthSpan(period.month)`를 부른다 |
 | 위 다섯의 짝 테스트 | 0분과 한 시간 미만을 단언하는 `describe`가 더해진다. 기존 단언은 안 고친다 |
-| `src/screens/payroll/model/__tests__/period.policy.test.ts` | 2월·윤년·30일 달을 단언하는 `describe`가 더해진다 |
+| `src/features/payrollCompute/model/__tests__/period.policy.test.ts` | 2월·윤년·30일 달을 단언하는 `describe`가 더해진다 |
 
 ## 완료 조건
 

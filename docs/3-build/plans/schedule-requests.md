@@ -198,15 +198,15 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 | `src/entities/schedule/api/send-work-request.ts` · `respond-request.ts` · `create-cancel-request.ts` · `decide-cancel-request.ts` | 쓰기 넷 | AC-05~AC-08 |
 | `src/entities/schedule/api/get-slot-requests.ts` · `get-pending-approvals.ts` | 자리의 요청과 판정 대기 목록 | AC-05·AC-08 |
 | `src/entities/schedule/api/__tests__/` | 함수 넷과 cron, 요청을 닫는 `add_assignment`·`force_change`의 integration | AC-10 |
-| `src/entities/clock/api/get-server-now.ts` · `src/shared/lib/server-clock.ts` · `server-clock-store.ts` · `src/app/_layout.tsx` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 앱이 뜰 때와 앞으로 돌아올 때 재고 스플래시는 안 기다린다 | AC-06 |
-| `src/features/schedule/model/query-keys.ts` · `useSendWorkRequest.ts` · `useRespondRequest.ts` · `useCreateCancelRequest.ts` · `useDecideCancelRequest.ts` · `useSlotRequests.ts` · `usePendingApprovals.ts` · `__tests__/` | mutation 넷과 읽기 둘, 무효화와 보내는 동안의 잠금 | AC-09 |
-| `src/screens/schedule-admin/model/person-picker-rows.ts` · `slot-request-badge.ts` · `__tests__/` | 미신청 줄의 요청 상태 셋과 체크박스 유무 / 자리 카드 배지 문구 | AC-05 |
-| `src/screens/schedule-admin/ui/PersonPickerSheet.tsx` · `PositionRow.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
-| `src/screens/schedule-worker/model/request-sheet.ts` · `cancel-request-sheet.ts` · `incoming-request.ts` · `day-sheet.ts` · `__tests__/` | 요청 시트 갈래 / 사유 검사와 배지 / 요청 온 날 판정 / 요청 중이면 버튼 둘 잠금 | AC-06·AC-07 |
-| `src/screens/schedule-worker/ui/RequestSheet.tsx` · `CancelShiftSheet.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `ScheduleWorkerScreen.tsx` | 근무 요청 시트·근무 취소 시트·요청 중 배지·달력 점선과 아래 줄 | AC-06·AC-07 |
-| `src/screens/approvals/model/approvals-list.ts` · `approval-detail.ts` · `reject-reason.ts` · `__tests__/` | 목록 정렬과 지우기 / 상세 문안 / 거절 이유 검사 | AC-08 |
+| `src/entities/clock/api/get-server-now.ts` · `src/entities/clock/model/serverClock.policy.ts` · `server-clock-store.ts` · `src/app/_layout.tsx` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 앱이 뜰 때와 앞으로 돌아올 때 재고 스플래시는 안 기다린다 | AC-06 |
+| `src/shared/api/queryKeys.ts` · `useSendWorkRequest.ts` · `useRespondRequest.ts` · `useCreateCancelRequest.ts` · `useDecideCancelRequest.ts` · `useSlotRequests.ts` · `usePendingApprovals.ts` · `__tests__/` | mutation 넷과 읽기 둘, 무효화와 보내는 동안의 잠금 | AC-09 |
+| `src/features/scheduleAssign/model/personPickerRows.policy.ts` · `slot-request-badge.ts` · `__tests__/` | 미신청 줄의 요청 상태 셋과 체크박스 유무 / 자리 카드 배지 문구 | AC-05 |
+| `src/features/scheduleAssign/ui/PersonPickerSheet.tsx` · `PositionRow.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
+| `src/features/workRequest/model/requestSheet.policy.ts` · `cancel-request-sheet.ts` · `incoming-request.ts` · `day-sheet.ts` · `__tests__/` | 요청 시트 갈래 / 사유 검사와 배지 / 요청 온 날 판정 / 요청 중이면 버튼 둘 잠금 | AC-06·AC-07 |
+| `src/features/workRequest/ui/RequestSheet.tsx` · `CancelShiftSheet.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `ScheduleWorkerScreen.tsx` | 근무 요청 시트·근무 취소 시트·요청 중 배지·달력 점선과 아래 줄 | AC-06·AC-07 |
+| `src/entities/workRequest/utils/approvalsList.utils.ts` · `approval-detail.ts` · `reject-reason.ts` · `__tests__/` | 목록 정렬과 지우기 / 상세 문안 / 거절 이유 검사 | AC-08 |
 | `src/screens/approvals/ui/ApprovalsScreen.tsx` · `ApprovalDetailSheet.tsx` · `src/app/admin/approvals.tsx` · `src/app/admin/schedule.tsx` | 목록·상세 시트·거절과 `?from=approvals`로 넘어가는 길 | AC-08 |
-| `src/screens/admin-home/model/approvals-line.ts` · `__tests__/` · `ui/AdminHomeScreen.tsx` | 「승인할 일 · n건」 | AC-05 |
+| `src/screens/adminHome/utils/approvalsLine.utils.ts` · `__tests__/` · `ui/AdminHomeScreen.tsx` | 「승인할 일 · n건」 | AC-05 |
 | `src/shared/ui/QuoteBlock.tsx` | 사람이 쓴 사유가 앉는 면 | AC-08 |
 | `src/shared/ui/Checkbox.tsx` · `Dialog.tsx` · `RosterRow.tsx` · `src/app/_catalog.tsx` | 픽커 체크박스·승인 확인 Dialog·명단 줄 배지 | AC-05~AC-08 |
 | `scripts/e2eSeedServer.mts` · `tests/e2e/scripts/seedSession.js` · `tests/integration/postgres.ts` | 시드 상태 넷과 요청·취소 요청 시드 헬퍼 | AC-10 |

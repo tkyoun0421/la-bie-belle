@@ -115,22 +115,22 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/screens/wages/model/wage-rows.ts` | 목록 줄을 세우고 「가장 최근 `wage_rates` 행」을 고르는 손을 가진다 | AC-01 |
-| `src/screens/wages/model/follower-count.ts` | 기본 시급을 따르는 인원을 센다 — 이력이 빈 사람도 따르는 사람이다 | AC-01·AC-02 |
-| `src/screens/wages/model/can-reset-to-default.ts` | 사람 시트에 되돌리기 줄을 그릴지 | AC-03 |
-| `src/screens/wages/model/wage-history.ts` | 이력을 세 줄로 자르고 시트 입력 칸의 초깃값을 낸다 | AC-03 |
-| `src/screens/wages/model/wage-amount.ts` | 상한·하한·저장 가능 여부와 「두 시트 다」 문안. 금액을 글자로 옮기는 손은 뒤에 `src/shared/lib/spell-number.ts`로 올라갔다 | AC-04 |
+| `src/entities/payroll/model/wageRows.policy.ts` | 목록 줄을 세우고 「가장 최근 `wage_rates` 행」을 고르는 손을 가진다 | AC-01 |
+| `src/features/wageAdmin/utils/followerCount.utils.ts` | 기본 시급을 따르는 인원을 센다 — 이력이 빈 사람도 따르는 사람이다 | AC-01·AC-02 |
+| `src/features/wageAdmin/model/canResetToDefault.policy.ts` | 사람 시트에 되돌리기 줄을 그릴지 | AC-03 |
+| `src/features/wageAdmin/utils/wageHistory.utils.ts` | 이력을 세 줄로 자르고 시트 입력 칸의 초깃값을 낸다 | AC-03 |
+| `src/features/wageAdmin/model/wageAmount.policy.ts` | 상한·하한·저장 가능 여부와 「두 시트 다」 문안. 금액을 글자로 옮기는 손은 뒤에 `src/shared/utils/spellNumber.ts`로 올라갔다 | AC-04 |
 | `src/screens/wages/model/__tests__/` | 위 다섯의 unit | AC-01~AC-04 |
 | `src/screens/wages/ui/WagesScreen.tsx` | 기본 시급 줄과 사람 목록, 빈 상태 | AC-01·AC-06 |
-| `src/screens/wages/ui/DefaultWageSheet.tsx` | 기본 시급 시트 — 입력 칸과 같이 바뀌는 인원 줄 | AC-02·AC-06 |
-| `src/screens/wages/ui/MemberWageSheet.tsx` | 사람 시트 — 입력 칸·적용 안내·되돌리기 줄·이력 | AC-03·AC-06 |
-| `src/screens/wages/ui/ResetWageDialog.tsx` | 되돌리기 확인 Dialog. 바뀔 값을 그 자리에서 말한다 | AC-03·AC-06 |
+| `src/features/wageAdmin/ui/DefaultWageSheet.tsx` | 기본 시급 시트 — 입력 칸과 같이 바뀌는 인원 줄 | AC-02·AC-06 |
+| `src/features/wageAdmin/ui/MemberWageSheet.tsx` | 사람 시트 — 입력 칸·적용 안내·되돌리기 줄·이력 | AC-03·AC-06 |
+| `src/features/wageAdmin/ui/ResetWageDialog.tsx` | 되돌리기 확인 Dialog. 바뀔 값을 그 자리에서 말한다 | AC-03·AC-06 |
 | `src/app/admin/wages.tsx` | `NotBuiltYet`을 걷고 `/admin/wages`에 화면을 붙인다 | AC-01 |
 | `src/shared/ui/AmountInput.tsx` | 숫자와 「원」을 한 덩이로 오른쪽에 세운다. 쉼표와 상한은 안 세고 부르는 쪽의 순수 함수가 든다 | AC-04 |
 | `src/entities/payroll/api/get-wage-rates.ts`·`__tests__/get-wage-rates.integration.test.ts` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
-| `src/features/payroll/model/useWageRates.ts`·`__tests__/useWageRates.test.ts` | 읽기 훅 하나. 목록과 시트 이력이 이 한 응답에서 갈린다 | AC-05 |
-| `src/features/payroll/model/useSetWage.ts`·`useSetDefaultWage.ts`·`useResetWageToDefault.ts`·`__tests__/` | 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
-| `src/features/payroll/model/query-keys.ts` | `['payroll']`과 `['payroll', 'wages']` 두 키 | AC-05 |
+| `src/entities/payroll/services/useWageRatesQuery.ts`·`__tests__/useWageRates.test.ts` | 읽기 훅 하나. 목록과 시트 이력이 이 한 응답에서 갈린다 | AC-05 |
+| `src/features/wageAdmin/services/useSetWageMutation.ts`·`useSetDefaultWage.ts`·`useResetWageToDefault.ts`·`__tests__/` | 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
+| `src/shared/api/queryKeys.ts` | `['payroll']`과 `['payroll', 'wages']` 두 키 | AC-05 |
 | `tests/e2e/wages.yaml` | 기본을 바꿔 따르는 사람이 같이 바뀌는 한 바퀴 | 검증 표 |
 | `scripts/e2eSeedServer.mts`·`tests/integration/postgres.ts` | `payroll_wages` 시드 — 사람 다섯과 기본 시급, 지난 이력 세 줄을 SQL로 꽂는다 | 검증 표 |
 
@@ -157,9 +157,9 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 개별로 정한 사람이 위로 올라간다 | unit `src/screens/wages/model/__tests__/wage-rows.test.ts` | `pnpm test` | 이름 가나다순 하나 |
-| AC-02 | 같이 바뀌는 인원이 틀린다 | unit `src/screens/wages/model/__tests__/follower-count.test.ts` | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
-| AC-04 | 상한이 한 시트에만 걸린다 | unit `src/screens/wages/model/__tests__/wage-amount.test.ts` | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
+| AC-01 | 개별로 정한 사람이 위로 올라간다 | unit `src/entities/payroll/model/__tests__/wageRows.policy.test.ts` | `pnpm test` | 이름 가나다순 하나 |
+| AC-02 | 같이 바뀌는 인원이 틀린다 | unit `src/features/wageAdmin/utils/__tests__/followerCount.utils.test.ts` | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
+| AC-04 | 상한이 한 시트에만 걸린다 | unit `src/features/wageAdmin/model/__tests__/wageAmount.policy.test.ts` | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
 | AC-04 | 저장 실패에 값이 날아간다 | unit 위 | `pnpm test` | 칸에 값이 남고 시트가 안 닫힌다 |
 | AC-05 | 목록 질의가 이력을 잘라 온다 | integration `src/entities/payroll/api/__tests__/get-wage-rates.integration.test.ts` | `pnpm test:integration:run` | 한 사람의 `wage_rates`가 전부 오고 기본 시급은 가장 최근 행 하나다 |
 | AC-01 | 퇴사자가 목록에 선다 | e2e `tests/e2e/wages.yaml` | `pnpm e2e` | 퇴사한 사람이 빠진다 |

@@ -77,7 +77,7 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `src/proxy.ts`(새) · `src/__tests__/proxy.test.ts`(새) · `src/middleware.ts`(삭제) · `src/__tests__/middleware.test.ts`(삭제) | 쿠키 갱신과 세션 없음 → `/login` | AC-01 |
-| `src/shared/lib/resolve-auth-destination.ts` · `__tests__/resolve-auth-destination.test.ts` | 목적지 다섯과 「제 자리」 판정 | AC-02 |
+| `src/entities/session/model/resolveAuthDestination.policy.ts` · `__tests__/resolve-auth-destination.test.ts` | 목적지 다섯과 「제 자리」 판정 | AC-02 |
 | `src/features/auth/`(게이트 훅·컨텍스트·클라이언트 컴포넌트 — 파일 이름은 구현이 정한다) · `__tests__/` | 세션 → `ensure_profile` → `['profile']` → 이동 | AC-03 |
 | `src/entities/profile/api/get-my-profile.ts` · `ensure-profile.ts` · `__tests__/*.integration.test.ts`(새) · `get-approved-at.ts`와 그 테스트(삭제) | 자기 프로필 읽기, `ensure_profile` 호출 | AC-04 |
 | `src/app/layout.tsx` · `page.tsx` · `pending/page.tsx` · `blocked/page.tsx`(새) · `left/page.tsx`(새) · `auth-gate.ts`(삭제) · `src/features/auth/read-auth-gate.ts`와 테스트(삭제) | 서버 게이트 제거, 껍데기에 게이트 컴포넌트, 임시 화면 둘 | AC-03·AC-05 |
@@ -109,7 +109,7 @@ sources:
 | 완료 조건·규칙 참조 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- |
 | AC-01 | unit `src/__tests__/proxy.test.ts`(예정), e2e `home.spec.ts`의 정적 자원 케이스 | `pnpm test`, `pnpm e2e` | 정적 자산 통과, 세션 없음 → `/login`, `/login`·`/auth/*` 예외 |
-| AC-02 | unit `src/shared/lib/__tests__/resolve-auth-destination.test.ts` | `pnpm test` | 다섯 목적지와 우선순위(차단 > 퇴사 > 승인), 「제 자리」 판정 |
+| AC-02 | unit `src/entities/session/model/__tests__/resolveAuthDestination.policy.test.ts` | `pnpm test` | 다섯 목적지와 우선순위(차단 > 퇴사 > 승인), 「제 자리」 판정 |
 | AC-03 | unit `src/features/auth/__tests__/`(예정), e2e 일곱 spec | `pnpm test`, `pnpm build && pnpm e2e` | 첫 읽기 동안 빈 화면, 읽은 뒤 이동, 탭 복귀에 다시 읽기 |
 | AC-04 | integration `src/entities/profile/api/__tests__/get-my-profile.integration.test.ts`·`ensure-profile.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | 자기 행만 읽힘, `ensure_profile` 멱등 |
 | AC-05·AC-06 | e2e `tests/e2e/*.spec.ts` 일곱 | `pnpm build && pnpm e2e` | 기존 다섯 무수정 초록, `blocked`·`left` 초록, 새 사용자에게 프로필 행 |

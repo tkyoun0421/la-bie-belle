@@ -160,8 +160,8 @@ sources:
 | `src/shared/consts/error.const.ts` | `bad_amount`·`no_default_wage` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
 | `src/entities/payroll/api/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
-| `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
-| `src/entities/rehearsal/model/rehearsal-hours.ts`·`__tests__/`(이동) | `features/rehearsal/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
+| `src/entities/attendance/model/attendanceStatus.policy.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
+| `src/entities/rehearsal/utils/rehearsalHours.utils.ts`·`__tests__/`(이동) | `features/rehearsal/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
 | `tests/integration/postgres.ts` | 급여 시드 헬퍼 | 검증 표 |
 
 ## 구현 순서

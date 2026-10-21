@@ -45,7 +45,7 @@ sources:
 - `next/server`를 쓰는 셋 — `src/app/auth/callback/route.ts`, `src/app/auth/logout/route.ts`, `src/proxy.ts`
 - `next/navigation`을 쓰는 하나 — `src/features/auth/use-auth-gate.ts`
 - `'use client'` 넷 — `src/app/providers.tsx`, `src/features/auth/ui/auth-gate.tsx`, `src/screens/pending/ui/pending-screen.tsx`, `src/screens/login/ui/login-screen.tsx`
-- 브라우저 API 둘 — `src/screens/pending/ui/pending-screen.tsx:60`의 `document.documentElement`, `src/screens/pending/model/notification-prompt.ts:28`의 `window.Notification`
+- 브라우저 API 둘 — `src/screens/pending/ui/pending-screen.tsx:60`의 `document.documentElement`, `src/screens/pending/model/notificationPrompt.policy.ts:28`의 `window.Notification`
 
 프레임워크를 안 타는 것은 그대로 간다 — `handle-auth-callback.ts`, `resolve-auth-destination.ts`, `read-supabase-env.ts`, `get-current-user.ts`, `features/auth/google-photo-of.ts`, `entities/profile/dals/` 둘이다.
 

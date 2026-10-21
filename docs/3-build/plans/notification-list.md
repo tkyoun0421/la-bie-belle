@@ -116,16 +116,16 @@ sources:
 | `src/entities/notification/utils/title.utils.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
 | `src/entities/notification/utils/when.utils.ts` | 날짜 머리와 받은 시각 | AC-02 |
 | `src/entities/notification/model/destination.policy.ts` | 종류마다의 목적지 | AC-05 |
-| `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
-| `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
-| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notificationRead/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
-| `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
-| `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
+| `src/entities/notification/services/useNotificationsQuery.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
+| `src/entities/notification/services/useUnreadCountQuery.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
+| `src/features/notificationRead/services/useMarkNotificationsReadMutation.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notificationRead/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
+| `src/entities/notification/model/notificationRows.policy.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
+| `src/screens/notifications/lib/pressNotification.lib.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
 | `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |
 | `src/app/notifications.tsx` | 라우트. 지금은 `NotBuiltYet` 한 줄이다 | AC-04 |
 | `src/shared/ui/BellIcon.tsx` | **이미 섰다** — [`ui-kit`](../../2-design/spec/ui-kit.md)이 아이콘·점·44px 닿는 면까지 세웠다. 이 task는 `unread`와 누름을 먹인다 | AC-06 |
 | `src/shared/ui/AppBar.tsx` | **이미 `right`를 받는다.** 고칠 것이 없고 종을 그 자리에 넣는 것이 이 task 몫이다 | AC-06 |
-| `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx`·`src/screens/payroll/ui/PayrollScreen.tsx`·`src/screens/profile/ui/ProfileScreen.tsx`·`src/screens/admin-home/ui/AdminHomeScreen.tsx` | 앱바 오른쪽에 종을 세운다. 대시보드 앱바는 [`dashboard`](../../backlog.md)가 세우고 그 task가 같이 단다 | AC-06 |
+| `src/screens/scheduleWorker/ui/ScheduleWorkerScreen.tsx`·`src/screens/payroll/ui/PayrollScreen.tsx`·`src/screens/profile/ui/ProfileScreen.tsx`·`src/screens/adminHome/ui/AdminHomeScreen.tsx` | 앱바 오른쪽에 종을 세운다. 대시보드 앱바는 [`dashboard`](../../backlog.md)가 세우고 그 task가 같이 단다 | AC-06 |
 | `src/features/notification/model/__tests__/`·`src/screens/notifications/model/__tests__/` | 문장·시각·목적지·줄 목록의 unit | AC-01·AC-02·AC-04·AC-05 |
 | `src/entities/notification/api/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
 | `src/entities/notification/api/__tests__/count-unread-notifications.integration.test.ts` | 안 읽은 수가 50건 창에 안 갇히는 것 | AC-03·AC-06 |
@@ -156,14 +156,14 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 문장이 표와 다르다 | unit `src/entities/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 열여덟이 표 그대로고 2차 다섯이 널 |
+| AC-01 | 문장이 표와 다르다 | unit `src/entities/notification/utils/__tests__/title.utils.test.ts`(예정) | `pnpm test` | 열여덟이 표 그대로고 2차 다섯이 널 |
 | AC-01 | 아래 줄이 있는 넷에 아래 줄이 없다 | unit 위 | `pnpm test` | `sub`가 든다 |
 | AC-01 | 푸시와 목록이 다르게 말한다 | unit 위 | `pnpm test` | 같은 함수를 쓴다 |
-| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/entities/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
+| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/entities/notification/utils/__tests__/when.utils.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
 | AC-02 | 한 시간 안인데 「1시간 전」이라 한다 | unit 위 | `pnpm test` | 「12분 전」 |
 | AC-03 | 남의 알림이 섞인다 | integration `src/entities/notification/api/__tests__/get-notifications.integration.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
 | AC-03 | 51번째가 안 온다 | integration 위 | 위와 같다 | 둘째 쪽이 온다 |
-| AC-05 | 목적지가 표와 다르다 | unit `src/entities/notification/model/__tests__/destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
+| AC-05 | 목적지가 표와 다르다 | unit `src/entities/notification/model/__tests__/destination.policy.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
 | AC-05 | 관리자 공지가 눌린다 | e2e `tests/e2e/notifications.yaml`(예정) | `pnpm e2e` | 안 눌리고 화살표가 없다 |
 | AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | `pnpm e2e` | 돌아오면 점이 없다 |
 | AC-04 | 빈 상태가 안 선다 | e2e 위 | `pnpm e2e` | 「아직 받은 알림이 없어요」 |
