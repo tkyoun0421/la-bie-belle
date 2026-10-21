@@ -1,6 +1,6 @@
 ---
 status: open
-target: tests/lint/sources-impact.ts
+target: tests/lint/sourcesImpact.ts
 date: 2026-09-23
 resolved:
 ---
@@ -9,7 +9,7 @@ resolved:
 
 ## 일
 
-PR #406이 `navigation.md`와 `components.md`처럼 여럿이 `sources`로 드는 문서 둘을 건드렸다. 그 둘을 받는 spec·plan이 서른한 개고, 게이트(`tests/lint/sources-impact.ts`)는 PR 본문에서 바뀐 각 문서의 basename을 문자열로 찾는다. 산문으로 「전수 확인했다」고만 적으면 그 이름이 하나도 안 나와서 막힌다.
+PR #406이 `navigation.md`와 `components.md`처럼 여럿이 `sources`로 드는 문서 둘을 건드렸다. 그 둘을 받는 spec·plan이 서른한 개고, 게이트(`tests/lint/sourcesImpact.ts`)는 PR 본문에서 바뀐 각 문서의 basename을 문자열로 찾는다. 산문으로 「전수 확인했다」고만 적으면 그 이름이 하나도 안 나와서 막힌다.
 
 통과하려면 서른한 개를 바뀐 입력 다섯 갈래로 묶어 각 파일 이름을 본문에 글자로 적어야 했다 — 판정 자체(영향 없음)는 짧게 끝나는데, 그것을 검사가 읽게 쓰는 절이 PR 본문에서 가장 길었다. 판정이 쉬운데 표현 비용이 판정 난이도가 아니라 팬아웃(그 문서를 받는 문서 수)에 비례해서 커진다.
 

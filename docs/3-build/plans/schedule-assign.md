@@ -79,7 +79,7 @@ sources:
 - `force_change(p_assignment_id uuid, p_profile_id uuid)` — 확정 뒤 한 자리의 사람을 바꾼다. 기존 배정을 닫고 새 배정을 연다. `add_assignment`와 같은 검사 넷이 새 사람에게 걸린다. **한 트랜잭션이다** — 빼기만 되고 넣기가 실패하면 자리가 빈 채로 남고 알림도 반쪽이 된다
 - `grant_position(p_profile_id uuid, p_position text)` — `position_grants`에 넣는다. 이미 있으면 조용히 통과한다(`on conflict do nothing`) — 자격은 있고 없고뿐이라 두 번 준 것이 오류가 아니다
 
-`error-codes.ts`에 `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`이 든다. `merge_slots`의 `no_empty_slot`도 든다 — 위 목록에서 빠져 있었다. `already_confirmed`·`not_allowed`는 [schedule-data](schedule-data.md)가 이미 넣었다.
+`error.const.ts`에 `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`이 든다. `merge_slots`의 `no_empty_slot`도 든다 — 위 목록에서 빠져 있었다. `already_confirmed`·`not_allowed`는 [schedule-data](schedule-data.md)가 이미 넣었다.
 
 ### AC-02
 
@@ -198,7 +198,7 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `supabase/migrations/20260927091505_schedule_assign.sql` | 함수 여덟과 `qualifications` 뷰 | AC-01 |
-| `src/shared/api/error-codes.ts` · `database-types.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`·`no_empty_slot`·`wrong_kind`와 다시 뽑은 생성 타입 | AC-01 |
+| `src/shared/consts/error.const.ts` · `databaseTypes.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`·`no_empty_slot`·`wrong_kind`와 다시 뽑은 생성 타입 | AC-01 |
 | `src/entities/schedule/api/add-slot.ts` · `remove-slot.ts` · `merge-slots.ts` · `split-slot.ts` · `add-assignment.ts` · `remove-assignment.ts` · `force-change.ts` · `grant-position.ts` | 쓰기 여덟 | AC-02 |
 | `src/entities/schedule/api/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰, 키 `['members', 'qualifications']` | AC-02 |
 | `src/entities/schedule/api/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind`, `slots`를 `created_at` 순으로 | AC-02 |

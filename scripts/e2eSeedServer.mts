@@ -7,6 +7,7 @@ import {
   approveProfile,
   backdateDeadline,
   createAdminUser,
+  DEFAULT_WAGE_RATES_LOCK,
   execSql,
   kstDate,
   kstInstant,
@@ -23,6 +24,7 @@ import {
   seedSlotOfPosition,
   seedWageHistory,
   seedWorkRequestWithCandidates,
+  withDbLock,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -292,13 +294,7 @@ async function seededUser(
   if (state === PAYROLL_VIEW || state === PAYROLL_VIEW_LEFT) {
     const admin = await createAdminUser();
 
-    throwIf(
-      (
-        await admin.client.rpc("set_default_wage", {
-          p_amount: PAYROLL_VIEW_WAGE,
-        })
-      ).error,
-    );
+    await setDefaultWageUnderLock(admin, PAYROLL_VIEW_WAGE);
     await decideBy("approve_member", user.profileId);
   }
 
@@ -309,6 +305,17 @@ function throwIf(error: unknown): void {
   if (error) {
     throw error;
   }
+}
+
+export async function setDefaultWageUnderLock(
+  admin: AdminUser,
+  amount: number,
+): Promise<void> {
+  await withDbLock(DEFAULT_WAGE_RATES_LOCK, async () => {
+    throwIf(
+      (await admin.client.rpc("set_default_wage", { p_amount: amount })).error,
+    );
+  });
 }
 
 async function createSchedule(
@@ -871,9 +878,7 @@ async function seedRehearsalQualified(
 async function seedPayrollWages(): Promise<Partial<SchedulePayload>> {
   const admin = await createAdminUser();
 
-  throwIf(
-    (await admin.client.rpc("set_default_wage", { p_amount: 11000 })).error,
-  );
+  await setDefaultWageUnderLock(admin, 11000);
 
   for (const name of ["윤소율", "차수아"]) {
     const follower = await createSignedInUser();

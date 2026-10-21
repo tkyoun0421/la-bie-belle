@@ -56,7 +56,7 @@ sources:
 - **리허설은 조정이 아니다.** 주인이 달라 표를 안 섞는다 — 조정은 관리자가 쓰고 리허설은 본인이 쓴다. 계산이 배정·조정·리허설 셋을 더하고 그 하나로 9시간 기준을 본다([PAY-028](../../2-design/modules/payroll/README.md#pay-028))
 - **기본 시급이 끈이다.** 승인될 때 한 번 복사되는 첫값이 아니다([PAY-013](../../2-design/modules/payroll/README.md#pay-013)). `set_default_wage`가 따르는 사람 전원에게 같은 날 행을 **한 트랜잭션에** 넣어, 계산은 `wage_rates` 한 표만 읽고 RLS도 한 표에만 건다
 
-지금 코드에는 급여가 하나도 없다. `src/shared/api/error-codes.ts`는 앞선 task가 이미 만들어 두었다.
+지금 코드에는 급여가 하나도 없다. `src/shared/consts/error.const.ts`는 앞선 task가 이미 만들어 두었다.
 
 ## 완료 조건
 
@@ -148,7 +148,7 @@ sources:
 
 ### AC-08
 
-**오류 코드 목록.** `bad_amount`와 `no_default_wage`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
+**오류 코드 목록.** `bad_amount`와 `no_default_wage`가 `src/shared/consts/error.const.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
 
 ## 변경 파일
 
@@ -157,7 +157,7 @@ sources:
 | `supabase/migrations/<날짜>_payroll.sql` | 표 넷, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_payroll_functions.sql` | 함수 여섯 | AC-03~AC-05 |
 | `supabase/migrations/<날짜>_approve_wage_row.sql` | 승인 함수에 첫 시급 행 | AC-03 |
-| `src/shared/api/error-codes.ts` | `bad_amount`·`no_default_wage` | AC-08 |
+| `src/shared/consts/error.const.ts` | `bad_amount`·`no_default_wage` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
 | `src/entities/payroll/api/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
 | `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
@@ -204,7 +204,7 @@ sources:
 | AC-06 | 결근 판정이 두 벌이라 어긋난다 | unit 위 | `pnpm test` | 조정 든 결근과 안 든 결근이 같은 금액(0) |
 | AC-06 | 그날 시급을 잘못 고른다 | unit 위 | `pnpm test` | 8월 1일에 올리면 7월은 옛 값, 8월 1일부터 새 값 |
 | AC-06 | 달을 걸친 주가 한 달에 통째로 든다 | unit 위 | `pnpm test` | 8월 31일 하루만 8월, 9월 1일부터 엿새는 9월 |
-| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | `bad_amount`와 `no_default_wage`가 양쪽에 있다 |
+| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/errorCodes.test.ts` | `pnpm test` | `bad_amount`와 `no_default_wage`가 양쪽에 있다 |
 
 - 배정하지 않은 것: 실제 한 달치 데이터로 금액이 관리자의 손 계산과 맞는지 — 첫 달 운영에서 대조한다. 앱이 내는 것이 예상치라 이 대조가 곧 규칙 검증이다
 - 막힌 것: 지금은 없다

@@ -152,7 +152,7 @@ sources:
 | `src/features/stats/model/person-days.ts` | 한 사람의 날짜별 근무 줄과 합계. 교육 배정은 「안내 교육」 꼴 라벨이 붙는다 | AC-02 |
 | `src/features/stats/utils/trend.utils.ts` | 보는 달을 오른쪽 끝으로 한 열두 달 창과 값 없는 달의 `null` | AC-03 |
 | `src/features/stats/model/attendance-inputs.ts` | 그달 배정·날 시각과 인증·사유를 `(day_id, profile_id)`로 맞물려 상태 함수가 그대로 먹을 입력을 낸다 | AC-09·「착수 판정」 |
-| `src/features/stats/api/useStatsQueries.ts` | 달마다의 `useQueries`와 캐시 키. 훅을 내놓는 `.ts`는 훅 이름을 써야 해서 `queries.ts`로 못 선다(`tests/lint/file-naming.ts`) | AC-03 |
+| `src/features/stats/api/useStatsQueries.ts` | 달마다의 `useQueries`와 캐시 키. 훅을 내놓는 `.ts`는 훅 이름을 써야 해서 `queries.ts`로 못 선다(`tests/lint/fileNaming.ts`) | AC-03 |
 | `src/screens/admin-stats/model/attendance-rows.ts` | 근태 탭 사람별 목록과 그달 tally 조립. 0인 몫은 값 자리를 비운다 | AC-09 |
 | `src/screens/admin-stats/model/chart-values.ts` | 읽어 온 열두 달을 그래프 값으로 옮기고 출근율 라벨을 낸다 | AC-03·AC-09 |
 | `src/shared/lib/month-boundary.ts` | 달 줄 화살표의 바닥·천장 판정. `screens/admin-stats/model/`에 섰다가 두 통계가 같이 쓰게 되면서 [`stats-worker`](stats-worker.md)가 shared로 올렸다 | AC-06 |

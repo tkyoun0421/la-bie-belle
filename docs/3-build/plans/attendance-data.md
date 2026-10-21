@@ -59,7 +59,7 @@ sources:
 - **QR 값이 따로 산다.** `hall_secrets`를 `halls`와 가른 이유는 읽기 범위다 — 좌표·반경은 전원이 읽지만 QR 값은 관리자만이다. 같은 행에 있으면 근무자가 값을 읽어 **스캔 없이 인증 함수에 넣는다**([QR](../../2-design/modules/attendance/design.md#qr))
 - **인증은 되돌릴 수 없다.** 행을 고치는 함수가 없다. 잘못 찍힌 것을 지우는 길도 안 만든다 — [ATT-009](../../2-design/modules/attendance/README.md#att-009)가 한 번 찍으면 버튼이 사라진다고 정했고, 되돌리는 문을 열면 그 규칙이 무너진다
 
-지금 코드에는 출근 인증이 하나도 없다. `halls` 표는 [`schedule-data`](schedule-data.md)가 세우고 이 task가 `hall_secrets`를 그 옆에 더한다. `src/shared/api/error-codes.ts`는 `profile-form`이나 [`schedule-data`](schedule-data.md) 중 먼저 merge된 쪽이 만든다.
+지금 코드에는 출근 인증이 하나도 없다. `halls` 표는 [`schedule-data`](schedule-data.md)가 세우고 이 task가 `hall_secrets`를 그 옆에 더한다. `src/shared/consts/error.const.ts`는 `profile-form`이나 [`schedule-data`](schedule-data.md) 중 먼저 merge된 쪽이 만든다.
 
 ## 완료 조건
 
@@ -163,13 +163,13 @@ sources:
 
 - 읽기 — `get-day-attendance.ts`(`['attendance', 'YYYY-MM-DD']`, 그날 `check_ins`와 `excuse_status`), `get-my-excuses.ts`(`['excuses', 'YYYY-MM']`, 본인 사유 목록), `get-qr-code.ts`(`['hall', 'qr']`, **`staleTime`이 0이고 영속하지 않는다** — 관리자가 돌리면 옛 값이 `invalid_qr`이다)
 - 쓰기 — `check-in.ts`·`submit-excuse.ts`·`decide-excuse.ts`·`rotate-qr.ts`·`set-hall-location.ts`
-- **`DomainError`·`TransportError`를 이 task가 처음 세운다.** [오류의 모양](../../2-design/system/data-access.md#오류의-모양)이 이미 있는 것처럼 적었지만 저장소에 없다 — `error-codes.ts` 옆 `src/shared/api/`에 한 곳으로 둔다. dal마다 각자 가르면 두 벌이 선다. `schedule-data`가 「`profile-form`의 몫」이라 미뤄둔 자리고, 재시도가 둘을 갈라야 도니 여기가 먼저다
+- **`DomainError`·`TransportError`를 이 task가 처음 세운다.** [오류의 모양](../../2-design/system/data-access.md#오류의-모양)이 이미 있는 것처럼 적었지만 저장소에 없다 — `src/shared/`에 한 곳으로 둔다. dal마다 각자 가르면 두 벌이 선다. `schedule-data`가 「`profile-form`의 몫」이라 미뤄둔 자리고, 재시도가 둘을 갈라야 도니 여기가 먼저다
 - **`check_in`만 재시도한다.** [재시도](../../2-design/system/runtime.md#재시도)의 「쓰기를 재시도하지 않는다」의 유일한 예외다 — `TransportError`면 지수 백오프로 다섯 번 더, 2·4·8·16·32초로 합쳐 1분쯤이다. `retryDelay`를 명시한다. **큐에 넣지 않는다**
 - 화면 잠금이나 앱 전환으로 iOS가 타이머를 멈추면 돌아올 때 이어 돈다 — **끊지 않는다**
 
 ### AC-08
 
-**오류 코드.** `src/shared/api/error-codes.ts`에 **여덟을 더한다** — `too_far`·`invalid_qr`·`bad_radius`·`window_closed`·`already_done`·`invalid_reason`·`already_requested`·`already_decided`. 앞 task들이 넣은 것은 `not_allowed` 하나뿐이고 나머지 다섯은 저장소에 없다. 대조가 양방향이라 던지는 코드를 목록에 안 넣으면 `tests/lint/error-codes.test.ts`가 `missing-from-list`로 빨개진다.
+**오류 코드.** `src/shared/consts/error.const.ts`에 **여덟을 더한다** — `too_far`·`invalid_qr`·`bad_radius`·`window_closed`·`already_done`·`invalid_reason`·`already_requested`·`already_decided`. 앞 task들이 넣은 것은 `not_allowed` 하나뿐이고 나머지 다섯은 저장소에 없다. 대조가 양방향이라 던지는 코드를 목록에 안 넣으면 `tests/lint/errorCodes.test.ts`가 `missing-from-list`로 빨개진다.
 
 ### AC-09
 
@@ -199,7 +199,7 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_attendance.sql` | 표 셋, 뷰, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_attendance_functions.sql` | 함수 다섯. 시각 경계는 `internal`이 `p_now`를 받고 `public`이 껍데기다 | AC-03~AC-05 |
-| `src/shared/api/error-codes.ts` | 코드 여덟 | AC-08 |
+| `src/shared/consts/error.const.ts` | 코드 여덟 | AC-08 |
 | `src/shared/api/errors.ts` | `DomainError`·`TransportError` | AC-07 |
 | `src/entities/attendance/consts/attendance.const.ts` | 업무 상수 | AC-06·AC-11 |
 | `tests/lint/` | 업무 상수 대조 | AC-11 |
@@ -240,7 +240,7 @@ sources:
 | AC-05 | 옛 QR이 살아 있다 | integration 위 | 위와 같다 | 돌린 뒤 옛 값이 `invalid_qr` |
 | AC-06 | 경계에서 상태가 뒤집힌다 | unit `src/features/attendance/model/__tests__/`(예정) | `pnpm test` | 정각·창 양 끝·48시간·거절 사유·통신 지연 5분 |
 | AC-07 | 통신이 끊기면 인증이 사라진다 | unit 위 | `pnpm test` | 다섯 번 재시도, 2·4·8·16·32초 |
-| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 셋이 양쪽에 있다 |
+| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/errorCodes.test.ts` | `pnpm test` | 셋이 양쪽에 있다 |
 
 - 배정하지 않은 것: 실제 통신이 끊긴 기기에서 재시도가 이어 도는지 — iOS가 타이머를 멈췄다 재개하는 동작이라 실기기에서 손으로 본다. 이것은 [`attendance-checkin`](../../backlog.md)의 몫이다
 - 막힌 것: 지금은 없다

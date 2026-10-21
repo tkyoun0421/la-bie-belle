@@ -106,7 +106,7 @@ sources:
 
 ## 변경 파일
 
-아직 안 선 task라 자리는 저장소 배치 관례를 보고 잡은 것이다. DB를 읽는 손은 `entities/<영역>/dals/`에 파일 하나씩, 그것을 감싸는 훅은 `features/<영역>/model/useXxx.ts`에 훅 하나씩 산다 — `features/schedule/model/`의 스물몇이 그 꼴이고, `tests/lint/file-naming.ts`가 훅을 내놓는 `.ts`에 훅 이름을 요구해서 `queries.ts`라는 이름은 못 선다.
+아직 안 선 task라 자리는 저장소 배치 관례를 보고 잡은 것이다. DB를 읽는 손은 `entities/<영역>/dals/`에 파일 하나씩, 그것을 감싸는 훅은 `features/<영역>/model/useXxx.ts`에 훅 하나씩 산다 — `features/schedule/model/`의 스물몇이 그 꼴이고, `tests/lint/fileNaming.ts`가 훅을 내놓는 `.ts`에 훅 이름을 요구해서 `queries.ts`라는 이름은 못 선다.
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |

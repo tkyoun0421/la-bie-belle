@@ -37,12 +37,12 @@ PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문�
 
 ### B. 골격과 계정 시범
 
-- `docs/README.md` — 문서 지도 정본. CLAUDE.md의 「문서 지도」는 이 파일을 링크하는 한 줄로 줄이고, `doc-map.ts`는 `docs/README.md`를 읽는다
+- `docs/README.md` — 문서 지도 정본. CLAUDE.md의 「문서 지도」는 이 파일을 링크하는 한 줄로 줄이고, `docMap.ts`는 `docs/README.md`를 읽는다
 - `2-design/README.md` — 설계 지도, 공통 기준 적용 규칙, 파일 종류별 절 순서, 규칙 ID 형식, `sources` 형식, 화면 작성 틀(design-system README에서 옮김)
 - `2-design/modules/README.md` — `domain/README.md`를 옮기고 영역별 design·screens 링크를 더한다
 - `2-design/modules/account/` — `README.md`(domain/account + 규칙 ID), `design.md`(data-model·api·runtime의 account를 행위별로 통합, 연락처 결정 반영), `screens/`(login·profile·members-pending·members 문서와 시안, flows/account의 화면별 흐름을 각 문서의 「흐름」 절로)
 - 옛 파일 삭제: `domain/account.md`, `architecture/{data-model,api,runtime,flows}/account.md`, `design-system/pages/{login,profile,members-pending,members}.*`
-- 소비자: `sian-html.ts`·`design-map.ts`(screens 글롭과 지도 대조), `.prettierignore`, `architecture/README.md` 도메인 지도 행, `design-system/README.md` 지도, `prd.md`·ADR-002·ADR-004·spec·plans·observations의 account 링크, 정의문(docs-researcher·architecture-advisor·sian-writer·sian-auditor)
+- 소비자: `sianHtml.ts`·`designMap.ts`(screens 글롭과 지도 대조), `.prettierignore`, `architecture/README.md` 도메인 지도 행, `design-system/README.md` 지도, `prd.md`·ADR-002·ADR-004·spec·plans·observations의 account 링크, 정의문(docs-researcher·architecture-advisor·sian-writer·sian-auditor)
 
 ### C. 나머지 영역과 system
 
@@ -50,7 +50,7 @@ PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문�
 - `modules/{schedule,attendance,payroll,swap,notification}/` — README(규칙 ID)·design(통신 지연 결정 반영)·screens(schedule-worker·schedule-admin → schedule, qr → attendance, payroll·wages → payroll)
 - `system/screens/{dashboard,approvals,stats}` — 이동만. dashboard 추출은 D
 - flows 다섯을 화면 문서의 「흐름」 절과 design의 행위별 계약으로 분배. flows/attendance의 출근 인증·사유 흐름은 D까지 dashboard 문서에 둔다
-- `architecture/`·`domain/`·`design-system/pages/` 삭제, `legacy-doc-paths.ts`에 세 경로 추가
+- `architecture/`·`domain/`·`design-system/pages/` 삭제, `legacyDocPaths.ts`에 세 경로 추가
 - 소비자: B와 같은 검사·정의문, backlog `blocked` 행의 링크, handoff 링크, `design-system/README.md`의 페이지 목록 제거
 
 ### D. dashboard 추출
@@ -86,8 +86,8 @@ PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문�
 
 - [x] 제안서 「완료 기준」 열 항목이 전부 선다
 - [x] 연락처 수정과 통신 지연이 위 결정대로 정본 한 곳에 적히고 다른 문서는 링크한다
-- [x] 옛 경로 셋(`2-design/domain/`·`2-design/architecture/`·`design-system/pages/`)이 `legacy-doc-paths.ts`에 있고 `docs/log/` 밖에 남지 않는다
-- [x] 화면 문서·시안 14쌍이 소유 위치에 있고 `sian-html.ts`·`design-map.ts`가 그 자리를 읽는다
+- [x] 옛 경로 셋(`2-design/domain/`·`2-design/architecture/`·`design-system/pages/`)이 `legacyDocPaths.ts`에 있고 `docs/log/` 밖에 남지 않는다
+- [x] 화면 문서·시안 14쌍이 소유 위치에 있고 `sianHtml.ts`·`designMap.ts`가 그 자리를 읽는다
 - [x] 정의문 전부가 새 경로를 가리킨다. 옛 경로를 읽는 정의문이 없다
 
 ## 안 하는 것
