@@ -9,7 +9,7 @@
 **사람 손이 필요한 것과 판정 대기가 남았다.** 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
 1. **사람 손·기기 확인·디자인 결정·판정은 [owner-todo.md](owner-todo.md)에 모였다.** 세션은 거기 줄을 대신 하지 않는다.
-2. **결정 없이 할 후보.** 지난 회차의 셋이 닫혔다([docs/log/2026-10-21.md](log/2026-10-21.md)). 남은 것은 새로 나온 셋이다 — [`snake-case-rule-quoted-keys`](backlog.md)(`house/no-snake-case-field`가 따옴표 키와 `Record<"profile_id", …>`를 못 잡는다) · [`legacy-intermediate-names`](backlog.md)(`src/shared/api/errorCodes.ts`처럼 중간 이름이던 없어진 경로가 `legacyDocPaths` 대상이 아니다) · [`legacy-allowlist-handoff-line`](backlog.md)(`legacyDocPaths`의 허용 목록이 handoff·backlog의 특정 문장에 묶여 있어 그 문장이 덮어쓰이면 항목이 낡는다). [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
+2. **결정 없이 할 후보.** 지난 회차의 셋(`snake-case-rule-quoted-keys`·`legacy-intermediate-names`·`legacy-allowlist-handoff-line`)은 #630으로 닫혔다. 새 후보는 회차 마감이 backlog에 더한다. [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
 
 ## 재개 맥락
 
@@ -69,7 +69,7 @@
 
 **검사 번호가 51까지다** — 51(`house/typed-mock-fn`)은 `jest.fn`의 타입 인자가 함수 타입이고 그 안에 `unknown`이 있으면 문다 — 대역은 `jest.fn<typeof 실물>()`로 적고 실물은 `import type`으로 당긴다. 48(`type-file-no-runtime`)은 `.type.ts`·`.dto.ts`의 런타임 선언을, 49(`services-no-hooks-import`)는 services가 hooks를 당기는 것을, 50(`hooks-export-use-only`)은 `hooks/`의 `use*`가 아닌 export를 문다. 접미사가 제 세그먼트에 사는지(`fileNaming`)와 문서의 검사 수(`docCounts`)는 `tests/lint/`가 센다. 47(`house/type-guard-name`)은 반환 타입이 서술어인 함수의 이름이 `is`로 시작하게 문다. **하나를 켜려면 한 커밋에 다섯 자리를 건드린다** — `eslint-rules/<이름>.mjs`·`index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`·`docs/4-test/execution.md`. 베낀 도메인 꼴을 막는 검사는 못 세웠다 — ESLint가 파일 하나의 AST만 보고 `tests/lint/`로 재도 거짓 양성이 안 사라진다(규칙 3이 import를 막아 베낄 수밖에 없는 자리가 대부분이었다).
 
-**CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조가 `database-types.ts`(없는 경로)를 보던 죽은 게이트였던 것을 고쳐 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사는 `ci`와 `impact` 둘이다** — 영향 확인 절이 없는 PR은 merge되지 않는다.
+**CI가 job 넷(`checks`·`bundle`·`db`·`secrets`)으로 병렬이다.** `impact.yml`이 PR 본문의 「영향 확인」만 따로 보고, `db`는 `api/`에 안 닿는 변경이면 건너뛴다. 생성 타입 대조는 `databaseTypes.ts`를 본다. **브랜치 보호의 필수 검사는 `ci`와 `impact` 둘이다** — 영향 확인 절이 없는 PR은 merge되지 않는다.
 
 **`grep` 한 줄로 셀 때 여러 줄 import·여러 줄 타입 선언 안의 이름이 안 보인다.** 이번 회차에 다섯 번 틀렸다. 경유지·이름으로 파일을 먼저 찾고(`grep -rl`) 그 파일을 열어 세는 쪽이 맞다.
 

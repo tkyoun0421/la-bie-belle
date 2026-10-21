@@ -69,6 +69,8 @@ PR 본문이 얇아서 왜를 복원할 수 없으면 억지로 채우지 말고
 
 열린 결정·상시 주의·완료 목록은 소유 문서로 보낸다. 총괄이 준 열린 결정은 정본이 있으면 그 문서의 「아직 안 정한 것」, 할 일이면 `backlog.md`의 `candidate`, 정의문·훅의 마찰이면 `docs/observations/`로 간다. 상시 검증 기준은 `docs/4-test/strategy.md`, 실행·훅·CI 주의는 `docs/4-test/execution.md`, 배포 환경 주의는 `docs/5-deploy/environments.md`로 보낸다. 보낼 때 목적지의 기존 문장과 먼저 합친다.
 
+handoff.md에는 옛 경로를 적지 않는다. 옛 이름을 꼭 들어야 하면 로그에 적는다 — `tests/lint/legacyDocPaths.ts`는 handoff를 허용 목록에 두지 않는다. 덮어쓴 뒤 `pnpm test -- --no-watchman tests/lint/legacyDocPaths.test.ts`로 확인한다.
+
 ## owner-todo.md
 
 사람이 할 일 — 직접 손, 실기기 확인, 디자인 결정, 판정 — 을 한 곳에 모으는 파일이다. 총괄이 준 사람 몫을 맞는 절에 한 줄로 더하고, 이번 회차에 끝난 줄은 지운다. 줄마다 backlog 행을 링크하고 사정은 행에 맡긴다. handoff.md에는 이 목록을 되풀이하지 않고 이 파일을 가리킨다.

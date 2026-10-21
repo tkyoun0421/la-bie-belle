@@ -350,7 +350,7 @@ describe("구 경로 잔존 검사", () => {
 });
 
 describe("허용 항목의 낡음", () => {
-  const HANDOFF = "docs/handoff.md";
+  const TARGET = "docs/backlog.md";
 
   function rootWithRealAllowedFiles() {
     const root = tempRoot();
@@ -364,39 +364,45 @@ describe("허용 항목의 낡음", () => {
     return staleAllowedLines(root).map((allowed) => allowed.file);
   }
 
+  it("덮어쓰는 handoff는 허용 목록에 오르지 않는다", () => {
+    expect(ALLOWED_LINES.map((allowed) => allowed.file)).not.toContain(
+      "docs/handoff.md",
+    );
+  });
+
   it("허용 줄이 다 제자리에 있으면 낡은 항목이 없다", () => {
     expect(staleAllowedLines(rootWithRealAllowedFiles())).toEqual([]);
   });
 
-  it("handoff가 덮어쓰여 표지 문장이 사라지면 그 항목이 낡았다고 드러난다", () => {
+  it("문서가 고쳐져 표지 문장이 사라지면 그 항목이 낡았다고 드러난다", () => {
     const root = rootWithRealAllowedFiles();
-    write(root, HANDOFF, "# 인계\n\n다음 첫 수는 새 task다.\n");
+    write(root, TARGET, "# 인계\n\n다음 첫 수는 새 task다.\n");
 
     const stale = staleFiles(root);
 
     expect(stale.length).toBeGreaterThan(0);
-    expect(new Set(stale)).toEqual(new Set([HANDOFF]));
+    expect(new Set(stale)).toEqual(new Set([TARGET]));
   });
 
   it("표지 문장은 남았는데 그 줄의 옛 경로가 고쳐졌으면 낡았다", () => {
     const root = rootWithRealAllowedFiles();
-    const handoffMarkers = ALLOWED_LINES.filter(
-      (allowed) => allowed.file === HANDOFF,
+    const targetMarkers = ALLOWED_LINES.filter(
+      (allowed) => allowed.file === TARGET,
     ).map((allowed) => allowed.marker);
     write(
       root,
-      HANDOFF,
-      `${handoffMarkers.map((marker) => `${marker}는 이제 지금 경로만 든다.`).join("\n")}\n`,
+      TARGET,
+      `${targetMarkers.map((marker) => `${marker}는 이제 지금 경로만 든다.`).join("\n")}\n`,
     );
 
-    expect(new Set(staleFiles(root))).toEqual(new Set([HANDOFF]));
+    expect(new Set(staleFiles(root))).toEqual(new Set([TARGET]));
   });
 
   it("허용 항목의 파일이 없어도 낡았다", () => {
     const root = rootWithRealAllowedFiles();
-    rmSync(join(root, HANDOFF));
+    rmSync(join(root, TARGET));
 
-    expect(new Set(staleFiles(root))).toEqual(new Set([HANDOFF]));
+    expect(new Set(staleFiles(root))).toEqual(new Set([TARGET]));
   });
 });
 
