@@ -39,7 +39,7 @@ iOS Expo Go는 SDK 57을 못 띄워 개발 빌드가 필요하다. 폰에서 로
 
 정본과 코드가 어긋난 자리:
 
-- [`canon-and-code-divergence-fixes`](backlog.md) — 판정 일곱, 추천은 행에 있다
+- [`canon-and-code-divergence-fixes`](backlog.md) — 판정 여섯, 추천은 행에 있다
 - [`requests-closed-30-days`](backlog.md) — 문서를 코드의 `closed_at is null`에 맞출지
 - [`monthly-assignment-count-canon`](backlog.md) — 한 달 배정 수 셋을 하나로
 - [`runtime-unbounded-keys-table`](backlog.md) — `runtime.md`의 「전체를 읽는 키는 셋」이 코드와 안 맞는다
