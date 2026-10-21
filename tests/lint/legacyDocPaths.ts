@@ -400,19 +400,11 @@ export const ALLOWED_LINES: AllowedLine[] = [
     marker: "`legacy-bare-script-names`",
   },
   {
-    file: "docs/handoff.md",
-    marker: "(없는 경로)",
-  },
-  {
     file: "tests/lint/e2eFileReferences.test.ts",
     marker: `"seedSession.js", "${OLD_SEED_SESSION}")`,
   },
   {
     file: "docs/backlog.md",
-    marker: "`legacy-intermediate-names`",
-  },
-  {
-    file: "docs/handoff.md",
     marker: "`legacy-intermediate-names`",
   },
   {
