@@ -9,7 +9,7 @@
 **사람 손이 필요한 것과 판정 대기가 남았다.** 코드와 단위 테스트는 초록이고, 남은 것은 사람 손과 기기 확인이다.
 
 1. **사람 손·기기 확인·디자인 결정·판정은 [owner-todo.md](owner-todo.md)에 모였다.** 세션은 거기 줄을 대신 하지 않는다.
-2. **결정 없이 할 후보.** [`legacy-non-ts-layer-paths`](backlog.md)는 층부터 적은 `.ts`·`.tsx` 밖의 옛 경로(`.css`·`.md` 등)가 검사 밖인 것이고, [`git-similarity-renames-missed`](backlog.md)는 닮음 50% 밑이라 git이 삭제와 생성으로 적은 이동(`ConfirmSheet`·`ScheduleAgenda`·`DaySheet`)이 이력에 없어 검사 밖인 것이며, [`proposal-status-drift`](backlog.md)는 `post-refactor-audit`의 backlog 행은 `done`인데 proposal 파일 `status`는 `proposed`인 것이다. [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
+2. **결정 없이 할 후보.** [`legacy-move-with-rename`](backlog.md)은 옮기면서 이름까지 바꾼 이동이 순수 삭제와 구별되지 않아 옛 경로 검사 밖인 것이고, [`proposal-stale-line-refs`](backlog.md)는 제안 문서의 `파일:줄` 인용이 낡는 것이다. [`e2e-seed-cleanup`](backlog.md)은 기기 빌드가 서야 검증할 수 있어 기다린다. [`attendance-column-label`](backlog.md)은 `attendance-excuse`가 서야 풀린다.
 
 ## 재개 맥락
 
