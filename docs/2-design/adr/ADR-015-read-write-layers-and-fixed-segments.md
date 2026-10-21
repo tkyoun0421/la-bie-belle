@@ -190,7 +190,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 얻는 둘은 이것이다. **전이가 순수 함수라 테스트가 `dispatch` 없이 선다**는 것과, **「무엇이 같이 바뀌나」가 한 자리에 살아** 호출부마다 다시 세지 않는다는 것이다.
 
-**Context는 `stores`다.** 하위트리에 상태를 나눠 주는 도구고 zustand와 역할이 같다. Context 객체와 그것을 읽는 훅이 `<도메인>.context.ts`에 살고 Provider 컴포넌트는 `.tsx`라 `ui/`에 남는다 — 지금 `shared/ui/DragAndDrop.tsx` 하나가 Context와 Provider와 훅 둘과 컴포넌트 둘을 삼백한 줄에 들고 export 다섯을 낸다.
+**Context는 `stores`다.** 하위트리에 상태를 나눠 주는 도구고 zustand와 역할이 같다. Context 객체와 그것을 읽는 훅이 `<도메인>.context.ts`에 살고 Provider 컴포넌트는 `.tsx`라 `ui/`에 남는다.
 
 **`policy`는 순수다.** 통신도 시계도 난수도 못 쓴다 — 「지금 지각인가」를 판정하려면 시각을 받아야 하고 제가 읽어선 안 된다. 그래서 테스트가 입력만 주면 돌고, 같은 판정을 서버 함수가 SQL로 또 쓸 때 두 쪽을 같은 표로 맞출 수 있다.
 
