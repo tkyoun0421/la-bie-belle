@@ -1,13 +1,15 @@
 type PageResult<T> = { data: T[] | null; error: unknown };
 
-export async function readAllPages<T>(
-  page: (from: number, to: number) => PromiseLike<PageResult<T>>,
+export async function readAllPages<T, K>(
+  page: (after: K | null, limit: number) => PromiseLike<PageResult<T>>,
+  keyOf: (row: T) => K,
   pageSize = 1000,
 ): Promise<T[]> {
   const rows: T[] = [];
+  let after: K | null = null;
 
-  for (let from = 0; ; from += pageSize) {
-    const { data, error } = await page(from, from + pageSize - 1);
+  for (;;) {
+    const { data, error } = await page(after, pageSize);
 
     if (error) {
       throw error;
@@ -16,8 +18,10 @@ export async function readAllPages<T>(
     const received = data ?? [];
     rows.push(...received);
 
-    if (received.length < pageSize) {
+    const last = received.at(-1);
+    if (received.length < pageSize || last === undefined) {
       return rows;
     }
+    after = keyOf(last);
   }
 }

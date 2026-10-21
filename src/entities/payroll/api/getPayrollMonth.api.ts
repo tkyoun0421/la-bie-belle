@@ -40,6 +40,19 @@ const EXCUSE_STATUS_COLUMNS = [
 
 const HOLIDAY_COLUMNS = ["holiday_date", "source", "name"].join(", ");
 
+function afterWageRate(after: MemberWageRateRow): string {
+  return `profile_id.gt.${after.profile_id},and(profile_id.eq.${after.profile_id},effective_date.gt.${after.effective_date})`;
+}
+
+function byDateThenProfile(
+  left: MemberWageRateRow,
+  right: MemberWageRateRow,
+): number {
+  const leftKey = `${left.effective_date}|${left.profile_id}`;
+  const rightKey = `${right.effective_date}|${right.profile_id}`;
+  return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+}
+
 async function monthDayIds(client: DB, month: string): Promise<string[]> {
   const { data, error } = await client
     .from("days")
@@ -62,15 +75,19 @@ export async function getPayrollMonth(
   const dayIds = await monthDayIds(client, month);
 
   const [wageRates, adjustments, excuseStatus, holidays] = await Promise.all([
-    readAllPages((from, to) =>
-      client
-        .from("wage_rates")
-        .select(WAGE_RATE_COLUMNS)
-        .lt("effective_date", nextMonthStart(month))
-        .order("effective_date")
-        .order("profile_id")
-        .range(from, to)
-        .returns<MemberWageRateRow[]>(),
+    readAllPages(
+      (after: MemberWageRateRow | null, limit) => {
+        const query = client
+          .from("wage_rates")
+          .select(WAGE_RATE_COLUMNS)
+          .lt("effective_date", nextMonthStart(month));
+        return (after === null ? query : query.or(afterWageRate(after)))
+          .order("profile_id")
+          .order("effective_date")
+          .limit(limit)
+          .returns<MemberWageRateRow[]>();
+      },
+      (row) => row,
     ),
     client
       .from("adjustments")
@@ -101,7 +118,7 @@ export async function getPayrollMonth(
   }
 
   return {
-    wageRates: wageRates.map(toMemberWageRate),
+    wageRates: wageRates.sort(byDateThenProfile).map(toMemberWageRate),
     adjustments: (adjustments.data ?? []).map(toAdjustment),
     excuseStatus: (excuseStatus.data ?? []).map(toExcuseStatus),
     holidays: (holidays.data ?? []).map(toHoliday),
