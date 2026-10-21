@@ -4,6 +4,7 @@ import type {
   DefaultWageRateRow,
   MemberWageRateRow,
 } from "@/entities/payroll/api/payroll.dto";
+import { afterWageRate } from "@/entities/payroll/api/wageRateCursor";
 import type { WageRates } from "@/entities/payroll/model/payroll.type";
 import {
   toMemberWageRate,
@@ -18,10 +19,6 @@ const MEMBER_WAGE_COLUMNS = [
 ].join(", ");
 
 const DEFAULT_WAGE_COLUMNS = ["effective_date", "amount"].join(", ");
-
-function afterWageRate(after: MemberWageRateRow): string {
-  return `profile_id.gt.${after.profile_id},and(profile_id.eq.${after.profile_id},effective_date.gt.${after.effective_date})`;
-}
 
 function byRecentDateThenProfile(
   left: MemberWageRateRow,
