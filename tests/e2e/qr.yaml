@@ -55,7 +55,7 @@
 #
 # - `qr-rotate-confirm-button` — 새로 뽑기 확인 Dialog의 오른쪽 버튼에
 #   `confirmTestID`로 얹는다. `src/shared/ui/Dialog.tsx`가 이미 그 자리를
-#   받고(`confirmTestID?: string`), `src/screens/members/ui/MemberDialog.tsx`의
+#   받고(`confirmTestID?: string`), `src/features/memberAdmin/ui/MemberDialog.tsx`의
 #   `MARK_LEAVE_CONFIRM_TEST_ID`가 같은 손을 쓴 전례다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은

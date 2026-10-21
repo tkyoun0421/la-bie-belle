@@ -142,12 +142,12 @@ sources:
 | `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/features/excuse/api/decideExcuse.api.ts) 호출과 무효화 | AC-06 |
 | `src/features/attendance/ui/ExcuseSheet.tsx` | 시트 조립 — 덮개가 안 닫고, 닿는 면과 아래 여백이 `useSafeAreaInsets`를 탄다 | AC-01~AC-05 |
 | `src/screens/dashboard/model/excuse-entry.ts`·`src/screens/dashboard/ui/DashboardScreen.tsx` | 못 찍음 블록과 반려 블록에서 시트를 연다. 블록 자체는 [`dashboard`](../../backlog.md)가 세운다 | AC-04 |
-| `src/screens/approvals/model/approvals-list.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |
-| `src/screens/approvals/model/approval-detail.ts` | 사유 줄의 제목·본문과 `excuses.body` 전문 | AC-06 |
-| `src/screens/approvals/model/reject-reason.ts` | 사유 반려의 이유가 비면 못 보낸다 | AC-06 |
+| `src/entities/workRequest/utils/approvalsList.utils.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |
+| `src/entities/workRequest/utils/approvalDetail.utils.ts` | 사유 줄의 제목·본문과 `excuses.body` 전문 | AC-06 |
+| `src/features/workRequest/model/rejectReason.policy.ts` | 사유 반려의 이유가 비면 못 보낸다 | AC-06 |
 | `src/screens/approvals/ui/ApprovalsScreen.tsx`·`ApprovalDetailSheet.tsx` | 사유 줄과 판정. 판정한 줄이 그 자리에서 결과로 바뀐다 | AC-06 |
 | `src/screens/schedule-worker/model/attendance-column.ts` | **이미 섰다** — 창이 열렸는지와 현황 줄의 0 제외를 [`schedule-worker`](schedule-worker.md)가 세웠다. 이 task는 상태 여섯을 줄마다 붙이는 손만 더한다 | AC-07 |
-| `src/screens/schedule-worker/ui/DayRoster.tsx`·`DaySheet.tsx` | 명단 줄의 인증 상태 열과 그 위 현황 줄. `RosterRow`의 `status`가 이미 받는 자리다 | AC-07 |
+| `src/entities/schedule/ui/DayRoster.tsx`·`DaySheet.tsx` | 명단 줄의 인증 상태 열과 그 위 현황 줄. `RosterRow`의 `status`가 이미 받는 자리다 | AC-07 |
 | `docs/2-design/modules/attendance/screens/excuse.sian.html` | 낡은 경로 주석을 지운다 | AC-08 |
 | `src/features/attendance/model/__tests__/`·`src/screens/approvals/model/__tests__/`·`src/screens/schedule-worker/model/__tests__/attendance-column.test.ts` | 입력 규칙과 상태 갈림, 판정 줄, 현황 줄의 unit | AC-09 |
 | `tests/e2e/excuse.yaml` | 제출부터 반려 뒤 재제출까지 | AC-09 |

@@ -95,7 +95,7 @@ sources:
 
 ### AC-04
 
-**순수 함수.** `rehearsalHours`·`dayTotal`·`monthTotal`은 `src/entities/rehearsal/model/rehearsal-hours.ts`에, `kindForDate`·`canAddOn`은 `src/features/rehearsal/model/`에 산다.
+**순수 함수.** `rehearsalHours`·`dayTotal`·`monthTotal`은 `src/entities/rehearsal/utils/rehearsalHours.utils.ts`에, `kindForDate`·`canAddOn`은 `src/features/rehearsal/model/`에 산다.
 
 - `rehearsalHours(row)` — 건수 갈래면 `count * 60`분, 시각 갈래면 `ends_at - starts_at`. **1건이 1시간이다**([SCH-023](../../2-design/modules/schedule/README.md#sch-023))
 - `dayTotal(rows)` · `monthTotal(rows)` — 날 합계와 달 합계. 달력 칸과 달 줄과 날 시트가 같은 함수를 쓴다
@@ -148,7 +148,7 @@ sources:
 
 **오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`·`bad_count`·`bad_hours`가 `src/shared/consts/error.const.ts`와 마이그레이션 양쪽에 선다. `tests/lint/errorCodes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`와 `bad_count` 둘이다.
 
-**KST 날짜 손을 `src/shared/lib/kst-date.ts`로 모은다.** `kstDateOf`·`kstToday`·`shiftMonth`·`spellMonth`·`lastDateOfMonth`가 슬라이스 넷(`schedule-worker`·`schedule-admin`·`admin-home`·`applications`)에 각자 서 있었고 이 화면이 다섯째다. 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용 자리로 올리고, 넷은 그 파일을 부른다 — 슬라이스의 기존 테스트는 그대로 통과해야 한다.
+**KST 날짜 손을 `src/shared/utils/kstDate.ts`로 모은다.** `kstDateOf`·`kstToday`·`shiftMonth`·`spellMonth`·`lastDateOfMonth`가 슬라이스 넷(`schedule-worker`·`schedule-admin`·`admin-home`·`applications`)에 각자 서 있었고 이 화면이 다섯째다. 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용 자리로 올리고, 넷은 그 파일을 부른다 — 슬라이스의 기존 테스트는 그대로 통과해야 한다.
 
 ## 변경 파일
 
@@ -158,20 +158,20 @@ sources:
 | `supabase/migrations/20260927091509_rehearsal_functions.sql` | `has_rehearsal_grant`와 함수 셋 | AC-02·AC-03 |
 | `src/shared/consts/error.const.ts` | 코드 둘(`overlaps`·`bad_count`) | AC-09 |
 | `src/shared/api/databaseTypes.ts` | 새 표와 함수 셋의 생성 타입 | AC-01·AC-03 |
-| `src/shared/lib/kst-date.ts`·`__tests__/kst-date.test.ts` | KST 날짜 손 공용화, 슬라이스 넷이 부른다 | AC-09 |
-| `src/screens/schedule-admin/model/format-schedule-date.ts`·`month-empty-state.ts` · `src/screens/schedule-worker/model/agenda-row.ts`·`month-state.ts` · `src/screens/admin-home/model/today-status.ts` · `src/screens/applications/model/applications-grouping.ts` | 각자 들고 있던 KST 날짜 손을 버리고 공용 파일을 부른다 | AC-09 |
-| `src/shared/lib/month-picker.ts`·`__tests__/month-picker.test.ts` | 달 고르기 시트가 그릴 해와 열두 달 | AC-06 |
+| `src/shared/utils/kstDate.ts`·`__tests__/kst-date.test.ts` | KST 날짜 손 공용화, 슬라이스 넷이 부른다 | AC-09 |
+| `src/entities/schedule/utils/formatScheduleDate.utils.ts`·`month-empty-state.ts` · `src/entities/schedule/utils/agendaRow.utils.ts`·`month-state.ts` · `src/screens/adminHome/model/todayStatus.policy.ts` · `src/entities/availability/utils/applicationsGrouping.utils.ts` | 각자 들고 있던 KST 날짜 손을 버리고 공용 파일을 부른다 | AC-09 |
+| `src/shared/utils/monthPicker.ts`·`__tests__/month-picker.test.ts` | 달 고르기 시트가 그릴 해와 열두 달 | AC-06 |
 | `src/shared/ui/MonthPickerSheet.tsx` | 달 고르기 시트 조각 | AC-06 |
 | `src/shared/ui/MonthCalendar.tsx`·`ScheduleDayCell.tsx` | 칸 바닥 단에 짧은 글 자리(`note`)를 낸다 — 리허설 달력이 거기에 시간을 적는다 | AC-06 |
-| `src/entities/rehearsal/model/rehearsal-hours.ts`·`__tests__/rehearsal-hours.test.ts` | 시간 환산과 날·달 합계. 뒤에 `features/rehearsal/model/`에서 `entities`로 내려갔다 | AC-04 |
-| `src/features/rehearsal/model/kind-for-date.ts`·`can-add-on.ts`·`__tests__/` | 갈래 판정과 넣기 가능 | AC-04 |
-| `src/features/rehearsal/model/query-keys.ts` | `['rehearsal']`과 무효화가 같이 건드리는 `['payroll']` | AC-05 |
-| `src/features/rehearsal/model/useMyRehearsals.ts`·`useAllRehearsals.ts`·`useAddRehearsal.ts`·`useEditRehearsal.ts`·`useRemoveRehearsal.ts`·`__tests__/` | 읽기 훅 둘, 쓰기 훅 셋, 무효화 | AC-05 |
+| `src/entities/rehearsal/utils/rehearsalHours.utils.ts`·`__tests__/rehearsal-hours.test.ts` | 시간 환산과 날·달 합계. 뒤에 `features/rehearsal/model/`에서 `entities`로 내려갔다 | AC-04 |
+| `src/entities/rehearsal/model/kindForDate.policy.ts`·`can-add-on.ts`·`__tests__/` | 갈래 판정과 넣기 가능 | AC-04 |
+| `src/shared/api/queryKeys.ts` | `['rehearsal']`과 무효화가 같이 건드리는 `['payroll']` | AC-05 |
+| `src/entities/rehearsal/services/useMyRehearsalsQuery.ts`·`useAllRehearsals.ts`·`useAddRehearsal.ts`·`useEditRehearsal.ts`·`useRemoveRehearsal.ts`·`__tests__/` | 읽기 훅 둘, 쓰기 훅 셋, 무효화 | AC-05 |
 | `src/entities/rehearsal/api/get-my-rehearsals.ts`·`get-all-rehearsals.ts`·`add-rehearsal.ts`·`edit-rehearsal.ts`·`remove-rehearsal.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 오류 가르기 | AC-05 |
-| `src/screens/rehearsal/model/rehearsal-day-cell.ts`·`spell-total.ts`·`day-sheet-rows.ts`·`add-sheet-state.ts`·`rehearsal-guard.ts`·`__tests__/` | 달력 칸 문구·합계 문구·날 시트 줄·시트 상태와 거절 받기·문 판정 | AC-06~AC-08 |
+| `src/shared/model/rehearsalDayCell.policy.ts`·`spell-total.ts`·`day-sheet-rows.ts`·`add-sheet-state.ts`·`rehearsal-guard.ts`·`__tests__/` | 달력 칸 문구·합계 문구·날 시트 줄·시트 상태와 거절 받기·문 판정 | AC-06~AC-08 |
 | `src/screens/rehearsal/ui/RehearsalScreen.tsx`·`RehearsalDaySheet.tsx`·`RehearsalFormSheet.tsx` | 달력·날 시트·넣는 시트와 고치는 시트·지우기 Dialog | AC-06·AC-07 |
 | `src/app/me/rehearsals.tsx` | `NotBuiltYet`을 걷고 `/me/rehearsals`에 화면을 붙인다 | AC-08 |
-| `src/screens/profile/model/has-rehearsal-grant.ts`·`__tests__/has-rehearsal-grant.test.ts` · `src/screens/profile/ui/ProfileScreen.tsx` | 「리허설」 줄과 그 줄이 서는 판정 | AC-08 |
+| `src/entities/member/model/hasRehearsalGrant.policy.ts`·`__tests__/has-rehearsal-grant.test.ts` · `src/screens/profile/ui/ProfileScreen.tsx` | 「리허설」 줄과 그 줄이 서는 판정 | AC-08 |
 | `tests/e2e/rehearsal.yaml`·`rehearsals.yaml` · `tests/e2e/profile.yaml` | 넣고 고치고 지우는 한 바퀴, 관리자 읽기, 자격 없는 사람의 진입. `rehearsals.yaml`은 라우트 파일명으로 찾는 훅을 위해 같은 플로우를 부르기만 한다 | 검증 표 |
 | `scripts/e2eSeedServer.mts`·`tests/e2e/scripts/seedSession.js` | `rehearsal_qualified` 시드 — `grant_position`으로 자격을 주고 배정 있는 날과 없는 날을 같이 깐다 | 검증 표 |
 
@@ -207,8 +207,8 @@ sources:
 | AC-03 | 시각이 겹친다 | integration 위 | 위와 같다 | `overlaps`. 배정 시간과는 안 견준다 |
 | AC-03 | 고치기가 갈래를 바꾼다 | integration 위 | 위와 같다 | 시각 행에 건수를 보내면 `wrong_kind` |
 | AC-03 | 남의 행을 고친다·지운다 | integration 위 | 위와 같다 | 관리자가 불러도 `not_allowed` |
-| AC-04 | 1건이 1시간이 아니다 | unit `src/entities/rehearsal/model/__tests__/rehearsal-hours.test.ts` | `pnpm test` | 3건이 3시간, 14:00–16:00이 2시간 |
-| AC-04 | 건수 갈래인 날에 넣기 버튼이 남는다 | unit `src/features/rehearsal/model/__tests__/can-add-on.test.ts` | `pnpm test` | 줄이 하나면 `canAddOn`이 거짓 |
+| AC-04 | 1건이 1시간이 아니다 | unit `src/entities/rehearsal/utils/__tests__/rehearsalHours.utils.test.ts` | `pnpm test` | 3건이 3시간, 14:00–16:00이 2시간 |
+| AC-04 | 건수 갈래인 날에 넣기 버튼이 남는다 | unit `src/entities/rehearsal/model/__tests__/canAddOn.policy.test.ts` | `pnpm test` | 줄이 하나면 `canAddOn`이 거짓 |
 | AC-06 | 못 누르는 칸이 생긴다 | e2e `tests/e2e/rehearsal.yaml` | `pnpm e2e` | 근무표에 없는 달의 아무 날이나 눌린다 |
 | AC-07 | 갈래가 바뀌면 고른 날짜가 날아간다 | e2e 위 | 위와 같다 | 알림 한 줄, 날짜 그대로, 칸만 바뀜 |
 | AC-08 | 자격 없는 사람이 주소로 들어온다 | e2e 위 | 위와 같다 | `/me`로 보낸다. 「나」에 줄이 없다 |

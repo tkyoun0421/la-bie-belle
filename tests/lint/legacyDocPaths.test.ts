@@ -1,7 +1,17 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { legacyPathViolations } from "@tests/lint/legacyDocPaths";
+import {
+  ALLOWED_LINES,
+  legacyPathViolations,
+  staleAllowedLines,
+} from "@tests/lint/legacyDocPaths";
 
 const ADR_004_RELATIVE = "docs/2-design/adr/ADR-004-domain-rules-home.md";
 const SDLC_GATE_RELATIVE = "docs/3-build/plans/sdlc-gate.md";
@@ -79,6 +89,25 @@ const RENAMED_LINT_FILES: [string, string][] = [
   [
     legacyPath("dark-media-query-compiles", ".test.ts"),
     "tests/lint/darkMediaQueryCompiles.test.ts",
+  ],
+];
+
+const RENAMED_SOURCES: [string, string][] = [
+  [
+    legacyPath("src/shared/api/", "errorCodes.ts"),
+    "src/shared/consts/error.const.ts",
+  ],
+  [
+    legacyPath("src/screens/schedule-admin/model/", "holiday-switch.ts"),
+    "src/entities/payroll/model/holidaySwitch.policy.ts",
+  ],
+  [
+    legacyPath("src/features/schedule/model/", "useMyAvailability.ts"),
+    "src/entities/availability/services/useMyAvailabilityQuery.ts",
+  ],
+  [
+    legacyPath("src/screens/admin-home/ui/", "AdminHomeScreen.tsx"),
+    "src/screens/adminHome/ui/AdminHomeScreen.tsx",
   ],
 ];
 
@@ -271,6 +300,44 @@ describe("구 경로 잔존 검사", () => {
     expect(violatingFiles(root)).toEqual([]);
   });
 
+  it.each(RENAMED_SOURCES)(
+    "개명 기록에서 사라진 src 경로 %s가 남아 있으면 검출한다",
+    (oldPath) => {
+      expect(patternsInSample(`| \`${oldPath}\` | 판정 | AC-01 |`)).toEqual([
+        oldPath,
+      ]);
+      expect(
+        patternsInSample(`[근거](../../../${oldPath})가 그 자리다.`),
+      ).toEqual([oldPath]);
+    },
+  );
+
+  it.each(RENAMED_SOURCES)(
+    "사라진 src 경로 %s가 더 긴 이름의 일부면 잡지 않는다",
+    (oldPath) => {
+      expect(patternsInSample(`\`${oldPath}x\`는 다른 파일이다.`)).toEqual([]);
+    },
+  );
+
+  it("코드 파일 안의 사라진 src 경로는 픽스처라 잡지 않고, 같은 글이 YAML 주석이면 잡는다", () => {
+    const root = tempRoot();
+    const [oldPath] = RENAMED_SOURCES[0];
+    write(root, "tests/lint/sample.test.ts", `const file = "${oldPath}";\n`);
+    write(root, "tests/e2e/sample.yaml", `# \`${oldPath}\`가 전례다.\n`);
+
+    expect(violatingFiles(root)).toEqual(["tests/e2e/sample.yaml"]);
+  });
+
+  it("개명된 src 경로의 지금 이름은 잡지 않는다", () => {
+    const root = tempRoot();
+    const table = RENAMED_SOURCES.map(
+      ([, currentPath]) => `| \`${currentPath}\` | 판정 | AC-01 |`,
+    ).join("\n");
+    write(root, "docs/3-build/plans/sample.md", `${table}\n`);
+
+    expect(violatingFiles(root)).toEqual([]);
+  });
+
   it.each(RISK_14_CASES)(
     "검사 대상에 %s 같은 정의문·코드 파일도 포함된다",
     (relative, body) => {
@@ -282,10 +349,65 @@ describe("구 경로 잔존 검사", () => {
   );
 });
 
+describe("허용 항목의 낡음", () => {
+  const HANDOFF = "docs/handoff.md";
+
+  function rootWithRealAllowedFiles() {
+    const root = tempRoot();
+    for (const { file } of ALLOWED_LINES) {
+      write(root, file, readFileSync(join(process.cwd(), file), "utf8"));
+    }
+    return root;
+  }
+
+  function staleFiles(root: string) {
+    return staleAllowedLines(root).map((allowed) => allowed.file);
+  }
+
+  it("허용 줄이 다 제자리에 있으면 낡은 항목이 없다", () => {
+    expect(staleAllowedLines(rootWithRealAllowedFiles())).toEqual([]);
+  });
+
+  it("handoff가 덮어쓰여 표지 문장이 사라지면 그 항목이 낡았다고 드러난다", () => {
+    const root = rootWithRealAllowedFiles();
+    write(root, HANDOFF, "# 인계\n\n다음 첫 수는 새 task다.\n");
+
+    const stale = staleFiles(root);
+
+    expect(stale.length).toBeGreaterThan(0);
+    expect(new Set(stale)).toEqual(new Set([HANDOFF]));
+  });
+
+  it("표지 문장은 남았는데 그 줄의 옛 경로가 고쳐졌으면 낡았다", () => {
+    const root = rootWithRealAllowedFiles();
+    const handoffMarkers = ALLOWED_LINES.filter(
+      (allowed) => allowed.file === HANDOFF,
+    ).map((allowed) => allowed.marker);
+    write(
+      root,
+      HANDOFF,
+      `${handoffMarkers.map((marker) => `${marker}는 이제 지금 경로만 든다.`).join("\n")}\n`,
+    );
+
+    expect(new Set(staleFiles(root))).toEqual(new Set([HANDOFF]));
+  });
+
+  it("허용 항목의 파일이 없어도 낡았다", () => {
+    const root = rootWithRealAllowedFiles();
+    rmSync(join(root, HANDOFF));
+
+    expect(new Set(staleFiles(root))).toEqual(new Set([HANDOFF]));
+  });
+});
+
 describe("구 경로 잔존 검사 — 실제 저장소 회귀", () => {
   it("허용된 자리(ADR-004 결정 문장, sdlc-gate.md 패턴 열거 줄 등) 말고는 옛 경로가 안 남아 있다", () => {
     const violations = legacyPathViolations(process.cwd());
 
     expect(violations).toEqual([]);
+  });
+
+  it("허용 항목마다 그 표지 문장이 옛 경로가 남은 줄을 실제로 가리킨다", () => {
+    expect(staleAllowedLines(process.cwd())).toEqual([]);
   });
 });

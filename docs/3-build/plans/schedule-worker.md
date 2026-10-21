@@ -52,7 +52,7 @@ sources:
 
 정본은 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md)다 — [근무표](../../2-design/modules/schedule/screens/schedule-worker.md#근무표)·[달 고르기 시트](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트)·[날 시트](../../2-design/modules/schedule/screens/schedule-worker.md#날-시트)의 상태 표, [보기 전환 세그먼트](../../2-design/modules/schedule/screens/schedule-worker.md#보기-전환-세그먼트)·[달력 순](../../2-design/modules/schedule/screens/schedule-worker.md#달력-순--기본)·[포지션 순](../../2-design/modules/schedule/screens/schedule-worker.md#포지션-순--날짜-아코디언)·[확정 전 — 근무 신청](../../2-design/modules/schedule/screens/schedule-worker.md#확정-전--근무-신청)·[날 시트 짜임](../../2-design/modules/schedule/screens/schedule-worker.md#날-시트-짜임)·[인증 상태](../../2-design/modules/schedule/screens/schedule-worker.md#인증-상태)·[시트의 문](../../2-design/modules/schedule/screens/schedule-worker.md#시트의-문)의 짜임, 색·글자 표, 문안 표 셋이다. 쓰기 함수는 `submit_availability` 하나다([근무 신청 내기](../../2-design/modules/schedule/design.md#근무-신청-내기)) — 이 task가 만든다. 규칙은 [SCH-005](../../2-design/modules/schedule/README.md#sch-005)·[SCH-006](../../2-design/modules/schedule/README.md#sch-006)·[SCH-010](../../2-design/modules/schedule/README.md#sch-010)·[SCH-019](../../2-design/modules/schedule/README.md#sch-019)고, 인증 상태는 [ATT-008](../../2-design/modules/attendance/README.md#att-008)·[ATT-016](../../2-design/modules/attendance/README.md#att-016)·[ATT-020](../../2-design/modules/attendance/README.md#att-020)이다.
 
-선행은 [`schedule-data`](schedule-data.md)뿐이다. [`schedule-admin`](schedule-admin.md)과 나란히 갈 수 있다 — 달력 그리드는 이 화면이 세우고 `schedule-admin`이 `src/shared/ui/MonthCalendar.tsx`로 올린다. 달 고르기 시트는 [`rehearsal`](rehearsal.md)이 `src/shared/ui/MonthPickerSheet.tsx`와 `src/shared/lib/month-picker.ts`로 세운다.
+선행은 [`schedule-data`](schedule-data.md)뿐이다. [`schedule-admin`](schedule-admin.md)과 나란히 갈 수 있다 — 달력 그리드는 이 화면이 세우고 `schedule-admin`이 `src/shared/ui/MonthCalendar.tsx`로 올린다. 달 고르기 시트는 [`rehearsal`](rehearsal.md)이 `src/shared/ui/MonthPickerSheet.tsx`와 `src/shared/utils/monthPicker.ts`로 세운다.
 
 정본에서 확인한 다섯이 plan의 방향을 정한다.
 
@@ -116,7 +116,7 @@ sources:
 
 **달력 순.** 기본 보기다.
 
-- 월 달력, 주는 월요일 시작, 이 달 밖 칸은 빈칸. 그리드 계산은 `ui-kit`이 세운 `src/shared/lib/mini-calendar.ts`의 `miniCalendarGrid`고 [schedule-admin](schedule-admin.md#ac-02)도 같은 것을 쓴다
+- 월 달력, 주는 월요일 시작, 이 달 밖 칸은 빈칸. 그리드 계산은 `ui-kit`이 세운 `src/shared/utils/miniCalendar.ts`의 `miniCalendarGrid`고 [schedule-admin](schedule-admin.md#ac-02)도 같은 것을 쓴다
 - 내 근무 날 — `bg.brand-weak` 면에 `bg.brand-solid` 점. 교육 배정도 같은 칸이다
 - 예식이 있지만 내가 안 나가는 날 — 회색 면만
 - 오늘 — 날짜 숫자를 검은 원이 감싼다. 칸 배경은 그날 상태 그대로라 오늘이 내 근무면 브랜드 면에 원과 점이 같이 선다
@@ -214,15 +214,15 @@ sources:
 | `src/entities/schedule/api/get-month-schedule.ts` | 그 달 근무표 행과 연 날들을 한 질의로, `assignments`에 프로필 이름 임베딩 | AC-02 |
 | `src/entities/schedule/api/get-my-availability.ts` · `submit-availability.ts` | 읽기 하나, 쓰기 하나 | AC-02 |
 | `src/entities/schedule/api/__tests__/get-month-schedule.integration.test.ts` · `get-my-availability.integration.test.ts` · `submit-availability.integration.test.ts` | dal 셋의 integration | AC-11 |
-| `src/features/schedule/model/query-keys.ts` · `useMonthSchedule.ts` · `useMonthWindow.ts` · `useMyAvailability.ts` · `useSubmitAvailability.ts` · `__tests__/` | 캐시 키, query 셋과 mutation 하나, 보낸 뒤 `['availability']` 무효화 | AC-06 |
-| `src/screens/schedule-worker/model/month-state.ts` | 달의 네 모습 판정과 마감 줄 문구 | AC-02 |
-| `src/screens/schedule-worker/model/calendar-day-state.ts` | 달력 칸 상태와 「내 근무만」의 면 제거 | AC-02·AC-04·AC-05 |
-| `src/screens/schedule-worker/model/agenda-row.ts` | 아코디언 줄의 내 상태, 날짜 표기, 「내 근무만」 거르기 | AC-02·AC-05 |
-| `src/screens/schedule-worker/model/day-sheet.ts` | 명단 정렬·빈 자리 줄·인원 셈·버튼 둘의 노출 | AC-02·AC-07 |
+| `src/shared/api/queryKeys.ts` · `useMonthSchedule.ts` · `useMonthWindow.ts` · `useMyAvailability.ts` · `useSubmitAvailability.ts` · `__tests__/` | 캐시 키, query 셋과 mutation 하나, 보낸 뒤 `['availability']` 무효화 | AC-06 |
+| `src/entities/schedule/model/monthState.policy.ts` | 달의 네 모습 판정과 마감 줄 문구 | AC-02 |
+| `src/shared/model/calendarDayState.policy.ts` | 달력 칸 상태와 「내 근무만」의 면 제거 | AC-02·AC-04·AC-05 |
+| `src/entities/schedule/utils/agendaRow.utils.ts` | 아코디언 줄의 내 상태, 날짜 표기, 「내 근무만」 거르기 | AC-02·AC-05 |
+| `src/entities/schedule/model/daySheet.policy.ts` | 명단 정렬·빈 자리 줄·인원 셈·버튼 둘의 노출 | AC-02·AC-07 |
 | `src/screens/schedule-worker/model/attendance-column.ts` | 인증 열 노출 판정과 현황 줄(0인 항목 제외) | AC-02·AC-08 |
-| `src/screens/schedule-worker/model/submission-selection.ts` | 고른 날짜 토글 | AC-02·AC-06 |
+| `src/shared/utils/submissionSelection.utils.ts` | 고른 날짜 토글 | AC-02·AC-06 |
 | `src/screens/schedule-worker/model/__tests__/` | 위 여섯의 unit | AC-11 |
-| `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx` · `ScheduleAgenda.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `src/app/(tabs)/schedule.tsx` | 달력 순·포지션 순·제출 모드·날 시트와 `?month=`·`?date=`를 넘기는 라우트 | AC-03~AC-08 |
+| `src/screens/scheduleWorker/ui/ScheduleWorkerScreen.tsx` · `ScheduleAgenda.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `src/app/(tabs)/schedule.tsx` | 달력 순·포지션 순·제출 모드·날 시트와 `?month=`·`?date=`를 넘기는 라우트 | AC-03~AC-08 |
 | `src/shared/ui/Accordion.tsx` · `Checkbox.tsx` · `RosterRow.tsx` | 이 화면이 처음 세운 공용 조각 셋 | AC-10 |
 | `src/shared/ui/ScheduleDayCell.tsx` · `Segment.tsx` | 날짜 칸에 `muted` 상태, 세그먼트에 아이콘 칸 | AC-05·AC-10 |
 | `src/shared/ui/MonthCalendar.tsx` | 달력 그리드 — 이 화면이 세웠고 [`schedule-admin`](schedule-admin.md)이 공용 자리로 올렸다 | AC-04·AC-10 |

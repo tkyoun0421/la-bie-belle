@@ -1,6 +1,6 @@
 ---
 status: open
-target: src/features/schedule/model/useMyAvailability.ts
+target: src/entities/availability/services/useMyAvailabilityQuery.ts
 date: 2026-10-01
 resolved:
 ---

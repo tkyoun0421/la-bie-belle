@@ -78,7 +78,7 @@ pg_cron 작업 하나(`fetch-holidays`)와 Edge Function 하나(`import-holidays
 
 #### 파싱이 사는 자리
 
-**파싱은 `src/`에 순수 함수로 산다.** `src/features/payroll/model/holiday-api-response.ts`가 둘을 낸다.
+**파싱은 `src/`에 순수 함수로 산다.** `src/features/holiday/model/holiday.schema.ts`가 둘을 낸다.
 
 ```ts
 export function toIsoDate(rawDate: number | string): string;   // 20261003 → "2026-10-03"
@@ -109,8 +109,8 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 | --- | --- |
 | `supabase/migrations/<타임스탬프>_fetch_holidays.sql` | 확장, `internal.fetch_holidays`, `public.import_holidays` 껍데기, cron 등록 |
 | `supabase/functions/import-holidays/index.ts` | 열두 달 호출, 파싱 함수 부르기, 껍데기에 넘기기, 호출자 검사 |
-| `src/features/payroll/model/holiday-api-response.ts` | `toIsoDate`·`parseHolidayApiResponse` |
-| `src/features/payroll/model/__tests__/holiday-api-response.test.ts` | 그 짝 |
+| `src/features/holiday/model/holiday.schema.ts` | `toIsoDate`·`parseHolidayApiResponse` |
+| `src/features/holiday/model/__tests__/holiday.schema.test.ts` | 그 짝 |
 | `src/entities/payroll/api/__tests__/fetch-holidays.integration.test.ts` | cron 조건과 등록 |
 | `supabase/config.toml` | `[functions.import-holidays]` |
 | `.env.example` | secret 이름만 |
@@ -145,7 +145,7 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 | AC-01 | 올해 행을 보고 다음 해를 안 본다 | integration 위 | 위와 같다 | 올해에 `api` 행이 있어도 다음 해가 비면 여전히 호출 1 |
 | AC-01 | vault가 비어 cron 작업이 날마다 실패로 남는다 | integration 위 | 위와 같다 | 항목이 없어도 함수가 예외 없이 끝난다 |
 | AC-03 | crontab 항목이 안 서거나 시각이 틀리다 | integration 위 — `cron.job`을 읽는다 | 위와 같다 | `fetch-holidays` 이름의 행이 하나고 스케줄이 `0 18 * * *` |
-| AC-02 | 숫자 날짜를 잘못 읽는다 | unit `src/features/payroll/model/__tests__/holiday-api-response.test.ts`(예정) | `pnpm test` | `toIsoDate(20261003)`이 `"2026-10-03"` |
+| AC-02 | 숫자 날짜를 잘못 읽는다 | unit `src/features/holiday/model/__tests__/holiday.schema.test.ts`(예정) | `pnpm test` | `toIsoDate(20261003)`이 `"2026-10-03"` |
 | AC-02 | 항목이 하나일 때 파싱이 깨진다 | unit 위 | `pnpm test` | `item`이 객체 하나로 와도 한 건으로 읽는다 |
 | AC-02 | 빈 결과가 예외로 튄다 | unit 위 | `pnpm test` | `items`가 빈 문자열이면 빈 배열 |
 | AC-02 | 공휴일이 아닌 날이 급여 계산에 든다 | unit 위 | `pnpm test` | `isHoliday`가 `"N"`인 항목이 빠진다 |

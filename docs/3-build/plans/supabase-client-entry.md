@@ -6,7 +6,7 @@
 
 ## 완료 조건
 
-- `src/shared/lib/read-supabase-env.ts`가 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 읽어 `{ url, anonKey }`로 돌려준다. 둘 중 하나라도 비어 있으면 지금 두 팩토리가 던지는 것과 같은 문구로 그 자리에서 던진다. 두 팩토리가 이 함수를 부르고 자기 `requireEnv`를 지운다. 기존 팩토리 테스트의 env 단언은 고치지 않은 채 그대로 통과한다.
+- `src/shared/config/supabase.config.ts`가 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 읽어 `{ url, anonKey }`로 돌려준다. 둘 중 하나라도 비어 있으면 지금 두 팩토리가 던지는 것과 같은 문구로 그 자리에서 던진다. 두 팩토리가 이 함수를 부르고 자기 `requireEnv`를 지운다. 기존 팩토리 테스트의 env 단언은 고치지 않은 채 그대로 통과한다.
 - `src/shared/lib/create-supabase-request-client.ts`가 인자 없이 `next/headers`의 `cookies()`를 안에서 받아 `createSupabaseServerClient`에 넘긴 결과를 돌려준다. 호출자는 `cookies()`를 모른다. `createSupabaseServerClient(store)`는 그대로 남는다 — 미들웨어처럼 저장소가 다른 자리의 진입점이다.
 - `src/app/auth-gate.ts`·`src/app/login/actions.ts`·`src/app/auth/callback/route.ts`·`src/app/auth/logout/route.ts`가 새 진입점을 쓴다. 저장소에서 `createSupabaseServerClient(await cookies())`가 사라진다.
 - `src/features/auth/read-auth-gate.ts`가 클라이언트를 받아 목적지와 계정을 돌려준다 — 지금 `src/app/auth-gate.ts`의 `readAuthGate`와 `googlePhotoOf`, `AuthGate`·`SignedInAccount` 타입이 여기로 온다. `next/*`를 import하지 않는다. 짝 테스트 `src/features/auth/__tests__/read-auth-gate.test.ts`가 가짜 클라이언트로 세션 없음·승인 전·승인 후와 아바타 키 둘(`avatar_url`·`picture`)을 확인한다.

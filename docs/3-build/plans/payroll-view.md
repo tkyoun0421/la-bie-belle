@@ -123,21 +123,21 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/screens/payroll/model/period.policy.ts` | 기간을 단위와 날짜로 들고 라벨·앞뒤 이동·읽을 달 키를 낸다 | AC-01·AC-06 |
-| `src/screens/payroll/utils/summary.utils.ts` | 금액 한 줄과 누적 두 줄. 셀 것이 없는 기간이 `–`고 합이 0인 기간이 `0원`이다. 금액을 글자로 옮기는 손은 뒤에 `src/shared/lib/spell-number.ts`로 올라갔다 | AC-02 |
-| `src/screens/payroll/model/history-rows.ts` | 내역 줄의 제목·보조 정보·금액. 연장·교육·결근·시급 미정 문구가 여기 있다 | AC-03 |
-| `src/screens/payroll/model/year-rows.ts` | 날을 달로 접고 맨 아래에 안 눌리는 합계 줄을 붙인다 | AC-04 |
-| `src/screens/payroll/model/boundary.policy.ts` | 기간 화살표가 서는지 — 바닥은 승인된 달, 천장은 오늘이고 퇴사자는 퇴사한 달이다 | AC-05 |
+| `src/features/payrollCompute/model/period.policy.ts` | 기간을 단위와 날짜로 들고 라벨·앞뒤 이동·읽을 달 키를 낸다 | AC-01·AC-06 |
+| `src/features/payrollCompute/utils/summary.utils.ts` | 금액 한 줄과 누적 두 줄. 셀 것이 없는 기간이 `–`고 합이 0인 기간이 `0원`이다. 금액을 글자로 옮기는 손은 뒤에 `src/shared/utils/spellNumber.ts`로 올라갔다 | AC-02 |
+| `src/features/payrollCompute/utils/historyRows.utils.ts` | 내역 줄의 제목·보조 정보·금액. 연장·교육·결근·시급 미정 문구가 여기 있다 | AC-03 |
+| `src/features/payrollCompute/utils/yearRows.utils.ts` | 날을 달로 접고 맨 아래에 안 눌리는 합계 줄을 붙인다 | AC-04 |
+| `src/features/payrollCompute/model/boundary.policy.ts` | 기간 화살표가 서는지 — 바닥은 승인된 달, 천장은 오늘이고 퇴사자는 퇴사한 달이다 | AC-05 |
 | `src/screens/payroll/model/__tests__/` | 위 다섯의 unit | AC-01~AC-05 |
 | `src/screens/payroll/ui/PayrollScreen.tsx` | 세그먼트·기간 줄·금액·예상치 안내·누적·내역 목록을 배치한다 | AC-01~AC-05·AC-07 |
 | `src/app/(tabs)/payroll.tsx` | `NotBuiltYet`을 걷고 `/payroll`에 화면을 붙인다 | AC-01 |
 | `src/app/(tabs)/_layout.tsx` | 퇴사한 사람에게 탭 바를 안 그린다 — 판정이 화면이 아니라 탭 껍데기에 있다 | AC-05 |
-| `src/features/payroll/model/usePayrollMonths.ts`·`__tests__/usePayrollMonths.test.ts` | 급여 달치를 여러 달 읽어 합친다 | AC-06 |
-| `src/features/schedule/model/useScheduleMonths.ts`·`__tests__/useScheduleMonths.test.ts` | 배정·날도 같은 수의 달을 읽어야 한다 — 기존 훅이 달 하나짜리다 | AC-06 |
-| `src/features/rehearsal/model/useRehearsalMonths.ts`·`__tests__/useRehearsalMonths.test.ts` | 리허설도 같다 | AC-06 |
+| `src/entities/payroll/services/usePayrollMonthsQuery.ts`·`__tests__/usePayrollMonths.test.ts` | 급여 달치를 여러 달 읽어 합친다 | AC-06 |
+| `src/entities/schedule/services/useScheduleMonthsQuery.ts`·`__tests__/useScheduleMonths.test.ts` | 배정·날도 같은 수의 달을 읽어야 한다 — 기존 훅이 달 하나짜리다 | AC-06 |
+| `src/entities/rehearsal/services/useRehearsalMonthsQuery.ts`·`__tests__/useRehearsalMonths.test.ts` | 리허설도 같다 | AC-06 |
 | `src/shared/ui/Segment.tsx` | 주·월·연 세그먼트 — 이미 있고 고른 면이 미끄러지는 모션만 는다. `schedule-worker`가 같이 쓰니 그 화면도 회귀로 본다 | AC-01 |
-| `src/features/payroll/model/payroll-days.ts`·`__tests__/payroll-days.test.ts` | 시급 없는 날을 버리지 말고 `'wage-pending'`으로 낸다 — [payroll-data AC-06](payroll-data.md#ac-06)의 계약을 넓힌다. `payrollViewDays`가 세 키의 행을 접어 화면이 물을 사실까지 같이 낸다 | AC-04 |
-| `src/features/payroll/model/day-amount.ts` | `REGULAR_MINUTES`를 내보내 내역 줄이 연장 초과분을 적는다 | AC-03 |
+| `src/features/payrollCompute/model/payrollDays.policy.ts`·`__tests__/payroll-days.test.ts` | 시급 없는 날을 버리지 말고 `'wage-pending'`으로 낸다 — [payroll-data AC-06](payroll-data.md#ac-06)의 계약을 넓힌다. `payrollViewDays`가 세 키의 행을 접어 화면이 물을 사실까지 같이 낸다 | AC-04 |
+| `src/entities/payroll/model/dayAmount.policy.ts` | `REGULAR_MINUTES`를 내보내 내역 줄이 연장 초과분을 적는다 | AC-03 |
 | `src/entities/schedule/api/get-month-schedule.ts` | 근태 판정이 읽는 인증의 신고·접수 시각을 같이 싣는다 | AC-02 |
 | `tests/e2e/payroll.yaml` | 주·월·연 한 바퀴, 연에서 달로 들어가기, 퇴사자 진입 | 검증 표 |
 | `scripts/e2eSeedServer.mts`·`tests/integration/postgres.ts` | 지난 달 근무표를 SQL로 꽂고 승인과 첫 시급 행을 근무보다 앞 달로 물린다 | 검증 표 |
@@ -165,14 +165,14 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 달을 걸친 주가 한 달에 통째로 든다 | unit `src/screens/payroll/model/__tests__/period.test.ts` | `pnpm test` | 주 보기는 이레가 한 덩이, 월 보기는 8월 31일만 8월 |
-| AC-02 | 근무가 없는데 `0원`이 뜬다 | unit `src/screens/payroll/model/__tests__/summary.test.ts` | `pnpm test` | `–`가 뜬다 |
+| AC-01 | 달을 걸친 주가 한 달에 통째로 든다 | unit `src/features/payrollCompute/model/__tests__/period.policy.test.ts` | `pnpm test` | 주 보기는 이레가 한 덩이, 월 보기는 8월 31일만 8월 |
+| AC-02 | 근무가 없는데 `0원`이 뜬다 | unit `src/features/payrollCompute/utils/__tests__/summary.utils.test.ts` | `pnpm test` | `–`가 뜬다 |
 | AC-02 | 지각 0회 줄이 선다 | unit 위 | `pnpm test` | 그 줄이 없다 |
 | AC-02 | 누적이 기간을 안 따라간다 | unit 위 | `pnpm test` | 주로 바꾸면 누적도 그 주 |
-| AC-03 | 결근한 날이 목록에서 사라진다 | unit `src/screens/payroll/model/__tests__/history-rows.test.ts` | `pnpm test` | 줄이 서고 금액이 `–`, 보조 정보가 「결근」 |
+| AC-03 | 결근한 날이 목록에서 사라진다 | unit `src/features/payrollCompute/utils/__tests__/historyRows.utils.test.ts` | `pnpm test` | 줄이 서고 금액이 `–`, 보조 정보가 「결근」 |
 | AC-03 | 리허설만 있는 날이 빠진다 | unit 위 | `pnpm test` | 줄이 서고 금액이 난다 |
 | AC-03 | 연장이 붙은 날에 근거가 없다 | unit 위 | `pnpm test` | 보조 정보에 「연장 1시간」 |
-| AC-04 | 연에 합계 줄이 없거나 눌린다 | unit `src/screens/payroll/model/__tests__/year-rows.test.ts` | `pnpm test` | 맨 아래 한 줄, 안 눌림. 주·월에는 없음 |
+| AC-04 | 연에 합계 줄이 없거나 눌린다 | unit `src/features/payrollCompute/utils/__tests__/yearRows.utils.test.ts` | `pnpm test` | 맨 아래 한 줄, 안 눌림. 주·월에는 없음 |
 | AC-05 | 첫 달 앞으로 계속 간다 | e2e `tests/e2e/payroll.yaml` | `pnpm e2e` | 화살표가 사라진다 |
 | AC-05 | 퇴사자에게 탭 바가 선다 | e2e 위 | 위와 같다 | 탭 바가 없고 뒤로가 `/left` |
 | AC-06 | 읽는 중에 `–`가 뜬다 | e2e 위 | 위와 같다 | 스켈레톤이고 `–`가 아니다 |

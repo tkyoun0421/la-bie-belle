@@ -104,7 +104,7 @@ sources:
 
 **순수 함수 — 메시지 만들기.**
 
-`src/features/notification/model/push-message.ts`.
+`src/entities/notification/utils/pushMessage.utils.ts`.
 
 - 잡힌 행과 주소 목록을 받아 부칠 메시지 배열을 낸다. 주소가 둘이면 메시지도 둘이다
 - 실을 것은 `kind`와 목적지뿐이다. **문안을 `data`에 안 싣는다** — payload가 4KB를 넘으면 통째로 거절당하고 문안은 화면이 그린다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
@@ -115,7 +115,7 @@ sources:
 
 **순수 함수 — 실패를 가르기.**
 
-`src/features/notification/model/push-result.ts`.
+`src/entities/notification/model/pushResult.policy.ts`.
 
 - 부친 답을 받아 셋으로 가른다 — 성공(접수증 번호), 주소 폐기, 다시 시도
 - 기기가 등록을 잃은 것(`DeviceNotRegistered`)이 주소 폐기다. 너무 잦은 것은 다시 시도고, 자격 증명이 틀린 것은 사람이 봐야 해 로그만 남기고 다시 시도로 안 친다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
@@ -158,8 +158,8 @@ sources:
 | `supabase/functions/send-push/index.ts` | 긁기·잡기·부치기·쓰기의 순서와 HTTP | AC-05 |
 | `supabase/functions/import-holidays/index.ts` | `_shared` 복사본을 보도록 import를 고친다 | AC-09 |
 | `supabase/config.toml` | `send-push` 항목 | AC-05 |
-| `src/features/notification/model/push-message.ts` | 메시지 만들기와 백 건 끊기 | AC-06 |
-| `src/features/notification/model/push-result.ts` | 성공·폐기·재시도 가르기 | AC-07 |
+| `src/entities/notification/utils/pushMessage.utils.ts` | 메시지 만들기와 백 건 끊기 | AC-06 |
+| `src/entities/notification/model/pushResult.policy.ts` | 성공·폐기·재시도 가르기 | AC-07 |
 | `scripts/syncEdgeShared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
 | `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-09 |
 | `package.json` | 복사 스크립트 항목 | AC-09 |
@@ -207,7 +207,7 @@ sources:
 | AC-08 | 행이 들어와도 안 쏜다 | integration 위 — `net`의 요청 시퀀스를 센다([관찰 034](../../observations/034-pg-net-response-row-is-async.md)) | 위와 같다 | `notifications` insert 하나에 호출이 1 |
 | AC-08 | 쏘기가 실패해 사건이 롤백된다 | integration 위 — vault 항목을 지우고 알림을 낳는다 | 위와 같다 | 알림 행이 남고 예외가 안 난다 |
 | AC-08 | crontab 항목이 안 선다 | integration 위 — `cron.job`을 읽는다 | 위와 같다 | `retry_push` 행이 하나 |
-| AC-06 | payload에 문안이 실린다 | unit `src/features/notification/model/__tests__/push-message.test.ts`(예정) | `pnpm test` | `data`에 `kind`와 목적지만 있다 |
+| AC-06 | payload에 문안이 실린다 | unit `src/entities/notification/utils/__tests__/pushMessage.utils.test.ts`(예정) | `pnpm test` | `data`에 `kind`와 목적지만 있다 |
 | AC-06 | 백 건을 안 끊는다 | unit 위 | 위와 같다 | 250건이 묶음 셋이 된다 |
 | AC-06 | 주소 둘인 사람에게 한 번만 간다 | unit 위 | 위와 같다 | 메시지가 둘이다 |
 | AC-07 | 살아 있는 주소를 지운다 | unit `push-result.test.ts`(예정) | 위와 같다 | 폐기는 기기 등록이 사라진 답 하나뿐이다 |

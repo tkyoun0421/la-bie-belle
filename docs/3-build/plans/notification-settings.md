@@ -40,7 +40,7 @@ sources:
 
 - **iOS 쪽 차이를 정본이 안 적는다.** 안드로이드의 알림 채널만 적혀 있다(AC-06). iOS는 채널 개념이 없고 권한 요청이 곧 시스템 창이라 **추가 단계가 없다** — 이 plan이 그 사실을 적고 화면은 플랫폼 분기 하나로 끝낸다
 - **주소를 받으려면 `projectId`가 든다.** Expo 푸시 주소는 EAS 프로젝트에 묶여 `app.json`의 `extra.eas.projectId`를 읽어 넘긴다. 그 값이 없으면 개발 빌드에서 주소 발급이 실패한다 — 화면은 그 실패를 「켰는데 기기가 없음」 갈래로 받는다
-- **승인 대기 화면의 모습이 셋인데 코드의 값은 다른 셋이다.** `src/screens/pending/model/notification-prompt.ts`가 `"idle" | "enabled" | "unsupported"`를 들고 `"denied"` 결과를 받으면 `current`를 그대로 돌려줘 **거부해도 화면이 안 넘어간다**. [login.md 「알림 영역의 세 모습」](../../2-design/modules/account/screens/login.md#알림-영역의-세-모습)의 셋째가 「거부한 뒤」니 뷰 값을 `"idle" | "enabled" | "denied"`로 맞추고, 기기가 물음 자체를 못 띄우는 `"unsupported"` 결과도 같은 셋째 모습으로 보낸다 — 넷째 모습이 정본에 없다. **`src/screens/pending/model/__tests__/notification-prompt.test.ts`의 `toBe("unsupported")` 단언이 이 판정으로 바뀐다** — `unit-test-writer`가 고쳐 쓰고 `implementer`는 받은 것을 그대로 통과시킨다
+- **승인 대기 화면의 모습이 셋인데 코드의 값은 다른 셋이다.** `src/screens/pending/model/notificationPrompt.policy.ts`가 `"idle" | "enabled" | "unsupported"`를 들고 `"denied"` 결과를 받으면 `current`를 그대로 돌려줘 **거부해도 화면이 안 넘어간다**. [login.md 「알림 영역의 세 모습」](../../2-design/modules/account/screens/login.md#알림-영역의-세-모습)의 셋째가 「거부한 뒤」니 뷰 값을 `"idle" | "enabled" | "denied"`로 맞추고, 기기가 물음 자체를 못 띄우는 `"unsupported"` 결과도 같은 셋째 모습으로 보낸다 — 넷째 모습이 정본에 없다. **`src/screens/pending/model/__tests__/notificationPrompt.policy.test.ts`의 `toBe("unsupported")` 단언이 이 판정으로 바뀐다** — `unit-test-writer`가 고쳐 쓰고 `implementer`는 받은 것을 그대로 통과시킨다
 
 ## 완료 조건
 
@@ -48,7 +48,7 @@ sources:
 
 **권한을 읽고 묻는 자리.**
 
-`src/features/notification/model/push-permission.ts`와 그 훅.
+`src/features/pushSwitch/lib/pushPermission.lib.ts`와 그 훅.
 
 - 상태 셋을 낸다 — 안 물어본 상태·허락·거부. `expo-notifications`의 권한 조회를 감싼다
 - **진입 즉시 안 묻는다.** 사람이 누를 때만 묻는다([NTF-017](../../2-design/modules/notification/README.md#ntf-017))
@@ -59,7 +59,7 @@ sources:
 
 **갈래를 판정하는 순수 함수.**
 
-`src/features/notification/model/reach-state.ts`.
+`src/entities/notification/model/reachState.policy.ts`.
 
 - 의사(`notifications_enabled`)와 기기(주소 유무)와 권한 상태 셋을 받아 화면이 그릴 갈래를 낸다 — 끔 / 켰는데 기기가 없음 / 켰고 기기가 있음 / 권한 거부
 - **권한 거부가 넷째로 갈린다.** 스위치를 세울지 안내를 세울지가 여기서 갈린다(AC-03)
@@ -69,7 +69,7 @@ sources:
 
 **켜고 끄는 훅.**
 
-`src/features/notification/model/useNotificationSwitch.ts`(이름은 테스트가 정한다).
+`src/features/pushSwitch/services/useNotificationSwitchMutation.ts`(이름은 테스트가 정한다).
 
 - **켜기** — `set_notifications_enabled(true)`를 먼저 보내고 권한을 묻는다. 거부되면 의사는 참인 채로 끝난다
 - **끄기** — 확인 Dialog를 거친 뒤([profile.md](../../2-design/modules/account/screens/profile.md#알림)) `set_notifications_enabled(false)`를 보낸다. 그 함수가 주소도 같이 지운다
@@ -130,17 +130,17 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `package.json`·`app.json` | `expo-notifications` 의존성과 `projectId` 읽는 자리 | AC-01 |
-| `src/features/notification/model/push-permission.ts` | 권한 상태 셋, 안드로이드 채널, 주소 받기 | AC-01·AC-06 |
-| `src/features/notification/model/reach-state.ts` | 갈래 판정 순수 함수 | AC-02·AC-07·AC-08 |
-| `src/features/notification/model/useNotificationSwitch.ts` | 켜기·끄기의 순서와 실패 되돌리기 | AC-03 |
-| `src/features/notification/model/useSavePushToken.ts` | 매 진입 주소 보내기 | AC-04 |
+| `src/features/pushSwitch/lib/pushPermission.lib.ts` | 권한 상태 셋, 안드로이드 채널, 주소 받기 | AC-01·AC-06 |
+| `src/entities/notification/model/reachState.policy.ts` | 갈래 판정 순수 함수 | AC-02·AC-07·AC-08 |
+| `src/features/pushSwitch/services/useNotificationSwitchMutation.ts` | 켜기·끄기의 순서와 실패 되돌리기 | AC-03 |
+| `src/features/pushSwitch/services/useSavePushTokenMutation.ts` | 매 진입 주소 보내기 | AC-04 |
 | `src/entities/notification/api/save-push-token.ts`·`remove-push-token.ts`·`set-notifications-enabled.ts` | 함수 넷 중 이 화면이 부르는 셋 | AC-03·AC-04 |
 | `src/entities/notification/api/get-push-reachable.ts` | `push_reachable` 뷰 읽기 | AC-08 |
 | `src/screens/profile/` | 알림 줄과 끄기 확인 Dialog | AC-07 |
 | `src/screens/pending/` | 켜기 자리 | AC-06 |
 | `src/screens/members/`·`src/screens/schedule-admin/` | 갈래 표시. 확정 뒤 확인은 한 줄로 합친다 | AC-08 |
 | `src/entities/profile/api/list-members.ts` | 목록이 `push_reachable`과 의사를 같이 읽는다 | AC-08 |
-| `src/screens/pending/model/notification-prompt.ts` | 뷰 값을 `"denied"`로 맞춘다 | AC-06 |
+| `src/screens/pending/model/notificationPrompt.policy.ts` | 뷰 값을 `"denied"`로 맞춘다 | AC-06 |
 | `src/features/notification/model/__tests__/`·`src/entities/notification/api/__tests__/` | 갈래 판정과 함수의 짝 | AC-02·AC-04·AC-05·AC-08 |
 | `tests/e2e/notification-settings.yaml` | 켜기·끄기·거부의 여정 | AC-01·AC-03·AC-06·AC-07 |
 
