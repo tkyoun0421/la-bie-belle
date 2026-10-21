@@ -106,7 +106,7 @@ sources:
 | `src/shared/utils/monthBoundary.ts` | 달 줄 경계가 `screens/admin-stats/model/`에서 올라온다 — 두 통계가 같은 경계를 쓴다 | AC-05 |
 | `src/features/stats/utils/teamChartValues.utils.ts`·`src/screens/adminStats/ui/AdminStatsScreen.tsx` | 올라간 셋을 새 자리에서 부른다 | AC-01 |
 | `src/features/payrollCompute/utils/summary.utils.ts`·`history-rows.ts`·`year-rows.ts` | `spellAmount`를 버리고 `spellWon`을 부른다. `NO_AMOUNT`가 `NO_VALUE`를 가리킨다 | AC-04 |
-| `src/features/wageAdmin/model/wageAmount.policy.ts`·`src/screens/wages/ui/WagesScreen.tsx`·`MemberWageSheet.tsx`·`ResetWageDialog.tsx` | 같은 자리 — 제 슬라이스의 `spellWon`을 버리고 shared 것을 부른다 | AC-04 |
+| `src/features/wageAdmin/model/wageAmount.policy.ts`·`src/screens/wages/ui/WagesScreen.tsx`·`src/features/wageAdmin/ui/MemberWageSheet.tsx`·`ResetWageDialog.tsx` | 같은 자리 — 제 슬라이스의 `spellWon`을 버리고 shared 것을 부른다 | AC-04 |
 | `src/features/payrollCompute/model/payrollDays.policy.ts` | 교육 배정의 `kind`가 `'education'`이 아니라 표가 드는 `'training'`이다 | AC-03 |
 | `src/features/stats/utils/__tests__/myTotals.utils.test.ts`·`src/features/stats/api/__tests__/useStatsQueries.test.ts` | 좁힌 집계와 급여 질의의 unit | AC-01 |
 | `src/screens/stats/model/__tests__/` | 탭 셋 모델 일곱의 unit | AC-02~AC-04 |

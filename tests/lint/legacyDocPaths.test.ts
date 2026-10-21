@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import {
   mkdirSync,
   mkdtempSync,
@@ -6,10 +7,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import {
   ALLOWED_LINES,
   legacyPathViolations,
+  pathsRenamedAway,
   staleAllowedLines,
 } from "@tests/lint/legacyDocPaths";
 
@@ -52,42 +54,60 @@ const RISK_10_CASES: [string, string][] = [
 ];
 
 const RENAMED_SCRIPTS: [string, string][] = [
-  [legacyPath("check-moved-lines", ".mts"), "scripts/checkMovedLines.mts"],
   [
-    legacyPath("check-sources-impact", ".mts"),
+    legacyPath("scripts/check-moved-lines", ".mts"),
+    "scripts/checkMovedLines.mts",
+  ],
+  [
+    legacyPath("scripts/check-sources-impact", ".mts"),
     "scripts/checkSourcesImpact.mts",
   ],
-  [legacyPath("e2e-seed-server", ".mts"), "scripts/e2eSeedServer.mts"],
-  [legacyPath("font-subset", ".mts"), "scripts/fontSubset.mts"],
+  [legacyPath("scripts/e2e-seed-server", ".mts"), "scripts/e2eSeedServer.mts"],
+  [legacyPath("scripts/font-subset", ".mts"), "scripts/fontSubset.mts"],
   [
-    legacyPath("generate-database-types", ".mts"),
+    legacyPath("scripts/generate-database-types", ".mts"),
     "scripts/generateDatabaseTypes.mts",
   ],
   [
-    legacyPath("generate-globals-css", ".mts"),
+    legacyPath("scripts/generate-globals-css", ".mts"),
     "scripts/generateGlobalsCss.mts",
   ],
   [
-    legacyPath("generate-route-types", ".mts"),
+    legacyPath("scripts/generate-route-types", ".mts"),
     "scripts/generateRouteTypes.mts",
   ],
-  [legacyPath("inline-sian-font", ".mts"), "scripts/inlineSianFont.mts"],
-  [legacyPath("module-alias-hooks", ".mjs"), "scripts/moduleAliasHooks.mjs"],
-  [legacyPath("sync-edge-shared", ".mts"), "scripts/syncEdgeShared.mts"],
-  [legacyPath("tokens-md", ".mts"), "scripts/tokensMd.mts"],
-  [legacyPath("tossface-fetch", ".mts"), "scripts/tossfaceFetch.mts"],
-  [legacyPath("seed-session", ".js"), "tests/e2e/scripts/seedSession.js"],
+  [
+    legacyPath("scripts/inline-sian-font", ".mts"),
+    "scripts/inlineSianFont.mts",
+  ],
+  [
+    legacyPath("scripts/module-alias-hooks", ".mjs"),
+    "scripts/moduleAliasHooks.mjs",
+  ],
+  [
+    legacyPath("scripts/sync-edge-shared", ".mts"),
+    "scripts/syncEdgeShared.mts",
+  ],
+  [legacyPath("scripts/tokens-md", ".mts"), "scripts/tokensMd.mts"],
+  [legacyPath("scripts/tossface-fetch", ".mts"), "scripts/tossfaceFetch.mts"],
+  [
+    legacyPath("tests/e2e/scripts/seed-session", ".js"),
+    "tests/e2e/scripts/seedSession.js",
+  ],
 ];
 
 const RENAMED_LINT_FILES: [string, string][] = [
   [
-    legacyPath("generate-globals-css", ".test.ts"),
+    legacyPath("tests/lint/generate-globals-css", ".test.ts"),
     "tests/lint/generateGlobalsCss.test.ts",
   ],
-  [legacyPath("legacy-doc-paths", ".ts"), "tests/lint/legacyDocPaths.ts"],
-  [legacyPath("rule-check", ".ts"), "tests/lint/ruleCheck.ts"],
   [
-    legacyPath("dark-media-query-compiles", ".test.ts"),
+    legacyPath("tests/lint/legacy-doc-paths", ".ts"),
+    "tests/lint/legacyDocPaths.ts",
+  ],
+  [legacyPath("tests/lint/rule-check", ".ts"), "tests/lint/ruleCheck.ts"],
+  [
+    legacyPath("tests/lint/dark-media-query-compiles", ".test.ts"),
     "tests/lint/darkMediaQueryCompiles.test.ts",
   ],
 ];
@@ -109,6 +129,20 @@ const RENAMED_SOURCES: [string, string][] = [
     legacyPath("src/screens/admin-home/ui/", "AdminHomeScreen.tsx"),
     "src/screens/adminHome/ui/AdminHomeScreen.tsx",
   ],
+];
+
+const RENAMED_AWAY = [
+  ...RENAMED_SCRIPTS,
+  ...RENAMED_LINT_FILES,
+  ...RENAMED_SOURCES,
+].map(([oldPath]) => oldPath);
+
+const SIBLING_FOLDER = "src/screens/sample/ui/";
+const OLD_DAY_SHEET = "OldDaySheet.tsx";
+const OLD_FORM_SHEET = "OldFormSheet.tsx";
+const SIBLINGS_RENAMED_AWAY = [
+  `${SIBLING_FOLDER}${OLD_DAY_SHEET}`,
+  `${SIBLING_FOLDER}${OLD_FORM_SHEET}`,
 ];
 
 const NAMES_INSIDE_OTHER_WORDS = [
@@ -138,12 +172,14 @@ function write(root: string, relative: string, body: string) {
   writeFileSync(absolute, body);
 }
 
-function violatingFiles(root: string) {
-  return legacyPathViolations(root).map((violation) => violation.file);
+function violatingFiles(root: string, renamedAway = RENAMED_AWAY) {
+  return legacyPathViolations(root, renamedAway).map(
+    (violation) => violation.file,
+  );
 }
 
 function violationsFor(root: string, file: string) {
-  return legacyPathViolations(root).filter(
+  return legacyPathViolations(root, RENAMED_AWAY).filter(
     (violation) => violation.file === file,
   );
 }
@@ -246,27 +282,33 @@ describe("구 경로 잔존 검사", () => {
     expect(violatingFiles(root)).toEqual(["docs/proposals/other.md"]);
   });
 
-  function patternsInSample(line: string): string[] {
+  function patternsInSample(
+    line: string,
+    renamedAway = RENAMED_AWAY,
+    file = "docs/3-build/plans/sample.md",
+  ): string[] {
     const root = tempRoot();
-    write(root, "docs/3-build/plans/sample.md", `${line}\n`);
+    write(root, file, `${line}\n`);
 
-    return violationsFor(root, "docs/3-build/plans/sample.md").map(
-      (violation) => violation.pattern,
-    );
+    return legacyPathViolations(root, renamedAway)
+      .filter((violation) => violation.file === file)
+      .map((violation) => violation.pattern);
   }
 
   it.each(RENAMED_SCRIPTS)(
-    "camelCase로 옮기기 전 스크립트 경로 scripts/%s가 남아 있으면 검출한다",
-    (oldName) => {
+    "camelCase로 옮기기 전 스크립트 경로 %s가 남아 있으면 검출한다",
+    (oldPath) => {
       expect(
-        patternsInSample(`| \`scripts/${oldName}\` | 시드 상태 | AC-01 |`),
-      ).toContain(oldName);
+        patternsInSample(`| \`${oldPath}\` | 시드 상태 | AC-01 |`),
+      ).toContain(basename(oldPath));
     },
   );
 
   it.each(RENAMED_SCRIPTS)(
     "경로 없이 이름만 적힌 옛 스크립트 %s도 검출한다",
-    (oldName) => {
+    (oldPath) => {
+      const oldName = basename(oldPath);
+
       expect(
         patternsInSample(`\`${oldName}\`가 토큰 표를 읽어 CSS를 만든다.`),
       ).toContain(oldName);
@@ -274,11 +316,13 @@ describe("구 경로 잔존 검사", () => {
   );
 
   it.each(RENAMED_LINT_FILES)(
-    "camelCase로 옮기기 전 tests/lint 파일 이름 %s를 경로가 있든 없든 검출한다",
-    (oldName) => {
-      expect(
-        patternsInSample(`검사는 \`tests/lint/${oldName}\`가 한다.`),
-      ).toEqual([oldName]);
+    "camelCase로 옮기기 전 tests/lint 파일 %s를 경로가 있든 없든 검출한다",
+    (oldPath) => {
+      const oldName = basename(oldPath);
+
+      expect(patternsInSample(`검사는 \`${oldPath}\`가 한다.`)).toEqual([
+        oldName,
+      ]);
       expect(patternsInSample(`검사는 ${oldName}가 한다.`)).toEqual([oldName]);
     },
   );
@@ -338,6 +382,92 @@ describe("구 경로 잔존 검사", () => {
     expect(violatingFiles(root)).toEqual([]);
   });
 
+  it("이름 변경 기록의 옛 경로에 지금 파일이 다시 있으면 잡지 않는다", () => {
+    const root = tempRoot();
+    const recreated = "tests/lint/sampleTypes.ts";
+    write(root, recreated, "export const sample = 1;\n");
+    write(
+      root,
+      "docs/3-build/plans/sample.md",
+      `검사는 \`${recreated}\`가 한다.\n`,
+    );
+
+    expect(violatingFiles(root, [recreated])).toEqual([]);
+  });
+
+  it("옛 파일 이름이 지금 다른 폴더에 있으면 이름만으로는 잡지 않고 옛 경로로만 잡는다", () => {
+    const root = tempRoot();
+    const oldPath = "tests/unit/sample.test.ts";
+    write(root, "src/shared/utils/__tests__/sample.test.ts", "");
+    write(
+      root,
+      "docs/3-build/plans/sample.md",
+      `\`sample.test.ts\`가 그 테스트다.\n\`${oldPath}\`는 옮기기 전 자리다.\n`,
+    );
+
+    expect(legacyPathViolations(root, [oldPath])).toEqual([
+      { file: "docs/3-build/plans/sample.md", pattern: oldPath, line: 2 },
+    ]);
+  });
+
+  it("경로 뒤에 이어 쓴 형제 이름은 앞 경로의 폴더에서 읽어 옛 경로를 잡는다", () => {
+    expect(
+      patternsInSample(
+        `\`${SIBLING_FOLDER}SampleScreen.tsx\`·\`${OLD_DAY_SHEET}\`·\`${OLD_FORM_SHEET}\`가 화면이다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual(SIBLINGS_RENAMED_AWAY);
+  });
+
+  it("형제 이름을 쉼표로 이어 써도 잡는다", () => {
+    expect(
+      patternsInSample(
+        `\`${SIBLING_FOLDER}SampleScreen.tsx\`, \`${OLD_DAY_SHEET}\`가 화면이다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([`${SIBLING_FOLDER}${OLD_DAY_SHEET}`]);
+  });
+
+  it("앞 경로가 옛 경로이고 형제 이름도 옛 경로면 둘 다 잡는다", () => {
+    expect(
+      patternsInSample(
+        `\`${SIBLING_FOLDER}${OLD_FORM_SHEET}\`·\`${OLD_DAY_SHEET}\`가 시트다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([
+      `${SIBLING_FOLDER}${OLD_FORM_SHEET}`,
+      `${SIBLING_FOLDER}${OLD_DAY_SHEET}`,
+    ]);
+  });
+
+  it("형제 이름을 앞 경로의 폴더에서 읽은 경로가 옛 경로가 아니면 잡지 않는다", () => {
+    expect(
+      patternsInSample(
+        `\`src/screens/other/ui/OtherScreen.tsx\`·\`${OLD_DAY_SHEET}\`가 화면이다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([]);
+  });
+
+  it("앞 경로 없이 홀로 적힌 옛 src 파일 이름은 잡지 않는다", () => {
+    expect(
+      patternsInSample(
+        `\`${OLD_DAY_SHEET}\`가 시트다. ${OLD_FORM_SHEET}도 그렇다.`,
+        SIBLINGS_RENAMED_AWAY,
+      ),
+    ).toEqual([]);
+  });
+
+  it("코드 파일 안의 형제 이름은 잡지 않는다", () => {
+    expect(
+      patternsInSample(
+        `const files = "\`${SIBLING_FOLDER}SampleScreen.tsx\`·\`${OLD_DAY_SHEET}\`";`,
+        SIBLINGS_RENAMED_AWAY,
+        "tests/lint/sample.test.ts",
+      ),
+    ).toEqual([]);
+  });
+
   it.each(RISK_14_CASES)(
     "검사 대상에 %s 같은 정의문·코드 파일도 포함된다",
     (relative, body) => {
@@ -352,6 +482,12 @@ describe("구 경로 잔존 검사", () => {
 describe("허용 항목의 낡음", () => {
   const TARGET = "docs/backlog.md";
 
+  let renamedAway: string[];
+
+  beforeAll(() => {
+    renamedAway = pathsRenamedAway(process.cwd());
+  });
+
   function rootWithRealAllowedFiles() {
     const root = tempRoot();
     for (const { file } of ALLOWED_LINES) {
@@ -361,7 +497,7 @@ describe("허용 항목의 낡음", () => {
   }
 
   function staleFiles(root: string) {
-    return staleAllowedLines(root).map((allowed) => allowed.file);
+    return staleAllowedLines(root, renamedAway).map((allowed) => allowed.file);
   }
 
   it("덮어쓰는 handoff는 허용 목록에 오르지 않는다", () => {
@@ -371,7 +507,9 @@ describe("허용 항목의 낡음", () => {
   });
 
   it("허용 줄이 다 제자리에 있으면 낡은 항목이 없다", () => {
-    expect(staleAllowedLines(rootWithRealAllowedFiles())).toEqual([]);
+    expect(staleAllowedLines(rootWithRealAllowedFiles(), renamedAway)).toEqual(
+      [],
+    );
   });
 
   it("문서가 고쳐져 표지 문장이 사라지면 그 항목이 낡았다고 드러난다", () => {
@@ -406,14 +544,105 @@ describe("허용 항목의 낡음", () => {
   });
 });
 
+describe("이름 변경 기록", () => {
+  function git(cwd: string, ...args: string[]) {
+    const result = spawnSync(
+      "git",
+      [
+        "-c",
+        "user.name=test",
+        "-c",
+        "user.email=test@example.com",
+        "-c",
+        "commit.gpgsign=false",
+        ...args,
+      ],
+      { cwd, encoding: "utf8" },
+    );
+    if (result.status !== 0) {
+      throw new Error(`git ${args.join(" ")} 실패: ${result.stderr}`);
+    }
+  }
+
+  function commitAll(repo: string, message: string) {
+    git(repo, "add", "--all");
+    git(repo, "commit", "--quiet", "--no-verify", "-m", message);
+  }
+
+  function repoWithRenames() {
+    const repo = tempRoot();
+    git(repo, "init", "--quiet");
+    write(repo, "src/old-name.ts", "export const sample = 1;\n");
+    write(repo, "scripts/old-script.mts", "export const script = 1;\n");
+    write(repo, "docs/old-doc.md", "# 문서\n\n본문이다.\n");
+    commitAll(repo, "처음");
+    git(repo, "mv", "src/old-name.ts", "src/newName.ts");
+    git(repo, "mv", "scripts/old-script.mts", "scripts/oldScript.mts");
+    git(repo, "mv", "docs/old-doc.md", "docs/new-doc.md");
+    commitAll(repo, "이름을 바꾼다");
+
+    return repo;
+  }
+
+  it("src·scripts·tests 아래 개명의 옛 경로를 뽑고 다른 자리의 개명은 뺀다", () => {
+    expect(new Set(pathsRenamedAway(repoWithRenames()))).toEqual(
+      new Set(["src/old-name.ts", "scripts/old-script.mts"]),
+    );
+  });
+
+  it("얕은 clone이면 이력이 없다고 알리고 실패한다", () => {
+    const shallow = join(tempRoot(), "shallow");
+    git(
+      tmpdir(),
+      "clone",
+      "--quiet",
+      "--depth",
+      "1",
+      `file://${repoWithRenames()}`,
+      shallow,
+    );
+
+    expect(() => pathsRenamedAway(shallow)).toThrow(/얕은 clone/);
+  });
+
+  it("git 저장소가 아니면 실패한다", () => {
+    expect(() => pathsRenamedAway(join(tempRoot(), "missing"))).toThrow(/git/);
+  });
+
+  it("이름 변경 기록이 비었으면 조용히 통과하지 않고 실패한다", () => {
+    const repo = tempRoot();
+    git(repo, "init", "--quiet");
+    write(repo, "src/only.ts", "export const only = 1;\n");
+    commitAll(repo, "처음");
+
+    expect(() => pathsRenamedAway(repo)).toThrow(/이름 변경 기록이 비었다/);
+  });
+});
+
 describe("구 경로 잔존 검사 — 실제 저장소 회귀", () => {
+  let renamedAway: string[];
+
+  beforeAll(() => {
+    renamedAway = pathsRenamedAway(process.cwd());
+  });
+
+  it.each([
+    "src/shared/lib/fontLoading.ts",
+    "src/screens/notifications/hooks/pressNotification.ts",
+    "src/features/payroll/model/query-keys.ts",
+    legacyPath("scripts/font-subset", ".mts"),
+    legacyPath("tests/lint/legacy-doc-paths", ".ts"),
+  ])("개명 기록이 옛 경로 %s를 든다", (oldPath) => {
+    expect(renamedAway).toContain(oldPath);
+  });
+
   it("허용된 자리(ADR-004 결정 문장, sdlc-gate.md 패턴 열거 줄 등) 말고는 옛 경로가 안 남아 있다", () => {
-    const violations = legacyPathViolations(process.cwd());
+    const violations = legacyPathViolations(process.cwd(), renamedAway);
 
     expect(violations).toEqual([]);
   });
 
   it("허용 항목마다 그 표지 문장이 옛 경로가 남은 줄을 실제로 가리킨다", () => {
-    expect(staleAllowedLines(process.cwd())).toEqual([]);
+    expect(staleAllowedLines(process.cwd(), renamedAway)).toEqual([]);
   });
 });

@@ -222,7 +222,7 @@ sources:
 | `src/screens/schedule-worker/model/attendance-column.ts` | 인증 열 노출 판정과 현황 줄(0인 항목 제외) | AC-02·AC-08 |
 | `src/shared/utils/submissionSelection.utils.ts` | 고른 날짜 토글 | AC-02·AC-06 |
 | `src/screens/schedule-worker/model/__tests__/` | 위 여섯의 unit | AC-11 |
-| `src/screens/scheduleWorker/ui/ScheduleWorkerScreen.tsx` · `ScheduleAgenda.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `src/app/(tabs)/schedule.tsx` | 달력 순·포지션 순·제출 모드·날 시트와 `?month=`·`?date=`를 넘기는 라우트 | AC-03~AC-08 |
+| `src/screens/scheduleWorker/ui/ScheduleWorkerScreen.tsx` · `src/entities/schedule/ui/ScheduleAgenda.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `src/app/(tabs)/schedule.tsx` | 달력 순·포지션 순·제출 모드·날 시트와 `?month=`·`?date=`를 넘기는 라우트 | AC-03~AC-08 |
 | `src/shared/ui/Accordion.tsx` · `Checkbox.tsx` · `RosterRow.tsx` | 이 화면이 처음 세운 공용 조각 셋 | AC-10 |
 | `src/shared/ui/ScheduleDayCell.tsx` · `Segment.tsx` | 날짜 칸에 `muted` 상태, 세그먼트에 아이콘 칸 | AC-05·AC-10 |
 | `src/shared/ui/MonthCalendar.tsx` | 달력 그리드 — 이 화면이 세웠고 [`schedule-admin`](schedule-admin.md)이 공용 자리로 올렸다 | AC-04·AC-10 |

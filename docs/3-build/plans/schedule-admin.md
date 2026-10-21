@@ -221,8 +221,8 @@ sources:
 | `src/shared/model/adminCalendarDayState.policy.ts` · `confirm-affordance.ts` · `deadline-line.ts` · `format-schedule-date.ts` · `group-open-slots.ts` · `month-empty-state.ts` · `open-mode-selection.ts` · `day-detail-rows.ts` · `day-hours-form.ts` · `__tests__/` | 칸 상태와 빈 자리 수 / 확정 세 모습 / 마감 줄 / 날짜·확정 줄 표기 / 빈 자리 묶기와 「외 n개」 / 전부 지난 달 / 열기 모드의 고를 수 있는 칸과 「n일 열기」 / 날 상세 줄 갈래 / 근무 시간 시트 | AC-02 |
 | `src/shared/model/tileMonth.policy.ts` · `home-tile-summary.ts` · `today-status.ts` · `vacancy-cards.ts` · `mini-view-density.ts` · `__tests__/` | 타일이 말하는 달 / 요약 줄 세 갈래 / 오늘 현황과 비율 띠 / 빈 자리 카드와 사흘 안 승격 / 미니뷰 진하기 | AC-02·AC-03 |
 | `src/entities/availability/utils/applicationsGrouping.utils.ts` · `__tests__/` | 날짜순·사람순 묶기와 표기 | AC-07 |
-| `src/screens/adminHome/ui/AdminHomeScreen.tsx` · `HallDefaultsSheet.tsx` · `src/app/admin/index.tsx` | 관리자 홈과 근무 시간 기본값 시트 | AC-03 |
-| `src/screens/scheduleAdmin/ui/ScheduleAdminScreen.tsx` · `CreateScheduleSheet.tsx` · `DayDetail.tsx` · `DayHoursSheet.tsx` · `CloseDayWarningSheet.tsx` · `ConfirmSheet.tsx` · `src/app/admin/schedule.tsx` | 달력·만들기·열기 모드·날 상세 껍데기·날 닫기 경고·확정과 확정 뒤 | AC-04~AC-06·AC-08·AC-09 |
+| `src/screens/adminHome/ui/AdminHomeScreen.tsx` · `src/features/hallDefaults/ui/HallDefaultsSheet.tsx` · `src/app/admin/index.tsx` | 관리자 홈과 근무 시간 기본값 시트 | AC-03 |
+| `src/screens/scheduleAdmin/ui/ScheduleAdminScreen.tsx` · `DayDetail.tsx` · `src/features/scheduleDay/ui/CreateScheduleSheet.tsx` · `DayHoursSheet.tsx` · `CloseDayWarningSheet.tsx` · `src/features/scheduleConfirm/ui/ConfirmSheet.tsx` · `src/app/admin/schedule.tsx` | 달력·만들기·열기 모드·날 상세 껍데기·날 닫기 경고·확정과 확정 뒤 | AC-04~AC-06·AC-08·AC-09 |
 | `src/screens/applications/ui/ApplicationsScreen.tsx` · `src/app/admin/applications.tsx` | 모아보기 | AC-07 |
 | `src/shared/ui/MonthCalendar.tsx` · `ScheduleDayCell.tsx` | 달력 그리드를 근무자 화면에서 공용 자리로 올리고 칸에 관리자 편집 상태를 더한다 | AC-10 |
 | `src/screens/scheduleWorker/ui/ScheduleWorkerScreen.tsx` | 올린 달력 그리드를 따라가는 import | AC-10 |
