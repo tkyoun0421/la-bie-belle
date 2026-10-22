@@ -47,6 +47,15 @@ describe("보드 문서 줄 번호 인용 검사", () => {
     expect(files).toContain("CLAUDE.md");
   });
 
+  it("에이전트 정의문과 스킬은 보고 로컬 worktree는 안 연다", () => {
+    const files = scannedFiles(process.cwd());
+
+    expect(files).toContain(".claude/agents/session-recorder.md");
+    expect(files.some((file) => file.startsWith(".claude/worktrees/"))).toBe(
+      false,
+    );
+  });
+
   it("현재 저장소의 문서는 보드를 줄 번호로 인용하지 않는다 (회귀)", () => {
     expect(repositoryBoardLineRefs(process.cwd())).toEqual([]);
   });
