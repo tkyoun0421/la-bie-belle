@@ -8,12 +8,8 @@ export type BoardLineRef = {
 };
 
 const ROOT_DOCS = ["CLAUDE.md", "README.md", "REVIEW.md"];
-const SCANNED_DIRS = ["docs", ".claude"];
-const RECORD_PREFIXES = [
-  "docs/log/",
-  "docs/observations/",
-  ".claude/worktrees/",
-];
+const SCANNED_DIRS = ["docs", ".claude/agents", ".claude/skills"];
+const RECORD_PREFIXES = ["docs/log/", "docs/observations/"];
 const BOARD_LINE_REF =
   /(?:backlog|handoff|owner-todo)\.md(?:\)|`)?:\d+(?:[·,]\d+)*/g;
 
