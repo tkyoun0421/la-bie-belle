@@ -217,7 +217,7 @@ ADR-015의 세그먼트 뜻과 접미사 열여섯을 기준으로 봤다. **0�
 | 「검사 열일곱」 | `CLAUDE.md`:27 · ADR-015:295 | 집행 표 행 19 | 표 행 셈 | 셋째 감사가 안 든 수다. `tests/lint/docCounts`가 그 표를 읽어 세면 된다 |
 | 「열여섯 꼴」 · 「세그먼트는 열」 | `CLAUDE.md`:31·27 | 맞다 — 셋째 감사가 확인했다 | 접미사 표 행 셈 · 폴더 이름 셈 | 코드 쪽에 대조할 표가 없어 다음에도 사람이 센다. `fileNaming.ts`에 접미사→세그먼트 표를, `eslint-rules`에 세그먼트 목록 하나를 세운다 — 지금은 규칙 넷이 부분집합을 각자 든다(`constsSegment`·`dumbUi`·`nativeSdkSegment`·`uiValueImport`) |
 | 규칙 줄 46 · 번호 47 | execution.md:238 | 맞다 | `ruleCatalogue.test.ts`가 이미 센다 | — |
-| 행이 든 수 — `effect-derived-values` 14, `modern-react-hooks`의 `useCallback` 259 · 한 손 둘 이상 32 | backlog.md:113·114 | 14 · **179** · **28**(plan은 30 — 셈 조건이 다르다) | AST | 행은 그 순간의 기록이다. CI가 아니라 **띄우는 순간**에 구현자가 다시 센다 — `plan-preflight`가 그 자리다 |
+| 행이 든 수 — `effect-derived-values` 14, `modern-react-hooks`의 `useCallback` 259 · 한 손 둘 이상 32 | backlog.md의 두 행 | 14 · **179** · **28**(plan은 30 — 셈 조건이 다르다) | AST | 행은 그 순간의 기록이다. CI가 아니라 **띄우는 순간**에 구현자가 다시 센다 — `plan-preflight`가 그 자리다 |
 
 ### 검사 카탈로그의 빈 자리
 

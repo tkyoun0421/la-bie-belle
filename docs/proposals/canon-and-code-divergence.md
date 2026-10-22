@@ -51,7 +51,7 @@ status: proposed
 - [ADR-004](../2-design/adr/ADR-004-domain-rules-home.md)가 세 꼴로 가리키는 옛 도메인 자리(`docs/` 바로 아래의 파일과 디렉터리, 그리고 `2-design/domain/`) — 머리글이 「아래 경로는 당시 결정의 기록이다」를 박았다
 - [ADR-003](../2-design/adr/ADR-003-supabase-and-integration-tests.md):55의 `SKIP_PREFIXES` — `.claude/hooks/tdd-guard-unit.py:27`에 산다. 파이썬이라 TS 색인 밖이었다
 - [plans/screens-calc-placement.md](../3-build/plans/screens-calc-placement.md):152의 `eslint-rules/noCopiedDomainShape.mjs` — 취소선과 「**뺐다.**」가 붙어 있다
-- [backlog.md](../backlog.md):89의 `src/app/providers.tsx` — 그 줄 자신이 「그 파일이 없어진 뒤로」를 적는다
+- [backlog.md](../backlog.md) `tsx-dumb-ui-fixtures` 행의 `src/app/providers.tsx` — 그 줄 자신이 「그 파일이 없어진 뒤로」를 적는다
 - `assets/illustrations/`·`docs/2-design/design-system/canvas/` — 아직 안 만든 자리를 가리키는 문장
 - `supabase/functions/_shared/`·`tests/lint/.tmp-format-check/` — `pnpm edge:sync`와 테스트가 런타임에 만들고 `.gitignore` 안이다
 - `.claude/agents/`의 `cart` 예시 — 지어낸 이름
